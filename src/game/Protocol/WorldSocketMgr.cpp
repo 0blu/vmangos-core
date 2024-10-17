@@ -25,6 +25,7 @@
 #include "Policies/SingletonImp.h"
 #include "IO/Networking/AsyncSocketAcceptor.h"
 #include "IO/Multithreading/CreateThread.h"
+#include "Metric/Metric.h"
 #include "ProxyProtocol/ProxyV2Reader.h"
 
 INSTANTIATE_SINGLETON_1(WorldSocketMgr);
@@ -43,6 +44,7 @@ bool WorldSocketMgr::StartWorldNetworking(IO::IoContext* ioCtx, WorldSocketMgrOp
     }
     m_listener->AutoAcceptSocketsUntilClose([this](IO::Networking::SocketDescriptor socketDescriptor)
     {
+        MANGOS_METRIC(IncrementalCounter::NewSocketConnection{});
         this->OnNewClientConnected(std::move(socketDescriptor));
     });
 

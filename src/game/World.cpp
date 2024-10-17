@@ -85,6 +85,8 @@
 
 #include <chrono>
 
+#include "Metric/Metric.h"
+
 INSTANTIATE_SINGLETON_1(World);
 
 volatile bool World::m_stopEvent = false;
@@ -1967,6 +1969,8 @@ void World::ProcessAsyncPackets()
 // Update the World !
 void World::Update(uint32 diff)
 {
+    MANGOS_METRIC(ScopedStopwatch::TotalWorldUpdateTime{});
+
     m_currentMSTime = WorldTimer::getMSTime();
     m_currentTime = std::chrono::time_point_cast<std::chrono::milliseconds>(Clock::now());
     m_currentDiff = diff;
@@ -1990,6 +1994,7 @@ void World::Update(uint32 diff)
     if (m_timers[WUPDATE_AUCTIONS].Passed())
     {
         m_timers[WUPDATE_AUCTIONS].Reset();
+        //MANGOS_METRIC_STOPWATCH_SCOPE(AuctionHouse);
 
         sAuctionHouseBotMgr.Update();
         // Handle expired auctions
@@ -2004,7 +2009,10 @@ void World::Update(uint32 diff)
 
         // <li> Handle session updates
         uint32 updateSessionsTime = WorldTimer::getMSTime();
-        UpdateSessions(diff);
+        {
+            //MANGOS_METRIC_STOPWATCH_SCOPE(SessionUpdate);
+            UpdateSessions(diff);
+        }
         updateSessionsTime = WorldTimer::getMSTimeDiffToNow(updateSessionsTime);
         if (getConfig(CONFIG_UINT32_PERFLOG_SLOW_SESSIONS_UPDATE) && updateSessionsTime > getConfig(CONFIG_UINT32_PERFLOG_SLOW_SESSIONS_UPDATE))
             sLog.Out(LOG_PERFORMANCE, LOG_LVL_MINIMAL, "Update sessions: %ums", updateSessionsTime);
@@ -2040,11 +2048,15 @@ void World::Update(uint32 diff)
     std::future<void> job = m_updateThreads->processWorkload(_asyncTasksBusy);
     _asyncTasks.clear();
     lock.unlock();
-    
-    sMapMgr.Update(diff);
-    sBattleGroundMgr.Update(diff);
-    sGuardMgr.Update(diff);
-    sZoneScriptMgr.Update(diff);
+
+    {
+        //MANGOS_METRIC_STOPWATCH_SCOPE(MapUpdate);
+
+        sMapMgr.Update(diff);
+        sBattleGroundMgr.Update(diff);
+        sGuardMgr.Update(diff);
+        sZoneScriptMgr.Update(diff);
+    }
 
     // Update groups with offline leaders
     if (m_timers[WUPDATE_GROUPS].Passed())
@@ -2133,6 +2145,12 @@ void World::Update(uint32 diff)
     //cleanup unused GridMap objects as well as VMaps
     if (getConfig(CONFIG_BOOL_CLEANUP_TERRAIN))
         sTerrainMgr.Update(diff);
+
+    // TODO: Add this commit later https://github.com/cmangos/mangos-tbc/commit/24f4a2c86273d9d06f69a43bb73b9adce44b230b
+    MANGOS_METRIC(MaximalCounter::PlayerCount{ (uint32) m_sessions.size() });
+
+    MANGOS_METRIC(MaximalCounter::LoadedMaps{ sMapMgr.Maps().size() });
+    MANGOS_METRIC(MaximalCounter::OpenGmTickets{ sTicketMgr->instance()->GetOpenTicketCount() });
 }
 
 // Send a packet to all players (except self if mentioned)

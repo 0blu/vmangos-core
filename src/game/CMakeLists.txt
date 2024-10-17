@@ -422,7 +422,8 @@ set (game_SRCS
     vmap/VMapManager2.h
     vmap/VMapTools.h
     vmap/WorldModel.h
-
+    Metric/Metric.h
+    Metric/Metric.cpp
 )
 
 if((${CMAKE_VERSION} VERSION_LESS "3.16") OR USE_PCH_OLD)

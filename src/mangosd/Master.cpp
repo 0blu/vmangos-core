@@ -56,6 +56,8 @@
 #endif
 #include <signal.h>
 
+#include "Metric/Metric.h"
+
 #ifdef WIN32
 #include "ServiceWin32.h"
 extern volatile int m_ServiceStatus;
@@ -145,6 +147,13 @@ int Master::Run()
 
         sLog.Out(LOG_BASIC, LOG_LVL_BASIC, "Daemon PID: %u\n", pid);
     }
+
+    if (!MaNGOS::Metric::MetricService::Initialize({"username", "password", "db"}, "MyRealmName"))
+    {
+        sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "Failed to connect to metric database! (Will start server nonetheless)");
+        Log::WaitBeforeContinueIfNeed();
+    }
+
 
     // Start the databases
     if (!_StartDB())
@@ -294,6 +303,8 @@ int Master::Run()
         trustedProxyIps,
     };
 
+    MaNGOS::Metric::MetricService::StartSenderThread();
+
     if (!sWorldSocketMgr.StartWorldNetworking(ioCtx, socketOptions))
     {
         Log::WaitBeforeContinueIfNeed();
@@ -307,6 +318,8 @@ int Master::Run()
     // Stop soap thread
     if (soap_thread)
         soap_thread->join();
+
+    MaNGOS::Metric::MetricService::Finalize();
 
     // Set server offline in realmlist
     //LoginDatabase.DirectPExecute("UPDATE realmlist SET realmflags = realmflags | %u WHERE id = '%u'", REALM_FLAG_OFFLINE, realmID);
