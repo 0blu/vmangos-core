@@ -1,0 +1,26 @@
+Checks: >
+    - readability-identifier-naming
+
+CheckOptions:
+    - key: readability-identifier-naming.ClassCase
+      value: PascalCase
+    - key: readability-identifier-naming.StructCase
+      value: PascalCase
+    - key: readability-identifier-naming.UnionCase
+      value: PascalCase
+    - key: readability-identifier-naming.TypedefCase
+      value: PascalCase
+    - key: readability-identifier-naming.FunctionCase
+      value: PascalCase
+    - key: readability-identifier-naming.MacroDefinitionCase
+      value: UPPER_CASE
+    - key: readability-identifier-naming.NamespaceCase
+      value: PascalCase
+    - key: readability-identifier-naming.ClassMemberCase
+      value: camelBack
+    - key: readability-identifier-naming.ClassMemberPrefix
+      value: 'm_'
+    - key: readability-identifier-naming.ParameterCase
+      value: camelBack
+    - key: readability-identifier-naming.VariableCase
+      value: camelBack

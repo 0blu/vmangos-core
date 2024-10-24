@@ -49,6 +49,9 @@
       </rules>
       <option name="TYPE_QUALIFIERS_PLACEMENT" value="AFTER" />
     </Objective-C-extensions>
+    <editorconfig>
+      <option name="ENABLED" value="false" />
+    </editorconfig>
     <codeStyleSettings language="ObjectiveC">
       <option name="RIGHT_MARGIN" value="999" />
       <option name="KEEP_CONTROL_STATEMENT_IN_ONE_LINE" value="false" />
