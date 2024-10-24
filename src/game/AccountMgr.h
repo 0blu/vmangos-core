@@ -117,7 +117,7 @@ class AccountMgr
         void UnbanIP(std::string const& ip) { m_ipBanned.erase(ip); }
         void BanAccount(uint32 account, uint32 unbandate) { m_accountBanned[account] = unbandate; }
         void UnbanAccount(uint32 acc) { m_accountBanned.erase(acc); }
-        bool IsIPBanned(std::string const& ip) const;
+        bool IsIPBanned(std::string ip) const;
         bool IsAccountBanned(uint32 acc) const;
 
         void LoadAccountWarnings();

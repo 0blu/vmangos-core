@@ -390,7 +390,7 @@ void AccountMgr::LoadAccountBanList(bool silent)
         sLog.Out(LOG_BASIC, LOG_LVL_MINIMAL, "Loading account_banned ...");
 
     std::unique_ptr<QueryResult> banresult(LoginDatabase.PQuery("SELECT `id`, `unbandate`, `bandate` FROM `account_banned` WHERE `active` = 1 AND (`unbandate` > UNIX_TIMESTAMP() OR `bandate` = `unbandate`)"));
-    
+
     if (!banresult)
     {
         if (!silent)
@@ -425,7 +425,7 @@ void AccountMgr::LoadAccountBanList(bool silent)
     }
 }
 
-bool AccountMgr::IsIPBanned(std::string const& ip) const
+bool AccountMgr::IsIPBanned(std::string ip) const // test5
 {
     std::shared_lock<std::shared_timed_mutex> lock(m_ipBannedMutex);
     std::map<std::string, uint32>::const_iterator it = m_ipBanned.find(ip);
@@ -553,7 +553,7 @@ AccountPersistentData& AccountMgr::GetAccountPersistentData(uint32 accountId)
         if (itr != m_accountPersistentData.end())
             return itr->second;
     }
-    
+
     {
         std::lock_guard<std::shared_timed_mutex> guard(m_accountPersistentDataMutex);
         return m_accountPersistentData[accountId];
