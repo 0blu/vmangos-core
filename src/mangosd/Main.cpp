@@ -57,6 +57,7 @@ DatabaseType LoginDatabase;                                 // Accessor to the r
 DatabaseType LogsDatabase;                                  // Accessor to the logs database
 
 uint32 realmID;                                             // Id of the realm
+std::string realmName;                                      // Name of the realm
 
 char const* g_mainLogFileName = "Server.log";
 

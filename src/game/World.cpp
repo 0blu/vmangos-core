@@ -2146,10 +2146,8 @@ void World::Update(uint32 diff)
     if (getConfig(CONFIG_BOOL_CLEANUP_TERRAIN))
         sTerrainMgr.Update(diff);
 
-    // TODO: Add this commit later https://github.com/cmangos/mangos-tbc/commit/24f4a2c86273d9d06f69a43bb73b9adce44b230b
-    MANGOS_METRIC(MaximalCounter::PlayerCount{ (uint32) m_sessions.size() });
-
-    MANGOS_METRIC(MaximalCounter::LoadedMaps{ sMapMgr.Maps().size() });
+    MANGOS_METRIC(MaximalCounter::SessionCount{ static_cast<uint32>(m_sessions.size()) }); // TODO: Add this commit later https://github.com/cmangos/mangos-tbc/commit/24f4a2c86273d9d06f69a43bb73b9adce44b230b
+    MANGOS_METRIC(MaximalCounter::LoadedMaps{ static_cast<uint32>(sMapMgr.Maps().size()) });
     MANGOS_METRIC(MaximalCounter::OpenGmTickets{ sTicketMgr->instance()->GetOpenTicketCount() });
 }
 

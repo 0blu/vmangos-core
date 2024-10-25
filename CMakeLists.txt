@@ -320,6 +320,13 @@ else()
   message(STATUS "Use anticheat         : No  (default)")
 endif()
 
+if(ENABLE_METRICS)
+  message(STATUS "Metrics Enabled?      : Yes")
+  set(DEFINITIONS ${DEFINITIONS} ENABLE_METRICS)
+else()
+  message(STATUS "Metrics Enabled?      : No  (default)")
+endif()
+
 if(USE_SCRIPTS)
   message(STATUS "Build scripts         : Yes (default)")
 else()

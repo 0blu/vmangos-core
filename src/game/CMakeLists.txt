@@ -15,7 +15,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-set (game_SRCS 
+set (game_SRCS
     AccountMgr.cpp
     AuraRemovalMgr.cpp
     AutoBroadCastMgr.cpp
@@ -422,8 +422,6 @@ set (game_SRCS
     vmap/VMapManager2.h
     vmap/VMapTools.h
     vmap/WorldModel.h
-    Metric/Metric.h
-    Metric/Metric.cpp
 )
 
 if((${CMAKE_VERSION} VERSION_LESS "3.16") OR USE_PCH_OLD)
@@ -478,6 +476,20 @@ if(USE_ANTICHEAT)
   )
 endif()
 
+if(ENABLE_METRICS)
+  list(APPEND game_SRCS
+      Metric/Metric.h
+      Metric/Metric_Enabled.cpp
+      Metric/Metric_IncrementalCounter.cpp
+      Metric/Metric_MaximalCounter.cpp
+      Metric/Metric_ScopedStopwatch.cpp
+  )
+else()
+  list(APPEND game_SRCS
+      Metric/Metric.h
+      Metric/Metric_Disabled.cpp
+  )
+endif()
 
 include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}

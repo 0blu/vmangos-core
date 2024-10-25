@@ -148,18 +148,53 @@ int Master::Run()
         sLog.Out(LOG_BASIC, LOG_LVL_BASIC, "Daemon PID: %u\n", pid);
     }
 
-    if (!MaNGOS::Metric::MetricService::Initialize({"username", "password", "db"}, "MyRealmName"))
-    {
-        sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "Failed to connect to metric database! (Will start server nonetheless)");
-        Log::WaitBeforeContinueIfNeed();
-    }
-
-
     // Start the databases
     if (!_StartDB())
     {
         Log::WaitBeforeContinueIfNeed();
         return 1;
+    }
+
+    {
+        std::unique_ptr<QueryResult> result{LoginDatabase.PQuery("SELECT `name` FROM `realmlist` WHERE `id` = %d", realmID)};
+        if (!result)
+        {
+            sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "Config contains invalid realmID %d, make sure its set in the `realmlist` table", realmID);
+            Log::WaitBeforeContinueIfNeed();
+            return 1;
+        }
+        realmName = (*result)[0].GetCppString();
+    }
+
+    if (sConfig.GetBoolDefault("Metric.Enable", false))
+    {
+        int metricInterval = sConfig.GetIntDefault("Metric.Interval", 1);
+        if (metricInterval < 1)
+        {
+            sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "'Metric.Interval' config set to %s, overriding to 1.", metricInterval);
+            metricInterval = 1;
+        }
+
+        std::string metricConnectionInfo = sConfig.GetStringDefault("Metric.ConnectionInfo", "");
+        std::vector<std::string> tokens = SplitStringByDelimiter(metricConnectionInfo, ';');
+        if (tokens.size() != 3)
+        {
+            sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "Unable to parse 'Metric.ConnectionInfo'", metricInterval);
+            Log::WaitBeforeContinueIfNeed();
+            return 1;
+        }
+
+        std::string metricUsername = tokens[0];
+        std::string metricPassword = tokens[1];
+        std::string metricDatabase = tokens[2];
+
+        MaNGOS::Metric::MetricService::InfluxDbCredentials influxCredentials{metricUsername, metricPassword, metricDatabase };
+
+        if (!MaNGOS::Metric::MetricService::Initialize(influxCredentials, std::chrono::seconds(metricInterval), realmName))
+        {
+            sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "Failed to connect to metric database! (Will start game server nonetheless)");
+            Log::WaitBeforeContinueIfNeed();
+        }
     }
 
     std::unique_ptr<IO::IoContext> ioCtxUniquePtr = IO::IoContext::CreateIoContext();
