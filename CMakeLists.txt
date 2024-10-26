@@ -26,34 +26,7 @@ if(${CMAKE_VERSION} VERSION_GREATER "3.11")
 endif()
 
 include(cmake/common.cmake)
-
-set(SUPPORTED_CLIENT_BUILD "CLIENT_BUILD_1_12_1" CACHE STRING "Client version the core will support")
-option(USE_STD_MALLOC "Use standard malloc instead of TBB" OFF)
-option(BUILD_FOR_HOST_CPU "Build specifically for the host CPU via `-march=native` (might not run on different machines)" ON)
-option(TBB_DEBUG "Use TBB debug librairies" OFF)
-option(USE_SCRIPTS "Compile scripts" ON)
-option(USE_EXTRACTORS "Compile extractors" OFF)
-option(USE_LIBCURL "Compile with libcurl for email support" OFF)
-option(USE_REALMMERGE "Compile helper tool for merging character databases" OFF)
-
-if(UNIX)
-  option(DEBUG_SYMBOLS "Include Debug Symbols" ON)
-endif()
-
-find_package(PCHSupport)
-if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.16")
-  option(USE_PCH "Use precompiled headers" ON)
-endif()
-
-if(PCHSupport_FOUND AND (${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.16"))
-    if(MSVC)
-      option(USE_PCH_OLD "Use old precompiled headers implementation" ON)
-    else()
-      option(USE_PCH_OLD "Use old precompiled headers implementation" OFF)
-    endif()
-else()
-  unset(USE_PCH_OLD CACHE)
-endif()
+include(cmake/options.cmake)
 
 if(USE_LIBCURL)
   find_package(CURL REQUIRED)
@@ -108,19 +81,6 @@ if(WIN32)
   else() # 64-bit
     set(DEP_ARCH x64)
   endif()
-endif()
-
-# Add options for compile of mangos
-if((${CMAKE_VERSION} VERSION_LESS "3.16") OR USE_PCH_OLD)
-  if(PCHSupport_FOUND)
-    if(WIN32)
-      option(USE_PCH "Use precompiled headers" ON)
-    else()
-      option(USE_PCH "Use precompiled headers" OFF)
-    endif()
-  endif()
-else()
-  option(USE_PCH "Use precompiled headers" ON)
 endif()
 
 # Set up the install-prefix
