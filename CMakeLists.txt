@@ -57,10 +57,6 @@ message(STATUS
   For example: cmake .. -DPREFIX=/opt/mangos\n"
 ) # TODO: PLATFORM: Sets the architecture for compile (X86,X64)
 
-if(NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE "Release" CACHE STRING "" FORCE)
-endif()
-
 # Find out what system we use to include the needed libs
 if(WIN32)
   if(PLATFORM MATCHES X86) # 32-bit
