@@ -37,14 +37,14 @@ set (shared_SRCS
     WorldPacket.h
     Config/Config.h
     Config/ConfigEnv.h
+    Crypto/InitializeCrypto.h
+    Crypto/InitializeCrypto.cpp
     Crypto/BigNumber.h
     Crypto/BigNumber.cpp
     Crypto/Authentication/SRP6.h
     Crypto/Authentication/SRP6.cpp
     Crypto/Encryption/RC4.h
     Crypto/Encryption/RC4.cpp
-    Crypto/Hash/Hmac.h
-    Crypto/Hash/Hmac.cpp
     Crypto/Hash/HMACSHA1.h
     Crypto/Hash/HMACSHA1.cpp
     Crypto/Hash/MD5.h

@@ -24,7 +24,7 @@
 
 #include "AuthCrypt.h"
 
-#include "Crypto/Hash/Hmac.h"
+#include "Crypto/Hash/HMACSHA1.h"
 
 AuthCrypt::AuthCrypt()
 {
@@ -87,12 +87,4 @@ void AuthCrypt::SetKey(uint8* key, size_t len)
 
 AuthCrypt::~AuthCrypt()
 {
-}
-
-void AuthCrypt::GenerateKey(uint8* key, BigNumber* bn)
-{
-    HmacHash hash;
-    hash.UpdateBigNumber(bn);
-    hash.Finalize();
-    memcpy(key, hash.GetDigest(), hash.GetLength());
 }
