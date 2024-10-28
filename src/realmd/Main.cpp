@@ -34,8 +34,6 @@
 #include "revision.h"
 #include "Util.h"
 #include "migrations_list.h"
-#include <openssl/opensslv.h>
-#include <openssl/crypto.h>
 
 #include <ace/Get_Opt.h>
 #include <ace/Dev_Poll_Reactor.h>
@@ -43,6 +41,8 @@
 #include <ace/ACE.h>
 #include <ace/Acceptor.h>
 #include <ace/SOCK_Acceptor.h>
+
+#include "Crypto/InitializeCrypto.h"
 
 #ifdef USE_SENDGRID
 #include "MailerService.h"
@@ -193,6 +193,10 @@ extern int main(int argc, char **argv)
 #endif
 
     sLog.Out(LOG_BASIC, LOG_LVL_MINIMAL, "Core revision: %s [realm-daemon]", _FULLVERSION);
+    sLog.Out(LOG_BASIC, LOG_LVL_DETAIL, "Using ACE: %s", ACE_VERSION);
+    if (!Crypto::InitializeCryptoAndPrintVersion())
+        return 1;
+
     sLog.Out(LOG_BASIC, LOG_LVL_MINIMAL, "<Ctrl-C> to stop.\n" );
     sLog.Out(LOG_BASIC, LOG_LVL_MINIMAL, "Using configuration file %s.", cfg_file);
 
@@ -207,15 +211,6 @@ extern int main(int argc, char **argv)
         sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "*****************************************************************************");
         Log::WaitBeforeContinueIfNeed();
     }
-
-    sLog.Out(LOG_BASIC, LOG_LVL_DETAIL, "%s (Library: %s)", OPENSSL_VERSION_TEXT, SSLeay_version(SSLEAY_VERSION));
-    if (SSLeay() < 0x009080bfL )
-    {
-        sLog.Out(LOG_BASIC, LOG_LVL_DETAIL, "WARNING: Outdated version of OpenSSL lib. Logins to server may not work!");
-        sLog.Out(LOG_BASIC, LOG_LVL_DETAIL, "WARNING: Minimal required version [OpenSSL 0.9.8k]");
-    }
-
-    sLog.Out(LOG_BASIC, LOG_LVL_DETAIL, "Using ACE: %s", ACE_VERSION);
 
 #ifdef USE_SENDGRID
     sLog.Out(LOG_BASIC, LOG_LVL_DETAIL, "Using CURL version %s", curl_version());

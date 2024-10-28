@@ -31,10 +31,10 @@
 #include "Master.h"
 #include "SystemConfig.h"
 #include "revision.h"
-#include <openssl/opensslv.h>
-#include <openssl/crypto.h>
 #include <ace/Version.h>
 #include <ace/Get_Opt.h>
+
+#include "Crypto/InitializeCrypto.h"
 
 #ifdef WIN32
 #include "ServiceWin32.h"
@@ -196,20 +196,11 @@ extern int main(int argc, char **argv)
     sLog.Out(LOG_BASIC, LOG_LVL_MINIMAL, "VMaNGOS : https://github.com/vmangos");
     sLog.Out(LOG_BASIC, LOG_LVL_MINIMAL, "Using configuration file %s.", cfg_file);
 
-#define STR(s) #s
-#define XSTR(s) STR(s)
-
     sLog.Out(LOG_BASIC, LOG_LVL_MINIMAL, "Alloc library: " MANGOS_ALLOC_LIB "");
     sLog.Out(LOG_BASIC, LOG_LVL_MINIMAL, "Core Revision: " _FULLVERSION);
-
-    sLog.Out(LOG_BASIC, LOG_LVL_DETAIL, "%s (Library: %s)", OPENSSL_VERSION_TEXT, SSLeay_version(SSLEAY_VERSION));
-    if (SSLeay() < 0x009080bfL )
-    {
-        sLog.Out(LOG_BASIC, LOG_LVL_DETAIL, "WARNING: Outdated version of OpenSSL lib. Logins to server may not work!");
-        sLog.Out(LOG_BASIC, LOG_LVL_DETAIL, "WARNING: Minimal required version [OpenSSL 0.9.8k]");
-    }
-
     sLog.Out(LOG_BASIC, LOG_LVL_DETAIL, "Using ACE: %s", ACE_VERSION);
+    if (!Crypto::InitializeCryptoAndPrintVersion())
+        return 1;
 
     // Set progress bars show mode
     BarGoLink::SetOutputState(sConfig.GetBoolDefault("ShowProgressBars", true));

@@ -21,6 +21,8 @@
 
 #include "Common.h"
 
+#include <openssl/opensslv.h>
+
 class BigNumber;
 
 class HMACSHA1
@@ -31,8 +33,8 @@ class HMACSHA1
 
         void UpdateBigNumber(BigNumber* bn);
         void UpdateData(std::vector<uint8> const& data);
-        void UpdateData(uint8 const* data, int length);
         void UpdateData(std::string const& str);
+        void UpdateData(uint8 const* data, size_t length);
 
         void Finalize();
 
@@ -40,8 +42,15 @@ class HMACSHA1
         int constexpr GetLength() { return sizeof(m_digest); }
 
     private:
+#if defined(OPENSSL_VERSION_MAJOR) && (OPENSSL_VERSION_MAJOR >= 3)
+        typedef struct evp_mac_st EVP_MAC;
+        typedef struct evp_mac_ctx_st EVP_MAC_CTX;
+        EVP_MAC* m_mac;
+        EVP_MAC_CTX* m_ctx;
+#else
         typedef struct hmac_ctx_st HMAC_CTX;
         HMAC_CTX* m_ctx;
+#endif
         uint8 m_digest[20]; // SHA_DIGEST_LENGTH
 };
 #endif

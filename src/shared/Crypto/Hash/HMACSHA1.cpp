@@ -17,15 +17,23 @@
  */
 
 #include "HMACSHA1.h"
+
 #include "../BigNumber.h"
 
 #include <openssl/hmac.h>
+#include <openssl/sha.h>
 
 HMACSHA1::HMACSHA1(const uint8* seed, size_t len)
 {
-#if defined(OPENSSL_VERSION_NUMBER) && OPENSSL_VERSION_NUMBER >= 0x10100000L
-    m_ctx = HMAC_CTX_new();
-    HMAC_Init_ex(m_ctx, seed, len, EVP_sha1(), nullptr);
+#if defined(OPENSSL_VERSION_MAJOR) && (OPENSSL_VERSION_MAJOR >= 3)
+    m_mac = EVP_MAC_fetch(nullptr, "HMAC", nullptr);
+    m_ctx = EVP_MAC_CTX_new(m_mac);
+
+    OSSL_PARAM params[2];
+    params[0] = OSSL_PARAM_construct_utf8_string("digest", const_cast<char*>("SHA1"), 0);
+    params[1] = OSSL_PARAM_construct_end();
+
+    EVP_MAC_init(m_ctx, seed, len, params);
 #else
     m_ctx = new HMAC_CTX;
     HMAC_CTX_init(m_ctx);
@@ -36,7 +44,8 @@ HMACSHA1::HMACSHA1(const uint8* seed, size_t len)
 HMACSHA1::~HMACSHA1()
 {
 #if defined(OPENSSL_VERSION_NUMBER) && OPENSSL_VERSION_NUMBER >= 0x10100000L
-    HMAC_CTX_free(m_ctx);
+    EVP_MAC_CTX_free(m_ctx);
+    EVP_MAC_free(m_mac);
 #else
     HMAC_CTX_cleanup(m_ctx);
     delete m_ctx;
@@ -50,21 +59,31 @@ void HMACSHA1::UpdateBigNumber(BigNumber* bn)
 
 void HMACSHA1::UpdateData(std::vector<uint8> const& data)
 {
-    HMAC_Update(m_ctx, data.data(), data.size());
-}
-
-void HMACSHA1::UpdateData(uint8 const* data, int length)
-{
-    HMAC_Update(m_ctx, data, length);
+    UpdateData(data.data(), data.size());
 }
 
 void HMACSHA1::UpdateData(std::string const& str)
 {
-    UpdateData((uint8 const*) str.c_str(), str.length());
+    UpdateData(reinterpret_cast<const uint8*>(str.c_str()), str.length());
+}
+
+void HMACSHA1::UpdateData(uint8 const* data, size_t length)
+{
+#if defined(OPENSSL_VERSION_MAJOR) && (OPENSSL_VERSION_MAJOR >= 3)
+    EVP_MAC_update(m_ctx, data, length);
+#else
+    HMAC_Update(m_ctx, data, length);
+#endif
 }
 
 void HMACSHA1::Finalize()
 {
+#if defined(OPENSSL_VERSION_MAJOR) && (OPENSSL_VERSION_MAJOR >= 3)
+    size_t length = 0;
+    EVP_MAC_final(m_ctx, m_digest, &length, sizeof(m_digest));
+#else
     uint32 length = 0;
-    HMAC_Final(m_ctx, m_digest, &length);
+    HMAC_Final(m_ctx, (uint8*)m_digest, &length);
+#endif
+    MANGOS_ASSERT(length == SHA_DIGEST_LENGTH);
 }
