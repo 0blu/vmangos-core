@@ -5,8 +5,8 @@ option(BUILD_FOR_HOST_CPU             "Build specifically for the host CPU via `
 option(TBB_DEBUG                      "Use TBB debug libraries"                                                                       OFF)
 option(USE_SCRIPTS                    "Compile scripts"                                                                               ON)
 option(USE_EXTRACTORS                 "Compile extractors"                                                                            OFF)
-option(USE_LIBCURL                    "Compile with libcurl for email support"                                                        OFF)
 option(USE_REALMMERGE                 "Compile helper tool for merging character databases"                                           OFF)
+option(ENABLE_MAILSENDER              "Compile with email sender support via sendgrid.com (requires libcurl)"                         OFF)
 
 # Other options
 set(SUPPORTED_CLIENT_BUILD "CLIENT_BUILD_1_12_1" CACHE STRING "Client version the core will support")
@@ -62,7 +62,7 @@ message(STATUS
     TBB_DEBUG                 Use TBB debug libraries
     USE_SCRIPTS               Compile scripts
     USE_EXTRACTORS            Compile extractors
-    USE_LIBCURL               Compile with libcurl for email support
+    ENABLE_MAILSENDER         Compile with email sender support via sendgrid.com (requires libcurl)
     USE_REALMMERGE            Compile helper tool for merging character databases
     SUPPORTED_CLIENT_BUILD    Client version the core will support
 
