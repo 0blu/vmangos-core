@@ -47,6 +47,8 @@
 #include "MasterPlayer.h"
 #include "Crypto/Hash/MD5.h"
 
+#include "Metric/Metric.h"
+
 // select opcodes appropriate for processing in Map::Update context for current session state
 static bool MapSessionFilterHelper(WorldSession* session, OpcodeHandler const& opHandle)
 {
@@ -176,6 +178,8 @@ void WorldSession::SendPacketImpl(WorldPacket const* packet)
     if (m_sniffFile)
         m_sniffFile->WritePacket(*packet, false, time(nullptr));
 
+    MANGOS_METRIC(IncrementalCounter::network_packet_sendBytes{ packet->GetOpcode(), packet->size() });
+    MANGOS_METRIC(IncrementalCounter::network_packet_sendCount{ packet->GetOpcode() });
     m_socket->SendPacket(*packet);
 }
 
@@ -494,6 +498,9 @@ void WorldSession::ProcessPackets(PacketFilter& updater)
     m_receivedPacketType[updater.PacketProcessType()] = false;
     while (CanProcessPackets() && m_recvQueue[updater.PacketProcessType()].next(packet, updater))
     {
+        MANGOS_METRIC(IncrementalCounter::network_packet_recvBytes{ packet->GetOpcode(), packet->size() });
+        MANGOS_METRIC(IncrementalCounter::network_packet_recvCount{ packet->GetOpcode() });
+
         m_receivedPacketType[updater.PacketProcessType()] = true;
         if (!AllowPacket(packet->GetOpcode()))
             break;
@@ -501,6 +508,7 @@ void WorldSession::ProcessPackets(PacketFilter& updater)
         OpcodeHandler const& opHandle = opcodeTable[packet->GetOpcode()];
         try
         {
+            MANGOS_METRIC(ScopedStopwatch::network_packet_processTime{ packet->GetOpcode() });
             uint32 packetTime = WorldTimer::getMSTime();
             switch (opHandle.status)
             {

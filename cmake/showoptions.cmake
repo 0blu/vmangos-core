@@ -41,6 +41,12 @@ else()
   message(STATUS "Mailsender enabled    : No (default)")
 endif()
 
+if(ENABLE_METRICS)
+  message(STATUS "Metrics enabled       : Yes")
+else()
+  message(STATUS "Metric enabled        : No (default)")
+endif()
+
 if(UNIX)
   if(DEBUG_SYMBOLS)
     message(STATUS "Debug symbols         : Included")

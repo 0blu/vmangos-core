@@ -1,0 +1,20 @@
+name: vmangos-metric
+
+services:
+  graphitedb:
+    image: graphiteapp/graphite-statsd:1.1.10-5
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:2003:2003"
+    volumes:
+      - ./config/graphite/storage-aggregation.conf:/opt/graphite/conf/storage-aggregation.conf:ro
+      - ./config/graphite/storage-schemas.conf:/opt/graphite/conf/storage-schemas.conf:ro
+      - ./data/graphite-data:/opt/graphite/storage
+
+  grafana:
+    image: grafana/grafana-oss:11.3.0
+    restart: unless-stopped
+    ports:
+      - "3580:3000"
+    volumes:
+      - ./config/grafana/provisioning:/etc/grafana/provisioning:ro
