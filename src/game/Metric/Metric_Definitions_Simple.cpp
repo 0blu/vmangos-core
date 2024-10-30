@@ -1,0 +1,19 @@
+#include "./Metric.h"
+
+DEFINE_SIMPLE_METRIC_IncrementalCounter_impl(network_socketEvent_newConnection);
+DEFINE_SIMPLE_METRIC_IncrementalCounter_impl(network_socketEvent_closeConnection);
+DEFINE_SIMPLE_METRIC_IncrementalCounter_impl(world_update_completeAsyncLoops);
+
+DEFINE_SIMPLE_METRIC_MaximalCounter_impl    (server_memAllocatedBytes);
+DEFINE_SIMPLE_METRIC_MaximalCounter_impl    (player_sessionCount);
+DEFINE_SIMPLE_METRIC_MaximalCounter_impl    (world_loadedMaps);
+
+DEFINE_SIMPLE_METRIC_ScopedStopwatch_impl   (world_updateTime_total);
+DEFINE_SIMPLE_METRIC_ScopedStopwatch_impl   (world_updateTime_auctionHouse);
+DEFINE_SIMPLE_METRIC_ScopedStopwatch_impl   (world_updateTime_updateSessions);
+DEFINE_SIMPLE_METRIC_ScopedStopwatch_impl   (world_updateTime_mapMgrUpdate);
+DEFINE_SIMPLE_METRIC_ScopedStopwatch_impl   (world_updateTime_battleGroundMgrUpdate);
+DEFINE_SIMPLE_METRIC_ScopedStopwatch_impl   (world_updateTime_guardMgrUpdate);
+DEFINE_SIMPLE_METRIC_ScopedStopwatch_impl   (world_updateTime_zoneScriptMgr);
+DEFINE_SIMPLE_METRIC_ScopedStopwatch_impl   (world_updateTime_asyncQueries);
+DEFINE_SIMPLE_METRIC_ScopedStopwatch_impl   (world_updateTime_playerBotMgrUpdate);

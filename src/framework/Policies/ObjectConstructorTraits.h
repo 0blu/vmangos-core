@@ -5,10 +5,10 @@ namespace MaNGOS { namespace Policies
 {
     /// Disallows the copy constructor and **allows** the move constructor
     struct NoCopyButAllowMove {
-     protected:
+    protected:
         NoCopyButAllowMove() = default;
         ~NoCopyButAllowMove() = default;
-     public:
+    public:
         // remove copy
         NoCopyButAllowMove(NoCopyButAllowMove const&) = delete;
         NoCopyButAllowMove& operator=(NoCopyButAllowMove const&) = delete;
@@ -20,10 +20,10 @@ namespace MaNGOS { namespace Policies
 
     /// Disallows the copy constructor and also disallows the move constructor
     struct NoCopyNoMove {
-     protected:
+    protected:
         NoCopyNoMove() = default;
         ~NoCopyNoMove() = default;
-     public:
+    public:
         // remove copy
         NoCopyNoMove(NoCopyNoMove const&) = delete;
         NoCopyNoMove& operator=(NoCopyNoMove const&) = delete;

@@ -643,6 +643,8 @@ std::string FlagsToString(uint32 flags, ValueToStringFunc getNameFunc)
     }
     return names;
 }
+
+// TODO: C++17 make this a std::string_view maybe?
 std::vector<std::string> SplitStringByDelimiter(std::string const& str, char delimiter)
 {
     std::vector<std::string> vec;

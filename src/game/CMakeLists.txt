@@ -439,7 +439,6 @@ set (game_SRCS
     vmap/VMapManager2.h
     vmap/VMapTools.h
     vmap/WorldModel.h
-
 )
 
 if((${CMAKE_VERSION} VERSION_LESS "3.16") OR USE_PCH_OLD)
@@ -469,6 +468,20 @@ else()
   list(APPEND game_SRCS
       ${CMAKE_SOURCE_DIR}/src/scripts/ScriptLoader_noscripts.cpp
       ${CMAKE_SOURCE_DIR}/src/scripts/ScriptLoader.h
+  )
+endif()
+
+if(ENABLE_METRICS)
+  list(APPEND game_SRCS
+      Metric/Metric.h
+      Metric/Metric_Enabled.cpp
+      Metric/Metric_Definitions_Simple.cpp
+      Metric/Metric_Definitions_Complex.cpp
+  )
+else()
+  list(APPEND game_SRCS
+      Metric/Metric.h
+      Metric/Metric_Disabled.cpp
   )
 endif()
 
