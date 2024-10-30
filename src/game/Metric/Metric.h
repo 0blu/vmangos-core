@@ -23,6 +23,10 @@
 // Tests have shown that all the unnecessary stuff gets optimized out.
 // The usage is held simple with `MANGOS_METRIC()`,
 // but it's a bit awkward and boilerplaty if you want to add new measurements.
+//
+// We opted for GraphiteDB due to the uncertain future of free InfluxDB.
+// GraphiteDB is also simpler in terms of dependencies, making it easier to create a docker compose setup from scratch.
+// Additionally, it includes built-in data downsampling for maintaining a longer history.
 
 /// Namespace holding all the internal metric stuff.
 /// Use the macros below if you want to log values.
@@ -30,15 +34,14 @@ namespace MaNGOS { namespace Metric
 {
     /// global static functions related to metrics
     namespace MetricService {
-        struct InfluxDbCredentials
+        struct GraphiteDbClientConfig
         {
-            std::string username;
-            std::string password;
-            std::string database;
+            std::string address;
+            uint16_t port;
         };
         /// Initializes metric variables and test the connection
         /// \returns true if successful
-        bool Initialize(InfluxDbCredentials const& credentials, std::chrono::seconds sendingInterval, std::string const& realmName);
+        bool Initialize(GraphiteDbClientConfig const& config, std::chrono::seconds sendingInterval, std::string const& realmName);
 
         /// Start the sender thread which will repeatably send new metrics to the database
         void StartSenderThread();
