@@ -26,7 +26,7 @@ namespace MaNGOS { namespace Metric { namespace _Provider
 
             // Static storage
         public:
-            static void WriteInfluxLinesToBufferAndResetStats(std::stringstream& output, std::string const& afterName);
+            static void WriteGraphiteLinesToBufferAndResetStats(std::stringstream& output, std::string const& metricPathPrefix, std::string const& timestampAndLineEnd);
         private:
             static uint32_t g_counter;
         };
@@ -41,7 +41,7 @@ namespace MaNGOS { namespace Metric { namespace _Provider
 
             // Static storage
         public:
-            static void WriteInfluxLinesToBufferAndResetStats(std::stringstream& output, std::string const& afterName);
+            static void WriteGraphiteLinesToBufferAndResetStats(std::stringstream& output, std::string const& metricPathPrefix, std::string const& timestampAndLineEnd);
         private:
             static std::array<uint32_t, NUM_MSG_TYPES> g_recvOpcodeCount;
         };
@@ -56,7 +56,7 @@ namespace MaNGOS { namespace Metric { namespace _Provider
 
             // Static storage
         public:
-            static void WriteInfluxLinesToBufferAndResetStats(std::stringstream& output, std::string const& afterName);
+            static void WriteGraphiteLinesToBufferAndResetStats(std::stringstream& output, std::string const& metricPathPrefix, std::string const& timestampAndLineEnd);
         private:
             static std::array<uint32_t, NUM_MSG_TYPES> g_sentOpcodeCount;
         };
@@ -77,7 +77,7 @@ namespace MaNGOS { namespace Metric { namespace _Provider
 
             // Static storage
         public:
-            static void WriteInfluxLinesToBufferAndResetStats(std::stringstream& output, std::string const& afterName);
+            static void WriteGraphiteLinesToBufferAndResetStats(std::stringstream& output, std::string const& metricPathPrefix, std::string const& timestampAndLineEnd);
         private:
             struct MaxPlayerCountStats
             {
@@ -98,7 +98,7 @@ namespace MaNGOS { namespace Metric { namespace _Provider
 
             // Static storage
         public:
-            static void WriteInfluxLinesToBufferAndResetStats(std::stringstream& output, std::string const& afterName);
+            static void WriteGraphiteLinesToBufferAndResetStats(std::stringstream& output, std::string const& metricPathPrefix, std::string const& timestampAndLineEnd);
         private:
             static uint32 g_loadedMaps;
         };
@@ -131,7 +131,7 @@ namespace MaNGOS { namespace Metric { namespace _Provider
 
         // Static storage
         public:
-            static void WriteInfluxLinesToBufferAndResetStats(std::stringstream& output, std::string const& afterName);
+            static void WriteGraphiteLinesToBufferAndResetStats(std::stringstream& output, std::string const& metricPathPrefix, std::string const& timestampAndLineEnd);
         private:
             static std::array<float, NUM_MSG_TYPES> g_maxTimeMsPerOpcode;
         };
@@ -158,7 +158,7 @@ namespace MaNGOS { namespace Metric { namespace _Provider
 
             // Static storage
         public:
-            static void WriteInfluxLinesToBufferAndResetStats(std::stringstream& output, std::string const& afterName);
+            static void WriteGraphiteLinesToBufferAndResetStats(std::stringstream& output, std::string const& metricPathPrefix, std::string const& timestampAndLineEnd);
         private:
             static float g_maxUpdateTimeMs;
         };

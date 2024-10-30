@@ -226,9 +226,9 @@ int Master::Run()
         std::string metricPassword = tokens[1];
         std::string metricDatabase = tokens[2];
 
-        MaNGOS::Metric::MetricService::InfluxDbCredentials influxCredentials{metricUsername, metricPassword, metricDatabase };
+        MaNGOS::Metric::MetricService::GraphiteDbClientConfig graphiteDbConfig{ "127.0.0.1", 2003 };
 
-        if (!MaNGOS::Metric::MetricService::Initialize(influxCredentials, std::chrono::seconds(metricInterval), realmName))
+        if (!MaNGOS::Metric::MetricService::Initialize(graphiteDbConfig, std::chrono::seconds(metricInterval), realmName))
         {
             sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "Failed to connect to metric database! (Will start game server nonetheless)");
             Log::WaitBeforeContinueIfNeed();

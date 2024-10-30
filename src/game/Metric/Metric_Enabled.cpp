@@ -1,28 +1,35 @@
 #include "./Metric.h"
 
 #include <future>
+#include <regex>
 #include <sstream>
 #include <thread>
 #include <utility>
-#include <curl/curl.h>
+#include <nonstd/optional.hpp>
 
 #include "Opcodes.h"
 #include "Policies/Singleton.h"
 
+#include <ace/INET_Addr.h>
+#include <ace/SOCK_Connector.h>
+#include <ace/SOCK_Stream.h>
+
 std::chrono::seconds g_metricSendingInterval(1);
 
-std::string toInfluxSafeRealmName(std::string realmName)
+std::string toCarboneSafeRealmName(std::string const& realmName)
 {
-    std::replace(realmName.begin(), realmName.end(), '\'', '_');
-    return realmName;
+    // Replace every non-alphanumeric character with _
+    static const std::regex invalidChars{ R"([^A-Za-z0-9_])" };
+    return std::regex_replace(realmName, invalidChars, "_");
 }
 
 class MetricServiceInstance
 {
 public:
-    explicit MetricServiceInstance(MaNGOS::Metric::MetricService::InfluxDbCredentials credentials, std::string realmName)
-        : m_credentials{std::move(credentials)}, m_realmName{toInfluxSafeRealmName(realmName)}
+    explicit MetricServiceInstance(MaNGOS::Metric::MetricService::GraphiteDbClientConfig const& config, std::string const& realmName)
+        : m_safeRealmName{toCarboneSafeRealmName(realmName)}
     {
+        m_dbAddress = ACE_INET_Addr(config.address.c_str(), config.port);
     }
     ~MetricServiceInstance()
     {
@@ -43,36 +50,41 @@ public:
 private:
     void SendLinesToDatabase(const std::string& str);
     void ThreadBody();
+    nonstd::optional<ACE_SOCK_Stream>& GetOrReconnectSocket();
 
-    MaNGOS::Metric::MetricService::InfluxDbCredentials m_credentials;
-    std::string m_realmName;
+    ACE_INET_Addr m_dbAddress;
+    nonstd::optional<ACE_SOCK_Stream> m_currentDbSocket;
+
+    std::string m_safeRealmName;
     std::promise<void> m_metricSenderThreadStopFlag;
     std::unique_ptr<std::thread> m_senderThread;
+
 };
 
 bool MetricServiceInstance::TestConnection()
 {
-    return false;
+    return GetOrReconnectSocket().has_value();
 }
 
 void MetricServiceInstance::SendLinesToDatabase(std::string const& lines)
 {
-    sLog.Out(LOG_BASIC, LOG_LVL_MINIMAL, "%s", lines.c_str());
-    CURL *curl = curl_easy_init();
-    if (curl)
+
+    nonstd::optional<ACE_SOCK_Stream>& socket = GetOrReconnectSocket();
+    if (!socket.has_value())
     {
-        struct curl_slist *headers = nullptr;
-        headers = curl_slist_append(headers, "Content-Type: text/plain");
-        headers = curl_slist_append(headers, "Authorization: Token V6MaPyZ_kpNecXAAMHKeR79aiIRAcsJCvDnoWa6kutdnAlBiSUJCX2AruyzVDMCqAZn6xgZghWzrtf8mO5yJzw==");
-
-        curl_easy_setopt(curl, CURLOPT_URL, "http://localhost:8086/api/v2/write?org=vmangos&bucket=metrics&precision=s");
-        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, lines.c_str());
-
-        CURLcode res = curl_easy_perform(curl);
-        curl_slist_free_all(headers);
-        curl_easy_cleanup(curl);
+        sLog.Out(LOG_BASIC, LOG_LVL_BASIC, "Failed to send metric. Unable to connect to db.");
+        return;
     }
+
+    ACE_Time_Value timeout(5);
+    if (socket->send_n(lines.c_str(), lines.size(), &timeout) == -1)
+    {
+        sLog.Out(LOG_BASIC, LOG_LVL_BASIC, "Failed to send metric. Error while sending.");
+        socket.reset(); // Reset, so it can reconnect next time...
+        return;
+    }
+
+    // Success...
 }
 
 void MetricServiceInstance::ThreadBody()
@@ -80,32 +92,54 @@ void MetricServiceInstance::ThreadBody()
     // This function will continuously write to InfluxDB via plaintext LineProtocol (https://docs.influxdata.com/influxdb/cloud/reference/syntax/line-protocol/)
     using namespace MaNGOS::Metric::_Provider;
 
-    typedef void (*WriterFunc)(std::stringstream& output, std::string const& afterName);
+    typedef void (*WriterFunc)(std::stringstream& output, std::string const& metricPathPrefix, std::string const& timestampAndLineEnd);
     WriterFunc constexpr InfluxWriters[] =
     {
-        IncrementalCounter::NewSocketConnection::WriteInfluxLinesToBufferAndResetStats,
-        IncrementalCounter::ReceivedPacket::WriteInfluxLinesToBufferAndResetStats,
-        IncrementalCounter::SentPacket::WriteInfluxLinesToBufferAndResetStats,
-        MaximalCounter::SessionCount::WriteInfluxLinesToBufferAndResetStats,
-        MaximalCounter::LoadedMaps::WriteInfluxLinesToBufferAndResetStats,
-        ScopedStopwatch::PacketProcessTime::WriteInfluxLinesToBufferAndResetStats,
-        ScopedStopwatch::TotalWorldUpdateTime::WriteInfluxLinesToBufferAndResetStats,
+        IncrementalCounter::NewSocketConnection::WriteGraphiteLinesToBufferAndResetStats,
+        IncrementalCounter::ReceivedPacket::WriteGraphiteLinesToBufferAndResetStats,
+        IncrementalCounter::SentPacket::WriteGraphiteLinesToBufferAndResetStats,
+        MaximalCounter::SessionCount::WriteGraphiteLinesToBufferAndResetStats,
+        MaximalCounter::LoadedMaps::WriteGraphiteLinesToBufferAndResetStats,
+        ScopedStopwatch::PacketProcessTime::WriteGraphiteLinesToBufferAndResetStats,
+        ScopedStopwatch::TotalWorldUpdateTime::WriteGraphiteLinesToBufferAndResetStats,
     };
 
-    std::string realmTag = "";//",realmName=\"" + m_realmName + '\"';
     std::future<void> stopFlag = m_metricSenderThreadStopFlag.get_future();
 
+    std::string metricPathPrefix = "vmangos_metric." + m_safeRealmName + ".";
     while (stopFlag.wait_for(g_metricSendingInterval) == std::future_status::timeout)
     {
+        std::string timestampAndLineEnd = " -1\n";
+
         std::stringstream batchedData;
 
-        for (auto func : InfluxWriters)
+        for (WriterFunc const& func : InfluxWriters)
         {
-            func(batchedData, realmTag);
+            func(batchedData, metricPathPrefix, timestampAndLineEnd);
         }
 
         SendLinesToDatabase(batchedData.str());
     }
+}
+
+nonstd::optional<ACE_SOCK_Stream>& MetricServiceInstance::GetOrReconnectSocket()
+{
+    if (m_currentDbSocket.has_value())
+        return m_currentDbSocket;
+
+    ACE_INET_Addr myAddr("127.0.0.1:2003");
+
+    ACE_SOCK_Connector connector;
+    m_currentDbSocket = nonstd::make_optional<ACE_SOCK_Stream>({});
+
+    ACE_Time_Value timeout(5); // Set timeout to 5 seconds
+    if (connector.connect(m_currentDbSocket.value(), myAddr, &timeout) == -1)
+    {
+        sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "Metric: Fetch failed: connector.connect(...) Error: %d", ACE_OS::last_error());
+        m_currentDbSocket.reset();
+    }
+
+    return m_currentDbSocket;
 }
 
 std::unique_ptr<MetricServiceInstance> g_metricServiceInstance;
@@ -115,10 +149,10 @@ void MaNGOS::Metric::MetricService::Finalize()
     g_metricServiceInstance.reset();
 }
 
-bool MaNGOS::Metric::MetricService::Initialize(InfluxDbCredentials const& credentials, std::chrono::seconds sendingInterval, std::string const& realmName)
+bool MaNGOS::Metric::MetricService::Initialize(GraphiteDbClientConfig const& config, std::chrono::seconds sendingInterval, std::string const& realmName)
 {
     g_metricSendingInterval = sendingInterval;
-    g_metricServiceInstance = std::make_unique<MetricServiceInstance>(credentials, realmName);
+    g_metricServiceInstance = std::make_unique<MetricServiceInstance>(config, realmName);
     bool selfTestWasSuccessful = g_metricServiceInstance->TestConnection();
     return selfTestWasSuccessful;
 }
