@@ -3,7 +3,7 @@
 #####################################
 
 [MangosdConf]
-ConfVersion=2010100901
+ConfVersion=2024102601
 
 ###################################################################################################################
 # CONNECTIONS AND DIRECTORIES
@@ -2228,6 +2228,33 @@ Anticheat.Botting.Penalty = 3
 
 # Time to wait for movement change ack
 Movement.PendingAckResponseTime = 4000
+
+###################################################################################################
+# METRIC
+#
+# These settings control the statistics sent to the metric database (currently InfluxDB)
+#
+#    Metric.Enable
+#        Description: Enables statistics sent to the metric database.
+#        Default:     0 - (Disabled)
+#                     1 - (Enabled)
+#
+#    Metric.Interval
+#        Description: Interval between every batch of data sent in seconds.
+#                     Longer interval means larger batch of data. If the batch
+#                     is too big, it might get rejected.
+#        Default:     1 second
+#
+#    Metric.ConnectionInfo
+#        Description: Connection settings for metric database (currently InfluxDB).
+#        Example:     "hostname;port;database"
+#        Default:     "127.0.0.1;8086;worldserver"
+#
+###################################################################################################
+
+Metric.Enable = 0
+Metric.Interval = 1
+Metric.ConnectionInfo = "127.0.0.1;8086;worldserver"
 
 ###################################################################################################################
 # GAME MASTER SETTINGS
