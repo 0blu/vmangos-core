@@ -1,0 +1,10 @@
+apiVersion: 1
+
+providers:
+  - name: "build-in dashboards"
+    folder: ""
+    type: file
+    disableDeletion: true
+    editable: false
+    options:
+      path: /etc/grafana/provisioning/dashboards/build-in

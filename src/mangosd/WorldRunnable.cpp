@@ -35,6 +35,7 @@
 #include "TimePeriod.h"
 
 #include "Database/DatabaseEnv.h"
+#include "Metric/Metric.h"
 
 // Target server framerate is 1000/WORLD_SLEEP_CONST
 #define WORLD_SLEEP_CONST 50
