@@ -22,6 +22,7 @@
 #include "Common.h"
 #include "Config/Config.h"
 #include "Database/DatabaseEnv.h"
+#include "Metric/Metric.h"
 
 template <typename SocketType>
 class MangosSocketAcceptor : public ACE_Acceptor<SocketType, ACE_SOCK_Acceptor>
@@ -325,6 +326,8 @@ void MangosSocketMgr<SocketType>::Wait()
 template <typename SocketType>
 int MangosSocketMgr<SocketType>::OnSocketOpen(SocketType* sock)
 {
+    MANGOS_METRIC(IncrementalCounter::NewSocketConnection{});
+
     // set some options here
     if (m_SockOutKBuff >= 0)
     {
