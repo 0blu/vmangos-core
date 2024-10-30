@@ -441,5 +441,6 @@ inline uint32 BatchifyTimer(uint32 timer, uint32 interval)
 typedef char const*(*ValueToStringFunc) (uint32 value);
 
 std::string FlagsToString(uint32 flags, ValueToStringFunc getNameFunc);
+std::vector<std::string> SplitStringByDelimiter(std::string const& str, char delimiter);
 
 #endif

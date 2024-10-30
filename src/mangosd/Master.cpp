@@ -53,6 +53,8 @@
 #include <ace/Dev_Poll_Reactor.h>
 #include <signal.h>
 
+#include "Metric/Metric.h"
+
 #ifdef WIN32
 #include "ServiceWin32.h"
 extern int m_ServiceStatus;
@@ -191,6 +193,66 @@ int Master::Run()
     sLog.Out(LOG_BASIC, LOG_LVL_MINIMAL, "World server is running realm ID: %d Name: \"%s\"", realmID, realmName.c_str());
     sLog.Out(LOG_BASIC, LOG_LVL_MINIMAL, "");
 
+    {
+        std::unique_ptr<QueryResult> result{LoginDatabase.PQuery("SELECT `name` FROM `realmlist` WHERE `id` = %d", realmID)};
+        if (!result)
+        {
+            sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "Config contains invalid realmID %d, make sure its set in the `realmlist` table", realmID);
+            Log::WaitBeforeContinueIfNeed();
+            return 1;
+        }
+        realmName = (*result)[0].GetCppString();
+    }
+
+    if (sConfig.GetBoolDefault("Metric.Enable", false))
+    {
+        int metricInterval = sConfig.GetIntDefault("Metric.Interval", 1);
+        if (metricInterval < 1)
+        {
+            sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "'Metric.Interval' config is set to %d, overriding to 1.", metricInterval);
+            metricInterval = 1;
+        }
+
+        std::string metricConnectionInfo = sConfig.GetStringDefault("Metric.ConnectionInfo", "");
+        std::vector<std::string> tokens = SplitStringByDelimiter(metricConnectionInfo, ';');
+        if (tokens.size() != 3)
+        {
+            sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "Unable to parse 'Metric.ConnectionInfo'");
+            Log::WaitBeforeContinueIfNeed();
+            return 1;
+        }
+
+        std::string metricHostname = tokens[0];
+        std::string metricPortStr = tokens[1];
+        std::string metricPrefix = tokens[2];
+
+        uint64_t metricPort = 0;
+        try
+        {
+            metricPort = std::stoull(metricPortStr);
+        }
+        catch (const std::exception&)
+        {
+            // ignore
+        }
+
+        if (metricPort <= 0 || metricPort > std::numeric_limits<uint16_t>::max())
+        {
+            sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "Failed to parse 'Metric.ConnectionInfo' invalid port");
+            Log::WaitBeforeContinueIfNeed();
+            return 1;
+        }
+
+        MaNGOS::Metric::MetricService::GraphiteDbClientConfig graphiteDbConfig{ metricHostname, static_cast<uint16_t>(metricPort) };
+
+        // make sure the prefix ends with a '.'
+        if (!MaNGOS::Metric::MetricService::Initialize(graphiteDbConfig, metricPrefix + '.' + std::to_string(realmID) + '.', std::chrono::seconds(metricInterval)))
+        {
+            sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "Failed to connect to metric database! (Will start game server nonetheless)");
+            Log::WaitBeforeContinueIfNeed();
+        }
+    }
+
     // Initialize the World
     sWorld.SetInitialWorldSettings();
 
@@ -310,6 +372,7 @@ int Master::Run()
     sWorldSocketMgr->SetInterval(sConfig.GetIntDefault("Network.Interval", 10));
     sWorldSocketMgr->SetTcpNodelay(sConfig.GetBoolDefault("Network.TcpNodelay", true));
 
+    MaNGOS::Metric::MetricService::StartSenderThread();
     if (sWorldSocketMgr->StartNetwork(wsport, bind_ip) == -1)
     {
         sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "Failed to start WorldSocket network");
@@ -332,6 +395,8 @@ int Master::Run()
         soap_thread->join();
         delete soap_thread;
     }
+
+    MaNGOS::Metric::MetricService::Finalize();
 
     // Set server offline in realmlist
     //LoginDatabase.DirectPExecute("UPDATE realmlist SET realmflags = realmflags | %u WHERE id = '%u'", REALM_FLAG_OFFLINE, realmID);

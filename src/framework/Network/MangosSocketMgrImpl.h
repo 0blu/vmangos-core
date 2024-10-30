@@ -22,6 +22,7 @@
 #include "Common.h"
 #include "Config/Config.h"
 #include "Database/DatabaseEnv.h"
+#include "Metric/Metric.h"
 
 template <typename SocketType>
 class MangosSocketAcceptor : public ACE_Acceptor<SocketType, ACE_SOCK_Acceptor>
