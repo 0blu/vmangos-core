@@ -13,6 +13,11 @@
 /// instead of `MaNGOS::Metric::_Provider::IncrementalCounter::NewSocketConnection()`
 namespace MaNGOS { namespace Metric { namespace _Provider
 {
+
+    DEFINE_METRIC(IncrementalCounter, network_newSocketConnections, "network.newSocketConnections");
+
+    MANGOS_METRIC(IncrementalCounter::network_newSocketConnections);
+
     /// Stuff that counts +1
     namespace IncrementalCounter
     {
