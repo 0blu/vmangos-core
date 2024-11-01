@@ -26,8 +26,8 @@ std::string toCarboneSafeRealmName(std::string const& realmName)
 class MetricServiceInstance
 {
 public:
-    explicit MetricServiceInstance(MaNGOS::Metric::MetricService::GraphiteDbClientConfig const& config, std::string const& realmName)
-        : m_safeRealmName{toCarboneSafeRealmName(realmName)}
+    explicit MetricServiceInstance(MaNGOS::Metric::MetricService::GraphiteDbClientConfig const& config, uint32 realmId)
+        : m_metricLinePrefix("vmangos_metric." + std::to_string(realmId) + ".")
     {
         m_dbAddress = ACE_INET_Addr(config.address.c_str(), config.port);
     }
@@ -41,21 +41,20 @@ public:
         }
     }
     bool TestConnection();
-    void StartSendThread()
+    void StartMetricSender()
     {
-        // TODO: Name Thread "MetricSender"
         m_senderThread = std::make_unique<std::thread>([this]{ ThreadBody(); });
     }
 
 private:
-    void SendLinesToDatabase(const std::string& str);
+    void SendLinesToDatabase(std::string const& lines);
     void ThreadBody();
     nonstd::optional<ACE_SOCK_Stream>& GetOrReconnectSocket();
 
     ACE_INET_Addr m_dbAddress;
     nonstd::optional<ACE_SOCK_Stream> m_currentDbSocket;
 
-    std::string m_safeRealmName;
+    std::string const m_metricLinePrefix;
     std::promise<void> m_metricSenderThreadStopFlag;
     std::unique_ptr<std::thread> m_senderThread;
 
@@ -68,7 +67,6 @@ bool MetricServiceInstance::TestConnection()
 
 void MetricServiceInstance::SendLinesToDatabase(std::string const& lines)
 {
-
     nonstd::optional<ACE_SOCK_Stream>& socket = GetOrReconnectSocket();
     if (!socket.has_value())
     {
@@ -106,7 +104,6 @@ void MetricServiceInstance::ThreadBody()
 
     std::future<void> stopFlag = m_metricSenderThreadStopFlag.get_future();
 
-    std::string metricPathPrefix = "vmangos_metric." + m_safeRealmName + ".";
     while (stopFlag.wait_for(g_metricSendingInterval) == std::future_status::timeout)
     {
         std::string timestampAndLineEnd = " -1\n";
@@ -115,11 +112,14 @@ void MetricServiceInstance::ThreadBody()
 
         for (WriterFunc const& func : InfluxWriters)
         {
-            func(batchedData, metricPathPrefix, timestampAndLineEnd);
+            func(batchedData, m_metricLinePrefix, timestampAndLineEnd);
         }
 
         SendLinesToDatabase(batchedData.str());
     }
+
+    if (m_currentDbSocket.has_value())
+        m_currentDbSocket->close();
 }
 
 nonstd::optional<ACE_SOCK_Stream>& MetricServiceInstance::GetOrReconnectSocket()
@@ -149,10 +149,10 @@ void MaNGOS::Metric::MetricService::Finalize()
     g_metricServiceInstance.reset();
 }
 
-bool MaNGOS::Metric::MetricService::Initialize(GraphiteDbClientConfig const& config, std::chrono::seconds sendingInterval, std::string const& realmName)
+bool MaNGOS::Metric::MetricService::Initialize(GraphiteDbClientConfig const& config, std::chrono::seconds sendingInterval, uint32_t realmId)
 {
     g_metricSendingInterval = sendingInterval;
-    g_metricServiceInstance = std::make_unique<MetricServiceInstance>(config, realmName);
+    g_metricServiceInstance = std::make_unique<MetricServiceInstance>(config, realmId);
     bool selfTestWasSuccessful = g_metricServiceInstance->TestConnection();
     return selfTestWasSuccessful;
 }
@@ -163,6 +163,6 @@ void MaNGOS::Metric::MetricService::StartSenderThread()
     {
         // we start the thread even if there was an self test error
         // maybe the connection will magically fix itself while the server is running
-        g_metricServiceInstance->StartSendThread();
+        g_metricServiceInstance->StartMetricSender();
     }
 }

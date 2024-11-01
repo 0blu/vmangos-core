@@ -228,7 +228,7 @@ int Master::Run()
 
         MaNGOS::Metric::MetricService::GraphiteDbClientConfig graphiteDbConfig{ "127.0.0.1", 2003 };
 
-        if (!MaNGOS::Metric::MetricService::Initialize(graphiteDbConfig, std::chrono::seconds(metricInterval), realmName))
+        if (!MaNGOS::Metric::MetricService::Initialize(graphiteDbConfig, std::chrono::seconds(metricInterval), realmID))
         {
             sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "Failed to connect to metric database! (Will start game server nonetheless)");
             Log::WaitBeforeContinueIfNeed();
