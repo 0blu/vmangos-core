@@ -7,6 +7,7 @@ option(USE_SCRIPTS                    "Build scripts"                           
 option(USE_EXTRACTORS                 "Build extractors"                                                                              OFF)
 option(USE_REALMMERGE                 "Build helper tool for merging character databases"                                             OFF)
 option(ENABLE_MAILSENDER              "Enables support for sending emails via sendgrid.com (requires libcurl)"                        OFF)
+option(ENABLE_METRICS                 "Enables metric support via GraphiteDB"                                                         OFF)
 
 # Other options
 set(SUPPORTED_CLIENT_BUILD "CLIENT_BUILD_1_12_1" CACHE STRING "Client version the core will support")
