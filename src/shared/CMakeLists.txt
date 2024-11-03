@@ -69,6 +69,8 @@ set (shared_SRCS
     Database/SQLStorage.h
     Database/SQLStorageImpl.h
     Multithreading/Messager.h
+    IO/Utils.h
+    IO/Utils.cpp
     TimePeriod.h
     nonstd/optional.hpp
     ByteBuffer.cpp

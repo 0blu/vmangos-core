@@ -75,6 +75,7 @@ namespace MaNGOS { namespace Metric { namespace _Provider
     DEFINE_SIMPLE_METRIC_IncrementalCounter (network_socketEvent_closeConnection,       "network.socketEvent.closeConnection");
     DEFINE_SIMPLE_METRIC_IncrementalCounter (world_update_completeAsyncLoops,           "world.update.completeAsyncLoops");
 
+    DEFINE_SIMPLE_METRIC_MaximalCounter     (server_memAllocatedBytes,                  "server.memAllocatedBytes");
     DEFINE_SIMPLE_METRIC_MaximalCounter     (player_sessionCount,                       "player.sessionCount");
     DEFINE_SIMPLE_METRIC_MaximalCounter     (world_loadedMaps,                          "world.loadedMaps");
 

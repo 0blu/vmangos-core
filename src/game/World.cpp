@@ -84,6 +84,7 @@
 
 #include <chrono>
 
+#include "IO/Utils.h"
 #include "Metric/Metric.h"
 
 INSTANTIATE_SINGLETON_1(World);
@@ -2164,6 +2165,7 @@ void World::Update(uint32 diff)
 
     MANGOS_METRIC(MaximalCounter::player_sessionCount{ m_sessions.size() }); // TODO: Add this commit later https://github.com/cmangos/mangos-tbc/commit/24f4a2c86273d9d06f69a43bb73b9adce44b230b
     MANGOS_METRIC(MaximalCounter::world_loadedMaps{ sMapMgr.Maps().size() });
+    MANGOS_METRIC(MaximalCounter::server_memAllocatedBytes{ IO::Utils::GetCurrentProcessAmountOfAllocatedBytes() });
 }
 
 // Send a packet to all players (except self if mentioned)

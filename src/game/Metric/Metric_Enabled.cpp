@@ -105,6 +105,7 @@ void MetricServiceInstance::ThreadBody()
         IncrementalCounter::network_socketEvent_closeConnection::WriteGraphiteLinesToBufferAndResetStats,
         IncrementalCounter::world_update_completeAsyncLoops::WriteGraphiteLinesToBufferAndResetStats,
 
+        MaximalCounter::server_memAllocatedBytes::WriteGraphiteLinesToBufferAndResetStats,
         MaximalCounter::player_sessionCount::WriteGraphiteLinesToBufferAndResetStats,
         MaximalCounter::world_loadedMaps::WriteGraphiteLinesToBufferAndResetStats,
 
