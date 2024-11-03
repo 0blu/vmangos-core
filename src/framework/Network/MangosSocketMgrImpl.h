@@ -326,8 +326,6 @@ void MangosSocketMgr<SocketType>::Wait()
 template <typename SocketType>
 int MangosSocketMgr<SocketType>::OnSocketOpen(SocketType* sock)
 {
-    MANGOS_METRIC(IncrementalCounter::NewSocketConnection{});
-
     // set some options here
     if (m_SockOutKBuff >= 0)
     {

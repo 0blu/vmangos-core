@@ -476,9 +476,8 @@ if(ENABLE_METRICS)
   list(APPEND game_SRCS
       Metric/Metric.h
       Metric/Metric_Enabled.cpp
-      Metric/Metric_IncrementalCounter.cpp
-      Metric/Metric_MaximalCounter.cpp
-      Metric/Metric_ScopedStopwatch.cpp
+      Metric/Metric_Definitions_Simple.cpp
+      Metric/Metric_Definitions_Complex.cpp
   )
 else()
   list(APPEND game_SRCS

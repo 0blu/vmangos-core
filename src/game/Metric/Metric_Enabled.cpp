@@ -27,9 +27,8 @@ class MetricServiceInstance
 {
 public:
     explicit MetricServiceInstance(MaNGOS::Metric::MetricService::GraphiteDbClientConfig const& config, uint32 realmId)
-        : m_metricLinePrefix("vmangos_metric." + std::to_string(realmId) + ".")
+        : m_config(config), m_metricLinePrefix("vmangos_metric." + std::to_string(realmId) + ".")
     {
-        m_dbAddress = ACE_INET_Addr(config.address.c_str(), config.port);
     }
     ~MetricServiceInstance()
     {
@@ -51,7 +50,7 @@ private:
     void ThreadBody();
     nonstd::optional<ACE_SOCK_Stream>& GetOrReconnectSocket();
 
-    ACE_INET_Addr m_dbAddress;
+    MaNGOS::Metric::MetricService::GraphiteDbClientConfig m_config;
     nonstd::optional<ACE_SOCK_Stream> m_currentDbSocket;
 
     std::string const m_metricLinePrefix;
@@ -70,14 +69,14 @@ void MetricServiceInstance::SendLinesToDatabase(std::string const& lines)
     nonstd::optional<ACE_SOCK_Stream>& socket = GetOrReconnectSocket();
     if (!socket.has_value())
     {
-        sLog.Out(LOG_BASIC, LOG_LVL_BASIC, "Failed to send metric. Unable to connect to db.");
+        sLog.Out(LOG_BASIC, LOG_LVL_BASIC, "Metric: Failed to send metric. Unable to connect to db.");
         return;
     }
 
     ACE_Time_Value timeout(5);
     if (socket->send_n(lines.c_str(), lines.size(), &timeout) == -1)
     {
-        sLog.Out(LOG_BASIC, LOG_LVL_BASIC, "Failed to send metric. Error while sending.");
+        sLog.Out(LOG_BASIC, LOG_LVL_BASIC, "Metric: Failed to send metric. Error while sending.");
         socket.reset(); // Reset, so it can reconnect next time...
         return;
     }
@@ -93,18 +92,36 @@ void MetricServiceInstance::ThreadBody()
     typedef void (*WriterFunc)(std::stringstream& output, std::string const& metricPathPrefix, std::string const& timestampAndLineEnd);
     WriterFunc constexpr InfluxWriters[] =
     {
-        IncrementalCounter::NewSocketConnection::WriteGraphiteLinesToBufferAndResetStats,
-        IncrementalCounter::ReceivedPacket::WriteGraphiteLinesToBufferAndResetStats,
-        IncrementalCounter::SentPacket::WriteGraphiteLinesToBufferAndResetStats,
-        MaximalCounter::SessionCount::WriteGraphiteLinesToBufferAndResetStats,
-        MaximalCounter::LoadedMaps::WriteGraphiteLinesToBufferAndResetStats,
-        ScopedStopwatch::PacketProcessTime::WriteGraphiteLinesToBufferAndResetStats,
-        ScopedStopwatch::TotalWorldUpdateTime::WriteGraphiteLinesToBufferAndResetStats,
+        // complex
+        IncrementalCounter::network_packet_recvBytes::WriteGraphiteLinesToBufferAndResetStats,
+        IncrementalCounter::network_packet_recvCount::WriteGraphiteLinesToBufferAndResetStats,
+        IncrementalCounter::network_packet_sendBytes::WriteGraphiteLinesToBufferAndResetStats,
+        IncrementalCounter::network_packet_sendCount::WriteGraphiteLinesToBufferAndResetStats,
+
+        ScopedStopwatch::network_packet_processTime::WriteGraphiteLinesToBufferAndResetStats,
+
+        // simple
+        IncrementalCounter::network_socketEvent_newConnection::WriteGraphiteLinesToBufferAndResetStats,
+        IncrementalCounter::network_socketEvent_closeConnection::WriteGraphiteLinesToBufferAndResetStats,
+        IncrementalCounter::world_update_completeAsyncLoops::WriteGraphiteLinesToBufferAndResetStats,
+
+        MaximalCounter::player_sessionCount::WriteGraphiteLinesToBufferAndResetStats,
+        MaximalCounter::world_loadedMaps::WriteGraphiteLinesToBufferAndResetStats,
+
+        ScopedStopwatch::world_updateTime_total::WriteGraphiteLinesToBufferAndResetStats,
+        ScopedStopwatch::world_updateTime_auctionHouse::WriteGraphiteLinesToBufferAndResetStats,
+        ScopedStopwatch::world_updateTime_updateSessions::WriteGraphiteLinesToBufferAndResetStats,
+        ScopedStopwatch::world_updateTime_mapMgrUpdate::WriteGraphiteLinesToBufferAndResetStats,
+        ScopedStopwatch::world_updateTime_battleGroundMgrUpdate::WriteGraphiteLinesToBufferAndResetStats,
+        ScopedStopwatch::world_updateTime_guardMgrUpdate::WriteGraphiteLinesToBufferAndResetStats,
+        ScopedStopwatch::world_updateTime_zoneScriptMgr::WriteGraphiteLinesToBufferAndResetStats,
+        ScopedStopwatch::world_updateTime_playerBotMgrUpdate::WriteGraphiteLinesToBufferAndResetStats,
     };
 
     std::future<void> stopFlag = m_metricSenderThreadStopFlag.get_future();
 
-    while (stopFlag.wait_for(g_metricSendingInterval) == std::future_status::timeout)
+    std::chrono::time_point<std::chrono::steady_clock> nextTick = std::chrono::steady_clock::now();
+    while (stopFlag.wait_until(nextTick) == std::future_status::timeout)
     {
         std::string timestampAndLineEnd = " -1\n";
 
@@ -116,6 +133,12 @@ void MetricServiceInstance::ThreadBody()
         }
 
         SendLinesToDatabase(batchedData.str());
+
+        nextTick += g_metricSendingInterval;
+        if (nextTick < std::chrono::steady_clock::now())
+        {
+            sLog.Out(LOG_BASIC, LOG_LVL_MINIMAL, "Metric: Loop is out of sync... Skipping wait time");
+        }
     }
 
     if (m_currentDbSocket.has_value())
@@ -127,13 +150,13 @@ nonstd::optional<ACE_SOCK_Stream>& MetricServiceInstance::GetOrReconnectSocket()
     if (m_currentDbSocket.has_value())
         return m_currentDbSocket;
 
-    ACE_INET_Addr myAddr("127.0.0.1:2003");
-
     ACE_SOCK_Connector connector;
     m_currentDbSocket = nonstd::make_optional<ACE_SOCK_Stream>({});
 
+    ACE_INET_Addr targetAddress((m_config.address + ":" + std::to_string(m_config.port)).c_str());
+
     ACE_Time_Value timeout(5); // Set timeout to 5 seconds
-    if (connector.connect(m_currentDbSocket.value(), myAddr, &timeout) == -1)
+    if (connector.connect(m_currentDbSocket.value(), targetAddress, &timeout) == -1)
     {
         sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "Metric: Fetch failed: connector.connect(...) Error: %d", ACE_OS::last_error());
         m_currentDbSocket.reset();

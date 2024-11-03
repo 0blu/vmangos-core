@@ -2246,15 +2246,17 @@ Movement.PendingAckResponseTime = 4000
 #        Default:     1 second
 #
 #    Metric.ConnectionInfo
-#        Description: Connection settings for metric database (currently InfluxDB).
-#        Example:     "hostname;port;database"
+#        Description: Connection settings for metric database (GraphiteDB).
+#                     The current RealmID will be appended to the metricSuffix,
+#                     so you dont have to change it for every mangos instance.
+#        Format:      "hostname;port;metricSuffix"
 #        Default:     "127.0.0.1;8086;worldserver"
 #
 ###################################################################################################
 
 Metric.Enable = 0
 Metric.Interval = 1
-Metric.ConnectionInfo = "127.0.0.1;8086;worldserver"
+Metric.ConnectionInfo = "127.0.0.1;8086;vmangos_metric"
 
 ###################################################################################################################
 # GAME MASTER SETTINGS

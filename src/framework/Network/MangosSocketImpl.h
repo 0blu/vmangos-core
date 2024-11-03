@@ -19,6 +19,7 @@
 #include "WorldSession.h"
 #include "Log.h"
 #include "DBCStores.h"
+#include "Metric/Metric.h"
 
 
 template <typename SessionType, typename SocketName, typename Crypt>
@@ -37,11 +38,15 @@ MangosSocket<SessionType, SocketName, Crypt>::MangosSocket() :
     m_isServerSocket(true)
 {
     reference_counting_policy().value(ACE_Event_Handler::Reference_Counting_Policy::ENABLED);
+
+    MANGOS_METRIC(IncrementalCounter::network_socketEvent_newConnection{});
 }
 
 template <typename SessionType, typename SocketName, typename Crypt>
 MangosSocket<SessionType, SocketName, Crypt>::~MangosSocket(void)
 {
+    MANGOS_METRIC(IncrementalCounter::network_socketEvent_closeConnection{});
+
     delete m_RecvWPct;
 
     if (m_OutBuffer)

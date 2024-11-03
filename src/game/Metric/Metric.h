@@ -64,10 +64,11 @@ namespace MaNGOS { namespace Metric
 #define _MANGOS_METRIC_VARIABLE_UNIQUE_NAME_UNIQUE_NAME(name) _MANGOS_METRIC_VARIABLE_UNIQUE_NAME_CONCAT(name, __LINE__)
 
 /// Example usage `MANGOS_METRIC(ScopedStopwatch::TotalWorldUpdateTime{});`
-#define MANGOS_METRIC(metricSetter) auto const& _MANGOS_METRIC_VARIABLE_UNIQUE_NAME_UNIQUE_NAME(_mangos_metric_scope) = ::MaNGOS::Metric::_Provider:: metricSetter
+#define MANGOS_METRIC(...) auto const& _MANGOS_METRIC_VARIABLE_UNIQUE_NAME_UNIQUE_NAME(_mangos_metric_scope) = ::MaNGOS::Metric::_Provider:: __VA_ARGS__
 
 #define _MANGOS_METRIC_WAS_INCLUDED_BY_INTERNAL
-#include "./Metric_Definitions.h"
+#include "./Metric_Definitions_Simple.h"
+#include "./Metric_Definitions_Complex.h"
 #undef _MANGOS_METRIC_WAS_INCLUDED_BY_INTERNAL
 
 #endif
