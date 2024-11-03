@@ -209,7 +209,7 @@ int Master::Run()
         int metricInterval = sConfig.GetIntDefault("Metric.Interval", 1);
         if (metricInterval < 1)
         {
-            sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "'Metric.Interval' config set to %s, overriding to 1.", metricInterval);
+            sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "'Metric.Interval' config is set to %d, overriding to 1.", metricInterval);
             metricInterval = 1;
         }
 
@@ -217,18 +217,36 @@ int Master::Run()
         std::vector<std::string> tokens = SplitStringByDelimiter(metricConnectionInfo, ';');
         if (tokens.size() != 3)
         {
-            sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "Unable to parse 'Metric.ConnectionInfo'", metricInterval);
+            sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "Unable to parse 'Metric.ConnectionInfo'");
             Log::WaitBeforeContinueIfNeed();
             return 1;
         }
 
-        std::string metricUsername = tokens[0];
-        std::string metricPassword = tokens[1];
-        std::string metricDatabase = tokens[2];
+        std::string metricHostname = tokens[0];
+        std::string metricPortStr = tokens[1];
+        std::string metricPrefix = tokens[2];
 
-        MaNGOS::Metric::MetricService::GraphiteDbClientConfig graphiteDbConfig{ "127.0.0.1", 2003 };
+        uint64_t metricPort = 0;
+        try
+        {
+            metricPort = std::stoull(metricPortStr);
+        }
+        catch (const std::exception&)
+        {
+            // ignore
+        }
 
-        if (!MaNGOS::Metric::MetricService::Initialize(graphiteDbConfig, std::chrono::seconds(metricInterval), realmID))
+        if (metricPort <= 0 || metricPort > std::numeric_limits<uint16_t>::max())
+        {
+            sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "Failed to parse 'Metric.ConnectionInfo' invalid port");
+            Log::WaitBeforeContinueIfNeed();
+            return 1;
+        }
+
+        MaNGOS::Metric::MetricService::GraphiteDbClientConfig graphiteDbConfig{ metricHostname, static_cast<uint16_t>(metricPort) };
+
+        // make use the prefix ends with a '.'
+        if (!MaNGOS::Metric::MetricService::Initialize(graphiteDbConfig, metricPrefix + '.' + std::to_string(realmID) + '.', std::chrono::seconds(metricInterval)))
         {
             sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "Failed to connect to metric database! (Will start game server nonetheless)");
             Log::WaitBeforeContinueIfNeed();

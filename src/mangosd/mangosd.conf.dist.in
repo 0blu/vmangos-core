@@ -2232,7 +2232,7 @@ Movement.PendingAckResponseTime = 4000
 ###################################################################################################
 # METRIC
 #
-# These settings control the statistics sent to the metric database (currently InfluxDB)
+# These settings control the statistics sent to the metric database (GraphiteDB)
 #
 #    Metric.Enable
 #        Description: Enables statistics sent to the metric database.
@@ -2247,10 +2247,10 @@ Movement.PendingAckResponseTime = 4000
 #
 #    Metric.ConnectionInfo
 #        Description: Connection settings for metric database (GraphiteDB).
-#                     The current RealmID will be appended to the metricSuffix,
+#                     The current RealmID will be appended to the metricPrefix,
 #                     so you dont have to change it for every mangos instance.
-#        Format:      "hostname;port;metricSuffix"
-#        Default:     "127.0.0.1;8086;worldserver"
+#        Format:      "hostname;port;metricPrefix"
+#        Default:     "127.0.0.1;2003;vmangos_metric"
 #
 ###################################################################################################
 

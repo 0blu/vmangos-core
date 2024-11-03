@@ -16,18 +16,11 @@
 
 std::chrono::seconds g_metricSendingInterval(1);
 
-std::string toCarboneSafeRealmName(std::string const& realmName)
-{
-    // Replace every non-alphanumeric character with _
-    static const std::regex invalidChars{ R"([^A-Za-z0-9_])" };
-    return std::regex_replace(realmName, invalidChars, "_");
-}
-
 class MetricServiceInstance
 {
 public:
-    explicit MetricServiceInstance(MaNGOS::Metric::MetricService::GraphiteDbClientConfig const& config, uint32 realmId)
-        : m_config(config), m_metricLinePrefix("vmangos_metric." + std::to_string(realmId) + ".")
+    explicit MetricServiceInstance(MaNGOS::Metric::MetricService::GraphiteDbClientConfig const& config, std::string const& metricPrefix)
+        : m_config(config), m_metricLinePrefix(metricPrefix)
     {
     }
     ~MetricServiceInstance()
@@ -173,10 +166,10 @@ void MaNGOS::Metric::MetricService::Finalize()
     g_metricServiceInstance.reset();
 }
 
-bool MaNGOS::Metric::MetricService::Initialize(GraphiteDbClientConfig const& config, std::chrono::seconds sendingInterval, uint32_t realmId)
+bool MaNGOS::Metric::MetricService::Initialize(GraphiteDbClientConfig const& config, std::string const& metricPrefix, std::chrono::seconds sendingInterval)
 {
     g_metricSendingInterval = sendingInterval;
-    g_metricServiceInstance = std::make_unique<MetricServiceInstance>(config, realmId);
+    g_metricServiceInstance = std::make_unique<MetricServiceInstance>(config, metricPrefix);
     bool selfTestWasSuccessful = g_metricServiceInstance->TestConnection();
     return selfTestWasSuccessful;
 }

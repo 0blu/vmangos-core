@@ -41,7 +41,7 @@ namespace MaNGOS { namespace Metric
         };
         /// Initializes metric variables and test the connection
         /// \returns true if successful
-        bool Initialize(GraphiteDbClientConfig const& config, std::chrono::seconds sendingInterval, uint32_t realmId);
+        bool Initialize(GraphiteDbClientConfig const& config, std::string const& metricPrefix, std::chrono::seconds sendingInterval);
 
         /// Start the sender thread which will repeatably send new metrics to the database
         void StartSenderThread();
@@ -54,7 +54,7 @@ namespace MaNGOS { namespace Metric
 #ifndef ENABLE_METRICS
 
 /// NOOP metric handler
-#define MANGOS_METRIC(metricSetter) do {} while(0)
+#define MANGOS_METRIC(...) do {} while(0)
 
 #else
 

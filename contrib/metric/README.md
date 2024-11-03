@@ -5,6 +5,7 @@ This folder contains a sample setup for vMaNGOS' monitoring stack.
 ## Requirements
 - Linux or [WSL](https://learn.microsoft.com/en-us/windows/wsl/install)
 - `docker compose`
+- Build `mangosd` with `-DENABLE_METRICS=On`
 
 ## Install
 1. `cd` into this folder
