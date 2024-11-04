@@ -65,6 +65,7 @@
             }
           },
           "mappings": [],
+          "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -140,7 +141,7 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "palette-classic"
+            "mode": "continuous-GrYlRd"
           },
           "custom": {
             "axisBorderShow": false,
@@ -220,7 +221,14 @@
               },
               {
                 "id": "custom.lineWidth",
-                "value": 2
+                "value": 4
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "text",
+                  "mode": "fixed"
+                }
               }
             ]
           }
@@ -412,6 +420,7 @@
           },
           "decimals": 0,
           "mappings": [],
+          "min": 0,
           "noValue": "0",
           "thresholds": {
             "mode": "absolute",
@@ -608,6 +617,7 @@
             }
           },
           "mappings": [],
+          "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -652,7 +662,7 @@
           "target": "alias(vmangos_metric.$realmId.server.memAllocatedBytes, 'allocatedMemory')"
         }
       ],
-      "title": "Panel Title",
+      "title": "Allocated Memory",
       "type": "timeseries"
     },
     {
@@ -746,7 +756,7 @@
           "target": "vmangos_metric.$realmId.world.update.completeAsyncLoops"
         }
       ],
-      "title": "Amount of AsyncUpdate Loops (should be >0)",
+      "title": "Amount of AsyncUpdate loops (should be >0)",
       "type": "timeseries"
     },
     {
@@ -878,5 +888,5 @@
   "title": "vMaNGOS World Server Metrics",
   "uid": "fe2gzh1lj93b4e",
   "version": 1,
-  "weekStart": ""
+  "weekStart": "monday"
 }
