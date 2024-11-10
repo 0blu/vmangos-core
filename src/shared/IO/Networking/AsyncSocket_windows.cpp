@@ -1,5 +1,6 @@
 #include "AsyncSocket.h"
 #include "Log.h"
+#include "IO/SystemErrorToString.h"
 
 IO::NetworkError IO::Networking::AsyncSocket::InitializeAndFixateMemoryLocation()
 {
@@ -304,7 +305,7 @@ void IO::Networking::AsyncSocket::Write(IO::ReadableBuffer const& source, std::f
         int err = ::WSAGetLastError();
         if (err != WSA_IO_PENDING) // Pending means that this task was queued (which is what we want)
         {
-            sLog.Out(LOG_NETWORK, LOG_LVL_ERROR, "::WSASend(...) Error: %u", err);
+            sLog.Out(LOG_NETWORK, LOG_LVL_ERROR, "::WSASend(...) %s", SystemErrorToString(err).c_str());
             auto tmpCallback = std::move(m_writeCallback);
             m_writeSrc = nullptr;
             m_currentWriteTask.Reset();

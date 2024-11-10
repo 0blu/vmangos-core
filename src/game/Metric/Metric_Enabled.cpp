@@ -8,19 +8,21 @@
 #include <nonstd/optional.hpp>
 
 #include "Opcodes.h"
+#include "IO/Multithreading/CreateThread.h"
 #include "Policies/Singleton.h"
 
-#include <ace/INET_Addr.h>
-#include <ace/SOCK_Connector.h>
-#include <ace/SOCK_Stream.h>
+#include "IO/Networking/AsyncSocket.h"
+#include "IO/Networking/DNS.h"
+#include "IO/Networking/SocketConnector.h"
+#include "Memory/NoDeleter.h"
 
 std::chrono::seconds g_metricSendingInterval(1);
 
 class MetricServiceInstance
 {
 public:
-    explicit MetricServiceInstance(MaNGOS::Metric::MetricService::GraphiteDbClientConfig const& config, std::string const& metricPrefix)
-        : m_config(config), m_metricLinePrefix(metricPrefix)
+    explicit MetricServiceInstance(MaNGOS::Metric::MetricService::GraphiteDbClientConfig const& config, std::string const& metricPrefix, IO::IoContext* ioCtx)
+        : m_config(config), m_metricLinePrefix(metricPrefix), m_ioCtx(ioCtx)
     {
     }
     ~MetricServiceInstance()
@@ -31,43 +33,59 @@ public:
             m_senderThread->join();
             m_senderThread.reset();
         }
+        if (m_currentDbSocket)
+        {
+            m_currentDbSocket->CloseSocket();
+        }
     }
     bool TestConnection();
     void StartMetricSender()
     {
-        m_senderThread = std::make_unique<std::thread>([this]{ ThreadBody(); });
+        m_senderThread = IO::Multithreading::CreateThreadPtr("Metric", [this]{ ThreadBody(); });
     }
 
 private:
     void SendLinesToDatabase(std::string const& lines);
     void ThreadBody();
-    nonstd::optional<ACE_SOCK_Stream>& GetOrReconnectSocket();
+
+    /// This function will write to GraphiteDB via plaintext protocol
+    /// (https://graphite.readthedocs.io/en/latest/feeding-carbon.html#the-plaintext-protocol)
+    void LoopIteration();
+    std::unique_ptr<IO::Networking::AsyncSocket>& GetOrReconnectSocket();
 
     MaNGOS::Metric::MetricService::GraphiteDbClientConfig m_config;
-    nonstd::optional<ACE_SOCK_Stream> m_currentDbSocket;
+    std::unique_ptr<IO::Networking::AsyncSocket> m_currentDbSocket;
 
     std::string const m_metricLinePrefix;
     std::promise<void> m_metricSenderThreadStopFlag;
     std::unique_ptr<std::thread> m_senderThread;
+    IO::IoContext* m_ioCtx;
 
 };
 
 bool MetricServiceInstance::TestConnection()
 {
-    return GetOrReconnectSocket().has_value();
+    return GetOrReconnectSocket() != nullptr;
 }
 
 void MetricServiceInstance::SendLinesToDatabase(std::string const& lines)
 {
-    nonstd::optional<ACE_SOCK_Stream>& socket = GetOrReconnectSocket();
-    if (!socket.has_value())
+    std::unique_ptr<IO::Networking::AsyncSocket>& socket = GetOrReconnectSocket();
+    if (socket.get() == nullptr)
     {
         sLog.Out(LOG_BASIC, LOG_LVL_BASIC, "Metric: Failed to send metric. Unable to connect to db.");
         return;
     }
 
-    ACE_Time_Value timeout(5);
-    if (socket->send_n(lines.c_str(), lines.size(), &timeout) == -1)
+    std::promise<IO::NetworkError> writeIsDonePromise;
+    std::shared_ptr<uint8 const> fakeSharedPtr(reinterpret_cast<uint8_t const*>(lines.c_str()), MaNGOS::Memory::no_deleter<uint8>());
+    socket->Write({ fakeSharedPtr, lines.length() }, [&writeIsDonePromise](IO::NetworkError const& error)
+    {
+        writeIsDonePromise.set_value(error);
+    });
+
+    IO::NetworkError error = writeIsDonePromise.get_future().get();
+    if (error)
     {
         sLog.Out(LOG_BASIC, LOG_LVL_BASIC, "Metric: Failed to send metric. Error while sending.");
         socket.reset(); // Reset, so it can reconnect next time...
@@ -77,9 +95,8 @@ void MetricServiceInstance::SendLinesToDatabase(std::string const& lines)
     // Success...
 }
 
-void MetricServiceInstance::ThreadBody()
+void MetricServiceInstance::LoopIteration()
 {
-    // This function will continuously write to InfluxDB via plaintext LineProtocol (https://docs.influxdata.com/influxdb/cloud/reference/syntax/line-protocol/)
     using namespace MaNGOS::Metric::_Provider;
 
     typedef void (*WriterFunc)(std::stringstream& output, std::string const& metricPathPrefix, std::string const& timestampAndLineEnd);
@@ -112,49 +129,69 @@ void MetricServiceInstance::ThreadBody()
         ScopedStopwatch::world_updateTime_playerBotMgrUpdate::WriteGraphiteLinesToBufferAndResetStats,
     };
 
+    std::string timestampAndLineEnd = " -1\n";
+
+    std::stringstream batchedData;
+
+    for (WriterFunc const& func : InfluxWriters)
+    {
+        func(batchedData, m_metricLinePrefix, timestampAndLineEnd);
+    }
+
+    SendLinesToDatabase(batchedData.str());
+}
+
+void MetricServiceInstance::ThreadBody()
+{
     std::future<void> stopFlag = m_metricSenderThreadStopFlag.get_future();
 
     std::chrono::time_point<std::chrono::steady_clock> nextTick = std::chrono::steady_clock::now();
     while (stopFlag.wait_until(nextTick) == std::future_status::timeout)
     {
-        std::string timestampAndLineEnd = " -1\n";
-
-        std::stringstream batchedData;
-
-        for (WriterFunc const& func : InfluxWriters)
-        {
-            func(batchedData, m_metricLinePrefix, timestampAndLineEnd);
-        }
-
-        SendLinesToDatabase(batchedData.str());
+        LoopIteration();
 
         nextTick += g_metricSendingInterval;
-        if (nextTick < std::chrono::steady_clock::now())
+        auto now = std::chrono::steady_clock::now();
+        if (nextTick < now)
         {
             sLog.Out(LOG_BASIC, LOG_LVL_MINIMAL, "Metric: Loop is out of sync... Skipping wait time");
+
+            // align to next time sync
+            auto until = now - g_metricSendingInterval;
+            while (nextTick < until)
+            {
+                nextTick += g_metricSendingInterval;
+            }
         }
     }
 
-    if (m_currentDbSocket.has_value())
-        m_currentDbSocket->close();
+    if (m_currentDbSocket.get() != nullptr)
+        m_currentDbSocket->CloseSocket();
 }
 
-nonstd::optional<ACE_SOCK_Stream>& MetricServiceInstance::GetOrReconnectSocket()
+std::unique_ptr<IO::Networking::AsyncSocket>& MetricServiceInstance::GetOrReconnectSocket()
 {
-    if (m_currentDbSocket.has_value())
+    if (m_currentDbSocket.get() != nullptr)
         return m_currentDbSocket;
 
-    ACE_SOCK_Connector connector;
-    m_currentDbSocket = nonstd::make_optional<ACE_SOCK_Stream>({});
-
-    ACE_INET_Addr targetAddress((m_config.address + ":" + std::to_string(m_config.port)).c_str());
-
-    ACE_Time_Value timeout(5); // Set timeout to 5 seconds
-    if (connector.connect(m_currentDbSocket.value(), targetAddress, &timeout) == -1)
+    auto maybeIp = IO::Networking::DNS::ResolveDomainSingle(m_config.address, IO::Networking::IpAddress::Type::IPv4);
+    if (!maybeIp.has_value())
     {
-        sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "Metric: Fetch failed: connector.connect(...) Error: %d", ACE_OS::last_error());
-        m_currentDbSocket.reset();
+        sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "Metric: Failed to connect to database. Unable to resolve DNS entry");
+        return m_currentDbSocket; // see check above, is nullopt at this point
     }
+
+    IO::Networking::IpEndpoint targetAddress(maybeIp.value(), m_config.port);
+    std::chrono::seconds timeout(5); // Set timeout to 5 seconds
+    auto maybeSocketDescriptor = IO::Networking::SocketConnector::ConnectBlocking(targetAddress, timeout);
+    if (!maybeSocketDescriptor.has_value())
+    {
+        sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "Metric: Failed to connect to database. Connect error: %s", maybeSocketDescriptor.error().ToString().c_str());
+        return m_currentDbSocket; // see check above, is nullopt at this point
+    }
+
+    m_currentDbSocket = std::make_unique<IO::Networking::AsyncSocket>(m_ioCtx, std::move(maybeSocketDescriptor.value()));
+    MANGOS_ASSERT(!m_currentDbSocket->InitializeAndFixateMemoryLocation());
 
     return m_currentDbSocket;
 }
@@ -166,10 +203,10 @@ void MaNGOS::Metric::MetricService::Finalize()
     g_metricServiceInstance.reset();
 }
 
-bool MaNGOS::Metric::MetricService::Initialize(GraphiteDbClientConfig const& config, std::string const& metricPrefix, std::chrono::seconds sendingInterval)
+bool MaNGOS::Metric::MetricService::Initialize(GraphiteDbClientConfig const& config, std::string const& metricPrefix, IO::IoContext* ioContext, std::chrono::seconds sendingInterval)
 {
     g_metricSendingInterval = sendingInterval;
-    g_metricServiceInstance = std::make_unique<MetricServiceInstance>(config, metricPrefix);
+    g_metricServiceInstance = std::make_unique<MetricServiceInstance>(config, metricPrefix, ioContext);
     bool selfTestWasSuccessful = g_metricServiceInstance->TestConnection();
     return selfTestWasSuccessful;
 }

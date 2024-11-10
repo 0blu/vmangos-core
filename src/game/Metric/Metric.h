@@ -4,7 +4,7 @@
 #include <string>
 #include <chrono>
 
-#include "Policies/ObjectConstructorTraits.h"
+#include "IO/Context/IoContext.h"
 
 // Welcome to vMangos' Metric implementation!
 // This implementation is different to the one you see in cMaNGOS or TrinityCore.
@@ -41,7 +41,7 @@ namespace MaNGOS { namespace Metric
         };
         /// Initializes metric variables and test the connection
         /// \returns true if successful
-        bool Initialize(GraphiteDbClientConfig const& config, std::string const& metricPrefix, std::chrono::seconds sendingInterval);
+        bool Initialize(GraphiteDbClientConfig const& config, std::string const& metricPrefix, IO::IoContext* ioContext, std::chrono::seconds sendingInterval);
 
         /// Start the sender thread which will repeatably send new metrics to the database
         void StartSenderThread();
@@ -66,6 +66,7 @@ namespace MaNGOS { namespace Metric
 /// Example usage `MANGOS_METRIC(ScopedStopwatch::TotalWorldUpdateTime{});`
 #define MANGOS_METRIC(...) auto const& _MANGOS_METRIC_VARIABLE_UNIQUE_NAME_UNIQUE_NAME(_mangos_metric_scope) = ::MaNGOS::Metric::_Provider:: __VA_ARGS__
 
+#include "Policies/ObjectConstructorTraits.h"
 #define _MANGOS_METRIC_WAS_INCLUDED_BY_INTERNAL
 #include "./Metric_Definitions_Simple.h"
 #include "./Metric_Definitions_Complex.h"
