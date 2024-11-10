@@ -1,6 +1,11 @@
 # vMaNGOS `mangosd` monitoring via metrics in Grafana
 
-This folder contains a sample setup for vMaNGOS' monitoring stack.
+This folder contains a sample setup for vMaNGOS' monitoring stack.  
+It creates private GraphiteDB and public Grafana instance.  
+It can handle metrics from multiple mangosd servers.
+
+The database and Grafana dashboard are pre-configured for the default prefix `vmangos_metric`  
+(see `Metric.ConnectionInfo` in `mangosd.conf`).
 
 ## Requirements
 - Linux or [WSL](https://learn.microsoft.com/en-us/windows/wsl/install)
@@ -15,5 +20,5 @@ This folder contains a sample setup for vMaNGOS' monitoring stack.
 5. (You might want to keep the port behind a firewall)
 
 ## Uninstall
-1. `cd` into this folder
+1. `cd` into the folder
 2. `docker compose down`
