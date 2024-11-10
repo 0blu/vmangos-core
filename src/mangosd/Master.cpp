@@ -169,6 +169,17 @@ int Master::Run()
     sLog.Out(LOG_BASIC, LOG_LVL_MINIMAL, "World server is running realm ID: %d Name: \"%s\"", realmID, realmName.c_str());
     sLog.Out(LOG_BASIC, LOG_LVL_MINIMAL, "");
 
+    {
+        std::unique_ptr<QueryResult> result{LoginDatabase.PQuery("SELECT `name` FROM `realmlist` WHERE `id` = %d", realmID)};
+        if (!result)
+        {
+            sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "Config contains invalid realmID %d, make sure its set in the `realmlist` table", realmID);
+            Log::WaitBeforeContinueIfNeed();
+            return 1;
+        }
+        realmName = (*result)[0].GetCppString();
+    }
+
     std::unique_ptr<IO::IoContext> ioCtxUniquePtr = IO::IoContext::CreateIoContext();
     IO::IoContext* ioCtx = ioCtxUniquePtr.get();
     std::vector<std::thread> ioCtxRunners;
@@ -185,15 +196,6 @@ int Master::Run()
         {
             ioCtx->RunUntilShutdown();
         }));
-    {
-        std::unique_ptr<QueryResult> result{LoginDatabase.PQuery("SELECT `name` FROM `realmlist` WHERE `id` = %d", realmID)};
-        if (!result)
-        {
-            sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "Config contains invalid realmID %d, make sure its set in the `realmlist` table", realmID);
-            Log::WaitBeforeContinueIfNeed();
-            return 1;
-        }
-        realmName = (*result)[0].GetCppString();
     }
 
     if (sConfig.GetBoolDefault("Metric.Enable", false))
@@ -238,7 +240,7 @@ int Master::Run()
         MaNGOS::Metric::MetricService::GraphiteDbClientConfig graphiteDbConfig{ metricHostname, static_cast<uint16_t>(metricPort) };
 
         // make use the prefix ends with a '.'
-        if (!MaNGOS::Metric::MetricService::Initialize(graphiteDbConfig, metricPrefix + '.' + std::to_string(realmID) + '.', std::chrono::seconds(metricInterval)))
+        if (!MaNGOS::Metric::MetricService::Initialize(graphiteDbConfig, metricPrefix + '.' + std::to_string(realmID) + '.', ioCtx, std::chrono::seconds(metricInterval)))
         {
             sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "Failed to connect to metric database! (Will start game server nonetheless)");
             Log::WaitBeforeContinueIfNeed();
