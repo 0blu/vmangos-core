@@ -18,4 +18,4 @@ services:
       - "3580:3000"
     volumes:
       - ./config/grafana/provisioning/:/etc/grafana/provisioning/:ro
-      - ./config/grafana/defaults.ini:/usr/share/grafana/conf/defaults.ini:ro
+      - ./config/grafana/grafana.ini:/etc/grafana/grafana.ini:ro
