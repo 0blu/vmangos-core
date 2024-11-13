@@ -36,6 +36,7 @@
 #include "DBCStores.h"
 #include "IO/Networking/DNS.h"
 #include "WorldSocketMgr.h"
+#include "Metric/Metric.h"
 
 #if defined( __GNUC__ )
 #pragma pack(1)
@@ -71,11 +72,13 @@ WorldSocket::WorldSocket(IO::Networking::AsyncSocket socket)
       m_authSeed(static_cast<uint32>(rand32())),
       m_remoteIpAddressStringAfterProxy(m_socket.GetRemoteIpString())
 {
+    MANGOS_METRIC(IncrementalCounter::network_socketEvent_newConnection{});
     m_sendQueueIsRunning.clear(); // there is no atomic_flag::constructor on windows to initialize it with false by default (and if left out, linux is uninitialized and will fail randomly)
 }
 
 WorldSocket::~WorldSocket()
 {
+    MANGOS_METRIC(IncrementalCounter::network_socketEvent_closeConnection{});
     CloseSocket();
     sLog.Out(LOG_NETWORK, LOG_LVL_BASIC, "[%s] Connection closed", GetRemoteIpString().c_str());
 }

@@ -229,7 +229,7 @@ int Master::Run()
         MaNGOS::Metric::MetricService::GraphiteDbClientConfig graphiteDbConfig{ metricHostname, static_cast<uint16_t>(metricPort) };
 
         // make sure the prefix ends with a '.'
-        if (!MaNGOS::Metric::MetricService::Initialize(graphiteDbConfig, metricPrefix + '.' + std::to_string(realmID) + '.', std::chrono::seconds(metricInterval)))
+        if (!MaNGOS::Metric::MetricService::Initialize(graphiteDbConfig, metricPrefix + '.' + std::to_string(realmID) + '.', ioCtx, std::chrono::seconds(metricInterval)))
         {
             sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "Failed to connect to metric database! (Will start game server nonetheless)");
             Log::WaitBeforeContinueIfNeed();

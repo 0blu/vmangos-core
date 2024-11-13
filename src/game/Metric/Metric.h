@@ -4,6 +4,7 @@
 #include <string>
 #include <chrono>
 
+#include "IO/Context/IoContext.h"
 #include "Policies/ObjectConstructorTraits.h"
 
 // Welcome to vMangos' Metric implementation!
@@ -41,7 +42,7 @@ namespace MaNGOS { namespace Metric
         };
         /// Initializes metric variables and test the connection
         /// \returns true if successful
-        bool Initialize(GraphiteDbClientConfig const& config, std::string const& metricPrefix, std::chrono::seconds sendingInterval);
+        bool Initialize(GraphiteDbClientConfig const& config, std::string const& metricPrefix, IO::IoContext* ioContext, std::chrono::seconds sendingInterval);
 
         /// Start the sender thread which will repeatably send new metrics to the database
         void StartSenderThread();
