@@ -852,7 +852,7 @@
     }
   ],
   "preload": false,
-  "refresh": "auto",
+  "refresh": "",
   "schemaVersion": 40,
   "tags": [],
   "templating": {
@@ -880,12 +880,12 @@
     ]
   },
   "time": {
-    "from": "now-30m",
+    "from": "now-15m",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "browser",
-  "title": "vMaNGOS World Server Metrics",
+  "title": "vMaNGOS World - Details (Slow)",
   "uid": "fe2gzh1lj93b4e",
   "version": 1,
   "weekStart": "monday"
