@@ -24,36 +24,24 @@
 */
 
 #include "Opcodes.h"
-#include "Policies/SingletonImp.h"
 
-INSTANTIATE_SINGLETON_1(Opcodes);
-
-OpcodeHandler const Opcodes::emptyHandler =
+struct Handlers
 {
-    "<none>",
-    STATUS_UNHANDLED,
-    PACKET_PROCESS_MAX_TYPE,
-    &WorldSession::Handle_NULL
+    OpcodeHandler handlers[NUM_MSG_TYPES];
 };
 
-
-Opcodes::Opcodes()
+constexpr Handlers BuildOpcodeList()
 {
-    // Build Opcodes map
-    BuildOpcodeList();
-}
+    Handlers list{};
 
-Opcodes::~Opcodes()
-{
-    // Clear Opcodes
-    mOpcodeMap.clear();
-}
-
-
-void Opcodes::BuildOpcodeList()
-{
-    #define LEGACY_HANDLER(opcode, requiredState, schedulingStrategy, handler) \
-        StoreOpcode(opcode, #opcode, requiredState, schedulingStrategy, handler)
+    #define LEGACY_HANDLER(opcode, requiredState, schedulingStrategy, handlerPtr) \
+        { \
+            OpcodeHandler& ref = list.handlers[(opcode)]; \
+            ref.name = #opcode; \
+            ref.status = (requiredState); \
+            ref.packetProcessing = (schedulingStrategy); \
+            ref.handler = (handlerPtr); \
+        }
 
     // Correspondence between opcodes and their names
     LEGACY_HANDLER(MSG_NULL_ACTION,                   STATUS_NEVER,     PACKET_PROCESS_MAX_TYPE,      &WorldSession::Handle_NULL);
@@ -923,5 +911,40 @@ void Opcodes::BuildOpcodeList()
     LEGACY_HANDLER(MSG_UNUSED_826,                    STATUS_NEVER,     PACKET_PROCESS_MAX_TYPE,      &WorldSession::Handle_NULL);
     LEGACY_HANDLER(SMSG_DEFENSE_MESSAGE,              STATUS_NEVER,     PACKET_PROCESS_MAX_TYPE,      &WorldSession::Handle_ServerSide);
 #endif
-    return;
+
+    // Throw compile time error when a handler is not initialized
+    for (int i = 0; i < NUM_MSG_TYPES; i++)
+    {
+        if (list.handlers[i].name == nullptr)
+        {
+            throw "One or more packet handlers are not initialized";
+        }
+    }
+
+    return list;
+}
+
+// If you get "Constexpr variable 'handlerList' must be initialized by a constant expression"
+// you have to verify that every MSG type has a handler.
+constexpr Handlers handlerList = BuildOpcodeList();
+
+constexpr OpcodeHandler emptyHandler = {
+    "<none>",
+    STATUS_UNHANDLED,
+    PACKET_PROCESS_MAX_TYPE,
+    &WorldSession::Handle_NULL
+};
+
+OpcodeHandler const& LookupOpcodeHandler(uint16 id)
+{
+    if (id >= NUM_MSG_TYPES)
+        return emptyHandler;
+    return handlerList.handlers[id];
+}
+
+char const* LookupOpcodeName(uint16 id)
+{
+    if (id >= NUM_MSG_TYPES)
+        return "Received unknown opcode, it's more than max!";
+    return handlerList.handlers[id].name;
 }

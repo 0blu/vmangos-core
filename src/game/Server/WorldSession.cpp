@@ -58,7 +58,7 @@ static bool MapSessionFilterHelper(WorldSession* session, OpcodeHandler const& o
 
 bool MapSessionFilter::Process(std::unique_ptr<WorldPacket> const& packet)
 {
-    OpcodeHandler const& opHandle = opcodeTable[packet->GetOpcode()];
+    OpcodeHandler const& opHandle = LookupOpcodeHandler(packet->GetOpcode());
     // let's check if our opcode can be really processed in Map::Update()
     return MapSessionFilterHelper(m_pSession, opHandle);
 }
@@ -273,12 +273,13 @@ void WorldSession::QueuePacket(std::unique_ptr<WorldPacket> newPacket)
     uint32 processing;
 
     // Handle chat packets on async thread when possible
-    if (newPacket->GetOpcode() == CMSG_MESSAGECHAT &&
-        newPacket->size() >= sizeof(uint32))
+    if (newPacket->GetOpcode() == CMSG_MESSAGECHAT && newPacket->size() >= sizeof(uint32))
+    {
         processing = GetChatPacketProcessingType(*((uint32*)newPacket->contents()));
+    }
     else
     {
-        OpcodeHandler const& opHandle = opcodeTable[newPacket->GetOpcode()];
+        OpcodeHandler const& opHandle = LookupOpcodeHandler(newPacket->GetOpcode());
         processing = opHandle.packetProcessing;
 
         if (processing >= PACKET_PROCESS_MAX_TYPE)
@@ -496,7 +497,7 @@ void WorldSession::ProcessPackets(PacketFilter& updater)
         if (!AllowPacket(packet->GetOpcode()))
             break;
 
-        OpcodeHandler const& opHandle = opcodeTable[packet->GetOpcode()];
+        OpcodeHandler const& opHandle = LookupOpcodeHandler(packet->GetOpcode());
         try
         {
             uint32 packetTime = WorldTimer::getMSTime();
