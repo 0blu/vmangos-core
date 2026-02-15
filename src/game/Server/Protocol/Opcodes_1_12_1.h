@@ -826,6 +826,7 @@ enum OpcodesList
     SMSG_LOTTERY_RESULT_OBSOLETE           = 823,
     SMSG_CHARACTER_PROFILE                 = 824,
     SMSG_CHARACTER_PROFILE_REALM_CONNECTED = 825,
+    MSG_UNUSED_826                         = 826, // <- only here for a continuous list of numbers
     SMSG_DEFENSE_MESSAGE                   = 827,
     NUM_MSG_TYPES                          = 828
 };

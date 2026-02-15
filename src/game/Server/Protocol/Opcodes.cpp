@@ -590,6 +590,7 @@ void Opcodes::BuildOpcodeList()
     LEGACY_HANDLER(CMSG_RWHOIS,                       STATUS_NEVER,     PACKET_PROCESS_MAX_TYPE,      &WorldSession::Handle_NULL);
     LEGACY_HANDLER(SMSG_RWHOIS,                       STATUS_NEVER,     PACKET_PROCESS_MAX_TYPE,      &WorldSession::Handle_ServerSide);
     LEGACY_HANDLER(MSG_LOOKING_FOR_GROUP,             STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleLFGOpcode);
+    LEGACY_HANDLER(CMSG_SET_LOOKING_FOR_GROUP,        STATUS_UNHANDLED, PACKET_PROCESS_MAX_TYPE,      &WorldSession::Handle_NULL);
     LEGACY_HANDLER(CMSG_UNLEARN_SPELL,                STATUS_NEVER,     PACKET_PROCESS_MAX_TYPE,      &WorldSession::Handle_NULL);
     LEGACY_HANDLER(CMSG_UNLEARN_SKILL,                STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleUnlearnSkillOpcode);
     LEGACY_HANDLER(SMSG_REMOVED_SPELL,                STATUS_NEVER,     PACKET_PROCESS_MAX_TYPE,      &WorldSession::Handle_ServerSide);
@@ -919,6 +920,7 @@ void Opcodes::BuildOpcodeList()
     LEGACY_HANDLER(SMSG_LOTTERY_RESULT_OBSOLETE,      STATUS_NEVER,     PACKET_PROCESS_MAX_TYPE,      &WorldSession::Handle_ServerSide);
     LEGACY_HANDLER(SMSG_CHARACTER_PROFILE,            STATUS_NEVER,     PACKET_PROCESS_MAX_TYPE,      &WorldSession::Handle_ServerSide);
     LEGACY_HANDLER(SMSG_CHARACTER_PROFILE_REALM_CONNECTED, STATUS_NEVER,     PACKET_PROCESS_MAX_TYPE,      &WorldSession::Handle_ServerSide);
+    LEGACY_HANDLER(MSG_UNUSED_826,                    STATUS_NEVER,     PACKET_PROCESS_MAX_TYPE,      &WorldSession::Handle_NULL);
     LEGACY_HANDLER(SMSG_DEFENSE_MESSAGE,              STATUS_NEVER,     PACKET_PROCESS_MAX_TYPE,      &WorldSession::Handle_ServerSide);
 #endif
     return;
