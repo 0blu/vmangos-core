@@ -41,7 +41,7 @@ void WorldSession::SendNameQueryOpcode(Player* p)
     WorldPacket data(SMSG_NAME_QUERY_RESPONSE, (8 + 25 + 1 + 4 + 4 + 4));   // guess size
     data << ObjectGuid(p->GetObjectGuid());
     data << p->GetName();                                   // CString(48): played name
-    data << uint8(0);                                       // CString(256): realm name for cross realm BG usage
+    data << "";                                             // CString(256): realm name for cross realm BG usage
 #else
     WorldPacket data(SMSG_NAME_QUERY_RESPONSE, (8 + 25 + 4 + 4 + 4));   // guess size
     data << ObjectGuid(p->GetObjectGuid());
@@ -56,7 +56,7 @@ void WorldSession::SendNameQueryOpcode(Player* p)
 
 void WorldSession::SendNameQueryOpcodeFromDB(ObjectGuid guid)
 {
-    // Avec la mise en cache...
+    // Using the cache...
     if (PlayerCacheData* pData = sObjectMgr.GetPlayerDataByGUID(guid.GetCounter()))
     {
         std::string name = pData->sName;
@@ -64,8 +64,8 @@ void WorldSession::SendNameQueryOpcodeFromDB(ObjectGuid guid)
 #if SUPPORTED_CLIENT_BUILD >= CLIENT_BUILD_1_12_1
         WorldPacket data(SMSG_NAME_QUERY_RESPONSE, (8 + (name.size() + 1) + 1 + 4 + 4 + 4));
         data << ObjectGuid(HIGHGUID_PLAYER, pData->uiGuid);
-        data << name;
-        data << uint8(0);
+        data << name;                                       // CString(48): played name
+        data << "";                                         // CString(256): realm name for cross realm BG usage
 #else
         WorldPacket data(SMSG_NAME_QUERY_RESPONSE, (8 + (name.size() + 1) + 4 + 4 + 4));
         data << ObjectGuid(HIGHGUID_PLAYER, pData->uiGuid);
@@ -78,7 +78,8 @@ void WorldSession::SendNameQueryOpcodeFromDB(ObjectGuid guid)
         SendPacket(&data);
     }
 
-    // Ancienne methode :
+    // The old method was to query the database,
+    // but why would a client request the info of a player who was never logged in during the _current_ server uptime?
     /*
     CharacterDatabase.AsyncPQuery(&WorldSession::SendNameQueryOpcodeFromDBCallBack, GetAccountId(),
     //          0     1     2     3       4
@@ -116,7 +117,7 @@ void WorldSession::SendNameQueryOpcodeFromDBCallBack(QueryResult* result, uint32
     WorldPacket data(SMSG_NAME_QUERY_RESPONSE, (8 + (name.size() + 1) + 1 + 4 + 4 + 4));
     data << ObjectGuid(HIGHGUID_PLAYER, lowguid);
     data << name;
-    data << uint8(0);                                       // realm name for cross realm BG usage
+    data << "";                                            // realm name for cross realm BG usage
 #else
     WorldPacket data(SMSG_NAME_QUERY_RESPONSE, (8 + (name.size() + 1) + 4 + 4 + 4));
     data << ObjectGuid(HIGHGUID_PLAYER, lowguid);
@@ -130,33 +131,26 @@ void WorldSession::SendNameQueryOpcodeFromDBCallBack(QueryResult* result, uint32
     delete result;
 }
 
-void WorldSession::HandleNameQueryOpcode(WorldPacket& recv_data)
+void WorldSession::HandleQueryPlayerNameOpcode(WorldPackets::Query::QueryPlayerName const& packet)
 {
-    ObjectGuid guid;
-
-    recv_data >> guid;
-
-    Player* pChar = sObjectMgr.GetPlayer(guid);
+    Player* pChar = sObjectMgr.GetPlayer(packet.playerGuid);
 
     if (pChar)
         SendNameQueryOpcode(pChar);
     else
-        SendNameQueryOpcodeFromDB(guid);
+        SendNameQueryOpcodeFromDB(packet.playerGuid);
 }
 
-void WorldSession::HandleQueryTimeOpcode(WorldPacket& /*recv_data*/)
+void WorldSession::HandleQueryTimeOpcode(NullClientPacket const& /*packet*/)
 {
     SendQueryTimeResponse();
 }
 
 // Only _static_ data send in this packet !!!
-void WorldSession::HandleCreatureQueryOpcode(WorldPacket& recv_data)
+void WorldSession::HandleCreatureQueryOpcode(WorldPackets::Query::QueryCreature const& packet)
 {
-    uint32 entry;
-    ObjectGuid guid;
-
-    recv_data >> entry;
-    recv_data >> guid;
+    uint32 entry = packet.entry;
+    ObjectGuid guid = packet.guid;
 
     CreatureInfo const* ci = sObjectMgr.GetCreatureTemplate(entry);
     if (ci)
@@ -238,12 +232,10 @@ void WorldSession::HandleCreatureQueryOpcode(WorldPacket& recv_data)
 }
 
 // Only _static_ data send in this packet !!!
-void WorldSession::HandleGameObjectQueryOpcode(WorldPacket& recv_data)
+void WorldSession::HandleGameObjectQueryOpcode(WorldPackets::Query::QueryGameObject const& packet)
 {
-    uint32 entryID;
-    recv_data >> entryID;
-    ObjectGuid guid;
-    recv_data >> guid;
+    uint32 entryID = packet.entryID;
+    ObjectGuid guid = packet.guid;
 
     GameObjectInfo const* info = sObjectMgr.GetGameObjectTemplate(entryID);
     if (info)
@@ -288,7 +280,7 @@ void WorldSession::HandleGameObjectQueryOpcode(WorldPacket& recv_data)
         data.append(info->raw.data, 24);            // these are read as int32
 #else
         data.append(info->raw.data, 16);            // these are read as int32
-#endif    
+#endif
         //data << float(info->size);                // [-ZERO] go size: not in Zero
         SendPacket(&data);
     }
@@ -302,7 +294,7 @@ void WorldSession::HandleGameObjectQueryOpcode(WorldPacket& recv_data)
     }
 }
 
-void WorldSession::HandleCorpseQueryOpcode(WorldPacket& /*recv_data*/)
+void WorldSession::HandleCorpseQueryOpcode(NullClientPacket const& /*packet*/)
 {
     Corpse* corpse = GetPlayer()->GetCorpse();
 
@@ -350,13 +342,10 @@ void WorldSession::HandleCorpseQueryOpcode(WorldPacket& /*recv_data*/)
     SendPacket(&data);
 }
 
-void WorldSession::HandleNpcTextQueryOpcode(WorldPacket& recv_data)
+void WorldSession::HandleNpcTextQueryOpcode(WorldPackets::Npc::NpcTextQuery const& packet)
 {
-    uint32 textID;
-    ObjectGuid guid;
-
-    recv_data >> textID;
-    recv_data >> guid;
+    uint32 textID = packet.textID;
+    ObjectGuid guid = packet.guid;
 
     NpcText const* pGossip = sObjectMgr.GetNpcText(textID);
 
@@ -430,10 +419,9 @@ void WorldSession::HandleNpcTextQueryOpcode(WorldPacket& recv_data)
     SendPacket(&data);
 }
 
-void WorldSession::HandlePageTextQueryOpcode(WorldPacket& recv_data)
+void WorldSession::HandlePageTextQueryOpcode(WorldPackets::Query::QueryPageText const& packet)
 {
-    uint32 pageID;
-    recv_data >> pageID;
+    uint32 pageID = packet.pageID;
 
     while (pageID)
     {

@@ -39,15 +39,14 @@
 #include "Util.h"
 #include "Anticheat.h"
 
-void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
+void WorldSession::HandleAutostoreLootItemOpcode(WorldPackets::Loot::AutoStoreLootItem const& packet)
 {
-    Player  *player =   GetPlayer();
-    ObjectGuid lguid = player->GetLootGuid();
-    Loot    *loot;
-    uint8    lootSlot;
-    Item* pItem = nullptr;
+    uint8 lootSlot = packet.lootSlot;
 
-    recv_data >> lootSlot;
+    Player*    player = GetPlayer();
+    ObjectGuid lguid = player->GetLootGuid();
+    Loot*      loot;
+    Item*      pItem = nullptr;
 
     if (lguid.IsEmpty())
         return;
@@ -71,7 +70,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
 
                 return true;
             };
-            
+
             if (!go || (ShouldCheckDistance() && !go->IsWithinDistInMap(_player, INTERACTION_DISTANCE)))
             {
                 player->SendLootRelease(lguid);
@@ -236,7 +235,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
         player->SendEquipError(msg, nullptr, nullptr, item->itemid);
 }
 
-void WorldSession::HandleLootMoneyOpcode(WorldPacket& /*recv_data*/)
+void WorldSession::HandleLootMoneyOpcode(NullClientPacket const& /*packet*/)
 {
     Player* player = GetPlayer();
     if (!player || !player->IsInWorld())
@@ -312,7 +311,7 @@ void WorldSession::HandleLootMoneyOpcode(WorldPacket& /*recv_data*/)
                 Player* playerGroup = itr->getSource();
                 if (!playerGroup)
                     continue;
-                
+
                 if (player->IsWithinLootXPDist(playerGroup))
                     playersNear.push_back(playerGroup);
             }
@@ -340,10 +339,9 @@ void WorldSession::HandleLootMoneyOpcode(WorldPacket& /*recv_data*/)
     }
 }
 
-void WorldSession::HandleLootOpcode(WorldPacket& recv_data)
+void WorldSession::HandleLootOpcode(WorldPackets::Loot::LootUnit const& packet)
 {
-    ObjectGuid guid;
-    recv_data >> guid;
+    ObjectGuid guid = packet.guid;
 
     if (!guid.IsAnyTypeCreature() && !guid.IsPlayer() && !guid.IsCorpse())
     {
@@ -385,12 +383,10 @@ void WorldSession::HandleLootOpcode(WorldPacket& recv_data)
     GetPlayer()->SendLoot(guid, LOOT_CORPSE);
 }
 
-void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
+void WorldSession::HandleLootReleaseOpcode(WorldPackets::Loot::LootRelease const& /*packet*/)
 {
     // cheaters can modify lguid to prevent correct apply loot release code and re-loot
     // use internal stored guid
-    recv_data.read_skip<uint64>();                          // guid;
-
     if (ObjectGuid lootGuid = GetPlayer()->GetLootGuid())
         DoLootRelease(lootGuid);
 }
@@ -621,13 +617,11 @@ void WorldSession::DoLootRelease(ObjectGuid lguid)
     loot->RemoveLooter(player->GetObjectGuid());
 }
 
-void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
+void WorldSession::HandleLootMasterGiveOpcode(WorldPackets::Loot::LootMasterGive const& packet)
 {
-    uint8 slotid;
-    ObjectGuid lootGuid;
-    ObjectGuid playerGuid;
-
-    recv_data >> lootGuid >> slotid >> playerGuid;
+    uint8 slotid = packet.slotId;
+    ObjectGuid lootGuid = packet.lootGuid;
+    ObjectGuid playerGuid = packet.playerGuid;
 
     if (!_player->GetGroup() || _player->GetGroup()->GetLootMethod() != MASTER_LOOT || _player->GetGroup()->GetLooterGuid() != _player->GetObjectGuid())
     {
@@ -675,7 +669,7 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
             _player->SendLootError(lootGuid, LOOT_ERROR_DIDNT_KILL);
             return;
         }
-            
+
         if (!_player->IsAtGroupRewardDistance(creature))
         {
             _player->SendLootError(lootGuid, LOOT_ERROR_TOO_FAR);
