@@ -36,6 +36,7 @@
 #include "PacketProcessing.h"
 #include "UpdateData.h"
 #include "LockedQueue.h"
+#include "Packets/Misc.h"
 
 struct ItemPrototype;
 struct AuctionEntry;
@@ -473,7 +474,7 @@ class WorldSession
         void HandleMovementFlagChangeToggleAck(WorldPacket& recvData);
         void HandleMoveSplineDoneOpcode(WorldPacket& recvPacket);
         void HandleMoveSetRawPosition(WorldPacket& recv_data);
-        void HandleWorldTeleportOpcode(WorldPacket& recv_data);
+        void HandleWorldTeleportOpcode(WorldPackets::Misc::WorldTeleport const& packet);
         void HandleMountSpecialAnimOpcode(WorldPacket& recvdata);
         void HandleTeleportToUnitOpcode(WorldPacket& recvdata);
 

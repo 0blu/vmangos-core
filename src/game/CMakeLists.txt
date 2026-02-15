@@ -422,6 +422,7 @@ set (game_SRCS
     PlayerBots/PlayerBotMgr.h
     Server/Protocol/Opcodes.h
     Server/Packet.h
+    Server/Packets/Misc.h
     Server/WorldPacket.h
     Server/WorldSession.h
     Server/WorldSocket.h

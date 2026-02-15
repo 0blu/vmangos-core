@@ -1147,25 +1147,11 @@ void WorldSession::HandleTeleportToUnitOpcode(WorldPacket& recv_data)
     ProcessChatMessageAfterSecurityCheck(txt, LANG_UNIVERSAL, CHAT_MSG_SYSTEM);
 }
 
-void WorldSession::HandleWorldTeleportOpcode(WorldPacket& recv_data)
+void WorldSession::HandleWorldTeleportOpcode(WorldPackets::Misc::WorldTeleport const& packet)
 {
-    // write in client console: worldport 469 452 6454 2536 180 or /console worldport 469 452 6454 2536 180
+    // write in client console: worldport 1 16226 16257 13.2 90 or /console worldport 1 16226 16257 13.2 90
     // Received opcode CMSG_WORLD_TELEPORT
-    // Time is ***, map=469, x=452.000000, y=6454.000000, z=2536.000000, orient=3.141593
-
-    uint32 time;
-    uint32 mapId;
-    float positionX;
-    float positionY;
-    float positionZ;
-    float orientation;
-
-    recv_data >> time;                                      // time in m.sec.
-    recv_data >> mapId;
-    recv_data >> positionX;
-    recv_data >> positionY;
-    recv_data >> positionZ;
-    recv_data >> orientation;                               // o (3.141593 = 180 degrees)
+    // Time is ***, map=1, x=16226.000000, y=16257.000000, z=13.200000, orient=1.57079637
 
     //sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "Received opcode CMSG_WORLD_TELEPORT");
 
@@ -1176,7 +1162,7 @@ void WorldSession::HandleWorldTeleportOpcode(WorldPacket& recv_data)
     }
 
     if (GetSecurity() >= SEC_ADMINISTRATOR)
-        GetPlayer()->TeleportTo(mapId, positionX, positionY, positionZ, orientation);
+        GetPlayer()->TeleportTo(packet.location);
     else
         SendNotification(LANG_YOU_NOT_HAVE_PERMISSION);
 

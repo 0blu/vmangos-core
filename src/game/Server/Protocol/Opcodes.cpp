@@ -45,6 +45,7 @@ constexpr Handlers BuildOpcodeList()
 {
     Handlers list{};
 
+    // For WorldPacket handlers
     #define LEGACY_HANDLER(opcode, requiredState, schedulingStrategy, handlerPtr) \
         { \
             OpcodeHandler& ref = list.handlers[(opcode)]; \
@@ -73,7 +74,7 @@ constexpr Handlers BuildOpcodeList()
     LEGACY_HANDLER(SMSG_QUERY_OBJECT_POSITION,        STATUS_NEVER,     PACKET_PROCESS_MAX_TYPE,      &WorldSession::Handle_ServerSide);
     LEGACY_HANDLER(CMSG_QUERY_OBJECT_ROTATION,        STATUS_NEVER,     PACKET_PROCESS_MAX_TYPE,      &WorldSession::Handle_NULL);
     LEGACY_HANDLER(SMSG_QUERY_OBJECT_ROTATION,        STATUS_NEVER,     PACKET_PROCESS_MAX_TYPE,      &WorldSession::Handle_ServerSide);
-    LEGACY_HANDLER(CMSG_WORLD_TELEPORT,               STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleWorldTeleportOpcode);
+    DEFINE_HANDLER(CMSG_WORLD_TELEPORT,               STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleWorldTeleportOpcode);
     LEGACY_HANDLER(CMSG_TELEPORT_TO_UNIT,             STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleTeleportToUnitOpcode);
     LEGACY_HANDLER(CMSG_ZONE_MAP,                     STATUS_NEVER,     PACKET_PROCESS_MAX_TYPE,      &WorldSession::Handle_NULL);
     LEGACY_HANDLER(SMSG_ZONE_MAP,                     STATUS_NEVER,     PACKET_PROCESS_MAX_TYPE,      &WorldSession::Handle_ServerSide);
