@@ -30,6 +30,17 @@ struct Handlers
     OpcodeHandler handlers[NUM_MSG_TYPES];
 };
 
+template<typename T>
+struct get_packet_class
+{
+};
+
+template<typename PacketClass>
+struct get_packet_class<void(WorldSession::*)(PacketClass&)>
+{
+    using type = PacketClass;
+};
+
 constexpr Handlers BuildOpcodeList()
 {
     Handlers list{};
@@ -41,6 +52,16 @@ constexpr Handlers BuildOpcodeList()
             ref.status = (requiredState); \
             ref.packetProcessing = (schedulingStrategy); \
             ref.handler = (handlerPtr); \
+        }
+
+    // For generic handlers
+    #define DEFINE_HANDLER(opcode, requiredState, schedulingStrategy, handlerPtr) \
+        { \
+            OpcodeHandler& ref = list.handlers[(opcode)]; \
+            ref.name = #opcode; \
+            ref.status = (requiredState); \
+            ref.packetProcessing = (schedulingStrategy); \
+            ref.handler = &WorldSession::Handle_Generic<get_packet_class<decltype(handlerPtr)>::type, (handlerPtr)>; \
         }
 
     // Correspondence between opcodes and their names

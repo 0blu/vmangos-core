@@ -438,6 +438,13 @@ class WorldSession
         void BuildPartyMemberStatsPacket(Player* player, WorldPacket* data, uint32 updateMask, bool sendAllAuras);
 
     public:                                                 // opcodes handlers
+        template<typename TClientPacket, void (WorldSession::*THandler)(TClientPacket const& packet)>
+        void Handle_Generic(WorldPacket& recvPacket)
+        {
+            auto packet = TClientPacket();
+            packet.ReadFromWorldPacket(recvPacket);
+            (this->*THandler)(packet);
+        }
 
         void Handle_NULL(WorldPacket& recvPacket);          // not used
         void Handle_EarlyProccess(WorldPacket& recvPacket);// just mark packets processed in WorldSocket::OnRead
