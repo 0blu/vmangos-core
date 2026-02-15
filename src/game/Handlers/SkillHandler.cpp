@@ -29,18 +29,14 @@
 #include "UpdateMask.h"
 #include "Anticheat.h"
 
-void WorldSession::HandleLearnTalentOpcode(WorldPacket& recv_data)
+void WorldSession::HandleLearnTalentOpcode(WorldPackets::Skill::LearnTalent const& packet)
 {
-    uint32 talent_id, requested_rank;
-    recv_data >> talent_id >> requested_rank;
-
-    _player->LearnTalent(talent_id, requested_rank);
+    _player->LearnTalent(packet.talent_id, packet.requested_rank);
 }
 
-void WorldSession::HandleTalentWipeConfirmOpcode(WorldPacket& recv_data)
+void WorldSession::HandleTalentWipeConfirmOpcode(WorldPackets::Skill::TalentWipeConfirm const& packet)
 {
-    ObjectGuid guid;
-    recv_data >> guid;
+    ObjectGuid guid = packet.guid;
 
     Creature* unit = GetPlayer()->GetNPCIfCanInteractWith(guid, UNIT_NPC_FLAG_TRAINER);
     if (!unit)
@@ -65,10 +61,9 @@ void WorldSession::HandleTalentWipeConfirmOpcode(WorldPacket& recv_data)
     unit->CastSpell(_player, 14867, true);                  //spell: "Untalent Visual Effect"
 }
 
-void WorldSession::HandleUnlearnSkillOpcode(WorldPacket& recv_data)
+void WorldSession::HandleUnlearnSkillOpcode(WorldPackets::Skill::UnlearnSkill const& packet)
 {
-    uint32 skill_id;
-    recv_data >> skill_id;
+    uint32 skill_id = packet.skillId;
     SkillRaceClassInfoEntry const* rcEntry = GetSkillRaceClassInfo(skill_id, GetPlayer()->GetRace(), GetPlayer()->GetClass());
     if (!rcEntry || !(rcEntry->flags & SKILL_FLAG_UNLEARNABLE))
     {

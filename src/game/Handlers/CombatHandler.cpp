@@ -29,10 +29,9 @@
 #include "Player.h"
 #include "Map.h"
 
-void WorldSession::HandleAttackSwingOpcode(WorldPacket& recv_data)
+void WorldSession::HandleAttackSwingOpcode(WorldPackets::Combat::AttackSwing const& packet)
 {
-    ObjectGuid guid;
-    recv_data >> guid;
+    ObjectGuid guid = packet.targetGuid;
 
     if (!guid.IsUnit())
         return;
@@ -64,7 +63,7 @@ void WorldSession::HandleAttackSwingOpcode(WorldPacket& recv_data)
     _player->Attack(pEnemy, true);
 }
 
-void WorldSession::HandleAttackStopOpcode(WorldPacket& /*recv_data*/)
+void WorldSession::HandleAttackStopOpcode(NullClientPacket const& /*packet*/)
 {
     GetPlayer()->AttackStop();
 
@@ -80,10 +79,9 @@ void WorldSession::HandleAttackStopOpcode(WorldPacket& /*recv_data*/)
     GetPlayer()->ResetExtraAttacks();
 }
 
-void WorldSession::HandleSetSheathedOpcode(WorldPacket& recv_data)
+void WorldSession::HandleSetSheathedOpcode(WorldPackets::Combat::SetSheathed const& packet)
 {
-    uint32 sheathed;
-    recv_data >> sheathed;
+    uint32 sheathed = packet.sheathed;
     if (sheathed >= MAX_SHEATH_STATE)
         return;
 

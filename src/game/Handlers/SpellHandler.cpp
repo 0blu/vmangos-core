@@ -33,12 +33,11 @@
 
 using namespace Spells;
 
-void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
+void WorldSession::HandleUseItemOpcode(WorldPackets::Spell::UseItem const& packet)
 {
-    uint8 bagIndex, slot;
-    uint8 spellSlot; // the position of the spell id on the item template
-
-    recvPacket >> bagIndex >> slot >> spellSlot;
+    uint8 bagIndex = packet.bagIndex;
+    uint8 slot = packet.slot;
+    uint8 spellSlot = packet.spellSlot; // the position of the spell id on the item template
 
     // TODO: add targets.read() check
     Player* pUser = _player;
@@ -46,14 +45,12 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
     // ignore for remote control state
     if (!pUser->IsSelfMover())
     {
-        recvPacket.rpos(recvPacket.wpos());                 // prevent spam at not read packet tail
         return;
     }
 
     Item *pItem = pUser->GetItemByPos(bagIndex, slot);
     if (!pItem)
     {
-        recvPacket.rpos(recvPacket.wpos());                 // prevent spam at not read packet tail
         pUser->SendEquipError(EQUIP_ERR_ITEM_NOT_FOUND, nullptr, nullptr);
         return;
     }
@@ -61,7 +58,6 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
     ItemPrototype const* proto = pItem->GetProto();
     if (!proto)
     {
-        recvPacket.rpos(recvPacket.wpos());                 // prevent spam at not read packet tail
         pUser->SendEquipError(EQUIP_ERR_ITEM_NOT_FOUND, pItem, nullptr);
         return;
     }
@@ -70,7 +66,6 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
         proto->Spells[spellSlot].SpellId == 0 ||
         proto->Spells[spellSlot].SpellTrigger != ITEM_SPELLTRIGGER_ON_USE)
     {
-        recvPacket.rpos(recvPacket.wpos());                 // prevent spam at not read packet tail
         pUser->SendEquipError(EQUIP_ERR_ITEM_NOT_FOUND, pItem, nullptr);
         return;
     }
@@ -78,7 +73,6 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
     // some item classes can be used only in equipped state
     if (proto->InventoryType != INVTYPE_NON_EQUIP && !pItem->IsEquipped())
     {
-        recvPacket.rpos(recvPacket.wpos());                 // prevent spam at not read packet tail
         pUser->SendEquipError(EQUIP_ERR_ITEM_NOT_FOUND, pItem, nullptr);
         return;
     }
@@ -86,7 +80,6 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
     InventoryResult msg = pUser->CanUseItem(pItem);
     if (msg != EQUIP_ERR_OK)
     {
-        recvPacket.rpos(recvPacket.wpos());                 // prevent spam at not read packet tail
         pUser->SendEquipError(msg, pItem, nullptr);
         return;
     }
@@ -94,7 +87,6 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
     // not allow use item from trade (cheat way only)
     if (pItem->IsInTrade())
     {
-        recvPacket.rpos(recvPacket.wpos());                 // prevent spam at not read packet tail
         pUser->SendEquipError(EQUIP_ERR_ITEM_NOT_FOUND, pItem, nullptr);
         return;
     }
@@ -107,7 +99,6 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
             {
                 if (spellInfo->IsNonCombatSpell())
                 {
-                    recvPacket.rpos(recvPacket.wpos());     // prevent spam at not read packet tail
                     pUser->SendEquipError(EQUIP_ERR_NOT_IN_COMBAT, pItem, nullptr);
                     return;
                 }
@@ -125,11 +116,7 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
         }
     }
 
-    SpellCastTargets targets;
-
-    recvPacket >> targets.ReadForCaster(pUser);
-
-    targets.Update(pUser);
+    SpellCastTargets targets = SpellCastTargets::FromSpellCastTargetsInfo(packet.targets, pUser);
 
     SpellCastResult itemCastCheckResult = SPELL_CAST_OK;
     if (!pItem->IsTargetValidForItemUse(targets.getUnitTarget()))
@@ -159,10 +146,10 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
     pUser->CastItemUseSpell(pItem, targets);
 }
 
-void WorldSession::HandleOpenItemOpcode(WorldPacket& recvPacket)
+void WorldSession::HandleOpenItemOpcode(WorldPackets::Spell::OpenItem const& packet)
 {
-    uint8 bagIndex, slot;
-    recvPacket >> bagIndex >> slot;
+    uint8 bagIndex = packet.bagIndex;
+    uint8 slot = packet.slot;
 
     Player* pUser = _player;
 
@@ -250,10 +237,9 @@ void WorldSession::HandleOpenItemOpcode(WorldPacket& recvPacket)
         pUser->SendLoot(pItem->GetObjectGuid(), LOOT_CORPSE);
 }
 
-void WorldSession::HandleGameObjectUseOpcode(WorldPacket& recv_data)
+void WorldSession::HandleGameObjectUseOpcode(WorldPackets::Misc::GameObjectUse const& packet)
 {
-    ObjectGuid guid;
-    recv_data >> guid;
+    ObjectGuid guid = packet.guid;
 
     // ignore for remote control state
     if (!_player->IsSelfMover())
@@ -285,32 +271,25 @@ void WorldSession::HandleGameObjectUseOpcode(WorldPacket& recv_data)
     }
 }
 
-void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
+void WorldSession::HandleCastSpellOpcode(WorldPackets::Spell::CastSpell const& packet)
 {
-    uint32 spellId;
-    recvPacket >> spellId;
+    uint32 spellId = packet.spellId;
 
     SpellEntry const* spellInfo = sSpellMgr.GetSpellEntry(spellId);
 
     if (!spellInfo)
-    {
-        recvPacket.rpos(recvPacket.wpos());                 // prevent spam at ignore packet
         return;
-    }
 
     // not have spell in spellbook or spell passive and not casted by client
     if (!_player->HasActiveSpell(spellId) || spellInfo->IsPassiveSpell())
     {
         sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "World: Player %u casts spell %u which he shouldn't have", _player->GetGUIDLow(), spellId);
         //cheater? kick? ban?
-        recvPacket.rpos(recvPacket.wpos());                 // prevent spam at ignore packet
         return;
     }
 
     // client provided targets
-    SpellCastTargets targets;
-
-    recvPacket >> targets.ReadForCaster(_player);
+    SpellCastTargets targets = SpellCastTargets::FromSpellCastTargetsInfo(packet.targets, _player);
 
     SpellEntry const* originalSpellInfo = spellInfo;
 
@@ -352,10 +331,9 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
     spell->prepare(std::move(targets));
 }
 
-void WorldSession::HandleCancelCastOpcode(WorldPacket& recvPacket)
+void WorldSession::HandleCancelCastOpcode(WorldPackets::Spell::CancelCast const& packet)
 {
-    uint32 spellId;
-    recvPacket >> spellId;
+    uint32 spellId = packet.spellId;
 
     // ignore for remote control state (for player case)
     Unit* mover = _player->GetMover();
@@ -369,10 +347,9 @@ void WorldSession::HandleCancelCastOpcode(WorldPacket& recvPacket)
         _player->InterruptSpell(CURRENT_MELEE_SPELL);
 }
 
-void WorldSession::HandleCancelAuraOpcode(WorldPacket& recvPacket)
+void WorldSession::HandleCancelAuraOpcode(WorldPackets::Spell::CancelAura const& packet)
 {
-    uint32 spellId;
-    recvPacket >> spellId;
+    uint32 spellId = packet.spellId;
 
     SpellEntry const* spellInfo = sSpellMgr.GetSpellEntry(spellId);
     if (!spellInfo)
@@ -385,7 +362,7 @@ void WorldSession::HandleCancelAuraOpcode(WorldPacket& recvPacket)
 
     if (spellInfo->HasAttribute(SPELL_ATTR_DO_NOT_DISPLAY))
         return;
-    
+
     if (spellInfo->HasAttribute(SPELL_ATTR_EX_NO_AURA_ICON) && !spellInfo->activeIconID)
         return;
 
@@ -446,13 +423,10 @@ void WorldSession::HandleCancelAuraOpcode(WorldPacket& recvPacket)
     _player->RemoveAurasDueToSpellByCancel(spellId);
 }
 
-void WorldSession::HandlePetCancelAuraOpcode(WorldPacket& recvPacket)
+void WorldSession::HandlePetCancelAuraOpcode(WorldPackets::Pet::PetCancelAura const& packet)
 {
-    ObjectGuid guid;
-    uint32 spellId;
-
-    recvPacket >> guid;
-    recvPacket >> spellId;
+    ObjectGuid guid = packet.guid;
+    uint32 spellId = packet.spellId;
 
     // ignore for remote control state
     if (!_player->IsSelfMover())
@@ -479,22 +453,20 @@ void WorldSession::HandlePetCancelAuraOpcode(WorldPacket& recvPacket)
     pet->RemoveAurasDueToSpell(spellId);
 }
 
-void WorldSession::HandleCancelGrowthAuraOpcode(WorldPacket& /*recvPacket*/)
+void WorldSession::HandleCancelGrowthAuraOpcode(NullClientPacket const& /*packet*/)
 {
     // nothing do
 }
 
-void WorldSession::HandleCancelAutoRepeatSpellOpcode(WorldPacket& /*recvPacket*/)
+void WorldSession::HandleCancelAutoRepeatSpellOpcode(NullClientPacket const& /*packet*/)
 {
     // may be better send SMSG_CANCEL_AUTO_REPEAT?
     // cancel and prepare for deleting
     _player->GetMover()->InterruptSpell(CURRENT_AUTOREPEAT_SPELL);
 }
 
-void WorldSession::HandleCancelChanneling(WorldPacket& recv_data)
+void WorldSession::HandleCancelChanneling(WorldPackets::Spell::CancelChanneling const& /*packet*/)
 {
-    recv_data.read_skip<uint32>();                          // spellid, not used
-
     // ignore for remote control state (for player case)
     Unit* mover = _player->GetMover();
     if (mover != _player && mover->GetTypeId() == TYPEID_PLAYER)
@@ -508,7 +480,7 @@ void WorldSession::HandleCancelChanneling(WorldPacket& recv_data)
     }
 }
 
-void WorldSession::HandleSelfResOpcode(WorldPacket& /*recv_data*/)
+void WorldSession::HandleSelfResOpcode(NullClientPacket const& /*packet*/)
 {
 // World of Warcraft Client Patch 1.6.0 (2005-07-12)
 // - Self-resurrection spells show their name on the button in the release spirit dialog.

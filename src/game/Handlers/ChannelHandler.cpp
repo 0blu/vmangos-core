@@ -24,10 +24,10 @@
 #include "Chat.h"
 #include "World.h"
 
-void WorldSession::HandleJoinChannelOpcode(WorldPacket& recvPacket)
+void WorldSession::HandleJoinChannelOpcode(WorldPackets::Channel::JoinChannel const& packet)
 {
-    std::string channelname, pass;
-    recvPacket >> channelname;
+    std::string channelname = packet.channelName;
+    std::string pass = packet.channelPassword;
 
     // Channel name must begin with a letter.
     if (channelname.empty() || (uint8(channelname[0]) <= 127 && !isalpha(channelname[0])))
@@ -38,8 +38,6 @@ void WorldSession::HandleJoinChannelOpcode(WorldPacket& recvPacket)
         SendPacket(&data);
         return;
     }
-
-    recvPacket >> pass;
 
     PlayerPointer player = GetPlayerPointer();
     if (ChannelMgr* cMgr = channelMgr(player->GetTeam()))
@@ -55,10 +53,9 @@ void WorldSession::HandleJoinChannelOpcode(WorldPacket& recvPacket)
                     chn->Join(player->GetObjectGuid(), pass.c_str());
 }
 
-void WorldSession::HandleLeaveChannelOpcode(WorldPacket& recvPacket)
+void WorldSession::HandleLeaveChannelOpcode(WorldPackets::Channel::LeaveChannel const& packet)
 {
-    std::string channelname;
-    recvPacket >> channelname;
+    std::string channelname = packet.channelName;
 
     if (channelname.empty())
         return;
@@ -80,10 +77,9 @@ void WorldSession::HandleLeaveChannelOpcode(WorldPacket& recvPacket)
         }
 }
 
-void WorldSession::HandleChannelListOpcode(WorldPacket& recvPacket)
+void WorldSession::HandleChannelListOpcode(WorldPackets::Channel::ChannelList const& packet)
 {
-    std::string channelname;
-    recvPacket >> channelname;
+    std::string channelname = packet.channelName;
 
     PlayerPointer player = GetPlayerPointer();
     if (ChannelMgr* cMgr = channelMgr(player->GetTeam()))
@@ -93,27 +89,23 @@ void WorldSession::HandleChannelListOpcode(WorldPacket& recvPacket)
     }
 }
 
-void WorldSession::HandleChannelPasswordOpcode(WorldPacket& recvPacket)
+void WorldSession::HandleChannelPasswordOpcode(WorldPackets::Channel::ChannelPassword const& packet)
 {
-    std::string channelname, pass;
-    recvPacket >> channelname;
-
-    recvPacket >> pass;
+    std::string channelname = packet.channelName;
+    std::string pass = packet.password;
 
     PlayerPointer player = GetPlayerPointer();
     if (ChannelMgr* cMgr = channelMgr(player->GetTeam()))
     {
         if (Channel *chn = cMgr->GetChannel(channelname, player))
             chn->Password(player->GetObjectGuid(), pass.c_str());
-    } 
+    }
 }
 
-void WorldSession::HandleChannelSetOwnerOpcode(WorldPacket& recvPacket)
+void WorldSession::HandleChannelSetOwnerOpcode(WorldPackets::Channel::ChannelSetOwner const& packet)
 {
-    std::string channelname, newp;
-    recvPacket >> channelname;
-
-    recvPacket >> newp;
+    std::string channelname = packet.channelName;
+    std::string newp = packet.playerName;
 
     if (!normalizePlayerName(newp))
         return;
@@ -126,10 +118,9 @@ void WorldSession::HandleChannelSetOwnerOpcode(WorldPacket& recvPacket)
     }
 }
 
-void WorldSession::HandleChannelOwnerOpcode(WorldPacket& recvPacket)
+void WorldSession::HandleChannelOwnerOpcode(WorldPackets::Channel::ChannelOwner const& packet)
 {
-    std::string channelname;
-    recvPacket >> channelname;
+    std::string channelname = packet.channelName;
 
     PlayerPointer player = GetPlayerPointer();
     if (ChannelMgr* cMgr = channelMgr(player->GetTeam()))
@@ -139,12 +130,10 @@ void WorldSession::HandleChannelOwnerOpcode(WorldPacket& recvPacket)
     }
 }
 
-void WorldSession::HandleChannelModeratorOpcode(WorldPacket& recvPacket)
+void WorldSession::HandleChannelModeratorOpcode(WorldPackets::Channel::ChannelModerator const& packet)
 {
-    std::string channelname, otp;
-    recvPacket >> channelname;
-
-    recvPacket >> otp;
+    std::string channelname = packet.channelName;
+    std::string otp = packet.playerName;
 
     if (!normalizePlayerName(otp))
         return;
@@ -157,12 +146,10 @@ void WorldSession::HandleChannelModeratorOpcode(WorldPacket& recvPacket)
     }
 }
 
-void WorldSession::HandleChannelUnmoderatorOpcode(WorldPacket& recvPacket)
+void WorldSession::HandleChannelUnmoderatorOpcode(WorldPackets::Channel::ChannelUnmoderator const& packet)
 {
-    std::string channelname, otp;
-    recvPacket >> channelname;
-
-    recvPacket >> otp;
+    std::string channelname = packet.channelName;
+    std::string otp = packet.playerName;
 
     if (!normalizePlayerName(otp))
         return;
@@ -172,15 +159,13 @@ void WorldSession::HandleChannelUnmoderatorOpcode(WorldPacket& recvPacket)
     {
         if (Channel *chn = cMgr->GetChannel(channelname, player))
             chn->UnsetModerator(player->GetObjectGuid(), otp.c_str());
-    } 
+    }
 }
 
-void WorldSession::HandleChannelMuteOpcode(WorldPacket& recvPacket)
+void WorldSession::HandleChannelMuteOpcode(WorldPackets::Channel::ChannelMute const& packet)
 {
-    std::string channelname, otp;
-    recvPacket >> channelname;
-
-    recvPacket >> otp;
+    std::string channelname = packet.channelName;
+    std::string otp = packet.playerName;
 
     if (!normalizePlayerName(otp))
         return;
@@ -193,12 +178,10 @@ void WorldSession::HandleChannelMuteOpcode(WorldPacket& recvPacket)
     }
 }
 
-void WorldSession::HandleChannelUnmuteOpcode(WorldPacket& recvPacket)
+void WorldSession::HandleChannelUnmuteOpcode(WorldPackets::Channel::ChannelUnmute const& packet)
 {
-    std::string channelname, otp;
-    recvPacket >> channelname;
-
-    recvPacket >> otp;
+    std::string channelname = packet.channelName;
+    std::string otp = packet.playerName;
 
     if (!normalizePlayerName(otp))
         return;
@@ -211,12 +194,10 @@ void WorldSession::HandleChannelUnmuteOpcode(WorldPacket& recvPacket)
     }
 }
 
-void WorldSession::HandleChannelInviteOpcode(WorldPacket& recvPacket)
+void WorldSession::HandleChannelInviteOpcode(WorldPackets::Channel::ChannelInvite const& packet)
 {
-    std::string channelname, otp;
-    recvPacket >> channelname;
-
-    recvPacket >> otp;
+    std::string channelname = packet.channelName;
+    std::string otp = packet.playerName;
 
     if (!normalizePlayerName(otp))
         return;
@@ -232,12 +213,10 @@ void WorldSession::HandleChannelInviteOpcode(WorldPacket& recvPacket)
     }
 }
 
-void WorldSession::HandleChannelKickOpcode(WorldPacket& recvPacket)
+void WorldSession::HandleChannelKickOpcode(WorldPackets::Channel::ChannelKick const& packet)
 {
-    std::string channelname, otp;
-    recvPacket >> channelname;
-
-    recvPacket >> otp;
+    std::string channelname = packet.channelName;
+    std::string otp = packet.playerName;
     if (!normalizePlayerName(otp))
         return;
 
@@ -249,12 +228,10 @@ void WorldSession::HandleChannelKickOpcode(WorldPacket& recvPacket)
     }
 }
 
-void WorldSession::HandleChannelBanOpcode(WorldPacket& recvPacket)
+void WorldSession::HandleChannelBanOpcode(WorldPackets::Channel::ChannelBan const& packet)
 {
-    std::string channelname, otp;
-    recvPacket >> channelname;
-
-    recvPacket >> otp;
+    std::string channelname = packet.channelName;
+    std::string otp = packet.playerName;
 
     if (!normalizePlayerName(otp))
         return;
@@ -267,12 +244,10 @@ void WorldSession::HandleChannelBanOpcode(WorldPacket& recvPacket)
     }
 }
 
-void WorldSession::HandleChannelUnbanOpcode(WorldPacket& recvPacket)
+void WorldSession::HandleChannelUnbanOpcode(WorldPackets::Channel::ChannelUnban const& packet)
 {
-    std::string channelname, otp;
-    recvPacket >> channelname;
-
-    recvPacket >> otp;
+    std::string channelname = packet.channelName;
+    std::string otp = packet.playerName;
 
     if (!normalizePlayerName(otp))
         return;
@@ -285,10 +260,9 @@ void WorldSession::HandleChannelUnbanOpcode(WorldPacket& recvPacket)
     }
 }
 
-void WorldSession::HandleChannelAnnouncementsOpcode(WorldPacket& recvPacket)
+void WorldSession::HandleChannelAnnouncementsOpcode(WorldPackets::Channel::ChannelAnnouncements const& packet)
 {
-    std::string channelname;
-    recvPacket >> channelname;
+    std::string channelname = packet.channelName;
 
     PlayerPointer player = GetPlayerPointer();
     if (ChannelMgr* cMgr = channelMgr(player->GetTeam()))
@@ -298,10 +272,9 @@ void WorldSession::HandleChannelAnnouncementsOpcode(WorldPacket& recvPacket)
     }
 }
 
-void WorldSession::HandleChannelModerateOpcode(WorldPacket& recvPacket)
+void WorldSession::HandleChannelModerateOpcode(WorldPackets::Channel::ChannelModerate const& packet)
 {
-    std::string channelname;
-    recvPacket >> channelname;
+    std::string channelname = packet.channelName;
 
     PlayerPointer player = GetPlayerPointer();
     if (ChannelMgr* cMgr = channelMgr(player->GetTeam()))

@@ -46,10 +46,9 @@ enum StableResultCode
     STABLE_SUCCESS_BUY_SLOT = 0x0A,                         // buy slot success
 };
 
-void WorldSession::HandleTabardVendorActivateOpcode(WorldPacket& recv_data)
+void WorldSession::HandleTabardVendorActivateOpcode(WorldPackets::Npc::TabardVendorActivate const& packet)
 {
-    ObjectGuid guid;
-    recv_data >> guid;
+    ObjectGuid guid = packet.guid;
 
     Creature* unit = GetPlayer()->GetNPCIfCanInteractWith(guid, UNIT_NPC_FLAG_TABARDDESIGNER);
     if (!unit)
@@ -71,10 +70,9 @@ void WorldSession::SendTabardVendorActivate(ObjectGuid guid)
     SendPacket(&data);
 }
 
-void WorldSession::HandleBankerActivateOpcode(WorldPacket& recv_data)
+void WorldSession::HandleBankerActivateOpcode(WorldPackets::Npc::BankerActivate const& packet)
 {
-    ObjectGuid guid;
-    recv_data >> guid;
+    ObjectGuid guid = packet.guid;
 
     if (!CheckBanker(guid))
         return;
@@ -94,10 +92,9 @@ void WorldSession::SendShowBank(ObjectGuid guid)
     SendPacket(&data);
 }
 
-void WorldSession::HandleTrainerListOpcode(WorldPacket& recv_data)
+void WorldSession::HandleTrainerListOpcode(WorldPackets::Npc::TrainerList const& packet)
 {
-    ObjectGuid guid;
-    recv_data >> guid;
+    ObjectGuid guid = packet.guid;
 
     SendTrainerList(guid);
 }
@@ -267,12 +264,10 @@ void WorldSession::SendTrainingFailure(ObjectGuid guid, uint32 serviceId, uint32
     SendPacket(&data);
 }
 
-void WorldSession::HandleTrainerBuySpellOpcode(WorldPacket& recv_data)
+void WorldSession::HandleTrainerBuySpellOpcode(WorldPackets::Npc::TrainerBuySpell const& packet)
 {
-    ObjectGuid guid;
-    uint32 spellId = 0;
-
-    recv_data >> guid >> spellId;
+    ObjectGuid guid = packet.guid;
+    uint32 spellId = packet.spellId;
     sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "WORLD: Received CMSG_TRAINER_BUY_SPELL Trainer: %s, learn spell id is: %u", guid.GetString().c_str(), spellId);
 
     Creature* unit = GetPlayer()->GetNPCIfCanInteractWith(guid, UNIT_NPC_FLAG_TRAINER);
@@ -293,7 +288,7 @@ void WorldSession::HandleTrainerBuySpellOpcode(WorldPacket& recv_data)
         SendTrainingFailure(guid, spellId, TRAIN_FAIL_UNAVAILABLE);
         return;
     }
-        
+
     // Try to find the spell in npc_trainer.
     TrainerSpell const* trainer_spell = cSpells ? cSpells->Find(spellId) : nullptr;
 
@@ -307,7 +302,7 @@ void WorldSession::HandleTrainerBuySpellOpcode(WorldPacket& recv_data)
         SendTrainingFailure(guid, spellId, TRAIN_FAIL_UNAVAILABLE);
         return;
     }
-    
+
     // Can't be learned, cheat? Or double learn with lags...
     if (_player->GetTrainerSpellState(trainer_spell) != TRAINER_SPELL_GREEN)
     {
@@ -354,10 +349,9 @@ void WorldSession::HandleTrainerBuySpellOpcode(WorldPacket& recv_data)
         SendTrainingFailure(guid, spellId, TRAIN_FAIL_UNAVAILABLE);
 }
 
-void WorldSession::HandleGossipHelloOpcode(WorldPacket& recv_data)
+void WorldSession::HandleGossipHelloOpcode(WorldPackets::Npc::GossipHello const& packet)
 {
-    ObjectGuid guid;
-    recv_data >> guid;
+    ObjectGuid guid = packet.npcGuid;
 
     Creature* pCreature = GetPlayer()->GetNPCIfCanInteractWith(guid, UNIT_NPC_FLAG_NONE);
     if (!pCreature)
@@ -382,58 +376,55 @@ void WorldSession::HandleGossipHelloOpcode(WorldPacket& recv_data)
     }
 }
 
-void WorldSession::HandleGossipSelectOptionOpcode(WorldPacket& recv_data)
+void WorldSession::HandleGossipSelectOptionOpcode(WorldPackets::Npc::GossipSelectOption const& packet)
 {
-    uint32 gossipListId;
-    ObjectGuid guid;
-    std::string code;
-
-    recv_data >> guid >> gossipListId;
-
-    if (_player->PlayerTalkClass->GossipOptionCoded(gossipListId))
-        recv_data >> code;
+    bool const isCoded = _player->PlayerTalkClass->GossipOptionCoded(packet.gossipListId);
+    if (isCoded && packet.code.empty())
+        return;  // coded option requires a code from the client
 
     GetPlayer()->InterruptSpellsWithChannelFlags(AURA_INTERRUPT_INTERACTING_CANCELS);
     GetPlayer()->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_INTERACTING_CANCELS);
 
-    uint32 sender = _player->PlayerTalkClass->GossipOptionSender(gossipListId);
-    uint32 action = _player->PlayerTalkClass->GossipOptionAction(gossipListId);
+    uint32 sender = _player->PlayerTalkClass->GossipOptionSender(packet.gossipListId);
+    uint32 action = _player->PlayerTalkClass->GossipOptionAction(packet.gossipListId);
 
-    if (guid.IsAnyTypeCreature())
+    // Only forward a non-null code to scripts for coded gossip options.
+    const char* code = (isCoded && !packet.code.empty()) ? packet.code.c_str() : nullptr;
+
+    if (packet.guid.IsAnyTypeCreature())
     {
-        Creature* pCreature = GetPlayer()->GetNPCIfCanInteractWith(guid, UNIT_NPC_FLAG_NONE);
+        Creature* pCreature = GetPlayer()->GetNPCIfCanInteractWith(packet.guid, UNIT_NPC_FLAG_NONE);
 
         if (!pCreature)
         {
-            sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "WORLD: HandleGossipSelectOptionOpcode - %s not found or you can't interact with it.", guid.GetString().c_str());
+            sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "WORLD: HandleGossipSelectOptionOpcode - %s not found or you can't interact with it.", packet.guid.GetString().c_str());
             return;
         }
 
         if (!pCreature->HasExtraFlag(CREATURE_FLAG_EXTRA_NO_MOVEMENT_PAUSE))
             pCreature->PauseOutOfCombatMovement();
 
-        if (!sScriptMgr.OnGossipSelect(_player, pCreature, sender, action, code.empty() ? nullptr : code.c_str()))
-            _player->OnGossipSelect(pCreature, gossipListId);
+        if (!sScriptMgr.OnGossipSelect(_player, pCreature, sender, action, code))
+            _player->OnGossipSelect(pCreature, packet.gossipListId);
     }
-    else if (guid.IsGameObject())
+    else if (packet.guid.IsGameObject())
     {
-        GameObject* pGo = GetPlayer()->GetGameObjectIfCanInteractWith(guid);
+        GameObject* pGo = GetPlayer()->GetGameObjectIfCanInteractWith(packet.guid);
 
         if (!pGo)
         {
-            sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "WORLD: HandleGossipSelectOptionOpcode - %s not found or you can't interact with it.", guid.GetString().c_str());
+            sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "WORLD: HandleGossipSelectOptionOpcode - %s not found or you can't interact with it.", packet.guid.GetString().c_str());
             return;
         }
 
-        if (!sScriptMgr.OnGossipSelect(_player, pGo, sender, action, code.empty() ? nullptr : code.c_str()))
-            _player->OnGossipSelect(pGo, gossipListId);
+        if (!sScriptMgr.OnGossipSelect(_player, pGo, sender, action, code))
+            _player->OnGossipSelect(pGo, packet.gossipListId);
     }
 }
 
-void WorldSession::HandleSpiritHealerActivateOpcode(WorldPacket& recv_data)
+void WorldSession::HandleSpiritHealerActivateOpcode(WorldPackets::Npc::SpiritHealerActivate const& packet)
 {
-    ObjectGuid guid;
-    recv_data >> guid;
+    ObjectGuid guid = packet.guid;
 
     Creature* unit = GetPlayer()->GetNPCIfCanInteractWith(guid, UNIT_NPC_FLAG_SPIRITHEALER);
     if (!unit)
@@ -472,7 +463,7 @@ void WorldSession::SendSpiritResurrect()
         float orientation = _player->GetOrientation();
 
         // World of Warcraft Client Patch 1.8.0 (2005-10-11)
-        // - All graveyards that needed adjustment were changed so that a 
+        // - All graveyards that needed adjustment were changed so that a
         //   character's spirit comes into the world facing toward the Spirit Healer.
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_7_1
         if (float facing = sObjectMgr.GetWorldSafeLocFacing(corpseGrave->ID))
@@ -496,10 +487,9 @@ void WorldSession::SendSpiritResurrect()
     }
 }
 
-void WorldSession::HandleBinderActivateOpcode(WorldPacket& recv_data)
+void WorldSession::HandleBinderActivateOpcode(WorldPackets::Npc::BinderActivate const& packet)
 {
-    ObjectGuid npcGuid;
-    recv_data >> npcGuid;
+    ObjectGuid npcGuid = packet.npcGuid;
 
     if (!GetPlayer()->IsInWorld() || !GetPlayer()->IsAlive())
         return;
@@ -528,10 +518,9 @@ void WorldSession::SendBindPoint(Creature* npc)
     _player->PlayerTalkClass->CloseGossip();
 }
 
-void WorldSession::HandleListStabledPetsOpcode(WorldPacket& recv_data)
+void WorldSession::HandleListStabledPetsOpcode(WorldPackets::Npc::ListStabledPets const& packet)
 {
-    ObjectGuid npcGUID;
-    recv_data >> npcGUID;
+    ObjectGuid npcGUID = packet.npcGuid;
 
     Creature* unit = GetPlayer()->GetNPCIfCanInteractWith(npcGUID, UNIT_NPC_FLAG_STABLEMASTER);
     if (!unit)
@@ -632,10 +621,9 @@ bool WorldSession::CheckStableMaster(ObjectGuid guid)
     return true;
 }
 
-void WorldSession::HandleStablePet(WorldPacket& recv_data)
+void WorldSession::HandleStablePet(WorldPackets::Npc::StablePet const& packet)
 {
-    ObjectGuid npcGUID;
-    recv_data >> npcGUID;
+    ObjectGuid npcGUID = packet.npcGuid;
 
     if (!GetPlayer()->IsAlive())
     {
@@ -683,12 +671,10 @@ void WorldSession::HandleStablePet(WorldPacket& recv_data)
         SendStableResult(STABLE_ERR_STABLE);
 }
 
-void WorldSession::HandleUnstablePet(WorldPacket& recv_data)
+void WorldSession::HandleUnstablePet(WorldPackets::Npc::UnstablePet const& packet)
 {
-    ObjectGuid npcGUID;
-    uint32 petNumber;
-
-    recv_data >> npcGUID >> petNumber;
+    ObjectGuid npcGUID = packet.npcGuid;
+    uint32 petNumber = packet.petNumber;
 
     if (!CheckStableMaster(npcGUID))
     {
@@ -735,10 +721,9 @@ void WorldSession::HandleUnstablePet(WorldPacket& recv_data)
     SendStableResult(STABLE_SUCCESS_UNSTABLE);
 }
 
-void WorldSession::HandleBuyStableSlot(WorldPacket& recv_data)
+void WorldSession::HandleBuyStableSlot(WorldPackets::Npc::BuyStableSlot const& packet)
 {
-    ObjectGuid npcGUID;
-    recv_data >> npcGUID;
+    ObjectGuid npcGUID = packet.npcGuid;
 
     if (!CheckStableMaster(npcGUID))
     {
@@ -765,16 +750,14 @@ void WorldSession::HandleBuyStableSlot(WorldPacket& recv_data)
         SendStableResult(STABLE_ERR_STABLE);
 }
 
-void WorldSession::HandleStableRevivePet(WorldPacket& /* recv_data */)
+void WorldSession::HandleStableRevivePet(NullClientPacket const& /*packet*/)
 {
 }
 
-void WorldSession::HandleStableSwapPet(WorldPacket& recv_data)
+void WorldSession::HandleStableSwapPet(WorldPackets::Npc::StableSwapPet const& packet)
 {
-    ObjectGuid npcGUID;
-    uint32 pet_number;
-
-    recv_data >> npcGUID >> pet_number;
+    ObjectGuid npcGUID = packet.npcGuid;
+    uint32 pet_number = packet.petNumber;
 
     if (!CheckStableMaster(npcGUID))
     {
@@ -830,12 +813,10 @@ void WorldSession::HandleStableSwapPet(WorldPacket& recv_data)
         SendStableResult(STABLE_SUCCESS_UNSTABLE);
 }
 
-void WorldSession::HandleRepairItemOpcode(WorldPacket& recv_data)
+void WorldSession::HandleRepairItemOpcode(WorldPackets::Npc::RepairItem const& packet)
 {
-    ObjectGuid npcGuid;
-    ObjectGuid itemGuid;
-
-    recv_data >> npcGuid >> itemGuid;
+    ObjectGuid npcGuid = packet.npcGuid;
+    ObjectGuid itemGuid = packet.itemGuid;
 
     Creature* unit = GetPlayer()->GetNPCIfCanInteractWith(npcGuid, UNIT_NPC_FLAG_REPAIR);
     if (!unit)
