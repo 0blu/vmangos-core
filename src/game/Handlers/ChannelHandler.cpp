@@ -105,7 +105,7 @@ void WorldSession::HandleChannelPasswordOpcode(WorldPacket& recvPacket)
     {
         if (Channel *chn = cMgr->GetChannel(channelname, player))
             chn->Password(player->GetObjectGuid(), pass.c_str());
-    } 
+    }
 }
 
 void WorldSession::HandleChannelSetOwnerOpcode(WorldPacket& recvPacket)
@@ -172,7 +172,7 @@ void WorldSession::HandleChannelUnmoderatorOpcode(WorldPacket& recvPacket)
     {
         if (Channel *chn = cMgr->GetChannel(channelname, player))
             chn->UnsetModerator(player->GetObjectGuid(), otp.c_str());
-    } 
+    }
 }
 
 void WorldSession::HandleChannelMuteOpcode(WorldPacket& recvPacket)
