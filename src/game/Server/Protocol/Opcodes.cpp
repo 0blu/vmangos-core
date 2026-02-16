@@ -131,7 +131,7 @@ constexpr Handlers BuildOpcodeList()
     LEGACY_HANDLER(CMSG_AUTH_SRP6_PROOF,              STATUS_NEVER,     PACKET_PROCESS_MAX_TYPE,      &WorldSession::Handle_NULL);
     LEGACY_HANDLER(CMSG_AUTH_SRP6_RECODE,             STATUS_NEVER,     PACKET_PROCESS_MAX_TYPE,      &WorldSession::Handle_NULL);
     DEFINE_HANDLER(CMSG_CHAR_CREATE,                  STATUS_AUTHED,    PACKET_PROCESS_WORLD,         &WorldSession::HandleCharCreateOpcode);
-    LEGACY_HANDLER(CMSG_CHAR_ENUM,                    STATUS_AUTHED,    PACKET_PROCESS_WORLD,         &WorldSession::HandleCharEnumOpcode);
+    DEFINE_HANDLER(CMSG_CHAR_ENUM,                    STATUS_AUTHED,    PACKET_PROCESS_WORLD,         &WorldSession::HandleCharEnumOpcode);
     LEGACY_HANDLER(CMSG_CHAR_DELETE,                  STATUS_AUTHED,    PACKET_PROCESS_WORLD,         &WorldSession::HandleCharDeleteOpcode);
     LEGACY_HANDLER(SMSG_AUTH_SRP6_RESPONSE,           STATUS_NEVER,     PACKET_PROCESS_MAX_TYPE,      &WorldSession::Handle_ServerSide);
     LEGACY_HANDLER(SMSG_CHAR_CREATE,                  STATUS_NEVER,     PACKET_PROCESS_MAX_TYPE,      &WorldSession::Handle_ServerSide);

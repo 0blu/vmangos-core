@@ -453,9 +453,9 @@ class WorldSession
         void Handle_ServerSide(WorldPacket& recvPacket);    // sever side only, can't be accepted from client
         void Handle_Deprecated(WorldPacket& recvPacket);    // never used anymore by client
 
-        void HandleCharEnumOpcode(WorldPacket& recvPacket);
+        void HandleCharEnumOpcode(NullClientPacket const& packet);
         void HandleCharDeleteOpcode(WorldPacket& recvPacket);
-        void HandleCharCreateOpcode(WorldPackets::Character::CharCreate const& recvPacket);
+        void HandleCharCreateOpcode(WorldPackets::Character::CharCreate const& packet);
         void HandlePlayerLoginOpcode(WorldPacket& recvPacket);
         void HandleCharEnum(std::unique_ptr<QueryResult> result);
         void HandlePlayerLogin(LoginQueryHolder* holder);
