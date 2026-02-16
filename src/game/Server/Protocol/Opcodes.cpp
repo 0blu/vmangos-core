@@ -205,7 +205,7 @@ constexpr Handlers BuildOpcodeList()
     LEGACY_HANDLER(SMSG_PARTY_MEMBER_STATS,           STATUS_NEVER,     PACKET_PROCESS_MAX_TYPE,      &WorldSession::Handle_ServerSide);
     LEGACY_HANDLER(SMSG_PARTY_COMMAND_RESULT,         STATUS_NEVER,     PACKET_PROCESS_MAX_TYPE,      &WorldSession::Handle_ServerSide);
     LEGACY_HANDLER(MSG_UPDATE_GROUP_MEMBERS,          STATUS_NEVER,     PACKET_PROCESS_MAX_TYPE,      &WorldSession::Handle_NULL);
-    LEGACY_HANDLER(CMSG_GUILD_CREATE,                 STATUS_NEVER,     PACKET_PROCESS_GUILD,         &WorldSession::HandleGuildCreateOpcode);
+    DEFINE_HANDLER(CMSG_GUILD_CREATE,                 STATUS_NEVER,     PACKET_PROCESS_GUILD,         &WorldSession::HandleGuildCreateOpcode);
     LEGACY_HANDLER(CMSG_GUILD_INVITE,                 STATUS_LOGGEDIN,  PACKET_PROCESS_GUILD,         &WorldSession::HandleGuildInviteOpcode);
     LEGACY_HANDLER(SMSG_GUILD_INVITE,                 STATUS_NEVER,     PACKET_PROCESS_MAX_TYPE,      &WorldSession::Handle_ServerSide);
     LEGACY_HANDLER(CMSG_GUILD_ACCEPT,                 STATUS_LOGGEDIN,  PACKET_PROCESS_GUILD,         &WorldSession::HandleGuildAcceptOpcode);

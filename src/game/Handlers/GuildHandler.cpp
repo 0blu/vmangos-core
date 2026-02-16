@@ -47,10 +47,9 @@ void WorldSession::HandleGuildQueryOpcode(WorldPacket& recvPacket)
     SendGuildCommandResult(GUILD_CREATE_S, "", ERR_GUILD_PLAYER_NOT_IN_GUILD);
 }
 
-void WorldSession::HandleGuildCreateOpcode(WorldPacket& recvPacket)
+void WorldSession::HandleGuildCreateOpcode(WorldPackets::Guild::GuildCreate const& packet)
 {
-    std::string gname;
-    recvPacket >> gname;
+    std::string gname = packet.desiredGuildName;
 
     if (GetPlayer()->GetGuildId())                          // already in guild
         return;
