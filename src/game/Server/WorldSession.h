@@ -456,7 +456,7 @@ class WorldSession
         void HandleCharEnumOpcode(NullClientPacket const& packet);
         void HandleCharCreateOpcode(WorldPackets::Character::CharCreate const& packet);
         void HandleCharDeleteOpcode(WorldPackets::Character::CharDelete const& packet);
-        void HandlePlayerLoginOpcode(WorldPacket& recvPacket);
+        void HandlePlayerLoginOpcode(WorldPackets::Character::PlayerLogin const& packet);
         void HandleCharEnum(std::unique_ptr<QueryResult> result);
         void HandlePlayerLogin(LoginQueryHolder* holder);
         void HandlePlayedTime(WorldPacket& recvPacket);
