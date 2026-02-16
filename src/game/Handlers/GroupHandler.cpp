@@ -53,10 +53,9 @@ void WorldSession::SendPartyResult(PartyOperation operation, std::string const& 
     SendPacket(&data);
 }
 
-void WorldSession::HandleGroupInviteOpcode(WorldPacket& recv_data)
+void WorldSession::HandleGroupInviteOpcode(WorldPackets::Group::GroupInvite const& packet)
 {
-    std::string membername;
-    recv_data >> membername;
+    std::string membername = packet.memberName;
 
     // Attempt add selected player
 
