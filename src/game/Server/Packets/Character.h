@@ -1,6 +1,7 @@
 #ifndef MANGOS_PACKETS_CHARACTER_H
 #define MANGOS_PACKETS_CHARACTER_H
 
+#include "ObjectGuid.h"
 #include "Packet.h"
 #include "ObjectGuid.h"
 
@@ -12,6 +13,14 @@ namespace WorldPackets { namespace Character
         std::string name;
         uint8 race, class_;
         uint8 gender, skin, face, hairStyle, hairColor, facialHair, outfitId;
+
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class CharDelete final : public ClientPacket
+    {
+    public:
+        ObjectGuid guid;
 
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };

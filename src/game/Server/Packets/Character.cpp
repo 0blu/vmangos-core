@@ -16,3 +16,8 @@ void WorldPackets::Character::CharCreate::ReadFromWorldPacket(WorldPacket& recv_
     recv_data >> facialHair;
     recv_data >> outfitId;
 }
+
+void WorldPackets::Character::CharDelete::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> guid;
+}
