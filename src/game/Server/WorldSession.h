@@ -36,6 +36,7 @@
 #include "PacketProcessing.h"
 #include "UpdateData.h"
 #include "LockedQueue.h"
+#include "Packets/Channel.h"
 #include "Packets/Character.h"
 #include "Packets/Group.h"
 #include "Packets/Guild.h"
@@ -717,7 +718,7 @@ class WorldSession
         void HandleResurrectResponseOpcode(WorldPacket& recvPacket);
         void HandleSummonResponseOpcode(WorldPacket& recv_data);
 
-        void HandleJoinChannelOpcode(WorldPacket& recvPacket);
+        void HandleJoinChannelOpcode(WorldPackets::Channel::JoinChannel const& packet);
         void HandleLeaveChannelOpcode(WorldPacket& recvPacket);
         void HandleChannelListOpcode(WorldPacket& recvPacket);
         void HandleChannelPasswordOpcode(WorldPacket& recvPacket);
