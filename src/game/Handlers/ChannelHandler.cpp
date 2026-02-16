@@ -24,10 +24,10 @@
 #include "Chat.h"
 #include "World.h"
 
-void WorldSession::HandleJoinChannelOpcode(WorldPacket& recvPacket)
+void WorldSession::HandleJoinChannelOpcode(WorldPackets::Channel::JoinChannel const& packet)
 {
-    std::string channelname, pass;
-    recvPacket >> channelname;
+    std::string channelname = packet.channelName;
+    std::string pass = packet.channelPassword;
 
     // Channel name must begin with a letter.
     if (channelname.empty() || (uint8(channelname[0]) <= 127 && !isalpha(channelname[0])))
@@ -38,8 +38,6 @@ void WorldSession::HandleJoinChannelOpcode(WorldPacket& recvPacket)
         SendPacket(&data);
         return;
     }
-
-    recvPacket >> pass;
 
     PlayerPointer player = GetPlayerPointer();
     if (ChannelMgr* cMgr = channelMgr(player->GetTeam()))

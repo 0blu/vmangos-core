@@ -227,7 +227,7 @@ constexpr Handlers BuildOpcodeList()
     LEGACY_HANDLER(MSG_UPDATE_GUILD,                  STATUS_NEVER,     PACKET_PROCESS_MAX_TYPE,      &WorldSession::Handle_NULL);
     LEGACY_HANDLER(CMSG_MESSAGECHAT,                  STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleMessagechatOpcode);
     LEGACY_HANDLER(SMSG_MESSAGECHAT,                  STATUS_NEVER,     PACKET_PROCESS_MAX_TYPE,      &WorldSession::Handle_ServerSide);
-    LEGACY_HANDLER(CMSG_JOIN_CHANNEL,                 STATUS_LOGGEDIN,  PACKET_PROCESS_CHANNEL,       &WorldSession::HandleJoinChannelOpcode);
+    DEFINE_HANDLER(CMSG_JOIN_CHANNEL,                 STATUS_LOGGEDIN,  PACKET_PROCESS_CHANNEL,       &WorldSession::HandleJoinChannelOpcode);
     LEGACY_HANDLER(CMSG_LEAVE_CHANNEL,                STATUS_LOGGEDIN,  PACKET_PROCESS_CHANNEL,       &WorldSession::HandleLeaveChannelOpcode);
     LEGACY_HANDLER(SMSG_CHANNEL_NOTIFY,               STATUS_NEVER,     PACKET_PROCESS_MAX_TYPE,      &WorldSession::Handle_ServerSide);
     LEGACY_HANDLER(CMSG_CHANNEL_LIST,                 STATUS_LOGGEDIN,  PACKET_PROCESS_CHANNEL,       &WorldSession::HandleChannelListOpcode);

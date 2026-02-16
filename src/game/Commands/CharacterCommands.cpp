@@ -5425,9 +5425,9 @@ bool ChatHandler::HandlePetInfoCommand(char* args)
 
 bool ChatHandler::HandleChannelJoinCommand(char* c)
 {
-    WorldPacket pkt(CMSG_JOIN_CHANNEL, 4);
-    pkt << c;
-    pkt << ""; // Pass
+    WorldPackets::Channel::JoinChannel pkt;
+    pkt.channelName = c;
+    pkt.channelPassword = "";
     m_session->HandleJoinChannelOpcode(pkt);
     PSendSysMessage("Joined channel \"%s\"", c);
     return true;
