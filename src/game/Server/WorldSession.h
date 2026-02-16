@@ -38,6 +38,7 @@
 #include "LockedQueue.h"
 #include "Packets/Character.h"
 #include "Packets/Group.h"
+#include "Packets/Guild.h"
 #include "Packets/Misc.h"
 
 struct ItemPrototype;
@@ -568,7 +569,7 @@ class WorldSession
         void HandleTurnInPetitionOpcode(WorldPacket& recv_data);
 
         void HandleGuildQueryOpcode(WorldPacket& recvPacket);
-        void HandleGuildCreateOpcode(WorldPacket& recvPacket);
+        void HandleGuildCreateOpcode(WorldPackets::Guild::GuildCreate const& packet);
         void HandleGuildInviteOpcode(WorldPacket& recvPacket);
         void HandleGuildRemoveOpcode(WorldPacket& recvPacket);
         void HandleGuildAcceptOpcode(WorldPacket& recvPacket);
