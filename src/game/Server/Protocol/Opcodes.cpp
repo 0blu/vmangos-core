@@ -137,7 +137,7 @@ constexpr Handlers BuildOpcodeList()
     LEGACY_HANDLER(SMSG_CHAR_CREATE,                  STATUS_NEVER,     PACKET_PROCESS_MAX_TYPE,      &WorldSession::Handle_ServerSide);
     LEGACY_HANDLER(SMSG_CHAR_ENUM,                    STATUS_NEVER,     PACKET_PROCESS_MAX_TYPE,      &WorldSession::Handle_ServerSide);
     LEGACY_HANDLER(SMSG_CHAR_DELETE,                  STATUS_NEVER,     PACKET_PROCESS_MAX_TYPE,      &WorldSession::Handle_ServerSide);
-    LEGACY_HANDLER(CMSG_PLAYER_LOGIN,                 STATUS_AUTHED,    PACKET_PROCESS_WORLD,         &WorldSession::HandlePlayerLoginOpcode);
+    DEFINE_HANDLER(CMSG_PLAYER_LOGIN,                 STATUS_AUTHED,    PACKET_PROCESS_WORLD,         &WorldSession::HandlePlayerLoginOpcode);
     LEGACY_HANDLER(SMSG_NEW_WORLD,                    STATUS_NEVER,     PACKET_PROCESS_MAX_TYPE,      &WorldSession::Handle_ServerSide);
     LEGACY_HANDLER(SMSG_TRANSFER_PENDING,             STATUS_NEVER,     PACKET_PROCESS_MAX_TYPE,      &WorldSession::Handle_ServerSide);
     LEGACY_HANDLER(SMSG_TRANSFER_ABORTED,             STATUS_NEVER,     PACKET_PROCESS_MAX_TYPE,      &WorldSession::Handle_ServerSide);

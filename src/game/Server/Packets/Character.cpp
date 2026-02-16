@@ -21,3 +21,8 @@ void WorldPackets::Character::CharDelete::ReadFromWorldPacket(WorldPacket& recv_
 {
     recv_data >> guid;
 }
+
+void WorldPackets::Character::PlayerLogin::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> guid;
+}

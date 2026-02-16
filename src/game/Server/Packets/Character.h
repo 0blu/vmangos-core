@@ -24,6 +24,14 @@ namespace WorldPackets { namespace Character
 
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class PlayerLogin final : public ClientPacket
+    {
+    public:
+        ObjectGuid guid;
+
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
 }} // namespace WorldPackets::Character
 
 #endif // MANGOS_PACKETS_CHARACTER_H

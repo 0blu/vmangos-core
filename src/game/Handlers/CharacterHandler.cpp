@@ -375,10 +375,9 @@ void WorldSession::HandleCharDeleteOpcode(WorldPackets::Character::CharDelete co
     SendPacket(&data);
 }
 
-void WorldSession::HandlePlayerLoginOpcode(WorldPacket& recv_data)
+void WorldSession::HandlePlayerLoginOpcode(WorldPackets::Character::PlayerLogin const& packet)
 {
-    ObjectGuid playerGuid;
-    recv_data >> playerGuid;
+    ObjectGuid playerGuid = packet.guid;
 
     if ((!sWorld.getConfig(CONFIG_BOOL_WORLD_AVAILABLE) && GetSecurity() == SEC_PLAYER) ||
         PlayerLoading() || GetPlayer() != nullptr || !playerGuid.IsPlayer())
