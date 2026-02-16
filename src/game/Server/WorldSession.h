@@ -454,8 +454,8 @@ class WorldSession
         void Handle_Deprecated(WorldPacket& recvPacket);    // never used anymore by client
 
         void HandleCharEnumOpcode(NullClientPacket const& packet);
-        void HandleCharDeleteOpcode(WorldPacket& recvPacket);
         void HandleCharCreateOpcode(WorldPackets::Character::CharCreate const& packet);
+        void HandleCharDeleteOpcode(WorldPackets::Character::CharDelete const& packet);
         void HandlePlayerLoginOpcode(WorldPacket& recvPacket);
         void HandleCharEnum(std::unique_ptr<QueryResult> result);
         void HandlePlayerLogin(LoginQueryHolder* holder);

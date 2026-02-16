@@ -329,10 +329,9 @@ void WorldSession::HandleCharCreateOpcode(WorldPackets::Character::CharCreate co
     }
 }
 
-void WorldSession::HandleCharDeleteOpcode(WorldPacket& recv_data)
+void WorldSession::HandleCharDeleteOpcode(WorldPackets::Character::CharDelete const& packet)
 {
-    ObjectGuid guid;
-    recv_data >> guid;
+    ObjectGuid guid = packet.guid;
 
     // can't delete loaded character
     if (ObjectAccessor::FindPlayerNotInWorld(guid))
