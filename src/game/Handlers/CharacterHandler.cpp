@@ -158,7 +158,7 @@ void WorldSession::HandleCharEnum(std::unique_ptr<QueryResult> result)
         }
         while (result->NextRow());
     }
-    
+
     data.put<uint8>(0, num);
     m_charactersCount = num;
 
@@ -182,21 +182,8 @@ void WorldSession::HandleCharEnumOpcode(WorldPacket& /*recv_data*/)
                                   PET_SAVE_AS_CURRENT, GetAccountId());
 }
 
-void WorldSession::HandleCharCreateOpcode(WorldPacket& recv_data)
+void WorldSession::HandleCharCreateOpcode(WorldPackets::Character::CharCreate const& packet)
 {
-    std::string name;
-    uint8 race_, class_;
-
-    recv_data >> name;
-
-    recv_data >> race_;
-    recv_data >> class_;
-
-    // extract other data required for player creating
-    uint8 gender, skin, face, hairStyle, hairColor, facialHair, outfitId;
-    recv_data >> gender >> skin >> face;
-    recv_data >> hairStyle >> hairColor >> facialHair >> outfitId;
-
     WorldPacket data(SMSG_CHAR_CREATE, 1);                  // returned with diff.values in all cases
 
     if (GetSecurity() == SEC_PLAYER)
@@ -205,7 +192,7 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket& recv_data)
         {
             bool disabled = false;
 
-            Team team = Player::TeamForRace(race_);
+            Team team = Player::TeamForRace(packet.race);
             switch (team)
             {
                 case ALLIANCE:
@@ -225,15 +212,15 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket& recv_data)
         }
     }
 
-    ChrClassesEntry const* classEntry = sChrClassesStore.LookupEntry(class_);
-    ChrRacesEntry const* raceEntry = sChrRacesStore.LookupEntry(race_);
+    ChrClassesEntry const* classEntry = sChrClassesStore.LookupEntry(packet.class_);
+    ChrRacesEntry const* raceEntry = sChrRacesStore.LookupEntry(packet.race);
 
     if (!classEntry || !raceEntry)
     {
         data << (uint8)CHAR_CREATE_FAILED;
         SendPacket(&data);
         std::stringstream oss;
-        oss << "Attempt to create character of invalid Class (" << int(class_) << ") or Race (" << int(race_) << ")";
+        oss << "Attempt to create character of invalid Class (" << int(packet.class_) << ") or Race (" << int(packet.race) << ")";
         ProcessAnticheatAction("PassiveAnticheat", oss.str().c_str(), CHEAT_ACTION_LOG);
         return;
     }
@@ -243,12 +230,12 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket& recv_data)
         data << (uint8)CHAR_CREATE_DISABLED;
         SendPacket(&data);
         std::stringstream oss;
-        oss << "Attempt to create character of non-playable Race (" << int(race_) << ")";
+        oss << "Attempt to create character of non-playable Race (" << int(packet.race) << ")";
         ProcessAnticheatAction("PassiveAnticheat", oss.str().c_str(), CHEAT_ACTION_LOG);
         return;
     }
 
-    if (!Player::ValidateAppearance(race_, gender, hairStyle, hairColor, face, facialHair, skin))
+    if (!Player::ValidateAppearance(packet.race, packet.gender, packet.hairStyle, packet.hairColor, packet.face, packet.facialHair, packet.skin))
     {
         data << (uint8)CHAR_CREATE_FAILED;
         SendPacket(&data);
@@ -256,8 +243,10 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket& recv_data)
         return;
     }
 
+    std::string safeName = packet.name;
+
     // prevent character creating with invalid name
-    if (!normalizePlayerName(name))
+    if (!normalizePlayerName(safeName))
     {
         data << (uint8)CHAR_NAME_NO_NAME;
         SendPacket(&data);
@@ -266,7 +255,7 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket& recv_data)
     }
 
     // check name limitations
-    uint8 res = ObjectMgr::CheckPlayerName(name, true);
+    uint8 res = ObjectMgr::CheckPlayerName(safeName, true);
     if (res != CHAR_NAME_SUCCESS)
     {
         data << uint8(res);
@@ -274,14 +263,14 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket& recv_data)
         return;
     }
 
-    if (GetSecurity() == SEC_PLAYER && sObjectMgr.IsReservedName(name))
+    if (GetSecurity() == SEC_PLAYER && sObjectMgr.IsReservedName(safeName))
     {
         data << (uint8)CHAR_NAME_RESERVED;
         SendPacket(&data);
         return;
     }
 
-    if (sObjectMgr.GetPlayerGuidByName(name))
+    if (sObjectMgr.GetPlayerGuidByName(safeName))
     {
         data << (uint8)CHAR_CREATE_NAME_IN_USE;
         SendPacket(&data);
@@ -305,7 +294,7 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket& recv_data)
         if (!characters.empty())
         {
             PlayerCacheData const* cData = characters.front();
-            Team team_ = Player::TeamForRace(race_);
+            Team team_ = Player::TeamForRace(packet.race);
 
             uint8 acc_race = cData->uiRace;
 
@@ -324,7 +313,7 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket& recv_data)
     }
 
     uint32 const guidLow = sObjectMgr.GeneratePlayerLowGuid();
-    if (Player::SaveNewPlayer(this, guidLow, name, race_, class_, gender, skin, face, hairStyle, hairColor, facialHair))
+    if (Player::SaveNewPlayer(this, guidLow, safeName, packet.race, packet.class_, packet.gender, packet.skin, packet.face, packet.hairStyle, packet.hairColor, packet.facialHair))
     {
         m_charactersCount += 1;
 
@@ -712,7 +701,7 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder *holder)
     std::string IP_str = GetRemoteAddress();
 
     sLog.Player(this, LOG_CHAR, "Login", LOG_LVL_DETAIL, alreadyOnline ? "Player was already online" : "");
-    
+
     if (!alreadyOnline && !pCurrChar->IsStandingUp() && !pCurrChar->HasUnitState(UNIT_STATE_STUNNED))
         pCurrChar->SetStandState(UNIT_STAND_STATE_STAND);
 

@@ -36,6 +36,7 @@
 #include "PacketProcessing.h"
 #include "UpdateData.h"
 #include "LockedQueue.h"
+#include "Packets/Character.h"
 #include "Packets/Misc.h"
 
 struct ItemPrototype;
@@ -454,7 +455,7 @@ class WorldSession
 
         void HandleCharEnumOpcode(WorldPacket& recvPacket);
         void HandleCharDeleteOpcode(WorldPacket& recvPacket);
-        void HandleCharCreateOpcode(WorldPacket& recvPacket);
+        void HandleCharCreateOpcode(WorldPackets::Character::CharCreate const& recvPacket);
         void HandlePlayerLoginOpcode(WorldPacket& recvPacket);
         void HandleCharEnum(std::unique_ptr<QueryResult> result);
         void HandlePlayerLogin(LoginQueryHolder* holder);
