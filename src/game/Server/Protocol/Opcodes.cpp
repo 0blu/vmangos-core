@@ -247,7 +247,7 @@ constexpr Handlers BuildOpcodeList()
     LEGACY_HANDLER(CMSG_CHANNEL_MODERATE,             STATUS_LOGGEDIN,  PACKET_PROCESS_CHANNEL,       &WorldSession::HandleChannelModerateOpcode);
     LEGACY_HANDLER(SMSG_UPDATE_OBJECT,                STATUS_NEVER,     PACKET_PROCESS_MAX_TYPE,      &WorldSession::Handle_ServerSide);
     LEGACY_HANDLER(SMSG_DESTROY_OBJECT,               STATUS_NEVER,     PACKET_PROCESS_MAX_TYPE,      &WorldSession::Handle_ServerSide);
-    LEGACY_HANDLER(CMSG_USE_ITEM,                     STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleUseItemOpcode);
+    DEFINE_HANDLER(CMSG_USE_ITEM,                     STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleUseItemOpcode);
     LEGACY_HANDLER(CMSG_OPEN_ITEM,                    STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleOpenItemOpcode);
     LEGACY_HANDLER(CMSG_READ_ITEM,                    STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleReadItemOpcode);
     LEGACY_HANDLER(SMSG_READ_ITEM_OK,                 STATUS_NEVER,     PACKET_PROCESS_MAX_TYPE,      &WorldSession::Handle_ServerSide);

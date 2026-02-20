@@ -27,11 +27,12 @@
 #include "DBCEnums.h"
 #include "ObjectGuid.h"
 #include "LootMgr.h"
+#include "Object.h"
 #include "Player.h"
 #include <vector>
 #include <memory>
 
-
+struct SpellCastTargetsInfo;
 struct SpellScript;
 class WorldSession;
 class WorldPacket;
@@ -85,6 +86,8 @@ class SpellCastTargets
     public:
         SpellCastTargets();
         ~SpellCastTargets();
+
+        static SpellCastTargets FromSpellCastTargetsInfo(SpellCastTargetsInfo const& info, Unit* caster);
 
         void read(ByteBuffer& data, Unit* caster);
         void write(ByteBuffer& data) const;

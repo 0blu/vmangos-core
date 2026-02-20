@@ -41,6 +41,7 @@
 #include "Packets/Group.h"
 #include "Packets/Guild.h"
 #include "Packets/Misc.h"
+#include "Packets/Spell.h"
 
 struct ItemPrototype;
 struct AuctionEntry;
@@ -674,7 +675,7 @@ class WorldSession
         void HandleAttackStopOpcode(WorldPacket& recvPacket);
         void HandleSetSheathedOpcode(WorldPacket& recvPacket);
 
-        void HandleUseItemOpcode(WorldPacket& recvPacket);
+        void HandleUseItemOpcode(WorldPackets::Spell::UseItem const& packet);
         void HandleOpenItemOpcode(WorldPacket& recvPacket);
         void HandleCastSpellOpcode(WorldPacket& recvPacket);
         void HandleCancelCastOpcode(WorldPacket& recvPacket);
