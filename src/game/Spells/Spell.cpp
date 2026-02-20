@@ -47,6 +47,7 @@
 #include "TradeData.h"
 #include "Geometry.h"
 #include "Anticheat.h"
+#include "SpellCastTargetsInfo.h"
 
 using namespace Spells;
 
@@ -68,6 +69,46 @@ SpellCastTargets::SpellCastTargets()
 
 SpellCastTargets::~SpellCastTargets()
 {
+}
+
+SpellCastTargets SpellCastTargets::FromSpellCastTargetsInfo(SpellCastTargetsInfo const& info, Unit* caster)
+{
+    SpellCastTargets targets;
+    targets.m_targetMask = info.m_targetMask;
+
+    if (targets.m_targetMask == TARGET_FLAG_SELF)
+    {
+        targets.m_destX = caster->GetPositionX();
+        targets.m_destY = caster->GetPositionY();
+        targets.m_destZ = caster->GetPositionZ();
+        targets.m_unitTarget = caster;
+        targets.m_unitTargetGUID = caster->GetObjectGuid();
+    }
+    else
+    {
+        if (targets.m_targetMask & (TARGET_FLAG_ITEM | TARGET_FLAG_TRADE_ITEM))
+        {
+            MANGOS_ASSERT(caster->IsPlayer()); // Must be a player if items are used
+        }
+
+        targets.m_srcX = info.m_srcX;
+        targets.m_srcY = info.m_srcY;
+        targets.m_srcZ = info.m_srcZ;
+        targets.m_destX = info.m_destX;
+        targets.m_destY = info.m_destY;
+        targets.m_destZ = info.m_destZ;
+        targets.m_strTarget = info.m_strTarget;
+        targets.m_unitTargetGUID = info.m_unitTargetGUID;
+        targets.m_GOTargetGUID = info.m_GOTargetGUID;
+        targets.m_CorpseTargetGUID = info.m_CorpseTargetGUID;
+        targets.m_itemTargetGUID = info.m_itemTargetGUID;
+        targets.m_itemTargetEntry = info.m_itemTargetEntry;
+    }
+
+    // Resolve GUIDs to find real units/GOs
+    targets.Update(caster);
+
+    return targets;
 }
 
 void SpellCastTargets::setUnitTarget(Unit* target)

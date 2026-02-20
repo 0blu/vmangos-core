@@ -1,0 +1,21 @@
+#ifndef MANGOS_PACKETS_SPELL_H
+#define MANGOS_PACKETS_SPELL_H
+
+#include "Packet.h"
+#include "SpellCastTargetsInfo.h"
+
+namespace WorldPackets { namespace Spell
+{
+    class UseItem final : public ClientPacket
+    {
+    public:
+        uint8 bagIndex;
+        uint8 slot;
+        uint8 spellSlot; // the position of the spell id on the item template
+        SpellCastTargetsInfo targets;
+
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+}} // namespace WorldPackets::Spell
+
+#endif // MANGOS_PACKETS_SPELL_H

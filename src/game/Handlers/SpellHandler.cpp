@@ -33,12 +33,11 @@
 
 using namespace Spells;
 
-void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
+void WorldSession::HandleUseItemOpcode(WorldPackets::Spell::UseItem const& packet)
 {
-    uint8 bagIndex, slot;
-    uint8 spellSlot; // the position of the spell id on the item template
-
-    recvPacket >> bagIndex >> slot >> spellSlot;
+    uint8 bagIndex = packet.bagIndex;
+    uint8 slot = packet.slot;
+    uint8 spellSlot = packet.spellSlot; // the position of the spell id on the item template
 
     // TODO: add targets.read() check
     Player* pUser = _player;
@@ -46,14 +45,12 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
     // ignore for remote control state
     if (!pUser->IsSelfMover())
     {
-        recvPacket.rpos(recvPacket.wpos());                 // prevent spam at not read packet tail
         return;
     }
 
     Item *pItem = pUser->GetItemByPos(bagIndex, slot);
     if (!pItem)
     {
-        recvPacket.rpos(recvPacket.wpos());                 // prevent spam at not read packet tail
         pUser->SendEquipError(EQUIP_ERR_ITEM_NOT_FOUND, nullptr, nullptr);
         return;
     }
@@ -61,7 +58,6 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
     ItemPrototype const* proto = pItem->GetProto();
     if (!proto)
     {
-        recvPacket.rpos(recvPacket.wpos());                 // prevent spam at not read packet tail
         pUser->SendEquipError(EQUIP_ERR_ITEM_NOT_FOUND, pItem, nullptr);
         return;
     }
@@ -70,7 +66,6 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
         proto->Spells[spellSlot].SpellId == 0 ||
         proto->Spells[spellSlot].SpellTrigger != ITEM_SPELLTRIGGER_ON_USE)
     {
-        recvPacket.rpos(recvPacket.wpos());                 // prevent spam at not read packet tail
         pUser->SendEquipError(EQUIP_ERR_ITEM_NOT_FOUND, pItem, nullptr);
         return;
     }
@@ -78,7 +73,6 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
     // some item classes can be used only in equipped state
     if (proto->InventoryType != INVTYPE_NON_EQUIP && !pItem->IsEquipped())
     {
-        recvPacket.rpos(recvPacket.wpos());                 // prevent spam at not read packet tail
         pUser->SendEquipError(EQUIP_ERR_ITEM_NOT_FOUND, pItem, nullptr);
         return;
     }
@@ -86,7 +80,6 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
     InventoryResult msg = pUser->CanUseItem(pItem);
     if (msg != EQUIP_ERR_OK)
     {
-        recvPacket.rpos(recvPacket.wpos());                 // prevent spam at not read packet tail
         pUser->SendEquipError(msg, pItem, nullptr);
         return;
     }
@@ -94,7 +87,6 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
     // not allow use item from trade (cheat way only)
     if (pItem->IsInTrade())
     {
-        recvPacket.rpos(recvPacket.wpos());                 // prevent spam at not read packet tail
         pUser->SendEquipError(EQUIP_ERR_ITEM_NOT_FOUND, pItem, nullptr);
         return;
     }
@@ -107,7 +99,6 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
             {
                 if (spellInfo->IsNonCombatSpell())
                 {
-                    recvPacket.rpos(recvPacket.wpos());     // prevent spam at not read packet tail
                     pUser->SendEquipError(EQUIP_ERR_NOT_IN_COMBAT, pItem, nullptr);
                     return;
                 }
@@ -125,11 +116,7 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
         }
     }
 
-    SpellCastTargets targets;
-
-    recvPacket >> targets.ReadForCaster(pUser);
-
-    targets.Update(pUser);
+    SpellCastTargets targets = SpellCastTargets::FromSpellCastTargetsInfo(packet.targets, pUser);
 
     SpellCastResult itemCastCheckResult = SPELL_CAST_OK;
     if (!pItem->IsTargetValidForItemUse(targets.getUnitTarget()))
@@ -385,7 +372,7 @@ void WorldSession::HandleCancelAuraOpcode(WorldPacket& recvPacket)
 
     if (spellInfo->HasAttribute(SPELL_ATTR_DO_NOT_DISPLAY))
         return;
-    
+
     if (spellInfo->HasAttribute(SPELL_ATTR_EX_NO_AURA_ICON) && !spellInfo->activeIconID)
         return;
 

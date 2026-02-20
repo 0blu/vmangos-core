@@ -201,11 +201,13 @@ set (game_SRCS
     Server/Packets/Group.cpp
     Server/Packets/Guild.cpp
     Server/Packets/Misc.cpp
+    Server/Packets/Spell.cpp
     Server/WorldSession.cpp
     Server/WorldSocket.cpp
     Server/WorldSocketMgr.cpp
     Spells/Spell.cpp
     Spells/SpellAuras.cpp
+    Spells/SpellCastTargetsInfo.cpp
     Spells/SpellEffects.cpp
     Spells/SpellEntry.cpp
     Spells/SpellMgr.cpp
@@ -430,6 +432,7 @@ set (game_SRCS
     Server/Packets/Group.h
     Server/Packets/Guild.h
     Server/Packets/Misc.h
+    Server/Packets/Spell.h
     Server/WorldPacket.h
     Server/WorldSession.h
     Server/WorldSocket.h
@@ -437,6 +440,7 @@ set (game_SRCS
     Spells/Spell.h
     Spells/SpellAuraDefines.h
     Spells/SpellAuras.h
+    Spells/SpellCastTargetsInfo.h
     Spells/SpellClassMask.h
     Spells/SpellDefines.h
     Spells/SpellEntry.h
