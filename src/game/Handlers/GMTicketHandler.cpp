@@ -89,7 +89,7 @@ void WorldSession::HandleGMTicketDeleteTicketOpcode(WorldPacket& /*recv_data*/)
     }
 }
 
-void WorldSession::HandleGMTicketCreateOpcode(WorldPacket& recvData)
+void WorldSession::HandleGMTicketCreateOpcode(WorldPackets::GmTicket::GmTicketCreate const& packet)
 {
     // Don't accept tickets if the ticket queue is disabled. (Ticket UI is greyed out but not fully dependable)
     if (sTicketMgr->GetStatus() == GMTICKET_QUEUE_STATUS_DISABLED)
@@ -107,34 +107,24 @@ void WorldSession::HandleGMTicketCreateOpcode(WorldPacket& recvData)
         std::string message;
         std::string chatLog;
 
-        uint8 ticketType;
-        uint32 mapId;
-        float x, y, z;
-        std::string ticketText;
-        std::string reservedForFutureUse;
-
-        recvData >> ticketType >> mapId >> x >> y >> z;                        // last check 2.4.3
-        recvData >> ticketText;
-        recvData >> reservedForFutureUse;
-
         if (GetPlayer()->GetLevel() < sWorld.getConfig(CONFIG_UINT32_GMTICKETS_MINLEVEL))
         {
             ChatHandler(this).PSendSysMessage("You can't use the ticket system before level %u", sWorld.getConfig(CONFIG_UINT32_GMTICKETS_MINLEVEL));
             return;
         }
 
-        if (ticketType >= GMTICKET_MAX)
+        if (packet.ticketType >= GMTICKET_MAX)
             return;
 
         ticket = new GmTicket(GetPlayer());
-        ticket->SetPosition(mapId, x, y, z);
-        ticket->SetMessage(ticketText);
-        ticket->SetTicketType(TicketType(ticketType));
+        ticket->SetPosition(packet.mapId, packet.x, packet.y, packet.z);
+        ticket->SetMessage(packet.ticketText);
+        ticket->SetTicketType(packet.ticketType);
 
         sTicketMgr->AddTicket(ticket);
         sTicketMgr->UpdateLastChange();
 
-        sWorld.SendGMTicketText(LANG_COMMAND_TICKETNEW, GetPlayer()->GetName(), ticket->GetTicketCategoryName(TicketType(ticketType)), ticket->GetId());
+        sWorld.SendGMTicketText(LANG_COMMAND_TICKETNEW, GetPlayer()->GetName(), ticket->GetTicketCategoryName(packet.ticketType), ticket->GetId());
 
         response = GMTICKET_RESPONSE_CREATE_SUCCESS;
     }
