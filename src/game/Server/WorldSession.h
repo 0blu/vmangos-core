@@ -41,6 +41,7 @@
 #include "Packets/Channel.h"
 #include "Packets/Character.h"
 #include "Packets/Chat.h"
+#include "Packets/Combat.h"
 #include "Packets/Group.h"
 #include "Packets/Guild.h"
 #include "Packets/Item.h"
@@ -685,7 +686,7 @@ class WorldSession
         void HandleAutoStoreBankItemOpcode(WorldPacket& recvPacket);
         void HandleWrapItemOpcode(WorldPacket& recvPacket);
 
-        void HandleAttackSwingOpcode(WorldPacket& recvPacket);
+        void HandleAttackSwingOpcode(WorldPackets::Combat::AttackSwing const& packet);
         void HandleAttackStopOpcode(WorldPacket& recvPacket);
         void HandleSetSheathedOpcode(WorldPacket& recvPacket);
 

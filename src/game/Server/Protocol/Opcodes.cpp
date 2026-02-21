@@ -414,7 +414,7 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(CMSG_SET_TARGET_OBSOLETE,          Reason::Unhandled);
     INVALID_PACKET(CMSG_UNUSED,                       Reason::Unhandled);
     INVALID_PACKET(CMSG_UNUSED2,                      Reason::Unhandled);
-    LEGACY_HANDLER(CMSG_ATTACKSWING,                  STATUS_LOGGEDIN,  PACKET_PROCESS_SPELLS,        &WorldSession::HandleAttackSwingOpcode);
+    DEFINE_HANDLER(CMSG_ATTACKSWING,                  STATUS_LOGGEDIN,  PACKET_PROCESS_SPELLS,        &WorldSession::HandleAttackSwingOpcode);
     LEGACY_HANDLER(CMSG_ATTACKSTOP,                   STATUS_LOGGEDIN,  PACKET_PROCESS_SPELLS,        &WorldSession::HandleAttackStopOpcode);
     INVALID_PACKET(SMSG_ATTACKSTART,                  Reason::SendByServer);
     INVALID_PACKET(SMSG_ATTACKSTOP,                   Reason::SendByServer);
