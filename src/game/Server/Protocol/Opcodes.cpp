@@ -678,7 +678,7 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(SMSG_SEND_MAIL_RESULT,             Reason::SendByServer);
     LEGACY_HANDLER(CMSG_GET_MAIL_LIST,                STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleGetMailList);
     INVALID_PACKET(SMSG_MAIL_LIST_RESULT,             Reason::SendByServer);
-    LEGACY_HANDLER(CMSG_BATTLEFIELD_LIST,             STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleBattlefieldListOpcode);
+    DEFINE_HANDLER(CMSG_BATTLEFIELD_LIST,             STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleBattlefieldListOpcode);
     INVALID_PACKET(SMSG_BATTLEFIELD_LIST,             Reason::SendByServer);
     LEGACY_HANDLER(CMSG_BATTLEFIELD_JOIN,             STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleBattlefieldJoinOpcode);
     INVALID_PACKET(SMSG_BATTLEFIELD_WIN,              Reason::SendByServer);

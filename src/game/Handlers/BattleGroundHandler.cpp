@@ -358,13 +358,10 @@ void WorldSession::HandlePVPLogDataOpcode(WorldPacket& /*recv_data*/)
         SendPacket(bg->GetFinalScorePacket());
 }
 
-void WorldSession::HandleBattlefieldListOpcode(WorldPacket& recv_data)
+void WorldSession::HandleBattlefieldListOpcode(WorldPackets::Battleground::BattlefieldListRequest const& packet)
 {
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
-    uint32 mapId;
-    recv_data >> mapId;
-
-    BattleGroundTypeId bgTypeId = GetBattleGroundTypeIdByMapId(mapId);
+    BattleGroundTypeId bgTypeId = GetBattleGroundTypeIdByMapId(packet.mapId);
 #else
     BattleGroundTypeId bgTypeId = BattleGroundTypeId(_player->GetQueuedBattleground());
 #endif

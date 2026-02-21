@@ -196,6 +196,7 @@ set (game_SRCS
     PlayerBots/PlayerBotAI.cpp
     PlayerBots/PlayerBotMgr.cpp
     Server/Protocol/Opcodes.cpp
+    Server/Packets/Battleground.cpp
     Server/Packets/Channel.cpp
     Server/Packets/Character.cpp
     Server/Packets/Chat.cpp
@@ -435,6 +436,7 @@ set (game_SRCS
     Server/Protocol/Opcodes.h
     Server/Protocol/Opcodes_active.h
     Server/Packet.h
+    Server/Packets/Battleground.h
     Server/Packets/Channel.h
     Server/Packets/Character.h
     Server/Packets/Chat.h
