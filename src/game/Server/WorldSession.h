@@ -38,6 +38,7 @@
 #include "LockedQueue.h"
 #include "Packets/Channel.h"
 #include "Packets/Character.h"
+#include "Packets/Chat.h"
 #include "Packets/Group.h"
 #include "Packets/Guild.h"
 #include "Packets/Item.h"
@@ -706,13 +707,13 @@ class WorldSession
         void HandlePushQuestToParty(WorldPacket& recvPacket);
         void HandleQuestPushResult(WorldPacket& recvPacket);
 
-        bool CheckChatMessageValidity(char*, uint32, uint32);
-        bool ProcessChatMessageAfterSecurityCheck(char*, uint32, uint32);
+        bool SanitizeChatMessage(std::string& msg, uint32 lang, uint32 msgType);
+        bool SanitizeChatMessageAndProcessCommand(std::string& msg, uint32 lang, uint32 msgType);
         static bool IsLanguageAllowedForChatType(uint32 lang, uint32 msgType);
         void SendPlayerNotFoundNotice(std::string const& name);
         void SendWrongFactionNotice();
         void SendChatRestrictedNotice();
-        void HandleMessagechatOpcode(WorldPacket& recvPacket);
+        void HandleChatMessageOpcode(WorldPackets::Chat::ChatMessage const& packet);
         void HandleTextEmoteOpcode(WorldPacket& recvPacket);
         void HandleChatIgnoredOpcode(WorldPacket& recvPacket);
         uint32_t ChatCooldown();

@@ -183,7 +183,7 @@ float GetFloatValueFromArray(Tokens const& data, uint16 index)
     return result;
 }
 
-void stripLineInvisibleChars(std::string &str)
+void stripLineInvisibleChars(std::string& str)
 {
     static std::string invChars = " \t\7\n";
 
