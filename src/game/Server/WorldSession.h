@@ -42,6 +42,7 @@
 #include "Packets/Character.h"
 #include "Packets/Chat.h"
 #include "Packets/Combat.h"
+#include "Packets/Duel.h"
 #include "Packets/Group.h"
 #include "Packets/Guild.h"
 #include "Packets/Item.h"
@@ -631,7 +632,7 @@ class WorldSession
         void HandleStableRevivePet(WorldPacket& recvPacket);
         void HandleStableSwapPet(WorldPacket& recvPacket);
 
-        void HandleDuelAcceptedOpcode(WorldPacket& recvPacket);
+        void HandleDuelAcceptedOpcode(WorldPackets::Duel::DuelAccepted const& packet);
         void HandleDuelCancelledOpcode(WorldPacket& recvPacket);
 
         void HandleAcceptTradeOpcode(WorldPacket& recvPacket);
