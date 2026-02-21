@@ -36,6 +36,7 @@
 #include "PacketProcessing.h"
 #include "UpdateData.h"
 #include "LockedQueue.h"
+#include "Packets/Battleground.h"
 #include "Packets/Channel.h"
 #include "Packets/Character.h"
 #include "Packets/Chat.h"
@@ -778,7 +779,7 @@ class WorldSession
         void HandlePVPLogDataOpcode(WorldPacket& recv_data);
         void HandleBattlefieldStatusOpcode(WorldPacket& recv_data);
         void HandleBattleFieldPortOpcode(WorldPacket& recv_data);
-        void HandleBattlefieldListOpcode(WorldPacket& recv_data);
+        void HandleBattlefieldListOpcode(WorldPackets::Battleground::BattlefieldListRequest const& packet);
         void HandleLeaveBattlefieldOpcode(WorldPacket& recv_data);
 
         void HandleWardenDataOpcode(WorldPacket& recv_data);
