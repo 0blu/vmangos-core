@@ -478,7 +478,7 @@ constexpr Handlers BuildOpcodeList()
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_5_1
     INVALID_PACKET(SMSG_PET_MODE,                     Reason::SendByServer);
 #endif
-    LEGACY_HANDLER(CMSG_GOSSIP_HELLO,                 STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleGossipHelloOpcode);
+    DEFINE_HANDLER(CMSG_GOSSIP_HELLO,                 STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleGossipHelloOpcode);
     LEGACY_HANDLER(CMSG_GOSSIP_SELECT_OPTION,         STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleGossipSelectOptionOpcode);
     INVALID_PACKET(SMSG_GOSSIP_MESSAGE,               Reason::SendByServer);
     INVALID_PACKET(SMSG_GOSSIP_COMPLETE,              Reason::SendByServer);

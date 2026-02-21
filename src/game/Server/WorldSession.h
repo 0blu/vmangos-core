@@ -48,6 +48,7 @@
 #include "Packets/Mail.h"
 #include "Packets/Misc.h"
 #include "Packets/Movement.h"
+#include "Packets/Npc.h"
 #include "Packets/Pet.h"
 #include "Packets/Query.h"
 #include "Packets/Quest.h"
@@ -617,7 +618,7 @@ class WorldSession
         void HandleTrainerListOpcode(WorldPacket& recvPacket);
         void HandleTrainerBuySpellOpcode(WorldPacket& recvPacket);
         void HandlePetitionShowListOpcode(WorldPacket& recvPacket);
-        void HandleGossipHelloOpcode(WorldPacket& recvPacket);
+        void HandleGossipHelloOpcode(WorldPackets::Npc::GossipHello const& packet);
         void HandleGossipSelectOptionOpcode(WorldPacket& recvPacket);
         void HandleSpiritHealerActivateOpcode(WorldPacket& recvPacket);
         void HandleNpcTextQueryOpcode(WorldPacket& recvPacket);
