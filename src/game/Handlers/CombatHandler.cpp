@@ -29,10 +29,9 @@
 #include "Player.h"
 #include "Map.h"
 
-void WorldSession::HandleAttackSwingOpcode(WorldPacket& recv_data)
+void WorldSession::HandleAttackSwingOpcode(WorldPackets::Combat::AttackSwing const& packet)
 {
-    ObjectGuid guid;
-    recv_data >> guid;
+    ObjectGuid guid = packet.targetGuid;
 
     if (!guid.IsUnit())
         return;
