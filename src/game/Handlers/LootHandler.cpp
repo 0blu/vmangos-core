@@ -71,7 +71,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
 
                 return true;
             };
-            
+
             if (!go || (ShouldCheckDistance() && !go->IsWithinDistInMap(_player, INTERACTION_DISTANCE)))
             {
                 player->SendLootRelease(lguid);
@@ -312,7 +312,7 @@ void WorldSession::HandleLootMoneyOpcode(WorldPacket& /*recv_data*/)
                 Player* playerGroup = itr->getSource();
                 if (!playerGroup)
                     continue;
-                
+
                 if (player->IsWithinLootXPDist(playerGroup))
                     playersNear.push_back(playerGroup);
             }
@@ -675,7 +675,7 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
             _player->SendLootError(lootGuid, LOOT_ERROR_DIDNT_KILL);
             return;
         }
-            
+
         if (!_player->IsAtGroupRewardDistance(creature))
         {
             _player->SendLootError(lootGuid, LOOT_ERROR_TOO_FAR);
