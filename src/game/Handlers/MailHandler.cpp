@@ -130,13 +130,9 @@ public:
  *
  * @param recv_data the WorldPacket containing the data sent by the client.
  */
-void WorldSession::HandleSendMail(WorldPacket& recv_data)
+void WorldSession::HandleSendMail(WorldPackets::Mail::SendMail const& packet)
 {
-    ObjectGuid mailboxGuid;
-    uint32 unk1, unk2;
-
-    recv_data >> mailboxGuid;
-    if (!CheckMailBox(mailboxGuid))
+    if (!CheckMailBox(packet.mailboxGuid))
     {
         SendMailResult(0, MAIL_SEND, MAIL_ERR_INTERNAL_ERROR);
         return;
@@ -152,20 +148,12 @@ void WorldSession::HandleSendMail(WorldPacket& recv_data)
     req->accountId = GetAccountId();
     req->senderGuid = GetMasterPlayer()->GetObjectGuid();
 
-    recv_data >> req->receiverName;
-    recv_data >> req->subject;
-    recv_data >> req->body;
-    recv_data >> unk1;                                      // stationery?
-    recv_data >> unk2;                                      // 0x00000000
-    recv_data >> req->itemGuid;
-    recv_data >> req->money >> req->COD;                    // money and cod
-
-#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
-    uint64 unk3;
-    uint8 unk4;
-    recv_data >> unk3;                                      // const 0
-    recv_data >> unk4;                                      // const 0
-#endif
+    req->receiverName = packet.receiverName;
+    req->subject = packet.subject;
+    req->body = packet.body;
+    req->itemGuid = packet.itemGuid;
+    req->money = packet.money;
+    req->COD = packet.COD;
 
     // packet read complete, now do check
     if (req->subject.size() > 64)
@@ -202,14 +190,14 @@ void WorldSession::HandleSendMail(WorldPacket& recv_data)
 
     if (!req->receiver)
     {
-        sLog.Out(LOG_BASIC, LOG_LVL_DETAIL, "%s is sending mail to %s (GUID: nonexistent!) with subject %s and body %s includes %u items, %u copper and %u COD copper with unk1 = %u, unk2 = %u",
-                   pl->GetGuidStr().c_str(), req->receiverName.c_str(), req->subject.c_str(), req->body.c_str(), req->itemGuid ? 1 : 0, req->money, req->COD, unk1, unk2);
+        sLog.Out(LOG_BASIC, LOG_LVL_DETAIL, "%s is sending mail to %s (GUID: nonexistent!) with subject %s and body %s includes %u items, %u copper and %u COD copper",
+                   pl->GetGuidStr().c_str(), req->receiverName.c_str(), req->subject.c_str(), req->body.c_str(), req->itemGuid ? 1 : 0, req->money, req->COD);
         SendMailResult(0, MAIL_SEND, MAIL_ERR_RECIPIENT_NOT_FOUND);
         return;
     }
 
-    sLog.Out(LOG_BASIC, LOG_LVL_DETAIL, "%s is sending mail to %s with subject %s and body %s includes %u items, %u copper and %u COD copper with unk1 = %u, unk2 = %u",
-               pl->GetGuidStr().c_str(), req->receiverName.c_str(), req->subject.c_str(), req->body.c_str(), req->itemGuid ? 1 : 0, req->money, req->COD, unk1, unk2);
+    sLog.Out(LOG_BASIC, LOG_LVL_DETAIL, "%s is sending mail to %s with subject %s and body %s includes %u items, %u copper and %u COD copper",
+               pl->GetGuidStr().c_str(), req->receiverName.c_str(), req->subject.c_str(), req->body.c_str(), req->itemGuid ? 1 : 0, req->money, req->COD);
 
     if (pl->GetObjectGuid() == req->receiver)
     {

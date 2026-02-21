@@ -674,7 +674,7 @@ constexpr Handlers BuildOpcodeList()
     LEGACY_HANDLER(CMSG_GUILD_SET_OFFICER_NOTE,       STATUS_LOGGEDIN,  PACKET_PROCESS_GUILD,         &WorldSession::HandleGuildSetOfficerNoteOpcode);
     INVALID_PACKET(SMSG_LOGIN_VERIFY_WORLD,           Reason::SendByServer);
     INVALID_PACKET(CMSG_CLEAR_EXPLORATION,            Reason::Unhandled);
-    LEGACY_HANDLER(CMSG_SEND_MAIL,                    STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleSendMail);
+    DEFINE_HANDLER(CMSG_SEND_MAIL,                    STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleSendMail);
     INVALID_PACKET(SMSG_SEND_MAIL_RESULT,             Reason::SendByServer);
     LEGACY_HANDLER(CMSG_GET_MAIL_LIST,                STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleGetMailList);
     INVALID_PACKET(SMSG_MAIL_LIST_RESULT,             Reason::SendByServer);

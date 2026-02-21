@@ -42,6 +42,7 @@
 #include "Packets/Group.h"
 #include "Packets/Guild.h"
 #include "Packets/Item.h"
+#include "Packets/Mail.h"
 #include "Packets/Misc.h"
 #include "Packets/Movement.h"
 #include "Packets/Pet.h"
@@ -646,7 +647,7 @@ class WorldSession
         void HandleAuctionPlaceBid(WorldPacket& recv_data);
 
         void HandleGetMailList(WorldPacket& recv_data);
-        void HandleSendMail(WorldPacket& recv_data);
+        void HandleSendMail(WorldPackets::Mail::SendMail const& packet);
         class AsyncMailSendRequest;
         void HandleSendMailRequest(AsyncMailSendRequest* req);
         void HandleSendMailCallback(AsyncMailSendRequest* req);
