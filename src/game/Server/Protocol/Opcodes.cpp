@@ -622,7 +622,7 @@ constexpr Handlers BuildOpcodeList()
     LEGACY_HANDLER(CMSG_UNLEARN_SKILL,                STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleUnlearnSkillOpcode);
     INVALID_PACKET(SMSG_REMOVED_SPELL,                Reason::SendByServer);
     INVALID_PACKET(CMSG_DECHARGE,                     Reason::Unhandled);
-    LEGACY_HANDLER(CMSG_GMTICKET_CREATE,              STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleGMTicketCreateOpcode);
+    DEFINE_HANDLER(CMSG_GMTICKET_CREATE,              STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleGMTicketCreateOpcode);
     INVALID_PACKET(SMSG_GMTICKET_CREATE,              Reason::SendByServer);
     LEGACY_HANDLER(CMSG_GMTICKET_UPDATETEXT,          STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleGMTicketUpdateTextOpcode);
     INVALID_PACKET(SMSG_GMTICKET_UPDATETEXT,          Reason::SendByServer);

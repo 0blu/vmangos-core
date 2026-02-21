@@ -43,6 +43,7 @@
 #include "Packets/Chat.h"
 #include "Packets/Combat.h"
 #include "Packets/Duel.h"
+#include "Packets/GmTicket.h"
 #include "Packets/Group.h"
 #include "Packets/Guild.h"
 #include "Packets/Item.h"
