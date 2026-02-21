@@ -41,6 +41,7 @@
 #include "Packets/Group.h"
 #include "Packets/Guild.h"
 #include "Packets/Misc.h"
+#include "Packets/Query.h"
 #include "Packets/Spell.h"
 
 struct ItemPrototype;
@@ -538,7 +539,7 @@ class WorldSession
         void HandleMeetingStoneLeaveOpcode(WorldPacket& recPacket);
         void HandleMeetingStoneInfoOpcode(WorldPacket& recPacket);
 
-        void HandleNameQueryOpcode(WorldPacket& recvPacket);
+        void HandleQueryPlayerNameOpcode(WorldPackets::Query::QueryPlayerName const& packet);
         void HandleQueryTimeOpcode(WorldPacket& recvPacket);
         void HandleCreatureQueryOpcode(WorldPacket& recvPacket);
         void HandleGameObjectQueryOpcode(WorldPacket& recvPacket);

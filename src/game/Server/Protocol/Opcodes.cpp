@@ -173,7 +173,7 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(SMSG_LOGOUT_COMPLETE,              Reason::SendByServer);
     LEGACY_HANDLER(CMSG_LOGOUT_CANCEL,                STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleLogoutCancelOpcode);
     INVALID_PACKET(SMSG_LOGOUT_CANCEL_ACK,            Reason::SendByServer);
-    LEGACY_HANDLER(CMSG_NAME_QUERY,                   STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleNameQueryOpcode);
+    DEFINE_HANDLER(CMSG_NAME_QUERY,                   STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleQueryPlayerNameOpcode);
     INVALID_PACKET(SMSG_NAME_QUERY_RESPONSE,          Reason::SendByServer);
     LEGACY_HANDLER(CMSG_PET_NAME_QUERY,               STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandlePetNameQueryOpcode);
     INVALID_PACKET(SMSG_PET_NAME_QUERY_RESPONSE,      Reason::SendByServer);
