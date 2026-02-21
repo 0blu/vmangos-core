@@ -293,7 +293,7 @@ void WorldSession::HandleTrainerBuySpellOpcode(WorldPacket& recv_data)
         SendTrainingFailure(guid, spellId, TRAIN_FAIL_UNAVAILABLE);
         return;
     }
-        
+
     // Try to find the spell in npc_trainer.
     TrainerSpell const* trainer_spell = cSpells ? cSpells->Find(spellId) : nullptr;
 
@@ -307,7 +307,7 @@ void WorldSession::HandleTrainerBuySpellOpcode(WorldPacket& recv_data)
         SendTrainingFailure(guid, spellId, TRAIN_FAIL_UNAVAILABLE);
         return;
     }
-    
+
     // Can't be learned, cheat? Or double learn with lags...
     if (_player->GetTrainerSpellState(trainer_spell) != TRAINER_SPELL_GREEN)
     {
@@ -472,7 +472,7 @@ void WorldSession::SendSpiritResurrect()
         float orientation = _player->GetOrientation();
 
         // World of Warcraft Client Patch 1.8.0 (2005-10-11)
-        // - All graveyards that needed adjustment were changed so that a 
+        // - All graveyards that needed adjustment were changed so that a
         //   character's spirit comes into the world facing toward the Spirit Healer.
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_7_1
         if (float facing = sObjectMgr.GetWorldSafeLocFacing(corpseGrave->ID))
