@@ -525,7 +525,7 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(CMSG_TAXIENABLEALLNODES,           Reason::Unhandled);
     INVALID_PACKET(CMSG_TAXISHOWNODES,                Reason::Unhandled);
     INVALID_PACKET(SMSG_SHOWTAXINODES,                Reason::SendByServer);
-    LEGACY_HANDLER(CMSG_TAXINODE_STATUS_QUERY,        STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleTaxiNodeStatusQueryOpcode);
+    DEFINE_HANDLER(CMSG_TAXINODE_STATUS_QUERY,        STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleTaxiNodeStatusQueryOpcode);
     INVALID_PACKET(SMSG_TAXINODE_STATUS,              Reason::SendByServer);
     LEGACY_HANDLER(CMSG_TAXIQUERYAVAILABLENODES,      STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleTaxiQueryAvailableNodes);
     LEGACY_HANDLER(CMSG_ACTIVATETAXI,                 STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleActivateTaxiOpcode);

@@ -1,0 +1,19 @@
+#ifndef MANGOS_PACKETS_TAXI_H
+#define MANGOS_PACKETS_TAXI_H
+
+#include "Packet.h"
+#include "ObjectGuid.h"
+
+namespace WorldPackets { namespace Taxi
+{
+    class TaxiNodeStatusQuery final : public ClientPacket
+    {
+    public:
+        ObjectGuid creatureGuidNearTaxi;
+
+        explicit TaxiNodeStatusQuery() : ClientPacket(CMSG_TAXINODE_STATUS_QUERY) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+}} // namespace WorldPackets::Taxi
+
+#endif // MANGOS_PACKETS_TAXI_H
