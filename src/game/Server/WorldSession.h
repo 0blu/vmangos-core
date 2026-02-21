@@ -36,6 +36,7 @@
 #include "PacketProcessing.h"
 #include "UpdateData.h"
 #include "LockedQueue.h"
+#include "Packets/AuctionHouse.h"
 #include "Packets/Battleground.h"
 #include "Packets/Channel.h"
 #include "Packets/Character.h"
@@ -640,7 +641,7 @@ class WorldSession
         void HandleSetTradeItemOpcode(WorldPacket& recvPacket);
         void HandleUnacceptTradeOpcode(WorldPacket& recvPacket);
 
-        void HandleAuctionHelloOpcode(WorldPacket& recvPacket);
+        void HandleAuctionHelloOpcode(WorldPackets::AuctionHouse::AuctionHello const& packet);
         void HandleAuctionListItems(WorldPacket& recv_data);
         void HandleAuctionListBidderItems(WorldPacket& recv_data);
         void HandleAuctionSellItem(WorldPacket& recv_data);

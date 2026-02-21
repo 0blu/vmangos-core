@@ -703,7 +703,7 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(SMSG_RESURRECT_FAILED,             Reason::SendByServer);
     LEGACY_HANDLER(CMSG_TOGGLE_PVP,                   STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleTogglePvP);
     INVALID_PACKET(SMSG_ZONE_UNDER_ATTACK,            Reason::SendByServer);
-    LEGACY_HANDLER(MSG_AUCTION_HELLO,                 STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleAuctionHelloOpcode);
+    DEFINE_HANDLER(MSG_AUCTION_HELLO,                 STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleAuctionHelloOpcode);
     LEGACY_HANDLER(CMSG_AUCTION_SELL_ITEM,            STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleAuctionSellItem);
     LEGACY_HANDLER(CMSG_AUCTION_REMOVE_ITEM,          STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleAuctionRemoveItem);
     LEGACY_HANDLER(CMSG_AUCTION_LIST_ITEMS,           STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleAuctionListItems);
