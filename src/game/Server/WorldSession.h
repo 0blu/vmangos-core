@@ -51,6 +51,7 @@
 #include "Packets/Quest.h"
 #include "Packets/Skill.h"
 #include "Packets/Spell.h"
+#include "Packets/Trade.h"
 
 struct ItemPrototype;
 struct AuctionEntry;
@@ -635,7 +636,7 @@ class WorldSession
         void HandleCancelTradeOpcode(WorldPacket& recvPacket);
         void HandleClearTradeItemOpcode(WorldPacket& recvPacket);
         void HandleIgnoreTradeOpcode(WorldPacket& recvPacket);
-        void HandleInitiateTradeOpcode(WorldPacket& recvPacket);
+        void HandleInitiateTradeOpcode(WorldPackets::Trade::InitiateTrade const& packet);
         void HandleSetTradeGoldOpcode(WorldPacket& recvPacket);
         void HandleSetTradeItemOpcode(WorldPacket& recvPacket);
         void HandleUnacceptTradeOpcode(WorldPacket& recvPacket);

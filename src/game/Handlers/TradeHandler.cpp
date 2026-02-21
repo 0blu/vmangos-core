@@ -592,10 +592,9 @@ void WorldSession::HandleCancelTradeOpcode(WorldPacket& /*recvPacket*/)
         _player->TradeCancel(true);
 }
 
-void WorldSession::HandleInitiateTradeOpcode(WorldPacket& recvPacket)
+void WorldSession::HandleInitiateTradeOpcode(WorldPackets::Trade::InitiateTrade const& packet)
 {
-    ObjectGuid otherGuid;
-    recvPacket >> otherGuid;
+    ObjectGuid otherGuid = packet.tradeTargetGuid;
 
     if (GetPlayer()->m_trade)
         return;
@@ -683,7 +682,7 @@ void WorldSession::HandleInitiateTradeOpcode(WorldPacket& recvPacket)
     // OK start trade
     _player->m_trade = new TradeData(_player, pOther);
     pOther->m_trade = new TradeData(pOther, _player);
-    
+
     // Set the scam prevention, a delay  of 200 ms should suffice
     _player->m_trade->SetScamPreventionDelay(200);
     pOther->m_trade->SetScamPreventionDelay(200);
@@ -749,7 +748,7 @@ void WorldSession::HandleSetTradeItemOpcode(WorldPacket& recvPacket)
     }
 
     // prevent trading item from bank slot
-    if (_player->IsBankPos(bag, slot)) 
+    if (_player->IsBankPos(bag, slot))
     {
         SendTradeStatus(TRADE_STATUS_TRADE_CANCELED);
         return;
