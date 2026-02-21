@@ -53,6 +53,7 @@
 #include "Packets/Movement.h"
 #include "Packets/Npc.h"
 #include "Packets/Pet.h"
+#include "Packets/Petition.h"
 #include "Packets/Query.h"
 #include "Packets/Quest.h"
 #include "Packets/Skill.h"
@@ -446,7 +447,7 @@ class WorldSession
 
         // Guild Team
         void SendGuildCommandResult(uint32 typecmd, std::string const& str, uint32 cmdresult);
-        void SendPetitionShowList(ObjectGuid& guid);
+        void SendPetitionShowList(ObjectGuid guid);
         void SendSaveGuildEmblem(uint32 msg);
 
         // Battleground
@@ -521,7 +522,7 @@ class WorldSession
         void HandlePlayerLogoutOpcode(WorldPacket& recvPacket);
         void HandleLogoutCancelOpcode(WorldPacket& recvPacket);
         void HandleGMTicketGetTicketOpcode(WorldPacket& recvPacket);
-        void HandleGMTicketCreateOpcode(WorldPacket& recvPacket);
+        void HandleGMTicketCreateOpcode(WorldPackets::GmTicket::GmTicketCreate const& packet);
         void HandleGMTicketSystemStatusOpcode(WorldPacket& recvPacket);
 
         void HandleGMTicketDeleteTicketOpcode(WorldPacket& recvPacket);
@@ -620,7 +621,7 @@ class WorldSession
         void HandleBuyBankSlotOpcode(WorldPacket& recvPacket);
         void HandleTrainerListOpcode(WorldPacket& recvPacket);
         void HandleTrainerBuySpellOpcode(WorldPacket& recvPacket);
-        void HandlePetitionShowListOpcode(WorldPacket& recvPacket);
+        void HandlePetitionShowListOpcode(WorldPackets::Petition::PetitionShow const& packet);
         void HandleGossipHelloOpcode(WorldPackets::Npc::GossipHello const& packet);
         void HandleGossipSelectOptionOpcode(WorldPacket& recvPacket);
         void HandleSpiritHealerActivateOpcode(WorldPacket& recvPacket);

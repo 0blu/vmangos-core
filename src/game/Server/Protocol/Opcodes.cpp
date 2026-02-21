@@ -542,7 +542,7 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(SMSG_SHOW_BANK,                    Reason::SendByServer);
     LEGACY_HANDLER(CMSG_BUY_BANK_SLOT,                STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleBuyBankSlotOpcode);
     INVALID_PACKET(SMSG_BUY_BANK_SLOT_RESULT,         Reason::SendByServer);
-    LEGACY_HANDLER(CMSG_PETITION_SHOWLIST,            STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandlePetitionShowListOpcode);
+    DEFINE_HANDLER(CMSG_PETITION_SHOWLIST,            STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandlePetitionShowListOpcode);
     INVALID_PACKET(SMSG_PETITION_SHOWLIST,            Reason::SendByServer);
     LEGACY_HANDLER(CMSG_PETITION_BUY,                 STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandlePetitionBuyOpcode);
     LEGACY_HANDLER(CMSG_PETITION_SHOW_SIGNATURES,     STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandlePetitionShowSignOpcode);
