@@ -283,12 +283,12 @@ void Player::ExecuteTeleportNear()
     ProcessDelayedOperations();
 }
 
-void WorldSession::HandleMovementOpcodes(WorldPacket& recvData)
+void WorldSession::HandleMovementOpcodes(WorldPackets::Movement::MovementPacket const& packet)
 {
-    uint32 opcode = recvData.GetOpcode();
+    uint32 opcode = packet.GetOpcode();
 
     // Do not accept packets sent before this time.
-    if (recvData.GetPacketTime() <= m_moveRejectTime)
+    if (World::GetCurrentMSTime() <= m_moveRejectTime)
         return;
 
     Unit* pMover = _player->GetConfirmedMover();
@@ -301,7 +301,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recvData)
     // currently being moved by server
     if (!pMover->movespline->Finalized())
         return;
-        
+
     Player* pPlayerMover = pMover->ToPlayer();
 
     // ignore, waiting processing in WorldSession::HandleMoveWorldportAckOpcode and WorldSession::HandleMoveTeleportAck
@@ -309,9 +309,17 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recvData)
         return;
 
     /* extract packet */
-    MovementInfo movementInfo = pPlayerMover ? pPlayerMover->m_movementInfo : MovementInfo();
-    recvData >> movementInfo;
-    movementInfo.UpdateTime(recvData.GetPacketTime());
+    MovementInfo movementInfo;
+    if (pPlayerMover)
+    {
+        movementInfo = pPlayerMover->m_movementInfo;
+        movementInfo.FillFrom(packet.movementInfo);
+    }
+    else
+    {
+        movementInfo = packet.movementInfo;
+    }
+    movementInfo.UpdateTime(World::GetCurrentMSTime());
     /*----------------*/
 
     if (!VerifyMovementInfo(movementInfo))
@@ -393,7 +401,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recvData)
     }
 #endif
 
-    WorldPacket data(opcode, recvData.size());
+    WorldPacket data(opcode, 20 /*estimated size*/);
 
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
     data << m_clientMoverGuid.WriteAsPacked();
@@ -978,7 +986,7 @@ void WorldSession::HandleMoveNotActiveMoverOpcode(WorldPacket& recvData)
     // ignore, waiting processing in WorldSession::HandleMoveWorldportAckOpcode and WorldSession::HandleMoveTeleportAck
     if (pPlayerMover && pPlayerMover->IsBeingTeleported())
         return;
-    
+
     if (pPlayerMover)
     {
         if ((m_moveRejectTime = _player->GetCheatData()->HandleFlagTests(pPlayerMover, movementInfo, recvData.GetOpcode())) ||
@@ -1174,7 +1182,7 @@ void WorldSession::HandleMoverRelocation(Unit* pMover, MovementInfo& movementInf
         }
         else if (pPlayerMover->CanFreeMove())
             pPlayerMover->SaveNoUndermapPosition(pMover->m_movementInfo.GetPos().x, pMover->m_movementInfo.GetPos().y, pMover->m_movementInfo.GetPos().z + 3.0f, pMover->m_movementInfo.GetPos().o);
-        
+
         // Antiundermap2: teleport to graveyard
         if (pMover->m_movementInfo.GetPos().z < -500.0f && !pPlayerMover->IsGameMaster())
         {

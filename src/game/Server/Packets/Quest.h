@@ -11,6 +11,7 @@ namespace WorldPackets { namespace Quest
     public:
         uint32 questEntry; // db entry id
 
+        explicit QueryQuest() : ClientPacket(CMSG_QUEST_QUERY), questEntry(0) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
 }} // namespace WorldPackets::Quest

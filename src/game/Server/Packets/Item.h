@@ -12,6 +12,7 @@ namespace WorldPackets { namespace Item
         uint32 itemEntry; // db entry id
         ObjectGuid itemGuid;
 
+        explicit QueryItem() : ClientPacket(CMSG_ITEM_QUERY_SINGLE), itemEntry(0) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
 }} // namespace WorldPackets::Item

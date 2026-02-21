@@ -11,6 +11,7 @@ namespace WorldPackets { namespace Query
     public:
         ObjectGuid playerGuid;
 
+        explicit QueryPlayerName() : ClientPacket(CMSG_NAME_QUERY) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
 }} // namespace WorldPackets::Query

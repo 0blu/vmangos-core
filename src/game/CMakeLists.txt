@@ -203,6 +203,7 @@ set (game_SRCS
     Server/Packets/Guild.cpp
     Server/Packets/Item.cpp
     Server/Packets/Misc.cpp
+    Server/Packets/Movement.cpp
     Server/Packets/Pet.cpp
     Server/Packets/Query.cpp
     Server/Packets/Quest.cpp
@@ -431,6 +432,7 @@ set (game_SRCS
     PlayerBots/PlayerBotAI.h
     PlayerBots/PlayerBotMgr.h
     Server/Protocol/Opcodes.h
+    Server/Protocol/Opcodes_active.h
     Server/Packet.h
     Server/Packets/Channel.h
     Server/Packets/Character.h
@@ -439,6 +441,7 @@ set (game_SRCS
     Server/Packets/Guild.h
     Server/Packets/Item.h
     Server/Packets/Misc.h
+    Server/Packets/Movement.h
     Server/Packets/Pet.h
     Server/Packets/Query.h
     Server/Packets/Quest.h

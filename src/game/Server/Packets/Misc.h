@@ -12,6 +12,7 @@ namespace WorldPackets { namespace Misc
         uint32 timeMs;
         WorldLocation location;
 
+        explicit WorldTeleport() : ClientPacket(CMSG_WORLD_TELEPORT), timeMs(0) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
 }} // namespace WorldPackets::Misc

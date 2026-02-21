@@ -14,6 +14,7 @@ namespace WorldPackets { namespace Chat
         std::string whisperTargetOrChannel;
         std::string message;
 
+        explicit ChatMessage() : ClientPacket(CMSG_MESSAGECHAT), type(0), lang(0) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
 }} // namespace WorldPackets::Chat
