@@ -211,15 +211,9 @@ void WorldSession::HandlePetStopAttack(WorldPacket& recv_data)
     pet->AttackStop();
 }
 
-void WorldSession::HandlePetNameQueryOpcode(WorldPacket& recv_data)
+void WorldSession::HandlePetNameQueryOpcode(WorldPackets::Pet::QueryPetName const& packet)
 {
-    uint32 petNumber;
-    ObjectGuid petGuid;
-
-    recv_data >> petNumber;
-    recv_data >> petGuid;
-
-    SendPetNameQuery(petGuid, petNumber);
+    SendPetNameQuery(packet.petGuid, packet.petNumber);
 }
 
 void WorldSession::SendPetNameQuery(ObjectGuid petGuid, uint32 petNumber)
@@ -232,7 +226,7 @@ void WorldSession::SendPetNameQuery(ObjectGuid petGuid, uint32 petNumber)
 
     WorldPacket data(SMSG_PET_NAME_QUERY_RESPONSE, (4 + 4 + name.size() + 1));
     data << uint32(petNumber);
-    data << name.c_str();
+    data << name;
     data << uint32(pet->GetUInt32Value(UNIT_FIELD_PET_NAME_TIMESTAMP));
 
     _player->GetSession()->SendPacket(&data);

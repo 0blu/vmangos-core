@@ -41,6 +41,7 @@
 #include "Packets/Group.h"
 #include "Packets/Guild.h"
 #include "Packets/Misc.h"
+#include "Packets/Pet.h"
 #include "Packets/Query.h"
 #include "Packets/Spell.h"
 
@@ -750,7 +751,7 @@ class WorldSession
         //Pet
         void HandlePetAction(WorldPacket& recv_data);
         void HandlePetStopAttack(WorldPacket& recv_data);
-        void HandlePetNameQueryOpcode(WorldPacket& recv_data);
+        void HandlePetNameQueryOpcode(WorldPackets::Pet::QueryPetName const& packet);
         void HandlePetSetAction(WorldPacket& recv_data);
         void HandlePetAbandon(WorldPacket& recv_data);
         void HandlePetRename(WorldPacket& recv_data);
