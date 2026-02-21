@@ -922,13 +922,6 @@ void WorldSession::Handle_ServerSide(WorldPacket& recvPacket)
                   recvPacket.GetOpcode());
 }
 
-void WorldSession::Handle_Deprecated(WorldPacket& recvPacket)
-{
-    sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "SESSION: received deprecated opcode %s (0x%.4X)",
-                  LookupOpcodeName(recvPacket.GetOpcode()),
-                  recvPacket.GetOpcode());
-}
-
 void WorldSession::SendAuthWaitQue(uint32 position)
 {
     if (position == 0)
