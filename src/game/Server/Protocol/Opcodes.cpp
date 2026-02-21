@@ -242,7 +242,7 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(SMSG_GUILD_EVENT,                  Reason::SendByServer);
     INVALID_PACKET(SMSG_GUILD_COMMAND_RESULT,         Reason::SendByServer);
     INVALID_PACKET(MSG_UPDATE_GUILD,                  Reason::Unhandled);
-    LEGACY_HANDLER(CMSG_MESSAGECHAT,                  STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleMessagechatOpcode);
+    DEFINE_HANDLER(CMSG_MESSAGECHAT,                  STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleChatMessageOpcode);
     INVALID_PACKET(SMSG_MESSAGECHAT,                  Reason::SendByServer);
     DEFINE_HANDLER(CMSG_JOIN_CHANNEL,                 STATUS_LOGGEDIN,  PACKET_PROCESS_CHANNEL,       &WorldSession::HandleJoinChannelOpcode);
     LEGACY_HANDLER(CMSG_LEAVE_CHANNEL,                STATUS_LOGGEDIN,  PACKET_PROCESS_CHANNEL,       &WorldSession::HandleLeaveChannelOpcode);

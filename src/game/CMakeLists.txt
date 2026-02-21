@@ -198,6 +198,7 @@ set (game_SRCS
     Server/Protocol/Opcodes.cpp
     Server/Packets/Channel.cpp
     Server/Packets/Character.cpp
+    Server/Packets/Chat.cpp
     Server/Packets/Group.cpp
     Server/Packets/Guild.cpp
     Server/Packets/Item.cpp
@@ -433,6 +434,7 @@ set (game_SRCS
     Server/Packet.h
     Server/Packets/Channel.h
     Server/Packets/Character.h
+    Server/Packets/Chat.h
     Server/Packets/Group.h
     Server/Packets/Guild.h
     Server/Packets/Item.h

@@ -41,34 +41,38 @@
 #include "Anticheat.h"
 #include "AccountMgr.h"
 
-bool WorldSession::CheckChatMessageValidity(char* msg, uint32 lang, uint32 msgType)
+bool WorldSession::SanitizeChatMessage(std::string& msg, uint32 lang, uint32 msgType)
 {
-    if (lang != LANG_ADDON)
-    {
-        // strip invisible characters for non-addon messages
-        if (sWorld.getConfig(CONFIG_BOOL_CHAT_FAKE_MESSAGE_PREVENTING))
-            stripLineInvisibleChars(msg);
+    if (msg.empty())
+        return false;
 
-        if (sWorld.getConfig(CONFIG_UINT32_CHAT_STRICT_LINK_CHECKING_SEVERITY) && !ChatHandler(this).isValidChatMessage(msg))
-        {
-            sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "Player %s (GUID: %u) sent a chatmessage with an invalid link: %s", GetPlayer()->GetName(),
-                GetPlayer()->GetGUIDLow(), msg);
-            if (sWorld.getConfig(CONFIG_UINT32_CHAT_STRICT_LINK_CHECKING_KICK))
-                KickPlayer();
-            return false;
-        }
+    if (lang == LANG_ADDON)
+        return true; // dont verify addon chat
+
+    if (sWorld.getConfig(CONFIG_BOOL_CHAT_FAKE_MESSAGE_PREVENTING))
+        stripLineInvisibleChars(msg); // modifies `msg`
+
+    if (sWorld.getConfig(CONFIG_UINT32_CHAT_STRICT_LINK_CHECKING_SEVERITY) && !ChatHandler(this).isValidChatMessage(msg))
+    {
+        sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "Player %s (GUID: %u) sent a chatmessage with an invalid link: %s", GetPlayer()->GetName(), GetPlayer()->GetGUIDLow(), msg);
+        if (sWorld.getConfig(CONFIG_UINT32_CHAT_STRICT_LINK_CHECKING_KICK))
+            KickPlayer();
+        return false;
     }
+
     return true;
 }
 
-bool WorldSession::ProcessChatMessageAfterSecurityCheck(char* msg, uint32 lang, uint32 msgType)
+bool WorldSession::SanitizeChatMessageAndProcessCommand(std::string& msg, uint32 lang, uint32 msgType)
 {
-    if (!CheckChatMessageValidity(msg, lang, msgType))
-        return false;
+    if (!SanitizeChatMessage(msg, lang, msgType))
+        return false; // was invalid message
 
     ChatHandler handler(this);
+    if (handler.ParseCommands(msg.c_str()) == ParseCommandResult::CommandDetectedAndHandled)
+        return false; // was handled
 
-    return !handler.ParseCommands(msg);
+    return true;
 }
 
 bool WorldSession::IsLanguageAllowedForChatType(uint32 lang, uint32 msgType)
@@ -146,13 +150,10 @@ uint32_t WorldSession::ChatCooldown()
     return 0;
 }
 
-void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
+void WorldSession::HandleChatMessageOpcode(WorldPackets::Chat::ChatMessage const& packet)
 {
-    uint32 type;
-    uint32 lang;
-
-    recv_data >> type;
-    recv_data >> lang;
+    uint32 type = packet.type;
+    uint32 lang = packet.lang;
 
     if (type >= MAX_CHAT_MSG_TYPE)
     {
@@ -241,68 +242,14 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
         }
     }
 
-    char* msg = nullptr;
-    size_t msgLen = 0;
-    std::string channel, to;
+    std::string msgSanitized = packet.message;
+    if (!SanitizeChatMessageAndProcessCommand(msgSanitized, lang, type)) // <-- includes `CheckChatMessageValidity`
+        return;
 
-    // Message parsing
-    switch (type)
-    {
-        case CHAT_MSG_CHANNEL:
-        {
-            recv_data >> channel;
-            recv_data.ReadCString(msg, msgLen);
-
-            if (!ProcessChatMessageAfterSecurityCheck(msg, lang, type))
-                return;
-
-            if (!msgLen)
-                return;
-
-            break;
-        }
-        case CHAT_MSG_WHISPER:
-        {
-            recv_data >> to;
-            // no break
-        }
-        case CHAT_MSG_SAY:
-        case CHAT_MSG_EMOTE:
-        case CHAT_MSG_YELL:
-        case CHAT_MSG_PARTY:
-        case CHAT_MSG_GUILD:
-        case CHAT_MSG_OFFICER:
-        case CHAT_MSG_RAID:
-#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_10_2
-        case CHAT_MSG_RAID_LEADER:
-        case CHAT_MSG_RAID_WARNING:
-#endif
-#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_11_2
-        case CHAT_MSG_BATTLEGROUND:
-        case CHAT_MSG_BATTLEGROUND_LEADER:
-#endif
-        {
-            recv_data.ReadCString(msg, msgLen);
-            if (!ProcessChatMessageAfterSecurityCheck(msg, lang, type))
-                return;
-            if (!msgLen)
-                return;
-            break;
-        }
-        case CHAT_MSG_AFK:
-        case CHAT_MSG_DND:
-        {
-            recv_data.ReadCString(msg, msgLen);
-            if (!CheckChatMessageValidity(msg, lang, type))
-                return;
-            break;
-        }
-        default:
-        {
-            sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "CHAT: unknown message type %u, lang: %u", type, lang);
-            return;
-        }
-    }
+    std::string channel = packet.whisperTargetOrChannel;
+    std::string to = packet.whisperTargetOrChannel;
+    char const* msg = msgSanitized.c_str();
+    size_t msgLen = msgSanitized.length();
 
     /** Enable various spam chat detections */
     if (lang != LANG_ADDON)
@@ -690,7 +637,6 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
                     _player->ToggleDND();
             }
         }
-
         break;
 
         case CHAT_MSG_DND:
@@ -709,8 +655,13 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
                     _player->ToggleAFK();
             }
         }
-
         break;
+
+        default:
+        {
+            sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "CHAT: Unknown message type %u, lang: %u sent by %s", type, lang, _player->GetName());
+            return;
+        }
     }
 }
 
