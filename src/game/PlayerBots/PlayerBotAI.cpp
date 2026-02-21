@@ -46,7 +46,7 @@ void PlayerBotAI::UpdateAI(uint32 const diff)
         me->GetSession()->HandleMoveTeleportAckOpcode(data);
     }
     if (me->IsBeingTeleportedFar())
-        me->GetSession()->HandleMoveWorldportAckOpcode();
+        me->GetSession()->HandleMoveWorldportAck();
 }
 
 void PlayerBotAI::Remove()

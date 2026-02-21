@@ -692,7 +692,7 @@ void WorldSession::LogoutPlayer(bool Save)
         // this should fix players being able to logout and login back with full hp at death position
         while (_player->IsBeingTeleportedFar())
         {
-            HandleMoveWorldportAckOpcode();
+            HandleMoveWorldportAck();
             sMapMgr.ExecuteSingleDelayedTeleport(_player); // Execute chain teleport if there are some
         }
 
@@ -707,7 +707,7 @@ void WorldSession::LogoutPlayer(bool Save)
             // loading screen during the teleport into bg when joining
             while (_player->IsBeingTeleportedFar())
             {
-                HandleMoveWorldportAckOpcode();
+                HandleMoveWorldportAck();
                 sMapMgr.ExecuteSingleDelayedTeleport(_player);
             }
         }
