@@ -165,7 +165,7 @@ void WorldSession::HandleBattlemasterJoinOpcode(WorldPacket& recv_data)
     // ignore if player is already in BG
     if (_player->InBattleGround())
         return;
-    
+
     // get bg instance or bg template if instance not found
     BattleGround *bg = nullptr;
     if (instanceId)
@@ -255,7 +255,7 @@ void WorldSession::HandleBattlemasterJoinOpcode(WorldPacket& recv_data)
         {
             Player* member = itr->getSource();
             if (!member) continue;  // this should never happen
-            
+
             if (std::find(excludedMembers.begin(), excludedMembers.end(), member->GetGUIDLow()) != excludedMembers.end())
             {
                 WorldPacket data;
@@ -310,7 +310,7 @@ void WorldSession::HandleBattleGroundPlayerPositionsOpcode(WorldPacket& /*recv_d
         }
     }
     data.put<uint32>(countPos, count);
-    
+
     switch (bg->GetTypeID())
     {
         case BATTLEGROUND_WS:
