@@ -371,7 +371,7 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(SMSG_OPEN_CONTAINER,               Reason::SendByServer);
     LEGACY_HANDLER(CMSG_INSPECT,                      STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleInspectOpcode);
     INVALID_PACKET(SMSG_INSPECT,                      Reason::SendByServer);
-    LEGACY_HANDLER(CMSG_INITIATE_TRADE,               STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleInitiateTradeOpcode);
+    DEFINE_HANDLER(CMSG_INITIATE_TRADE,               STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleInitiateTradeOpcode);
     LEGACY_HANDLER(CMSG_BEGIN_TRADE,                  STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleBeginTradeOpcode);
     LEGACY_HANDLER(CMSG_BUSY_TRADE,                   STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleBusyTradeOpcode);
     LEGACY_HANDLER(CMSG_IGNORE_TRADE,                 STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleIgnoreTradeOpcode);
