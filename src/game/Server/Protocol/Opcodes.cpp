@@ -313,7 +313,7 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(MSG_MOVE_TOGGLE_COLLISION_CHEAT,   Reason::Unhandled);
     DEFINE_HANDLER(MSG_MOVE_SET_FACING,               STATUS_LOGGEDIN,  PACKET_PROCESS_MOVEMENT,      &WorldSession::HandleMovementOpcodes);
     DEFINE_HANDLER(MSG_MOVE_SET_PITCH,                STATUS_LOGGEDIN,  PACKET_PROCESS_MOVEMENT,      &WorldSession::HandleMovementOpcodes);
-    LEGACY_HANDLER(MSG_MOVE_WORLDPORT_ACK,            STATUS_TRANSFER,  PACKET_PROCESS_WORLD,         &WorldSession::HandleMoveWorldportAckOpcode);
+    DEFINE_HANDLER(MSG_MOVE_WORLDPORT_ACK,            STATUS_TRANSFER,  PACKET_PROCESS_WORLD,         &WorldSession::HandleMoveWorldportAckOpcode);
     INVALID_PACKET(SMSG_MONSTER_MOVE,                 Reason::SendByServer);
     INVALID_PACKET(SMSG_MOVE_WATER_WALK,              Reason::SendByServer);
     INVALID_PACKET(SMSG_MOVE_LAND_WALK,               Reason::SendByServer);
