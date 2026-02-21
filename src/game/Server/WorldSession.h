@@ -40,6 +40,7 @@
 #include "Packets/Character.h"
 #include "Packets/Group.h"
 #include "Packets/Guild.h"
+#include "Packets/Item.h"
 #include "Packets/Misc.h"
 #include "Packets/Pet.h"
 #include "Packets/Query.h"
@@ -654,12 +655,11 @@ class WorldSession
         void HandleQueryNextMailTime(WorldPacket& recv_data);
         void HandleCancelChanneling(WorldPacket& recv_data);
 
-        void SendItemPageInfo(ItemPrototype *itemProto);
         void HandleSplitItemOpcode(WorldPacket& recvPacket);
         void HandleSwapInvItemOpcode(WorldPacket& recvPacket);
         void HandleDestroyItemOpcode(WorldPacket& recvPacket);
         void HandleAutoEquipItemOpcode(WorldPacket& recvPacket);
-        void HandleItemQuerySingleOpcode(WorldPacket& recvPacket);
+        void HandleItemQuerySingleOpcode(WorldPackets::Item::QueryItem const& packet);
         void HandleSellItemOpcode(WorldPacket& recvPacket);
         void HandleBuyItemInSlotOpcode(WorldPacket& recvPacket);
         void HandleBuyItemOpcode(WorldPacket& recvPacket);

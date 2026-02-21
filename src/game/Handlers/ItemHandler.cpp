@@ -284,158 +284,152 @@ void WorldSession::HandleDestroyItemOpcode(WorldPacket& recv_data)
 }
 
 // Only _static_ data send in this packet !!!
-void WorldSession::HandleItemQuerySingleOpcode(WorldPacket& recv_data)
+void WorldSession::HandleItemQuerySingleOpcode(WorldPackets::Item::QueryItem const& packet)
 {
-    //sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "WORLD: CMSG_ITEM_QUERY_SINGLE");
-    uint32 item;
-    recv_data >> item;
-    recv_data.read_skip<uint64>();                          // guid
-
-    ItemPrototype const* pProto = sObjectMgr.GetItemPrototype(item);
-    if (pProto && (pProto->Discovered || (GetSecurity() > SEC_PLAYER)))
+    ItemPrototype const* pProto = sObjectMgr.GetItemPrototype(packet.itemEntry);
+    if (!pProto || (!pProto->Discovered && GetSecurity() <= SEC_PLAYER))
     {
-        char const* name        = pProto->Name1;
-        char const* description = pProto->Description;
+        WorldPacket data(SMSG_ITEM_QUERY_SINGLE_RESPONSE, 4);
+        data << uint32(packet.itemEntry | 0x80000000);
+        SendPacket(&data);
+        return;
+    }
 
-        int loc_idx = GetSessionDbLocaleIndex();
-        if (loc_idx >= 0)
+    char const* name        = pProto->Name1;
+    char const* description = pProto->Description;
+
+    int loc_idx = GetSessionDbLocaleIndex();
+    if (loc_idx >= 0)
+    {
+        ItemLocale const* il = sObjectMgr.GetItemLocale(pProto->ItemId);
+        if (il)
         {
-            ItemLocale const* il = sObjectMgr.GetItemLocale(pProto->ItemId);
-            if (il)
-            {
-                if (il->Name.size() > size_t(loc_idx) && !il->Name[loc_idx].empty())
-                    name = il->Name[loc_idx].c_str();
-                if (il->Description.size() > size_t(loc_idx) && !il->Description[loc_idx].empty())
-                    description = il->Description[loc_idx].c_str();
-            }
+            if (il->Name.size() > size_t(loc_idx) && !il->Name[loc_idx].empty())
+                name = il->Name[loc_idx].c_str();
+            if (il->Description.size() > size_t(loc_idx) && !il->Description[loc_idx].empty())
+                description = il->Description[loc_idx].c_str();
         }
-        // guess size
-        WorldPacket data(SMSG_ITEM_QUERY_SINGLE_RESPONSE, 600);
-        data << pProto->ItemId;
-        data << pProto->Class;
-        // client known only 0 subclass (and 1-2 obsolute subclasses)
-        data << (pProto->Class == ITEM_CLASS_CONSUMABLE ? uint32(0) : pProto->SubClass);
-        data << name;                                       // max length of any of 4 names: 256 bytes
-        data << uint8(0x00);                                //pProto->Name2; // blizz not send name there, just uint8(0x00); <-- \0 = empty string = empty name...
-        data << uint8(0x00);                                //pProto->Name3; // blizz not send name there, just uint8(0x00);
-        data << uint8(0x00);                                //pProto->Name4; // blizz not send name there, just uint8(0x00);
-        data << pProto->DisplayInfoID;
-        data << pProto->Quality;
-        data << pProto->Flags;
-        data << pProto->BuyPrice;
-        data << pProto->SellPrice;
-        data << pProto->InventoryType;
-        data << pProto->AllowableClass;
-        data << pProto->AllowableRace;
-        data << pProto->ItemLevel;
-        data << pProto->RequiredLevel;
-        data << pProto->RequiredSkill;
-        data << pProto->RequiredSkillRank;
-        data << pProto->RequiredSpell;
-        data << pProto->RequiredHonorRank;
-        data << pProto->RequiredCityRank;
+    }
+    // guess size
+    WorldPacket data(SMSG_ITEM_QUERY_SINGLE_RESPONSE, 600);
+    data << pProto->ItemId;
+    data << pProto->Class;
+    // client known only 0 subclass (and 1-2 obsolute subclasses)
+    data << (pProto->Class == ITEM_CLASS_CONSUMABLE ? uint32(0) : pProto->SubClass);
+    data << name;                                       // max length of any of 4 names: 256 bytes
+    data << "";                                         //pProto->Name2; // blizz not send name there, just empty string
+    data << "";                                         //pProto->Name3; // blizz not send name there, just empty string
+    data << "";                                         //pProto->Name4; // blizz not send name there, just empty string
+    data << pProto->DisplayInfoID;
+    data << pProto->Quality;
+    data << pProto->Flags;
+    data << pProto->BuyPrice;
+    data << pProto->SellPrice;
+    data << pProto->InventoryType;
+    data << pProto->AllowableClass;
+    data << pProto->AllowableRace;
+    data << pProto->ItemLevel;
+    data << pProto->RequiredLevel;
+    data << pProto->RequiredSkill;
+    data << pProto->RequiredSkillRank;
+    data << pProto->RequiredSpell;
+    data << pProto->RequiredHonorRank;
+    data << pProto->RequiredCityRank;
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_6_1
-        data << pProto->RequiredReputationFaction;
-        data << (pProto->RequiredReputationFaction > 0  ? pProto->RequiredReputationRank : 0);   // send value only if reputation faction id setted (needed for some items)
+    data << pProto->RequiredReputationFaction;
+    data << (pProto->RequiredReputationFaction > 0  ? pProto->RequiredReputationRank : 0);   // send value only if reputation faction id setted (needed for some items)
 #endif
-        data << pProto->MaxCount;
-        data << pProto->Stackable;
-        data << pProto->ContainerSlots;
-        for (const auto& i : pProto->ItemStat)
-        {
-            data << i.ItemStatType;
-            data << i.ItemStatValue;
-        }
-        for (const auto& i : pProto->Damage)
-        {
-            data << i.DamageMin;
-            data << i.DamageMax;
-            data << i.DamageType;
-        }
+    data << pProto->MaxCount;
+    data << pProto->Stackable;
+    data << pProto->ContainerSlots;
+    for (const auto& i : pProto->ItemStat)
+    {
+        data << i.ItemStatType;
+        data << i.ItemStatValue;
+    }
+    for (const auto& i : pProto->Damage)
+    {
+        data << i.DamageMin;
+        data << i.DamageMax;
+        data << i.DamageType;
+    }
 
-        // resistances (7)
-        data << pProto->Armor;
-        data << pProto->HolyRes;
-        data << pProto->FireRes;
-        data << pProto->NatureRes;
-        data << pProto->FrostRes;
-        data << pProto->ShadowRes;
-        data << pProto->ArcaneRes;
+    // resistances (7)
+    data << pProto->Armor;
+    data << pProto->HolyRes;
+    data << pProto->FireRes;
+    data << pProto->NatureRes;
+    data << pProto->FrostRes;
+    data << pProto->ShadowRes;
+    data << pProto->ArcaneRes;
 
-        data << pProto->Delay;
-        data << pProto->AmmoType;
+    data << pProto->Delay;
+    data << pProto->AmmoType;
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
-        data << (float)pProto->RangedModRange;
+    data << (float)pProto->RangedModRange;
 #endif
 
-        for (const auto& itr : pProto->Spells)
+    for (const auto& itr : pProto->Spells)
+    {
+        // send DBC data for cooldowns in same way as it used in Spell::SendSpellCooldown
+        // use `item_template` or if not set then only use spell cooldowns
+        SpellEntry const* spell = sSpellMgr.GetSpellEntry(itr.SpellId);
+        if (spell)
         {
-            // send DBC data for cooldowns in same way as it used in Spell::SendSpellCooldown
-            // use `item_template` or if not set then only use spell cooldowns
-            SpellEntry const* spell = sSpellMgr.GetSpellEntry(itr.SpellId);
-            if (spell)
+            bool db_data = itr.SpellCooldown >= 0 || itr.SpellCategoryCooldown >= 0;
+
+            data << itr.SpellId;
+            data << itr.SpellTrigger;
+
+            // let the database control the sign here.  negative means that the item should be consumed once the charges are consumed.
+            data << itr.SpellCharges;
+
+            if (db_data)
             {
-                bool db_data = itr.SpellCooldown >= 0 || itr.SpellCategoryCooldown >= 0;
-
-                data << itr.SpellId;
-                data << itr.SpellTrigger;
-
-                // let the database control the sign here.  negative means that the item should be consumed once the charges are consumed.
-                data << itr.SpellCharges;
-
-                if (db_data)
-                {
-                    data << uint32(itr.SpellCooldown);
-                    data << uint32(itr.SpellCategory);
-                    data << uint32(itr.SpellCategoryCooldown);
-                }
-                else
-                {
-                    data << uint32(spell->RecoveryTime);
-                    data << uint32(spell->Category);
-                    data << uint32(spell->CategoryRecoveryTime);
-                }
+                data << uint32(itr.SpellCooldown);
+                data << uint32(itr.SpellCategory);
+                data << uint32(itr.SpellCategoryCooldown);
             }
             else
             {
-                data << uint32(0);
-                data << uint32(0);
-                data << uint32(0);
-                data << uint32(-1);
-                data << uint32(0);
-                data << uint32(-1);
+                data << uint32(spell->RecoveryTime);
+                data << uint32(spell->Category);
+                data << uint32(spell->CategoryRecoveryTime);
             }
         }
-        data << pProto->Bonding;
-        data << description;
-        data << pProto->PageText;
-        data << pProto->LanguageID;
-        data << pProto->PageMaterial;
-        data << pProto->StartQuest;
-        data << pProto->LockID;
-        data << pProto->Material;
-        data << pProto->Sheath;
-        data << pProto->RandomProperty;
-        data << pProto->Block;
-        data << pProto->ItemSet;
-        data << pProto->MaxDurability;
+        else
+        {
+            data << uint32(0);
+            data << uint32(0);
+            data << uint32(0);
+            data << uint32(-1);
+            data << uint32(0);
+            data << uint32(-1);
+        }
+    }
+    data << pProto->Bonding;
+    data << description;
+    data << pProto->PageText;
+    data << pProto->LanguageID;
+    data << pProto->PageMaterial;
+    data << pProto->StartQuest;
+    data << pProto->LockID;
+    data << pProto->Material;
+    data << pProto->Sheath;
+    data << pProto->RandomProperty;
+    data << pProto->Block;
+    data << pProto->ItemSet;
+    data << pProto->MaxDurability;
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_6_1
-        data << pProto->Area;
+    data << pProto->Area;
 #endif
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_10_2
-        data << pProto->Map;
+    data << pProto->Map;
 #endif
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
-        data << pProto->BagFamily;
+    data << pProto->BagFamily;
 #endif
-        SendPacket(&data);
-    }
-    else
-    {
-        WorldPacket data(SMSG_ITEM_QUERY_SINGLE_RESPONSE, 4);
-        data << uint32(item | 0x80000000);
-        SendPacket(&data);
-    }
+    SendPacket(&data);
 }
 
 void WorldSession::HandleReadItemOpcode(WorldPacket& recv_data)
@@ -517,7 +511,7 @@ void WorldSession::HandleSellItemOpcode(WorldPacket& recv_data)
     }
 
     // prevent selling item in bank slot
-    if (_player->IsBankPos(pItem->GetPos())) 
+    if (_player->IsBankPos(pItem->GetPos()))
     {
         _player->SendSellError(SELL_ERR_CANT_SELL_ITEM, pCreature, itemGuid, 0);
         return;
@@ -1139,7 +1133,7 @@ void WorldSession::HandleItemNameQueryOpcode(WorldPacket& recv_data)
                     name = il->Name[loc_idx].c_str();
             }
         }
-        
+
         size_t const nameLen = strlen(name) + 1;
 
         WorldPacket data(SMSG_ITEM_NAME_QUERY_RESPONSE, (4 + nameLen));
@@ -1232,7 +1226,7 @@ void WorldSession::HandleWrapItemOpcode(WorldPacket& recv_data)
 
     CharacterDatabase.BeginTransaction(_player->GetGUIDLow());
     CharacterDatabase.PExecute("INSERT INTO character_gifts VALUES ('%u', '%u', '%u', '%u')", item->GetOwnerGuid().GetCounter(), item->GetGUIDLow(), item->GetEntry(), item->GetUInt32Value(ITEM_FIELD_FLAGS));
-    
+
     item->SetEntry(gift->GetProto()->WrappedGift);
     item->SetGuidValue(ITEM_FIELD_GIFTCREATOR, _player->GetObjectGuid());
     item->SetUInt32Value(ITEM_FIELD_FLAGS, ITEM_DYNFLAG_WRAPPED);

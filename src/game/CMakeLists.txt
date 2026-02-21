@@ -200,6 +200,7 @@ set (game_SRCS
     Server/Packets/Character.cpp
     Server/Packets/Group.cpp
     Server/Packets/Guild.cpp
+    Server/Packets/Item.cpp
     Server/Packets/Misc.cpp
     Server/Packets/Pet.cpp
     Server/Packets/Query.cpp
@@ -433,6 +434,7 @@ set (game_SRCS
     Server/Packets/Character.h
     Server/Packets/Group.h
     Server/Packets/Guild.h
+    Server/Packets/Item.h
     Server/Packets/Misc.h
     Server/Packets/Pet.h
     Server/Packets/Query.h

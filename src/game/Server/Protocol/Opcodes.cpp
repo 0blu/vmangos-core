@@ -179,7 +179,7 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(SMSG_PET_NAME_QUERY_RESPONSE,      Reason::SendByServer);
     LEGACY_HANDLER(CMSG_GUILD_QUERY,                  STATUS_AUTHED,    PACKET_PROCESS_GUILD,         &WorldSession::HandleGuildQueryOpcode);
     INVALID_PACKET(SMSG_GUILD_QUERY_RESPONSE,         Reason::SendByServer);
-    LEGACY_HANDLER(CMSG_ITEM_QUERY_SINGLE,            STATUS_LOGGEDIN,  PACKET_PROCESS_DB_QUERY,      &WorldSession::HandleItemQuerySingleOpcode);
+    DEFINE_HANDLER(CMSG_ITEM_QUERY_SINGLE,            STATUS_LOGGEDIN,  PACKET_PROCESS_DB_QUERY,      &WorldSession::HandleItemQuerySingleOpcode);
     INVALID_PACKET(CMSG_ITEM_QUERY_MULTIPLE,          Reason::Unhandled);
     INVALID_PACKET(SMSG_ITEM_QUERY_SINGLE_RESPONSE,   Reason::SendByServer);
     INVALID_PACKET(SMSG_ITEM_QUERY_MULTIPLE_RESPONSE, Reason::SendByServer);
