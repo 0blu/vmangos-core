@@ -27,11 +27,8 @@
 #include "UpdateData.h"
 #include "Player.h"
 
-void WorldSession::HandleDuelAcceptedOpcode(WorldPacket& recvPacket)
+void WorldSession::HandleDuelAcceptedOpcode(WorldPackets::Duel::DuelAccepted const& packet)
 {
-    ObjectGuid guid;
-    recvPacket >> guid;
-
     if (!GetPlayer()->m_duel)                                 // ignore accept from duel-sender
         return;
 

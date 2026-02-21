@@ -461,7 +461,7 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(SMSG_DUEL_INBOUNDS,                Reason::SendByServer);
     INVALID_PACKET(SMSG_DUEL_COMPLETE,                Reason::SendByServer);
     INVALID_PACKET(SMSG_DUEL_WINNER,                  Reason::SendByServer);
-    LEGACY_HANDLER(CMSG_DUEL_ACCEPTED,                STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleDuelAcceptedOpcode);
+    DEFINE_HANDLER(CMSG_DUEL_ACCEPTED,                STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleDuelAcceptedOpcode);
     LEGACY_HANDLER(CMSG_DUEL_CANCELLED,               STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleDuelCancelledOpcode);
     INVALID_PACKET(SMSG_MOUNTRESULT,                  Reason::SendByServer);
     INVALID_PACKET(SMSG_DISMOUNTRESULT,               Reason::SendByServer);
