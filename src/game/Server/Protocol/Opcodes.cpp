@@ -357,7 +357,7 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(SMSG_TEXT_EMOTE,                   Reason::SendByServer);
     INVALID_PACKET(CMSG_AUTOEQUIP_GROUND_ITEM,        Reason::Unhandled);
     INVALID_PACKET(CMSG_AUTOSTORE_GROUND_ITEM,        Reason::Unhandled);
-    LEGACY_HANDLER(CMSG_AUTOSTORE_LOOT_ITEM,          STATUS_LOGGEDIN,  PACKET_PROCESS_SELF_ITEMS,    &WorldSession::HandleAutostoreLootItemOpcode);
+    DEFINE_HANDLER(CMSG_AUTOSTORE_LOOT_ITEM,          STATUS_LOGGEDIN,  PACKET_PROCESS_SELF_ITEMS,    &WorldSession::HandleAutostoreLootItemOpcode);
     INVALID_PACKET(CMSG_STORE_LOOT_IN_SLOT,           Reason::Unhandled);
     LEGACY_HANDLER(CMSG_AUTOEQUIP_ITEM,               STATUS_LOGGEDIN,  PACKET_PROCESS_SELF_ITEMS,    &WorldSession::HandleAutoEquipItemOpcode);
     LEGACY_HANDLER(CMSG_AUTOSTORE_BAG_ITEM,           STATUS_LOGGEDIN,  PACKET_PROCESS_SELF_ITEMS,    &WorldSession::HandleAutoStoreBagItemOpcode);

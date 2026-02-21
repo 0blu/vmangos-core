@@ -44,6 +44,7 @@
 #include "Packets/Group.h"
 #include "Packets/Guild.h"
 #include "Packets/Item.h"
+#include "Packets/Loot.h"
 #include "Packets/Mail.h"
 #include "Packets/Misc.h"
 #include "Packets/Movement.h"
@@ -504,7 +505,7 @@ class WorldSession
         void HandlePingOpcode(WorldPacket& recvPacket);
         void HandleAuthSessionOpcode(WorldPacket& recvPacket);
         void HandleRepopRequestOpcode(WorldPacket& recvPacket);
-        void HandleAutostoreLootItemOpcode(WorldPacket& recvPacket);
+        void HandleAutostoreLootItemOpcode(WorldPackets::Loot::AutoStoreLootItem const& packet);
         void HandleLootMoneyOpcode(WorldPacket& recvPacket);
         void HandleLootOpcode(WorldPacket& recvPacket);
         void HandleLootReleaseOpcode(WorldPacket& recvPacket);

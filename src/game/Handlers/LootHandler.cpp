@@ -39,15 +39,14 @@
 #include "Util.h"
 #include "Anticheat.h"
 
-void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
+void WorldSession::HandleAutostoreLootItemOpcode(WorldPackets::Loot::AutoStoreLootItem const& packet)
 {
-    Player  *player =   GetPlayer();
-    ObjectGuid lguid = player->GetLootGuid();
-    Loot    *loot;
-    uint8    lootSlot;
-    Item* pItem = nullptr;
+    uint8 lootSlot = packet.lootSlot;
 
-    recv_data >> lootSlot;
+    Player*    player = GetPlayer();
+    ObjectGuid lguid = player->GetLootGuid();
+    Loot*      loot;
+    Item*      pItem = nullptr;
 
     if (lguid.IsEmpty())
         return;
