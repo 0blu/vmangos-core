@@ -235,7 +235,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
                     return;
                 }
             }
-            
+
             if (lang != LANG_ADDON && GetMasterPlayer())
                 GetMasterPlayer()->UpdateSpeakTime(); // Anti chat flood
         }
@@ -244,7 +244,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
     char* msg = nullptr;
     size_t msgLen = 0;
     std::string channel, to;
-    
+
     // Message parsing
     switch (type)
     {
