@@ -185,7 +185,7 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(SMSG_ITEM_QUERY_MULTIPLE_RESPONSE, Reason::SendByServer);
     LEGACY_HANDLER(CMSG_PAGE_TEXT_QUERY,              STATUS_LOGGEDIN,  PACKET_PROCESS_DB_QUERY,      &WorldSession::HandlePageTextQueryOpcode);
     INVALID_PACKET(SMSG_PAGE_TEXT_QUERY_RESPONSE,     Reason::SendByServer);
-    LEGACY_HANDLER(CMSG_QUEST_QUERY,                  STATUS_LOGGEDIN,  PACKET_PROCESS_DB_QUERY,      &WorldSession::HandleQuestQueryOpcode);
+    DEFINE_HANDLER(CMSG_QUEST_QUERY,                  STATUS_LOGGEDIN,  PACKET_PROCESS_DB_QUERY,      &WorldSession::HandleQuestQueryOpcode);
     INVALID_PACKET(SMSG_QUEST_QUERY_RESPONSE,         Reason::SendByServer);
     LEGACY_HANDLER(CMSG_GAMEOBJECT_QUERY,             STATUS_LOGGEDIN,  PACKET_PROCESS_DB_QUERY,      &WorldSession::HandleGameObjectQueryOpcode);
     INVALID_PACKET(SMSG_GAMEOBJECT_QUERY_RESPONSE,    Reason::SendByServer);

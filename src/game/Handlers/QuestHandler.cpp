@@ -237,12 +237,9 @@ void WorldSession::HandleQuestgiverQueryQuestOpcode(WorldPacket& recv_data)
         _player->PlayerTalkClass->SendQuestGiverQuestDetails(pQuest, pObject->GetObjectGuid(), true);
 }
 
-void WorldSession::HandleQuestQueryOpcode(WorldPacket& recv_data)
+void WorldSession::HandleQuestQueryOpcode(WorldPackets::Quest::QueryQuest const& packet)
 {
-    uint32 quest;
-    recv_data >> quest;
-
-    Quest const* pQuest = sObjectMgr.GetQuestTemplate(quest);
+    Quest const* pQuest = sObjectMgr.GetQuestTemplate(packet.questEntry);
     if (!pQuest)
         return;
 

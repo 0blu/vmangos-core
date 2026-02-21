@@ -204,6 +204,7 @@ set (game_SRCS
     Server/Packets/Misc.cpp
     Server/Packets/Pet.cpp
     Server/Packets/Query.cpp
+    Server/Packets/Quest.cpp
     Server/Packets/Spell.cpp
     Server/WorldSession.cpp
     Server/WorldSocket.cpp
@@ -438,6 +439,7 @@ set (game_SRCS
     Server/Packets/Misc.h
     Server/Packets/Pet.h
     Server/Packets/Query.h
+    Server/Packets/Quest.h
     Server/Packets/Spell.h
     Server/WorldPacket.h
     Server/WorldSession.h
