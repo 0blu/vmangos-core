@@ -158,7 +158,7 @@ public:
 
             if (!(wguildName.empty() || wgname.find(wguildName) != std::wstring::npos))
                 continue;
-            
+
             uint32 pzoneId = pPlayer->GetCachedZoneId();
 
             bool zShow = true;
@@ -823,12 +823,12 @@ void WorldSession::HandleAreaTriggerOpcode(WorldPacket& recv_data)
     if (!pPlayer->IsGameMaster() && !pPlayer->HasCheatOption(PLAYER_CHEAT_TRIGGER_PASS))
     {
         // World of Warcraft Client Patch 1.4.1 (2005-05-03)
-        // - Added minimum level requirements to all instances to prevent 
+        // - Added minimum level requirements to all instances to prevent
         //   exploitive behavior.The minimum levels are very generous and should
         //   not affect the normal course of gameplay.
         bool const bLevelCheck = pPlayer->GetLevel() < pTeleTrigger->requiredLevel && !sWorld.getConfig(CONFIG_BOOL_INSTANCE_IGNORE_LEVEL) && sWorld.GetWowPatch() >= WOW_PATCH_104;
         bool const bConditionCheck = pTeleTrigger->requiredCondition && !IsConditionSatisfied(pTeleTrigger->requiredCondition, pPlayer, pPlayer->GetMap(), pPlayer, CONDITION_FROM_AREATRIGGER);
-        
+
         if (bLevelCheck || bConditionCheck)
         {
             if (pTeleTrigger->message.empty())
@@ -1252,6 +1252,7 @@ void WorldSession::HandleFarSightOpcode(WorldPacket& recv_data)
     if (!obj)
         return;
 
+    // op = 1 - op;
     switch (op)
     {
         case 0:
