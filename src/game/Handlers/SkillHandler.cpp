@@ -29,12 +29,9 @@
 #include "UpdateMask.h"
 #include "Anticheat.h"
 
-void WorldSession::HandleLearnTalentOpcode(WorldPacket& recv_data)
+void WorldSession::HandleLearnTalentOpcode(WorldPackets::Skill::LearnTalent const& packet)
 {
-    uint32 talent_id, requested_rank;
-    recv_data >> talent_id >> requested_rank;
-
-    _player->LearnTalent(talent_id, requested_rank);
+    _player->LearnTalent(packet.talent_id, packet.requested_rank);
 }
 
 void WorldSession::HandleTalentWipeConfirmOpcode(WorldPacket& recv_data)

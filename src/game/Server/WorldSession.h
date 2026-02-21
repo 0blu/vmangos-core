@@ -49,6 +49,7 @@
 #include "Packets/Pet.h"
 #include "Packets/Query.h"
 #include "Packets/Quest.h"
+#include "Packets/Skill.h"
 #include "Packets/Spell.h"
 
 struct ItemPrototype;
@@ -692,7 +693,7 @@ class WorldSession
         void HandleCancelGrowthAuraOpcode(WorldPacket& recvPacket);
         void HandleCancelAutoRepeatSpellOpcode(WorldPacket& recvPacket);
         void HandleSetActionBarTogglesOpcode(WorldPacket& recv_data);
-        void HandleLearnTalentOpcode(WorldPacket& recvPacket);
+        void HandleLearnTalentOpcode(WorldPackets::Skill::LearnTalent const& packet);
         void HandleTalentWipeConfirmOpcode(WorldPacket& recvPacket);
         void HandleUnlearnSkillOpcode(WorldPacket& recvPacket);
 
