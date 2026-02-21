@@ -30,11 +30,9 @@
 #include "Path.h"
 #include "WaypointMovementGenerator.h"
 
-void WorldSession::HandleTaxiNodeStatusQueryOpcode(WorldPacket& recv_data)
+void WorldSession::HandleTaxiNodeStatusQueryOpcode(WorldPackets::Taxi::TaxiNodeStatusQuery const& packet)
 {
-    ObjectGuid guid;
-    recv_data >> guid;
-    SendTaxiStatus(guid);
+    SendTaxiStatus(packet.creatureGuidNearTaxi);
 }
 
 void WorldSession::SendTaxiStatus(ObjectGuid guid)
