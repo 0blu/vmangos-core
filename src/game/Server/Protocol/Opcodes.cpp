@@ -387,7 +387,7 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(SMSG_SET_FACTION_VISIBLE,          Reason::SendByServer);
     INVALID_PACKET(SMSG_SET_FACTION_STANDING,         Reason::SendByServer);
     LEGACY_HANDLER(CMSG_SET_FACTION_ATWAR,            STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleSetFactionAtWarOpcode);
-    LEGACY_HANDLER(CMSG_SET_FACTION_CHEAT,            STATUS_NEVER,     PACKET_PROCESS_MAX_TYPE,      &WorldSession::Handle_Deprecated);
+    INVALID_PACKET(CMSG_SET_FACTION_CHEAT,            Reason::Unhandled);
     INVALID_PACKET(SMSG_SET_PROFICIENCY,              Reason::SendByServer);
     LEGACY_HANDLER(CMSG_SET_ACTION_BUTTON,            STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleSetActionButtonOpcode);
     INVALID_PACKET(SMSG_ACTION_BUTTONS,               Reason::SendByServer);
