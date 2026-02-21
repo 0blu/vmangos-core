@@ -38,10 +38,9 @@
 // post-incrementation is always slower than pre-incrementation !
 
 // void called when player click on auctioneer npc
-void WorldSession::HandleAuctionHelloOpcode(WorldPacket& recv_data)
+void WorldSession::HandleAuctionHelloOpcode(WorldPackets::AuctionHouse::AuctionHello const& packet)
 {
-    ObjectGuid auctioneerGuid;                              // NPC guid
-    recv_data >> auctioneerGuid;
+    ObjectGuid auctioneerGuid = packet.auctioneerGuid;
 
     Creature* unit = GetPlayer()->GetNPCIfCanInteractWith(auctioneerGuid, UNIT_NPC_FLAG_AUCTIONEER);
     if (!unit)
@@ -375,7 +374,7 @@ void WorldSession::HandleAuctionSellItem(WorldPacket& recv_data)
 
     if (GetSecurity() > SEC_PLAYER && sWorld.getConfig(CONFIG_BOOL_GM_LOG_TRADE))
     {
-        sLog.Player(GetAccountId(), LOG_GM, LOG_LVL_BASIC, 
+        sLog.Player(GetAccountId(), LOG_GM, LOG_LVL_BASIC,
             "GM %s (Account: %u) create auction: %s (Entry: %u Count: %u)",
             GetPlayerName(), GetAccountId(), it->GetProto()->Name1, it->GetEntry(), it->GetCount());
     }
@@ -401,7 +400,7 @@ void WorldSession::HandleAuctionSellItem(WorldPacket& recv_data)
     AH->auctionHouseEntry = auctionHouseEntry;
 
     sLog.Player(this, LOG_MONEY_TRADES, LOG_LVL_MINIMAL, "[AuctionHouse]: Player %s listing %s (%u) at auctioneer %s. Initial bid: %u, buyout: %u, duration: %u, auctionhouse: %u",
-                pl->GetShortDescription().c_str(), it->GetGuidStr().c_str(), it->GetEntry(), 
+                pl->GetShortDescription().c_str(), it->GetGuidStr().c_str(), it->GetEntry(),
                 auctioneerGuid.GetString().c_str(), bid, buyout, auction_time, AH->GetHouseId());
 
     // Log this transaction
