@@ -140,8 +140,8 @@ void WorldSession::HandlePetAction(WorldPacket& recv_data)
                 pCharmedUnit->SendPetCastFail(spellid, SPELL_FAILED_BAD_IMPLICIT_TARGETS);
                 return;
             }
-            
-            if (pUnitTarget == pCharmedUnit && 
+
+            if (pUnitTarget == pCharmedUnit &&
                 // Cannot cast negative spells on yourself. Handle it here since casting negative
                 // spells on yourself is frequently used within the core itself for certain mechanics.
                 ((explicitlySelectedTarget && !spellInfo->IsPositiveSpell(pCharmedUnit, pUnitTarget)) ||
