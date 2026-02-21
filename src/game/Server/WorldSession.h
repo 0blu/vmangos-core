@@ -44,6 +44,7 @@
 #include "Packets/Misc.h"
 #include "Packets/Pet.h"
 #include "Packets/Query.h"
+#include "Packets/Quest.h"
 #include "Packets/Spell.h"
 
 struct ItemPrototype;
@@ -695,7 +696,7 @@ class WorldSession
         void HandleQuestgiverQueryQuestOpcode(WorldPacket& recvPacket);
         void HandleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket);
         void HandleQuestgiverRequestRewardOpcode(WorldPacket& recvPacket);
-        void HandleQuestQueryOpcode(WorldPacket& recvPacket);
+        void HandleQuestQueryOpcode(WorldPackets::Quest::QueryQuest const& packet);
         void HandleQuestgiverCancel(WorldPacket& recv_data);
         void HandleQuestLogSwapQuest(WorldPacket& recv_data);
         void HandleQuestLogRemoveQuest(WorldPacket& recv_data);
