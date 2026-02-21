@@ -11,6 +11,7 @@ namespace WorldPackets { namespace Channel
         std::string channelName;
         std::string channelPassword;
 
+        explicit JoinChannel() : ClientPacket(CMSG_JOIN_CHANNEL) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
 }} // namespace WorldPackets::Channel

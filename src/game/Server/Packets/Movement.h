@@ -1,0 +1,19 @@
+#ifndef MANGOS_PACKETS_MOVEMENT_H
+#define MANGOS_PACKETS_MOVEMENT_H
+
+#include "Packet.h"
+#include "MovementInfo.h"
+
+namespace WorldPackets { namespace Movement
+{
+    class MovementPacket final : public ClientPacket
+    {
+    public:
+        MovementInfo movementInfo;
+
+        MovementPacket() : ClientPacket(OPCODE_WILL_BE_SET_IN_READ_FUNCTION) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+}} // namespace WorldPackets::Movement
+
+#endif // MANGOS_PACKETS_MOVEMENT_H

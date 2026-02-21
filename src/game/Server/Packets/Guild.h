@@ -10,6 +10,7 @@ namespace WorldPackets { namespace Guild
     public:
         std::string desiredGuildName;
 
+        explicit GuildCreate() : ClientPacket(CMSG_GUILD_CREATE) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
 }} // namespace WorldPackets::Guild

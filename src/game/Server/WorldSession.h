@@ -43,6 +43,7 @@
 #include "Packets/Guild.h"
 #include "Packets/Item.h"
 #include "Packets/Misc.h"
+#include "Packets/Movement.h"
 #include "Packets/Pet.h"
 #include "Packets/Query.h"
 #include "Packets/Quest.h"
@@ -477,7 +478,7 @@ class WorldSession
         void HandleForceSpeedChangeAckOpcodes(WorldPacket& recv_data);
         void HandleMoveWorldportAckOpcode(WorldPacket& recvPacket);
         void HandleMoveWorldportAckOpcode();                // for server-side calls
-        void HandleMovementOpcodes(WorldPacket& recvPacket);
+        void HandleMovementOpcodes(WorldPackets::Movement::MovementPacket const& packet);
         void HandleSetActiveMoverOpcode(WorldPacket& recv_data);
         void HandleMoveNotActiveMoverOpcode(WorldPacket& recv_data);
         void HandleMoveTimeSkippedOpcode(WorldPacket& recv_data);

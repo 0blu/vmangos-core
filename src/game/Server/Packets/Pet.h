@@ -13,6 +13,7 @@ namespace WorldPackets { namespace Pet
         uint32 petNumber;
         ObjectGuid petGuid;
 
+        explicit QueryPetName() : ClientPacket(CMSG_PET_NAME_QUERY), petNumber(0) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
 }} // namespace WorldPackets::Pet

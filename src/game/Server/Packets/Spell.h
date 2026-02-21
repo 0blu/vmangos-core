@@ -14,6 +14,7 @@ namespace WorldPackets { namespace Spell
         uint8 spellSlot; // the position of the spell id on the item template
         SpellCastTargetsInfo targets;
 
+        explicit UseItem() : ClientPacket(CMSG_USE_ITEM), bagIndex(0), slot(0), spellSlot(0) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
 }} // namespace WorldPackets::Spell

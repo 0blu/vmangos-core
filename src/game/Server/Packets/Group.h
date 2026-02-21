@@ -10,6 +10,7 @@ namespace WorldPackets { namespace Group
     public:
         std::string memberName;
 
+        explicit GroupInvite() : ClientPacket(CMSG_GROUP_INVITE) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
 }} // namespace WorldPackets::Group
