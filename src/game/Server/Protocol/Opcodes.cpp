@@ -699,7 +699,7 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(SMSG_PERIODICAURALOG,              Reason::SendByServer);
     INVALID_PACKET(SMSG_SPELLDAMAGESHIELD,            Reason::SendByServer);
     INVALID_PACKET(SMSG_SPELLNONMELEEDAMAGELOG,       Reason::SendByServer);
-    LEGACY_HANDLER(CMSG_LEARN_TALENT,                 STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleLearnTalentOpcode);
+    DEFINE_HANDLER(CMSG_LEARN_TALENT,                 STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleLearnTalentOpcode);
     INVALID_PACKET(SMSG_RESURRECT_FAILED,             Reason::SendByServer);
     LEGACY_HANDLER(CMSG_TOGGLE_PVP,                   STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleTogglePvP);
     INVALID_PACKET(SMSG_ZONE_UNDER_ATTACK,            Reason::SendByServer);
