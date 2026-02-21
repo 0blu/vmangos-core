@@ -213,6 +213,7 @@ set (game_SRCS
     Server/Packets/Movement.cpp
     Server/Packets/Npc.cpp
     Server/Packets/Pet.cpp
+    Server/Packets/Petition.cpp
     Server/Packets/Query.cpp
     Server/Packets/Quest.cpp
     Server/Packets/Skill.cpp
@@ -462,6 +463,7 @@ set (game_SRCS
     Server/Packets/Movement.h
     Server/Packets/Npc.h
     Server/Packets/Pet.h
+    Server/Packets/Petition.h
     Server/Packets/Query.h
     Server/Packets/Quest.h
     Server/Packets/Skill.h

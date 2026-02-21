@@ -535,14 +535,12 @@ void WorldSession::HandleTurnInPetitionOpcode(WorldPacket& recv_data)
     SendPacket(&data);
 }
 
-void WorldSession::HandlePetitionShowListOpcode(WorldPacket& recv_data)
+void WorldSession::HandlePetitionShowListOpcode(WorldPackets::Petition::PetitionShow const& packet)
 {
-    ObjectGuid guid;
-    recv_data >> guid;
-    SendPetitionShowList(guid);
+    SendPetitionShowList(packet.petitionerNpcGuid);
 }
 
-void WorldSession::SendPetitionShowList(ObjectGuid& guid)
+void WorldSession::SendPetitionShowList(ObjectGuid guid)
 {
     Creature* pCreature = GetPlayer()->GetNPCIfCanInteractWith(guid, UNIT_NPC_FLAG_PETITIONER);
     if (!pCreature)
