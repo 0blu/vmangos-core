@@ -470,7 +470,7 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(SMSG_MOUNTSPECIAL_ANIM,            Reason::SendByServer);
     INVALID_PACKET(SMSG_PET_TAME_FAILURE,             Reason::SendByServer);
     LEGACY_HANDLER(CMSG_PET_SET_ACTION,               STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandlePetSetAction);
-    LEGACY_HANDLER(CMSG_PET_ACTION,                   STATUS_LOGGEDIN,  PACKET_PROCESS_SPELLS,        &WorldSession::HandlePetAction);
+    DEFINE_HANDLER(CMSG_PET_ACTION,                   STATUS_LOGGEDIN,  PACKET_PROCESS_SPELLS,        &WorldSession::HandlePetAction);
     LEGACY_HANDLER(CMSG_PET_ABANDON,                  STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandlePetAbandon);
     LEGACY_HANDLER(CMSG_PET_RENAME,                   STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandlePetRename);
     INVALID_PACKET(SMSG_PET_NAME_INVALID,             Reason::SendByServer);

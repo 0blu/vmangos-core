@@ -32,14 +32,11 @@
 #include "Pet.h"
 #include "Group.h"
 
-void WorldSession::HandlePetAction(WorldPacket& recv_data)
+void WorldSession::HandlePetAction(WorldPackets::Pet::PetAction const& packet)
 {
-    ObjectGuid petGuid;
-    uint32 data;
-    ObjectGuid targetGuid;
-    recv_data >> petGuid;
-    recv_data >> data;
-    recv_data >> targetGuid;
+    ObjectGuid petGuid = packet.petGuid;
+    uint32 data = packet.data;
+    ObjectGuid targetGuid = packet.targetGuid;
 
     uint32 spellid = UNIT_ACTION_BUTTON_ACTION(data);
     uint8 flag = UNIT_ACTION_BUTTON_TYPE(data);             // delete = 0x07 CastSpell = C1
