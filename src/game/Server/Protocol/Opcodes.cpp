@@ -718,7 +718,7 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(SMSG_STANDSTATE_CHANGE_FAILURE,    Reason::SendByServer);
     INVALID_PACKET(SMSG_DISPEL_FAILED,                Reason::SendByServer);
     INVALID_PACKET(SMSG_SPELLORDAMAGE_IMMUNE,         Reason::SendByServer);
-    LEGACY_HANDLER(CMSG_AUCTION_LIST_BIDDER_ITEMS,    STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleAuctionListBidderItems);
+    DEFINE_HANDLER(CMSG_AUCTION_LIST_BIDDER_ITEMS,    STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleAuctionListBidderItems);
     INVALID_PACKET(SMSG_AUCTION_BIDDER_LIST_RESULT,   Reason::SendByServer);
     INVALID_PACKET(SMSG_SET_FLAT_SPELL_MODIFIER,      Reason::SendByServer);
     INVALID_PACKET(SMSG_SET_PCT_SPELL_MODIFIER,       Reason::SendByServer);
