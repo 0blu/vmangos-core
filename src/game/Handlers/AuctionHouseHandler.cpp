@@ -702,7 +702,6 @@ public:
                     data.SetOpcode(SMSG_AUCTION_BIDDER_LIST_RESULT);
                     for (const auto& outbiddedAuctionId : outbiddedAuctionIds)
                     {
-                        --outbiddedCount;
                         AuctionEntry* auction = auctionHouse->GetAuction(outbiddedAuctionId);
                         if (auction)
                         {
@@ -741,25 +740,12 @@ public:
 };
 
 // called when player lists his bids
-void WorldSession::HandleAuctionListBidderItems(WorldPacket& recv_data)
+void WorldSession::HandleAuctionListBidderItems(WorldPackets::AuctionHouse::AuctionListBidderItem const& packet)
 {
     if (ReceivedAHListRequest())
-        return;
+        return; // Only one AH request at a time is allowed
 
-    ObjectGuid auctioneerGuid;                              // NPC guid
-    uint32 listfrom;                                        // page of auctions
-    uint32 outbiddedCount;                                  // count of outbidded auctions
-
-    recv_data >> auctioneerGuid;
-    recv_data >> listfrom;                                  // where to start listing from
-    recv_data >> outbiddedCount;
-    if (recv_data.size() != (16 + outbiddedCount * 4))
-    {
-        sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "Client sent bad opcode!!! with count: %u and size : %u (must be: %u)", outbiddedCount, (uint32)recv_data.size(), (16 + outbiddedCount * 4));
-        outbiddedCount = 0;
-    }
-
-    AuctionHouseEntry const* auctionHouseEntry = GetCheckedAuctionHouseForAuctioneer(auctioneerGuid);
+    AuctionHouseEntry const* auctionHouseEntry = GetCheckedAuctionHouseForAuctioneer(packet.auctioneerGuid);
     if (!auctionHouseEntry)
         return;
 
@@ -769,16 +755,9 @@ void WorldSession::HandleAuctionListBidderItems(WorldPacket& recv_data)
 
     AuctionHouseClientQueryTask task(AUCTION_QUERY_LIST_BIDDER);
     task.auctionHouse = sAuctionMgr.GetAuctionsMap(auctionHouseEntry);
-    uint32 outbiddedAuctionId;
-    for (int i = outbiddedCount; i > 0; --i)
-    {
-        recv_data >> outbiddedAuctionId;
-        task.outbiddedAuctionIds.push_back(outbiddedAuctionId);
-    }
-
     task.accountId = GetAccountId();
-    task.listfrom = listfrom;
-    task.outbiddedCount = outbiddedCount;
+    task.listfrom = packet.pagingElementStartIndex;
+    task.outbiddedAuctionIds = packet.bidAuctionIdsToRefresh;
     SetReceivedAHListRequest(true);
     sWorld.AddAsyncTask(std::move(task));
 }

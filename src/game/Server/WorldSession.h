@@ -650,7 +650,7 @@ class WorldSession
 
         void HandleAuctionHelloOpcode(WorldPackets::AuctionHouse::AuctionHello const& packet);
         void HandleAuctionListItems(WorldPacket& recv_data);
-        void HandleAuctionListBidderItems(WorldPacket& recv_data);
+        void HandleAuctionListBidderItems(WorldPackets::AuctionHouse::AuctionListBidderItem const& packet);
         void HandleAuctionSellItem(WorldPacket& recv_data);
         void HandleAuctionRemoveItem(WorldPacket& recv_data);
         void HandleAuctionListOwnerItems(WorldPacket& recv_data);
