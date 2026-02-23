@@ -343,6 +343,7 @@ class WorldSession
 
     private:
         void SendPacketImpl(WorldPacket const* packet);
+        void VerifyPacketWasCorrectlyRead(WorldPacket const& recvPacket, ClientPacket const& clientPacket) const;
 
     public:
         void SendPacket(WorldPacket const* packet);
@@ -455,6 +456,7 @@ class WorldSession
         {
             auto packet = TClientPacket();
             packet.ReadFromWorldPacket(recvPacket);
+            VerifyPacketWasCorrectlyRead(recvPacket, packet);
             (this->*THandler)(packet);
         }
 

@@ -175,6 +175,18 @@ void WorldSession::SendPacketImpl(WorldPacket const* packet)
     m_socket->SendPacket(*packet);
 }
 
+void WorldSession::VerifyPacketWasCorrectlyRead(WorldPacket const& recvPacket, ClientPacket const& clientPacket) const
+{
+    if (clientPacket.GetOpcode() != recvPacket.GetOpcode())
+    {
+        sLog.Out(LOG_NETWORK, LOG_LVL_ERROR, "[NicePacket Conversion] Received %d (%s) but after parse it was %d", recvPacket.GetOpcode(), LookupOpcodeName(recvPacket.GetOpcode()), clientPacket.GetOpcode());
+    }
+    if (recvPacket.rpos() != recvPacket.size())
+    {
+        sLog.Out(LOG_NETWORK, LOG_LVL_ERROR, "[NicePacket Conversion] Packet is size %d but only parsed %d (opcode %d %s)", recvPacket.size(), recvPacket.rpos(), recvPacket.GetOpcode(), LookupOpcodeName(recvPacket.GetOpcode()));
+    }
+}
+
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_7_1
 void WorldSession::SendMovementPacket(WorldPacket const* packet)
 {
