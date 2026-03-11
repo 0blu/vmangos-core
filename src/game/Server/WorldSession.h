@@ -559,8 +559,8 @@ class WorldSession
 
         void HandleQueryPlayerNameOpcode(WorldPackets::Query::QueryPlayerName const& packet);
         void HandleQueryTimeOpcode(WorldPacket& recvPacket);
-        void HandleCreatureQueryOpcode(WorldPacket& recvPacket);
-        void HandleGameObjectQueryOpcode(WorldPacket& recvPacket);
+        void HandleCreatureQueryOpcode(WorldPackets::Query::QueryCreature const& packet);
+        void HandleGameObjectQueryOpcode(WorldPackets::Query::QueryGameObject const& packet);
 
         void HandleRequestRaidInfoOpcode(NullClientPacket const& packet);
         void HandleGroupInviteOpcode(WorldPackets::Group::GroupInvite const& packet);
@@ -738,27 +738,27 @@ class WorldSession
         void HandleSummonResponseOpcode(WorldPacket& recv_data);
 
         void HandleJoinChannelOpcode(WorldPackets::Channel::JoinChannel const& packet);
-        void HandleLeaveChannelOpcode(WorldPacket& recvPacket);
-        void HandleChannelListOpcode(WorldPacket& recvPacket);
-        void HandleChannelPasswordOpcode(WorldPacket& recvPacket);
-        void HandleChannelSetOwnerOpcode(WorldPacket& recvPacket);
-        void HandleChannelOwnerOpcode(WorldPacket& recvPacket);
-        void HandleChannelModeratorOpcode(WorldPacket& recvPacket);
-        void HandleChannelUnmoderatorOpcode(WorldPacket& recvPacket);
-        void HandleChannelMuteOpcode(WorldPacket& recvPacket);
-        void HandleChannelUnmuteOpcode(WorldPacket& recvPacket);
-        void HandleChannelInviteOpcode(WorldPacket& recvPacket);
-        void HandleChannelKickOpcode(WorldPacket& recvPacket);
-        void HandleChannelBanOpcode(WorldPacket& recvPacket);
-        void HandleChannelUnbanOpcode(WorldPacket& recvPacket);
-        void HandleChannelAnnouncementsOpcode(WorldPacket& recvPacket);
-        void HandleChannelModerateOpcode(WorldPacket& recvPacket);
+        void HandleLeaveChannelOpcode(WorldPackets::Channel::LeaveChannel const& packet);
+        void HandleChannelListOpcode(WorldPackets::Channel::ChannelList const& packet);
+        void HandleChannelPasswordOpcode(WorldPackets::Channel::ChannelPassword const& packet);
+        void HandleChannelSetOwnerOpcode(WorldPackets::Channel::ChannelSetOwner const& packet);
+        void HandleChannelOwnerOpcode(WorldPackets::Channel::ChannelOwner const& packet);
+        void HandleChannelModeratorOpcode(WorldPackets::Channel::ChannelModerator const& packet);
+        void HandleChannelUnmoderatorOpcode(WorldPackets::Channel::ChannelUnmoderator const& packet);
+        void HandleChannelMuteOpcode(WorldPackets::Channel::ChannelMute const& packet);
+        void HandleChannelUnmuteOpcode(WorldPackets::Channel::ChannelUnmute const& packet);
+        void HandleChannelInviteOpcode(WorldPackets::Channel::ChannelInvite const& packet);
+        void HandleChannelKickOpcode(WorldPackets::Channel::ChannelKick const& packet);
+        void HandleChannelBanOpcode(WorldPackets::Channel::ChannelBan const& packet);
+        void HandleChannelUnbanOpcode(WorldPackets::Channel::ChannelUnban const& packet);
+        void HandleChannelAnnouncementsOpcode(WorldPackets::Channel::ChannelAnnouncements const& packet);
+        void HandleChannelModerateOpcode(WorldPackets::Channel::ChannelModerate const& packet);
 
         void HandleCompleteCinematic(WorldPacket& recvPacket);
         void HandleNextCinematicCamera(WorldPacket& recvPacket);
 
         void HandlePageQuerySkippedOpcode(WorldPacket& recvPacket);
-        void HandlePageTextQueryOpcode(WorldPacket& recvPacket);
+        void HandlePageTextQueryOpcode(WorldPackets::Query::QueryPageText const& packet);
 
         void HandleTutorialFlagOpcode(WorldPacket& recv_data);
         void HandleTutorialClearOpcode(WorldPacket& recv_data);
@@ -795,7 +795,7 @@ class WorldSession
         void HandleMinimapPingOpcode(WorldPacket& recv_data);
         void HandleRandomRollOpcode(WorldPacket& recv_data);
         void HandleFarSightOpcode(WorldPackets::Misc::FarSight const& packet);
-        void HandleWhoisOpcode(WorldPacket& recv_data);
+        void HandleWhoisOpcode(WorldPackets::Query::Whois const& packet);
         void HandleResetInstancesOpcode(NullClientPacket const& packet);
 
         void HandleAreaSpiritHealerQueryOpcode(WorldPacket& recv_data);

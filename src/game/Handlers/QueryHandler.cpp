@@ -147,13 +147,10 @@ void WorldSession::HandleQueryTimeOpcode(WorldPacket& /*recv_data*/)
 }
 
 // Only _static_ data send in this packet !!!
-void WorldSession::HandleCreatureQueryOpcode(WorldPacket& recv_data)
+void WorldSession::HandleCreatureQueryOpcode(WorldPackets::Query::QueryCreature const& packet)
 {
-    uint32 entry;
-    ObjectGuid guid;
-
-    recv_data >> entry;
-    recv_data >> guid;
+    uint32 entry = packet.entry;
+    ObjectGuid guid = packet.guid;
 
     CreatureInfo const* ci = sObjectMgr.GetCreatureTemplate(entry);
     if (ci)
@@ -235,12 +232,10 @@ void WorldSession::HandleCreatureQueryOpcode(WorldPacket& recv_data)
 }
 
 // Only _static_ data send in this packet !!!
-void WorldSession::HandleGameObjectQueryOpcode(WorldPacket& recv_data)
+void WorldSession::HandleGameObjectQueryOpcode(WorldPackets::Query::QueryGameObject const& packet)
 {
-    uint32 entryID;
-    recv_data >> entryID;
-    ObjectGuid guid;
-    recv_data >> guid;
+    uint32 entryID = packet.entryID;
+    ObjectGuid guid = packet.guid;
 
     GameObjectInfo const* info = sObjectMgr.GetGameObjectTemplate(entryID);
     if (info)
@@ -427,10 +422,9 @@ void WorldSession::HandleNpcTextQueryOpcode(WorldPacket& recv_data)
     SendPacket(&data);
 }
 
-void WorldSession::HandlePageTextQueryOpcode(WorldPacket& recv_data)
+void WorldSession::HandlePageTextQueryOpcode(WorldPackets::Query::QueryPageText const& packet)
 {
-    uint32 pageID;
-    recv_data >> pageID;
+    uint32 pageID = packet.pageID;
 
     while (pageID)
     {

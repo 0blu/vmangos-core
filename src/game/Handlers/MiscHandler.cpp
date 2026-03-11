@@ -1181,10 +1181,9 @@ void WorldSession::HandleMoveSetRawPosition(WorldPacket& recv_data)
     sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "Received setrawpos command from player %s", GetPlayer()->GetName());
 }
 
-void WorldSession::HandleWhoisOpcode(WorldPacket& recv_data)
+void WorldSession::HandleWhoisOpcode(WorldPackets::Query::Whois const& packet)
 {
-    std::string charName;
-    recv_data >> charName;
+    std::string charName = packet.charName;
 
     if (GetSecurity() < SEC_ADMINISTRATOR)
     {
