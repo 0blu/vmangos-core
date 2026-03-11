@@ -33,10 +33,9 @@
 #include "Language.h"
 #include "Anticheat.h"
 
-void WorldSession::HandleGuildQueryOpcode(WorldPacket& recvPacket)
+void WorldSession::HandleGuildQueryOpcode(WorldPackets::Guild::GuildQuery const& packet)
 {
-    uint32 guildId;
-    recvPacket >> guildId;
+    uint32 guildId = packet.guildId;
 
     if (Guild* guild = sGuildMgr.GetGuildById(guildId))
     {
@@ -76,10 +75,9 @@ void WorldSession::HandleGuildCreateOpcode(WorldPackets::Guild::GuildCreate cons
     sGuildMgr.AddGuild(guild);
 }
 
-void WorldSession::HandleGuildInviteOpcode(WorldPacket& recvPacket)
+void WorldSession::HandleGuildInviteOpcode(WorldPackets::Guild::GuildInvite const& packet)
 {
-    std::string invitedName;
-    recvPacket >> invitedName;
+    std::string invitedName = packet.invitedName;
 
     Player* player = nullptr;
     if (normalizePlayerName(invitedName))
@@ -148,10 +146,9 @@ void WorldSession::HandleGuildInviteOpcode(WorldPacket& recvPacket)
     player->GetSession()->SendPacket(&data);
 }
 
-void WorldSession::HandleGuildRemoveOpcode(WorldPacket& recvPacket)
+void WorldSession::HandleGuildRemoveOpcode(WorldPackets::Guild::GuildRemove const& packet)
 {
-    std::string plName;
-    recvPacket >> plName;
+    std::string plName = packet.playerName;
 
     if (!normalizePlayerName(plName))
         return;
@@ -208,7 +205,7 @@ void WorldSession::HandleGuildRemoveOpcode(WorldPacket& recvPacket)
     guild->BroadcastEvent(GE_REMOVED, plName.c_str(), player->GetName());
 }
 
-void WorldSession::HandleGuildAcceptOpcode(WorldPacket& /*recvPacket*/)
+void WorldSession::HandleGuildAcceptOpcode(NullClientPacket const& /*packet*/)
 {
     Guild* guild;
     Player* player = GetPlayer();
@@ -229,7 +226,7 @@ void WorldSession::HandleGuildAcceptOpcode(WorldPacket& /*recvPacket*/)
     guild->BroadcastEvent(GE_JOINED, player->GetObjectGuid(), player->GetName());
 }
 
-void WorldSession::HandleGuildDeclineOpcode(WorldPacket& /*recvPacket*/)
+void WorldSession::HandleGuildDeclineOpcode(NullClientPacket const& /*packet*/)
 {
     if (_player->GetGuildId() || !_player->GetGuildIdInvited())
         return;
@@ -250,7 +247,7 @@ void WorldSession::HandleGuildDeclineOpcode(WorldPacket& /*recvPacket*/)
     _player->SetGuildIdInvited(0);
 }
 
-void WorldSession::HandleGuildInfoOpcode(WorldPacket& /*recvPacket*/)
+void WorldSession::HandleGuildInfoOpcode(NullClientPacket const& /*packet*/)
 {
     Guild* guild = sGuildMgr.GetGuildById(GetPlayer()->GetGuildId());
     if (!guild)
@@ -269,16 +266,15 @@ void WorldSession::HandleGuildInfoOpcode(WorldPacket& /*recvPacket*/)
     SendPacket(&data);
 }
 
-void WorldSession::HandleGuildRosterOpcode(WorldPacket& /*recvPacket*/)
+void WorldSession::HandleGuildRosterOpcode(NullClientPacket const& /*packet*/)
 {
     if (Guild* guild = sGuildMgr.GetGuildById(_player->GetGuildId()))
         guild->Roster(this);
 }
 
-void WorldSession::HandleGuildPromoteOpcode(WorldPacket& recvPacket)
+void WorldSession::HandleGuildPromoteOpcode(WorldPackets::Guild::GuildPromote const& packet)
 {
-    std::string plName;
-    recvPacket >> plName;
+    std::string plName = packet.playerName;
 
     if (!normalizePlayerName(plName))
         return;
@@ -326,10 +322,9 @@ void WorldSession::HandleGuildPromoteOpcode(WorldPacket& recvPacket)
     guild->BroadcastEvent(GE_PROMOTION, _player->GetName(), plName.c_str(), guild->GetRankName(newRankId).c_str());
 }
 
-void WorldSession::HandleGuildDemoteOpcode(WorldPacket& recvPacket)
+void WorldSession::HandleGuildDemoteOpcode(WorldPackets::Guild::GuildDemote const& packet)
 {
-    std::string plName;
-    recvPacket >> plName;
+    std::string plName = packet.playerName;
 
     if (!normalizePlayerName(plName))
         return;
@@ -385,7 +380,7 @@ void WorldSession::HandleGuildDemoteOpcode(WorldPacket& recvPacket)
     guild->BroadcastEvent(GE_DEMOTION, _player->GetName(), plName.c_str(), guild->GetRankName(slot->RankId).c_str());
 }
 
-void WorldSession::HandleGuildLeaveOpcode(WorldPacket& /*recvPacket*/)
+void WorldSession::HandleGuildLeaveOpcode(NullClientPacket const& /*packet*/)
 {
     Guild* guild = sGuildMgr.GetGuildById(_player->GetGuildId());
     if (!guild)
@@ -422,7 +417,7 @@ void WorldSession::HandleGuildLeaveOpcode(WorldPacket& /*recvPacket*/)
     guild->BroadcastEvent(GE_LEFT, _player->GetObjectGuid(), _player->GetName());
 }
 
-void WorldSession::HandleGuildDisbandOpcode(WorldPacket& /*recvPacket*/)
+void WorldSession::HandleGuildDisbandOpcode(NullClientPacket const& /*packet*/)
 {
     Guild* guild = sGuildMgr.GetGuildById(GetPlayer()->GetGuildId());
     if (!guild)
@@ -441,10 +436,9 @@ void WorldSession::HandleGuildDisbandOpcode(WorldPacket& /*recvPacket*/)
     delete guild;
 }
 
-void WorldSession::HandleGuildLeaderOpcode(WorldPacket& recvPacket)
+void WorldSession::HandleGuildLeaderOpcode(WorldPackets::Guild::GuildLeader const& packet)
 {
-    std::string name;
-    recvPacket >> name;
+    std::string name = packet.playerName;
 
     Player* oldLeader = GetPlayer();
 
@@ -485,14 +479,9 @@ void WorldSession::HandleGuildLeaderOpcode(WorldPacket& recvPacket)
     guild->BroadcastEvent(GE_LEADER_CHANGED, oldLeader->GetName(), name.c_str());
 }
 
-void WorldSession::HandleGuildMOTDOpcode(WorldPacket& recvPacket)
+void WorldSession::HandleGuildMOTDOpcode(WorldPackets::Guild::GuildMOTD const& packet)
 {
-    std::string MOTD;
-
-    if (!recvPacket.empty())
-        recvPacket >> MOTD;
-    else
-        MOTD.clear();
+    std::string MOTD = packet.motd;
 
     if (utf8length(MOTD) > GUILD_MOTD_MAX_LENGTH)
     {
