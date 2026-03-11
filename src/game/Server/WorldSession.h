@@ -671,22 +671,22 @@ class WorldSession
         void HandleQueryNextMailTime(WorldPacket& recv_data);
         void HandleCancelChanneling(WorldPacket& recv_data);
 
-        void HandleSplitItemOpcode(WorldPacket& recvPacket);
-        void HandleSwapInvItemOpcode(WorldPacket& recvPacket);
-        void HandleDestroyItemOpcode(WorldPacket& recvPacket);
-        void HandleAutoEquipItemOpcode(WorldPacket& recvPacket);
+        void HandleSplitItemOpcode(WorldPackets::Item::SplitItem const& packet);
+        void HandleSwapInvItemOpcode(WorldPackets::Item::SwapInvItem const& packet);
+        void HandleDestroyItemOpcode(WorldPackets::Item::DestroyItem const& packet);
+        void HandleAutoEquipItemOpcode(WorldPackets::Item::AutoEquipItem const& packet);
         void HandleItemQuerySingleOpcode(WorldPackets::Item::QueryItem const& packet);
         void HandleSellItemOpcode(WorldPacket& recvPacket);
         void HandleBuyItemInSlotOpcode(WorldPacket& recvPacket);
         void HandleBuyItemOpcode(WorldPacket& recvPacket);
         void HandleListInventoryOpcode(WorldPacket& recvPacket);
-        void HandleAutoStoreBagItemOpcode(WorldPacket& recvPacket);
-        void HandleReadItemOpcode(WorldPacket& recvPacket);
-        void HandleAutoEquipItemSlotOpcode(WorldPacket& recvPacket);
-        void HandleSwapItem(WorldPacket& recvPacket);
+        void HandleAutoStoreBagItemOpcode(WorldPackets::Item::AutoStoreBagItem const& packet);
+        void HandleReadItemOpcode(WorldPackets::Item::ReadItem const& packet);
+        void HandleAutoEquipItemSlotOpcode(WorldPackets::Item::AutoEquipItemSlot const& packet);
+        void HandleSwapItem(WorldPackets::Item::SwapItem const& packet);
         void HandleBuybackItem(WorldPacket& recvPacket);
-        void HandleAutoBankItemOpcode(WorldPacket& recvPacket);
-        void HandleAutoStoreBankItemOpcode(WorldPacket& recvPacket);
+        void HandleAutoBankItemOpcode(WorldPackets::Item::AutoBankItem const& packet);
+        void HandleAutoStoreBankItemOpcode(WorldPackets::Item::AutoStoreBankItem const& packet);
         void HandleWrapItemOpcode(WorldPacket& recvPacket);
 
         void HandleAttackSwingOpcode(WorldPackets::Combat::AttackSwing const& packet);
@@ -694,7 +694,7 @@ class WorldSession
         void HandleSetSheathedOpcode(WorldPacket& recvPacket);
 
         void HandleUseItemOpcode(WorldPackets::Spell::UseItem const& packet);
-        void HandleOpenItemOpcode(WorldPacket& recvPacket);
+        void HandleOpenItemOpcode(WorldPackets::Spell::OpenItem const& packet);
         void HandleCastSpellOpcode(WorldPacket& recvPacket);
         void HandleCancelCastOpcode(WorldPacket& recvPacket);
         void HandleCancelAuraOpcode(WorldPacket& recvPacket);

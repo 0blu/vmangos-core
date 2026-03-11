@@ -7,3 +7,9 @@ void WorldPackets::Spell::UseItem::ReadFromWorldPacket(WorldPacket& recv_data)
     recv_data >> spellSlot;
     recv_data >> targets;
 }
+
+void WorldPackets::Spell::OpenItem::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> bagIndex;
+    recv_data >> slot;
+}

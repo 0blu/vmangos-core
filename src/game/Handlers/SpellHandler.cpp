@@ -146,10 +146,10 @@ void WorldSession::HandleUseItemOpcode(WorldPackets::Spell::UseItem const& packe
     pUser->CastItemUseSpell(pItem, targets);
 }
 
-void WorldSession::HandleOpenItemOpcode(WorldPacket& recvPacket)
+void WorldSession::HandleOpenItemOpcode(WorldPackets::Spell::OpenItem const& packet)
 {
-    uint8 bagIndex, slot;
-    recvPacket >> bagIndex >> slot;
+    uint8 bagIndex = packet.bagIndex;
+    uint8 slot = packet.slot;
 
     Player* pUser = _player;
 

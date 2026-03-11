@@ -17,6 +17,16 @@ namespace WorldPackets { namespace Spell
         explicit UseItem() : ClientPacket(CMSG_USE_ITEM), bagIndex(0), slot(0), spellSlot(0) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class OpenItem final : public ClientPacket
+    {
+    public:
+        uint8 bagIndex = 0;
+        uint8 slot = 0;
+
+        explicit OpenItem() : ClientPacket(CMSG_OPEN_ITEM) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
 }} // namespace WorldPackets::Spell
 
 #endif // MANGOS_PACKETS_SPELL_H
