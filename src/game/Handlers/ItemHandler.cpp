@@ -1081,7 +1081,7 @@ void WorldSession::HandleAutoStoreBankItemOpcode(WorldPackets::Item::AutoStoreBa
     }
 }
 
-void WorldSession::HandleSetAmmoOpcode(WorldPacket& recv_data)
+void WorldSession::HandleSetAmmoOpcode(WorldPackets::Item::SetAmmo const& packet)
 {
     if (!GetPlayer()->IsAlive())
     {
@@ -1089,8 +1089,7 @@ void WorldSession::HandleSetAmmoOpcode(WorldPacket& recv_data)
         return;
     }
 
-    uint32 item;
-    recv_data >> item;
+    uint32 item = packet.item;
 
     if (item)
     {

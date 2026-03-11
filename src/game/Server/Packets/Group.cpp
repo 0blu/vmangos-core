@@ -14,3 +14,8 @@ void WorldPackets::Group::GroupUninviteGuid::ReadFromWorldPacket(WorldPacket& re
 {
     recv_data >> guid;
 }
+
+void WorldPackets::Group::RequestPartyMemberStats::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> guid;
+}

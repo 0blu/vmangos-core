@@ -108,6 +108,24 @@ namespace WorldPackets { namespace Misc
         explicit TextEmote() : ClientPacket(CMSG_TEXT_EMOTE) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class SetSelection final : public ClientPacket
+    {
+    public:
+        ObjectGuid guid;
+
+        explicit SetSelection() : ClientPacket(CMSG_SET_SELECTION) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class FarSight final : public ClientPacket
+    {
+    public:
+        uint8 op = 0;
+
+        explicit FarSight() : ClientPacket(CMSG_FAR_SIGHT) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
 }} // namespace WorldPackets::Misc
 
 #endif // MANGOS_PACKETS_MISC_H

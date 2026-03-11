@@ -76,3 +76,8 @@ void WorldPackets::Item::AutoStoreBankItem::ReadFromWorldPacket(WorldPacket& rec
     recv_data >> srcbag;
     recv_data >> srcslot;
 }
+
+void WorldPackets::Item::SetAmmo::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> item;
+}

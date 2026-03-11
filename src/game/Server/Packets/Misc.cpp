@@ -61,3 +61,13 @@ void WorldPackets::Misc::TextEmote::ReadFromWorldPacket(WorldPacket& recv_data)
     recv_data >> emoteNum;
     recv_data >> guid;
 }
+
+void WorldPackets::Misc::SetSelection::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> guid;
+}
+
+void WorldPackets::Misc::FarSight::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> op;
+}

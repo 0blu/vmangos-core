@@ -45,7 +45,7 @@
 #include "Anticheat.h"
 #include "MasterPlayer.h"
 
-void WorldSession::HandleRepopRequestOpcode(WorldPacket& /*recv_data*/)
+void WorldSession::HandleRepopRequestOpcode(NullClientPacket const& /*packet*/)
 {
     // recv_data.read_skip<uint8>(); client crash
 
@@ -426,10 +426,9 @@ void WorldSession::HandleZoneUpdateOpcode(WorldPacket& recv_data)
     }
 }
 
-void WorldSession::HandleSetSelectionOpcode(WorldPacket& recv_data)
+void WorldSession::HandleSetSelectionOpcode(WorldPackets::Misc::SetSelection const& packet)
 {
-    ObjectGuid guid;
-    recv_data >> guid;
+    ObjectGuid guid = packet.guid;
 
     _player->SetSelectionGuid(guid);
 
@@ -1234,10 +1233,9 @@ void WorldSession::HandleWhoisOpcode(WorldPacket& recv_data)
     _player->GetSession()->SendPacket(&data);
 }
 
-void WorldSession::HandleFarSightOpcode(WorldPacket& recv_data)
+void WorldSession::HandleFarSightOpcode(WorldPackets::Misc::FarSight const& packet)
 {
-    uint8 op;
-    recv_data >> op;
+    uint8 op = packet.op;
 
     WorldObject* obj = _player->GetMap()->GetWorldObject(_player->GetFarSightGuid());
     if (!obj)
@@ -1257,7 +1255,7 @@ void WorldSession::HandleFarSightOpcode(WorldPacket& recv_data)
     }
 }
 
-void WorldSession::HandleResetInstancesOpcode(WorldPacket& /*recv_data*/)
+void WorldSession::HandleResetInstancesOpcode(NullClientPacket const& /*packet*/)
 {
     if (Group* pGroup = _player->GetGroup())
     {
@@ -1268,7 +1266,7 @@ void WorldSession::HandleResetInstancesOpcode(WorldPacket& /*recv_data*/)
         _player->ResetInstances(INSTANCE_RESET_ALL);
 }
 
-void WorldSession::HandleRequestPetInfoOpcode(WorldPacket& /*recv_data */)
+void WorldSession::HandleRequestPetInfoOpcode(NullClientPacket const& /*packet */)
 {
     if (_player->GetPet())
         _player->PetSpellInitialize();

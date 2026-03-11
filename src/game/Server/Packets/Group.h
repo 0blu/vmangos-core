@@ -32,6 +32,15 @@ namespace WorldPackets { namespace Group
         explicit GroupUninviteGuid() : ClientPacket(CMSG_GROUP_UNINVITE_GUID) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class RequestPartyMemberStats final : public ClientPacket
+    {
+    public:
+        ObjectGuid guid;
+
+        explicit RequestPartyMemberStats() : ClientPacket(CMSG_REQUEST_PARTY_MEMBER_STATS) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
 }} // namespace WorldPackets::Group
 
 #endif // MANGOS_PACKETS_GROUP_H

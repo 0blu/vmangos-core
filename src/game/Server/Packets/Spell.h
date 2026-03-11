@@ -27,6 +27,24 @@ namespace WorldPackets { namespace Spell
         explicit OpenItem() : ClientPacket(CMSG_OPEN_ITEM) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class CancelCast final : public ClientPacket
+    {
+    public:
+        uint32 spellId = 0;
+
+        explicit CancelCast() : ClientPacket(CMSG_CANCEL_CAST) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class CancelAura final : public ClientPacket
+    {
+    public:
+        uint32 spellId = 0;
+
+        explicit CancelAura() : ClientPacket(CMSG_CANCEL_AURA) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
 }} // namespace WorldPackets::Spell
 
 #endif // MANGOS_PACKETS_SPELL_H

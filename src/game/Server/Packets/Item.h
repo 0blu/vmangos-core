@@ -122,6 +122,15 @@ namespace WorldPackets { namespace Item
         explicit AutoStoreBankItem() : ClientPacket(CMSG_AUTOSTORE_BANK_ITEM) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class SetAmmo final : public ClientPacket
+    {
+    public:
+        uint32 item = 0;
+
+        explicit SetAmmo() : ClientPacket(CMSG_SET_AMMO) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
 }} // namespace WorldPackets::Item
 
 #endif // MANGOS_PACKETS_ITEM_H
