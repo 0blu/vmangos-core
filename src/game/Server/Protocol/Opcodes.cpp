@@ -167,8 +167,8 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(SMSG_GAMESPEED_SET,                Reason::SendByServer);
     INVALID_PACKET(CMSG_SERVERTIME,                   Reason::Unhandled);
     INVALID_PACKET(SMSG_SERVERTIME,                   Reason::SendByServer);
-    LEGACY_HANDLER(CMSG_PLAYER_LOGOUT,                STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandlePlayerLogoutOpcode);
-    LEGACY_HANDLER(CMSG_LOGOUT_REQUEST,               STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleLogoutRequestOpcode);
+    DEFINE_HANDLER(CMSG_PLAYER_LOGOUT,                STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandlePlayerLogoutOpcode);
+    DEFINE_HANDLER(CMSG_LOGOUT_REQUEST,               STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleLogoutRequestOpcode);
     INVALID_PACKET(SMSG_LOGOUT_RESPONSE,              Reason::SendByServer);
     INVALID_PACKET(SMSG_LOGOUT_COMPLETE,              Reason::SendByServer);
     DEFINE_HANDLER(CMSG_LOGOUT_CANCEL,                STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleLogoutCancelOpcode);

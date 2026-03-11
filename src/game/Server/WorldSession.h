@@ -518,8 +518,8 @@ class WorldSession
         void HandleLootMasterGiveOpcode(WorldPacket& recvPacket);
         void HandleWhoOpcode(WorldPacket& recvPacket);
         void HandleLFGOpcode(WorldPacket& recvPacket);
-        void HandleLogoutRequestOpcode(WorldPacket& recvPacket);
-        void HandlePlayerLogoutOpcode(WorldPacket& recvPacket);
+        void HandleLogoutRequestOpcode(NullClientPacket const& packet);
+        void HandlePlayerLogoutOpcode(NullClientPacket const& packet);
         void HandleLogoutCancelOpcode(NullClientPacket const& packet);
         void HandleGMTicketGetTicketOpcode(WorldPacket& recvPacket);
         void HandleGMTicketCreateOpcode(WorldPackets::GmTicket::GmTicketCreate const& packet);
