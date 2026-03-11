@@ -475,18 +475,11 @@ void WorldSession::HandlePageQuerySkippedOpcode(WorldPacket& recv_data)
     recv_data >> itemid >> guid;
 }
 
-void WorldSession::HandleSellItemOpcode(WorldPacket& recv_data)
+void WorldSession::HandleSellItemOpcode(WorldPackets::Item::SellItem const& packet)
 {
-    ObjectGuid vendorGuid;
-    ObjectGuid itemGuid;
-    uint8 _count;
-
-    recv_data >> vendorGuid;
-    recv_data >> itemGuid;
-    recv_data >> _count;
-
-    // prevent possible overflow, as mangos uses uint32 for item count
-    uint32 count = _count;
+    ObjectGuid vendorGuid = packet.vendorGuid;
+    ObjectGuid itemGuid = packet.itemGuid;
+    uint32 count = packet.count;
 
     if (!itemGuid || !GetPlayer()->IsInWorld())
         return;
@@ -701,14 +694,13 @@ void WorldSession::HandleBuybackItem(WorldPacket& recv_data)
         _player->SendBuyError(BUY_ERR_CANT_FIND_ITEM, pCreature, 0, 0);
 }
 
-void WorldSession::HandleBuyItemInSlotOpcode(WorldPacket& recv_data)
+void WorldSession::HandleBuyItemInSlotOpcode(WorldPackets::Item::BuyItemInSlot const& packet)
 {
-    ObjectGuid vendorGuid;
-    ObjectGuid bagGuid;
-    uint32 item;
-    uint8 bagslot, count;
-
-    recv_data >> vendorGuid >> item >> bagGuid >> bagslot >> count;
+    ObjectGuid vendorGuid = packet.vendorGuid;
+    ObjectGuid bagGuid = packet.bagGuid;
+    uint32 item = packet.item;
+    uint8 bagslot = packet.bagslot;
+    uint8 count = packet.count;
 
     uint8 bag = NULL_BAG;                                   // init for case invalid bagGUID
 
@@ -737,21 +729,18 @@ void WorldSession::HandleBuyItemInSlotOpcode(WorldPacket& recv_data)
     GetPlayer()->BuyItemFromVendor(vendorGuid, item, count, bag, bagslot);
 }
 
-void WorldSession::HandleBuyItemOpcode(WorldPacket& recv_data)
+void WorldSession::HandleBuyItemOpcode(WorldPackets::Item::BuyItem const& packet)
 {
-    ObjectGuid vendorGuid;
-    uint32 item;
-    uint8 count, unk1;
-
-    recv_data >> vendorGuid >> item >> count >> unk1;
+    ObjectGuid vendorGuid = packet.vendorGuid;
+    uint32 item = packet.item;
+    uint8 count = packet.count;
 
     GetPlayer()->BuyItemFromVendor(vendorGuid, item, count, NULL_BAG, NULL_SLOT);
 }
 
-void WorldSession::HandleListInventoryOpcode(WorldPacket& recv_data)
+void WorldSession::HandleListInventoryOpcode(WorldPackets::Item::ListInventory const& packet)
 {
-    ObjectGuid guid;
-    recv_data >> guid;
+    ObjectGuid guid = packet.guid;
 
     if (!GetPlayer()->IsAlive())
         return;
@@ -960,10 +949,9 @@ bool WorldSession::CheckBanker(ObjectGuid guid)
     return true;
 }
 
-void WorldSession::HandleBuyBankSlotOpcode(WorldPacket& recvPacket)
+void WorldSession::HandleBuyBankSlotOpcode(WorldPackets::Item::BuyBankSlot const& packet)
 {
-    ObjectGuid guid;
-    recvPacket >> guid;
+    ObjectGuid guid = packet.guid;
 
     WorldPacket data(SMSG_BUY_BANK_SLOT_RESULT, 4);
 

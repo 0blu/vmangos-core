@@ -612,21 +612,21 @@ class WorldSession
         void HandleSaveGuildEmblemOpcode(WorldPacket& recvPacket);
 
         void HandleTaxiNodeStatusQueryOpcode(WorldPackets::Taxi::TaxiNodeStatusQuery const& packet);
-        void HandleTaxiQueryAvailableNodes(WorldPacket& recvPacket);
+        void HandleTaxiQueryAvailableNodes(WorldPackets::Taxi::TaxiQueryAvailableNodes const& packet);
         void HandleActivateTaxiOpcode(WorldPacket& recvPacket);
         void HandleActivateTaxiExpressOpcode(WorldPacket& recvPacket);
 
         void HandleTabardVendorActivateOpcode(WorldPacket& recvPacket);
-        void HandleBankerActivateOpcode(WorldPacket& recvPacket);
-        void HandleBuyBankSlotOpcode(WorldPacket& recvPacket);
-        void HandleTrainerListOpcode(WorldPacket& recvPacket);
-        void HandleTrainerBuySpellOpcode(WorldPacket& recvPacket);
+        void HandleBankerActivateOpcode(WorldPackets::Npc::BankerActivate const& packet);
+        void HandleBuyBankSlotOpcode(WorldPackets::Item::BuyBankSlot const& packet);
+        void HandleTrainerListOpcode(WorldPackets::Npc::TrainerList const& packet);
+        void HandleTrainerBuySpellOpcode(WorldPackets::Npc::TrainerBuySpell const& packet);
         void HandlePetitionShowListOpcode(WorldPackets::Petition::PetitionShow const& packet);
         void HandleGossipHelloOpcode(WorldPackets::Npc::GossipHello const& packet);
         void HandleGossipSelectOptionOpcode(WorldPacket& recvPacket);
         void HandleSpiritHealerActivateOpcode(WorldPacket& recvPacket);
-        void HandleNpcTextQueryOpcode(WorldPacket& recvPacket);
-        void HandleBinderActivateOpcode(WorldPacket& recvPacket);
+        void HandleNpcTextQueryOpcode(WorldPackets::Npc::NpcTextQuery const& packet);
+        void HandleBinderActivateOpcode(WorldPackets::Npc::BinderActivate const& packet);
         void HandleListStabledPetsOpcode(WorldPacket& recvPacket);
         void HandleStablePet(WorldPacket& recvPacket);
         void HandleUnstablePet(WorldPacket& recvPacket);
@@ -664,7 +664,7 @@ class WorldSession
         void HandleMailTakeMoney(WorldPacket& recv_data);
         void HandleMailTakeItem(WorldPacket& recv_data);
         void HandleMailMarkAsRead(WorldPacket& recv_data);
-        void HandleMailReturnToSender(WorldPacket& recv_data);
+        void HandleMailReturnToSender(WorldPackets::Mail::MailReturnToSender const& packet);
         void HandleMailDelete(WorldPacket& recv_data);
         void HandleItemTextQuery(WorldPacket& recv_data);
         void HandleMailCreateTextItem(WorldPacket& recv_data);
@@ -676,10 +676,10 @@ class WorldSession
         void HandleDestroyItemOpcode(WorldPackets::Item::DestroyItem const& packet);
         void HandleAutoEquipItemOpcode(WorldPackets::Item::AutoEquipItem const& packet);
         void HandleItemQuerySingleOpcode(WorldPackets::Item::QueryItem const& packet);
-        void HandleSellItemOpcode(WorldPacket& recvPacket);
-        void HandleBuyItemInSlotOpcode(WorldPacket& recvPacket);
-        void HandleBuyItemOpcode(WorldPacket& recvPacket);
-        void HandleListInventoryOpcode(WorldPacket& recvPacket);
+        void HandleSellItemOpcode(WorldPackets::Item::SellItem const& packet);
+        void HandleBuyItemInSlotOpcode(WorldPackets::Item::BuyItemInSlot const& packet);
+        void HandleBuyItemOpcode(WorldPackets::Item::BuyItem const& packet);
+        void HandleListInventoryOpcode(WorldPackets::Item::ListInventory const& packet);
         void HandleAutoStoreBagItemOpcode(WorldPackets::Item::AutoStoreBagItem const& packet);
         void HandleReadItemOpcode(WorldPackets::Item::ReadItem const& packet);
         void HandleAutoEquipItemSlotOpcode(WorldPackets::Item::AutoEquipItemSlot const& packet);

@@ -4,3 +4,8 @@ void WorldPackets::Taxi::TaxiNodeStatusQuery::ReadFromWorldPacket(WorldPacket& r
 {
     recv_data >> creatureGuidNearTaxi; // Normal clients would send the GUID of the flightmaster
 }
+
+void WorldPackets::Taxi::TaxiQueryAvailableNodes::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> guid;
+}

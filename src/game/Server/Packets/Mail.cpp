@@ -18,3 +18,10 @@ void WorldPackets::Mail::SendMail::ReadFromWorldPacket(WorldPacket& recv_data)
 #endif
 
 }
+
+
+void WorldPackets::Mail::MailReturnToSender::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> mailboxGuid;
+    recv_data >> mailId;
+}

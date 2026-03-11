@@ -81,3 +81,37 @@ void WorldPackets::Item::SetAmmo::ReadFromWorldPacket(WorldPacket& recv_data)
 {
     recv_data >> item;
 }
+
+void WorldPackets::Item::SellItem::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> vendorGuid;
+    recv_data >> itemGuid;
+    recv_data >> count;
+}
+
+void WorldPackets::Item::ListInventory::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> guid;
+}
+
+void WorldPackets::Item::BuyBankSlot::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> guid;
+}
+
+void WorldPackets::Item::BuyItem::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> vendorGuid;
+    recv_data >> item;
+    recv_data >> count;
+    recv_data >> unk1;
+}
+
+void WorldPackets::Item::BuyItemInSlot::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> vendorGuid;
+    recv_data >> item;
+    recv_data >> bagGuid;
+    recv_data >> bagslot;
+    recv_data >> count;
+}

@@ -342,13 +342,10 @@ void WorldSession::HandleCorpseQueryOpcode(WorldPacket& /*recv_data*/)
     SendPacket(&data);
 }
 
-void WorldSession::HandleNpcTextQueryOpcode(WorldPacket& recv_data)
+void WorldSession::HandleNpcTextQueryOpcode(WorldPackets::Npc::NpcTextQuery const& packet)
 {
-    uint32 textID;
-    ObjectGuid guid;
-
-    recv_data >> textID;
-    recv_data >> guid;
+    uint32 textID = packet.textID;
+    ObjectGuid guid = packet.guid;
 
     NpcText const* pGossip = sObjectMgr.GetNpcText(textID);
 

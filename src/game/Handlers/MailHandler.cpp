@@ -511,12 +511,10 @@ void WorldSession::HandleMailDelete(WorldPacket& recv_data)
  * @param recv_data The packet containing information about the mail being returned.
  *
  */
-void WorldSession::HandleMailReturnToSender(WorldPacket& recv_data)
+void WorldSession::HandleMailReturnToSender(WorldPackets::Mail::MailReturnToSender const& packet)
 {
-    ObjectGuid mailboxGuid;
-    uint32 mailId;
-    recv_data >> mailboxGuid;
-    recv_data >> mailId;
+    ObjectGuid mailboxGuid = packet.mailboxGuid;
+    uint32 mailId = packet.mailId;
 
     if (!CheckMailBox(mailboxGuid))
         return;
