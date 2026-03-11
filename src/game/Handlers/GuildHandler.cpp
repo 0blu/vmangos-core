@@ -506,10 +506,10 @@ void WorldSession::HandleGuildMOTDOpcode(WorldPackets::Guild::GuildMOTD const& p
     guild->BroadcastEvent(GE_MOTD, MOTD.c_str());
 }
 
-void WorldSession::HandleGuildSetPublicNoteOpcode(WorldPacket& recvPacket)
+void WorldSession::HandleGuildSetPublicNoteOpcode(WorldPackets::Guild::GuildSetPublicNote const& packet)
 {
-    std::string name, PNOTE;
-    recvPacket >> name;
+    std::string name = packet.playerName;
+    std::string PNOTE = packet.note;
 
     if (!normalizePlayerName(name))
         return;
@@ -536,20 +536,16 @@ void WorldSession::HandleGuildSetPublicNoteOpcode(WorldPacket& recvPacket)
 
     recvPacket >> PNOTE;
     if (utf8length(PNOTE) > GUILD_NOTE_MAX_LENGTH)
-    {
-        ProcessAnticheatAction("PassiveAnticheat", "Attempt to set guild player note to string longer than client limit.", CHEAT_ACTION_LOG | CHEAT_ACTION_REPORT_GMS | CHEAT_ACTION_KICK);
-        return;
-    }
 
     slot->SetPNOTE(PNOTE);
 
     guild->Roster(this);
 }
 
-void WorldSession::HandleGuildSetOfficerNoteOpcode(WorldPacket& recvPacket)
+void WorldSession::HandleGuildSetOfficerNoteOpcode(WorldPackets::Guild::GuildSetOfficerNote const& packet)
 {
-    std::string plName, OFFNOTE;
-    recvPacket >> plName;
+    std::string plName = packet.playerName;
+    std::string OFFNOTE = packet.note;
 
     if (!normalizePlayerName(plName))
         return;
@@ -571,10 +567,9 @@ void WorldSession::HandleGuildSetOfficerNoteOpcode(WorldPacket& recvPacket)
     if (!slot)
     {
         SendGuildCommandResult(GUILD_INVITE_S, plName, ERR_GUILD_PLAYER_NOT_IN_GUILD_S);
-        return;
+            return;
     }
 
-    recvPacket >> OFFNOTE;
     if (utf8length(OFFNOTE) > GUILD_NOTE_MAX_LENGTH)
     {
         ProcessAnticheatAction("PassiveAnticheat", "Attempt to set guild officer note to string longer than client limit.", CHEAT_ACTION_LOG | CHEAT_ACTION_REPORT_GMS | CHEAT_ACTION_KICK);

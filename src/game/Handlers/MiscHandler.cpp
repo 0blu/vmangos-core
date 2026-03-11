@@ -645,12 +645,10 @@ void WorldSession::HandleReclaimCorpseOpcode(WorldPackets::Misc::ReclaimCorpse c
     GetPlayer()->SpawnCorpseBones();
 }
 
-void WorldSession::HandleResurrectResponseOpcode(WorldPacket& recv_data)
+void WorldSession::HandleResurrectResponseOpcode(WorldPackets::Misc::ResurrectResponse const& packet)
 {
-    ObjectGuid guid;
-    uint8 status;
-    recv_data >> guid;
-    recv_data >> status;
+    ObjectGuid guid = packet.guid;
+    uint8 status = packet.status;
 
     if (!guid) // Cheating attempt
     {

@@ -521,12 +521,12 @@ class WorldSession
         void HandleLogoutRequestOpcode(NullClientPacket const& packet);
         void HandlePlayerLogoutOpcode(NullClientPacket const& packet);
         void HandleLogoutCancelOpcode(NullClientPacket const& packet);
-        void HandleGMTicketGetTicketOpcode(WorldPacket& recvPacket);
+        void HandleGMTicketGetTicketOpcode(NullClientPacket const& packet);
         void HandleGMTicketCreateOpcode(WorldPackets::GmTicket::GmTicketCreate const& packet);
-        void HandleGMTicketSystemStatusOpcode(WorldPacket& recvPacket);
+        void HandleGMTicketSystemStatusOpcode(NullClientPacket const& packet);
 
-        void HandleGMTicketDeleteTicketOpcode(WorldPacket& recvPacket);
-        void HandleGMTicketUpdateTextOpcode(WorldPacket& recvPacket);
+        void HandleGMTicketDeleteTicketOpcode(NullClientPacket const& packet);
+        void HandleGMTicketUpdateTextOpcode(WorldPackets::GmTicket::GmTicketUpdateText const& packet);
         void HandleGMSurveySubmitOpcode(WorldPacket& recvPacket);
 
         void HandleTogglePvP(WorldPacket& recvPacket);
@@ -603,11 +603,11 @@ class WorldSession
         void HandleGuildDisbandOpcode(NullClientPacket const& packet);
         void HandleGuildLeaderOpcode(WorldPackets::Guild::GuildLeader const& packet);
         void HandleGuildMOTDOpcode(WorldPackets::Guild::GuildMOTD const& packet);
-        void HandleGuildSetPublicNoteOpcode(WorldPacket& recvPacket);
-        void HandleGuildSetOfficerNoteOpcode(WorldPacket& recvPacket);
-        void HandleGuildRankOpcode(WorldPacket& recvPacket);
-        void HandleGuildAddRankOpcode(WorldPacket& recvPacket);
-        void HandleGuildDelRankOpcode(WorldPacket& recvPacket);
+        void HandleGuildSetPublicNoteOpcode(WorldPackets::Guild::GuildSetPublicNote const& packet);
+        void HandleGuildSetOfficerNoteOpcode(WorldPackets::Guild::GuildSetOfficerNote const& packet);
+        void HandleGuildRankOpcode(WorldPackets::Guild::GuildRank const& packet);
+        void HandleGuildAddRankOpcode(WorldPackets::Guild::GuildAddRank const& packet);
+        void HandleGuildDelRankOpcode(NullClientPacket const& packet);
         void HandleGuildChangeInfoTextOpcode(WorldPackets::Guild::GuildChangeInfoText const& packet);
         void HandleSaveGuildEmblemOpcode(WorldPackets::Guild::SaveGuildEmblem const& packet);
 
@@ -656,17 +656,17 @@ class WorldSession
         void HandleAuctionListOwnerItems(WorldPacket& recv_data);
         void HandleAuctionPlaceBid(WorldPacket& recv_data);
 
-        void HandleGetMailList(WorldPacket& recv_data);
+        void HandleGetMailList(WorldPackets::Mail::GetMailList const& packet);
         void HandleSendMail(WorldPackets::Mail::SendMail const& packet);
         class AsyncMailSendRequest;
         void HandleSendMailRequest(AsyncMailSendRequest* req);
         void HandleSendMailCallback(AsyncMailSendRequest* req);
-        void HandleMailTakeMoney(WorldPacket& recv_data);
-        void HandleMailTakeItem(WorldPacket& recv_data);
-        void HandleMailMarkAsRead(WorldPacket& recv_data);
+        void HandleMailTakeMoney(WorldPackets::Mail::MailTakeMoney const& packet);
+        void HandleMailTakeItem(WorldPackets::Mail::MailTakeItem const& packet);
+        void HandleMailMarkAsRead(WorldPackets::Mail::MailMarkAsRead const& packet);
         void HandleMailReturnToSender(WorldPackets::Mail::MailReturnToSender const& packet);
         void HandleMailDelete(WorldPacket& recv_data);
-        void HandleItemTextQuery(WorldPacket& recv_data);
+        void HandleItemTextQuery(WorldPackets::Misc::ItemTextQuery const& packet);
         void HandleMailCreateTextItem(WorldPacket& recv_data);
         void HandleQueryNextMailTime(NullClientPacket const& packet);
         void HandleCancelChanneling(NullClientPacket const& packet);
@@ -734,7 +734,7 @@ class WorldSession
 
         void HandleReclaimCorpseOpcode(WorldPackets::Misc::ReclaimCorpse const& packet);
         void HandleCorpseQueryOpcode(NullClientPacket const& packet);
-        void HandleResurrectResponseOpcode(WorldPacket& recvPacket);
+        void HandleResurrectResponseOpcode(WorldPackets::Misc::ResurrectResponse const& packet);
         void HandleSummonResponseOpcode(WorldPacket& recv_data);
 
         void HandleJoinChannelOpcode(WorldPackets::Channel::JoinChannel const& packet);

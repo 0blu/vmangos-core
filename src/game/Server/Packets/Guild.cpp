@@ -51,3 +51,27 @@ void WorldPackets::Guild::SaveGuildEmblem::ReadFromWorldPacket(WorldPacket& recv
     recv_data >> vendorGuid;
     recv_data >> emblemStyle >> emblemColor >> borderStyle >> borderColor >> backgroundColor;
 }
+
+void WorldPackets::Guild::GuildSetPublicNote::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> playerName;
+    recv_data >> note;
+}
+
+void WorldPackets::Guild::GuildSetOfficerNote::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> playerName;
+    recv_data >> note;
+}
+
+void WorldPackets::Guild::GuildAddRank::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> rankName;
+}
+
+void WorldPackets::Guild::GuildRank::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> rankId;
+    recv_data >> rights;
+    recv_data >> rankName;
+}

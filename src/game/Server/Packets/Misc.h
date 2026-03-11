@@ -210,6 +210,27 @@ namespace WorldPackets { namespace Misc
         explicit ChatIgnored() : ClientPacket(CMSG_CHAT_IGNORED) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class ResurrectResponse final : public ClientPacket
+    {
+    public:
+        ObjectGuid guid;
+        uint8 status = 0;
+
+        explicit ResurrectResponse() : ClientPacket(CMSG_RESURRECT_RESPONSE) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class ItemTextQuery final : public ClientPacket
+    {
+    public:
+        uint32 itemTextId = 0;
+        uint32 mailId = 0;
+        uint32 unk = 0;
+
+        explicit ItemTextQuery() : ClientPacket(CMSG_ITEM_TEXT_QUERY) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
 }} // namespace WorldPackets::Misc
 
 #endif // MANGOS_PACKETS_MISC_H

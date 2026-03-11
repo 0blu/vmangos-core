@@ -445,7 +445,7 @@ constexpr Handlers BuildOpcodeList()
 #endif
     DEFINE_HANDLER(CMSG_REPOP_REQUEST,                STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleRepopRequestOpcode);
     INVALID_PACKET(SMSG_RESURRECT_REQUEST,            Reason::SendByServer);
-    LEGACY_HANDLER(CMSG_RESURRECT_RESPONSE,           STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleResurrectResponseOpcode);
+    DEFINE_HANDLER(CMSG_RESURRECT_RESPONSE,           STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleResurrectResponseOpcode);
     DEFINE_HANDLER(CMSG_LOOT,                         STATUS_LOGGEDIN,  PACKET_PROCESS_SELF_ITEMS,    &WorldSession::HandleLootOpcode);
     DEFINE_HANDLER(CMSG_LOOT_MONEY,                   STATUS_LOGGEDIN,  PACKET_PROCESS_SELF_ITEMS,    &WorldSession::HandleLootMoneyOpcode);
     DEFINE_HANDLER(CMSG_LOOT_RELEASE,                 STATUS_LOGGEDIN,  PACKET_PROCESS_SELF_ITEMS,    &WorldSession::HandleLootReleaseOpcode);
@@ -624,7 +624,7 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(CMSG_DECHARGE,                     Reason::Unhandled);
     DEFINE_HANDLER(CMSG_GMTICKET_CREATE,              STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleGMTicketCreateOpcode);
     INVALID_PACKET(SMSG_GMTICKET_CREATE,              Reason::SendByServer);
-    LEGACY_HANDLER(CMSG_GMTICKET_UPDATETEXT,          STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleGMTicketUpdateTextOpcode);
+    DEFINE_HANDLER(CMSG_GMTICKET_UPDATETEXT,          STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleGMTicketUpdateTextOpcode);
     INVALID_PACKET(SMSG_GMTICKET_UPDATETEXT,          Reason::SendByServer);
     INVALID_PACKET(SMSG_ACCOUNT_DATA_MD5,             Reason::SendByServer);
     LEGACY_HANDLER(CMSG_REQUEST_ACCOUNT_DATA,         STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleRequestAccountData);
@@ -634,16 +634,16 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(SMSG_POWERGAINLOG_OBSOLETE,        Reason::SendByServer);
     INVALID_PACKET(CMSG_GM_TEACH,                     Reason::Unhandled);
     INVALID_PACKET(CMSG_GM_CREATE_ITEM_TARGET,        Reason::Unhandled);
-    LEGACY_HANDLER(CMSG_GMTICKET_GETTICKET,           STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleGMTicketGetTicketOpcode);
+    DEFINE_HANDLER(CMSG_GMTICKET_GETTICKET,           STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleGMTicketGetTicketOpcode);
     INVALID_PACKET(SMSG_GMTICKET_GETTICKET,           Reason::SendByServer);
     INVALID_PACKET(CMSG_UNLEARN_TALENTS,              Reason::Unhandled);
     INVALID_PACKET(SMSG_GAMEOBJECT_SPAWN_ANIM,        Reason::SendByServer);
     INVALID_PACKET(SMSG_GAMEOBJECT_DESPAWN_ANIM,      Reason::SendByServer);
     DEFINE_HANDLER(MSG_CORPSE_QUERY,                  STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleCorpseQueryOpcode);
-    LEGACY_HANDLER(CMSG_GMTICKET_DELETETICKET,        STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleGMTicketDeleteTicketOpcode);
+    DEFINE_HANDLER(CMSG_GMTICKET_DELETETICKET,        STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleGMTicketDeleteTicketOpcode);
     INVALID_PACKET(SMSG_GMTICKET_DELETETICKET,        Reason::SendByServer);
     INVALID_PACKET(SMSG_CHAT_WRONG_FACTION,           Reason::SendByServer);
-    LEGACY_HANDLER(CMSG_GMTICKET_SYSTEMSTATUS,        STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleGMTicketSystemStatusOpcode);
+    DEFINE_HANDLER(CMSG_GMTICKET_SYSTEMSTATUS,        STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleGMTicketSystemStatusOpcode);
     INVALID_PACKET(SMSG_GMTICKET_SYSTEMSTATUS,        Reason::SendByServer);
                // Can call convert corpse on different map.
     DEFINE_HANDLER(CMSG_SPIRIT_HEALER_ACTIVATE,       STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleSpiritHealerActivateOpcode);
@@ -667,16 +667,16 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(CMSG_GM_UBERINVIS,                 Reason::Unhandled);
     INVALID_PACKET(CMSG_GM_REQUEST_PLAYER_INFO,       Reason::Unhandled);
     INVALID_PACKET(SMSG_GM_PLAYER_INFO,               Reason::Unhandled);
-    LEGACY_HANDLER(CMSG_GUILD_RANK,                   STATUS_LOGGEDIN,  PACKET_PROCESS_GUILD,         &WorldSession::HandleGuildRankOpcode);
-    LEGACY_HANDLER(CMSG_GUILD_ADD_RANK,               STATUS_LOGGEDIN,  PACKET_PROCESS_GUILD,         &WorldSession::HandleGuildAddRankOpcode);
-    LEGACY_HANDLER(CMSG_GUILD_DEL_RANK,               STATUS_LOGGEDIN,  PACKET_PROCESS_GUILD,         &WorldSession::HandleGuildDelRankOpcode);
-    LEGACY_HANDLER(CMSG_GUILD_SET_PUBLIC_NOTE,        STATUS_LOGGEDIN,  PACKET_PROCESS_GUILD,         &WorldSession::HandleGuildSetPublicNoteOpcode);
-    LEGACY_HANDLER(CMSG_GUILD_SET_OFFICER_NOTE,       STATUS_LOGGEDIN,  PACKET_PROCESS_GUILD,         &WorldSession::HandleGuildSetOfficerNoteOpcode);
+    DEFINE_HANDLER(CMSG_GUILD_RANK,                   STATUS_LOGGEDIN,  PACKET_PROCESS_GUILD,         &WorldSession::HandleGuildRankOpcode);
+    DEFINE_HANDLER(CMSG_GUILD_ADD_RANK,               STATUS_LOGGEDIN,  PACKET_PROCESS_GUILD,         &WorldSession::HandleGuildAddRankOpcode);
+    DEFINE_HANDLER(CMSG_GUILD_DEL_RANK,               STATUS_LOGGEDIN,  PACKET_PROCESS_GUILD,         &WorldSession::HandleGuildDelRankOpcode);
+    DEFINE_HANDLER(CMSG_GUILD_SET_PUBLIC_NOTE,        STATUS_LOGGEDIN,  PACKET_PROCESS_GUILD,         &WorldSession::HandleGuildSetPublicNoteOpcode);
+    DEFINE_HANDLER(CMSG_GUILD_SET_OFFICER_NOTE,       STATUS_LOGGEDIN,  PACKET_PROCESS_GUILD,         &WorldSession::HandleGuildSetOfficerNoteOpcode);
     INVALID_PACKET(SMSG_LOGIN_VERIFY_WORLD,           Reason::SendByServer);
     INVALID_PACKET(CMSG_CLEAR_EXPLORATION,            Reason::Unhandled);
     DEFINE_HANDLER(CMSG_SEND_MAIL,                    STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleSendMail);
     INVALID_PACKET(SMSG_SEND_MAIL_RESULT,             Reason::SendByServer);
-    LEGACY_HANDLER(CMSG_GET_MAIL_LIST,                STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleGetMailList);
+    DEFINE_HANDLER(CMSG_GET_MAIL_LIST,                STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleGetMailList);
     INVALID_PACKET(SMSG_MAIL_LIST_RESULT,             Reason::SendByServer);
     DEFINE_HANDLER(CMSG_BATTLEFIELD_LIST,             STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleBattlefieldListOpcode);
     INVALID_PACKET(SMSG_BATTLEFIELD_LIST,             Reason::SendByServer);
@@ -685,11 +685,11 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(SMSG_BATTLEFIELD_LOSE,             Reason::SendByServer);
     INVALID_PACKET(CMSG_TAXICLEARNODE,                Reason::Unhandled);
     INVALID_PACKET(CMSG_TAXIENABLENODE,               Reason::Unhandled);
-    LEGACY_HANDLER(CMSG_ITEM_TEXT_QUERY,              STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleItemTextQuery);
+    DEFINE_HANDLER(CMSG_ITEM_TEXT_QUERY,              STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleItemTextQuery);
     INVALID_PACKET(SMSG_ITEM_TEXT_QUERY_RESPONSE,     Reason::SendByServer);
-    LEGACY_HANDLER(CMSG_MAIL_TAKE_MONEY,              STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleMailTakeMoney);
-    LEGACY_HANDLER(CMSG_MAIL_TAKE_ITEM,               STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD, /*COD*/ &WorldSession::HandleMailTakeItem);
-    LEGACY_HANDLER(CMSG_MAIL_MARK_AS_READ,            STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleMailMarkAsRead);
+    DEFINE_HANDLER(CMSG_MAIL_TAKE_MONEY,              STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleMailTakeMoney);
+    DEFINE_HANDLER(CMSG_MAIL_TAKE_ITEM,               STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD, /*COD*/ &WorldSession::HandleMailTakeItem);
+    DEFINE_HANDLER(CMSG_MAIL_MARK_AS_READ,            STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleMailMarkAsRead);
     DEFINE_HANDLER(CMSG_MAIL_RETURN_TO_SENDER,        STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleMailReturnToSender);
     LEGACY_HANDLER(CMSG_MAIL_DELETE,                  STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleMailDelete);
     LEGACY_HANDLER(CMSG_MAIL_CREATE_TEXT_ITEM,        STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleMailCreateTextItem);

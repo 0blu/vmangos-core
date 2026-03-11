@@ -119,3 +119,16 @@ void WorldPackets::Misc::ChatIgnored::ReadFromWorldPacket(WorldPacket& recv_data
 {
     recv_data >> guid;
 }
+
+void WorldPackets::Misc::ResurrectResponse::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> guid;
+    recv_data >> status;
+}
+
+void WorldPackets::Misc::ItemTextQuery::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> itemTextId;
+    recv_data >> mailId;
+    recv_data >> unk;
+}

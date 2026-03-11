@@ -99,6 +99,46 @@ namespace WorldPackets { namespace Guild
         explicit SaveGuildEmblem() : ClientPacket(MSG_SAVE_GUILD_EMBLEM) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class GuildSetPublicNote final : public ClientPacket
+    {
+    public:
+        std::string playerName;
+        std::string note;
+
+        explicit GuildSetPublicNote() : ClientPacket(CMSG_GUILD_SET_PUBLIC_NOTE) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class GuildSetOfficerNote final : public ClientPacket
+    {
+    public:
+        std::string playerName;
+        std::string note;
+
+        explicit GuildSetOfficerNote() : ClientPacket(CMSG_GUILD_SET_OFFICER_NOTE) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class GuildAddRank final : public ClientPacket
+    {
+    public:
+        std::string rankName;
+
+        explicit GuildAddRank() : ClientPacket(CMSG_GUILD_ADD_RANK) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class GuildRank final : public ClientPacket
+    {
+    public:
+        uint32 rankId = 0;
+        uint32 rights = 0;
+        std::string rankName;
+
+        explicit GuildRank() : ClientPacket(CMSG_GUILD_RANK) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
 }} // namespace WorldPackets::Guild
 
 #endif // MANGOS_PACKETS_GUILD_H
