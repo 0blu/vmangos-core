@@ -502,7 +502,7 @@ class WorldSession
         void HandleMountSpecialAnimOpcode(WorldPacket& recvdata);
         void HandleTeleportToUnitOpcode(WorldPacket& recvdata);
 
-        void HandleInspectOpcode(WorldPacket& recvPacket);
+        void HandleInspectOpcode(WorldPackets::Misc::Inspect const& packet);
         void HandleInspectHonorStatsOpcode(WorldPacket& recvPacket);
         void HandleShowingHelmOpcode(WorldPacket& recv_data);
         void HandleShowingCloakOpcode(WorldPacket& recv_data);
@@ -532,8 +532,8 @@ class WorldSession
         void HandleTogglePvP(WorldPacket& recvPacket);
         void HandleZoneUpdateOpcode(WorldPacket& recvPacket);
         void HandleSetSelectionOpcode(WorldPacket& recvPacket);
-        void HandleStandStateChangeOpcode(WorldPacket& recvPacket);
-        void HandleEmoteOpcode(WorldPacket& recvPacket);
+        void HandleStandStateChangeOpcode(WorldPackets::Misc::StandStateChange const& packet);
+        void HandleEmoteOpcode(WorldPackets::Misc::Emote const& packet);
         void HandleFriendListOpcode(NullClientPacket const& packet);
         void HandleAddFriendOpcode(WorldPackets::Misc::AddFriend const& packet);
         void HandleDelFriendOpcode(WorldPackets::Misc::DelFriend const& packet);
@@ -543,7 +543,7 @@ class WorldSession
         void HandleSetAmmoOpcode(WorldPacket& recvPacket);
         void HandleItemNameQueryOpcode(WorldPacket& recvPacket);
 
-        void HandleAreaTriggerOpcode(WorldPacket& recvPacket);
+        void HandleAreaTriggerOpcode(WorldPackets::Misc::AreaTrigger const& packet);
         void HandleSetFactionAtWarOpcode(WorldPacket& recv_data);
         void HandleSetWatchedFactionOpcode(WorldPacket& recv_data);
         void HandleSetFactionInactiveOpcode(WorldPacket& recv_data);
@@ -552,7 +552,7 @@ class WorldSession
         void HandleRequestAccountData(WorldPacket& recvPacket);
         void HandleSetActionButtonOpcode(WorldPacket& recvPacket);
 
-        void HandleGameObjectUseOpcode(WorldPacket& recPacket);
+        void HandleGameObjectUseOpcode(WorldPackets::Misc::GameObjectUse const& packet);
         void HandleMeetingStoneJoinOpcode(WorldPacket& recPacket);
         void HandleMeetingStoneLeaveOpcode(WorldPacket& recPacket);
         void HandleMeetingStoneInfoOpcode(WorldPacket& recPacket);
@@ -728,7 +728,7 @@ class WorldSession
         void SendWrongFactionNotice();
         void SendChatRestrictedNotice();
         void HandleChatMessageOpcode(WorldPackets::Chat::ChatMessage const& packet);
-        void HandleTextEmoteOpcode(WorldPacket& recvPacket);
+        void HandleTextEmoteOpcode(WorldPackets::Misc::TextEmote const& packet);
         void HandleChatIgnoredOpcode(WorldPacket& recvPacket);
         uint32_t ChatCooldown();
 

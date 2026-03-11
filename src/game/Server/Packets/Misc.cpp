@@ -29,3 +29,35 @@ void WorldPackets::Misc::DelIgnore::ReadFromWorldPacket(WorldPacket& recv_data)
 {
     recv_data >> ignoreGuid;
 }
+
+void WorldPackets::Misc::StandStateChange::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> animState;
+}
+
+void WorldPackets::Misc::AreaTrigger::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> triggerId;
+}
+
+void WorldPackets::Misc::Inspect::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> guid;
+}
+
+void WorldPackets::Misc::GameObjectUse::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> guid;
+}
+
+void WorldPackets::Misc::Emote::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> emote;
+}
+
+void WorldPackets::Misc::TextEmote::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> textEmote;
+    recv_data >> emoteNum;
+    recv_data >> guid;
+}

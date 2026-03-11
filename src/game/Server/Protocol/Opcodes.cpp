@@ -270,10 +270,10 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(SMSG_READ_ITEM_OK,                 Reason::SendByServer);
     INVALID_PACKET(SMSG_READ_ITEM_FAILED,             Reason::SendByServer);
     INVALID_PACKET(SMSG_ITEM_COOLDOWN,                Reason::SendByServer);
-    LEGACY_HANDLER(CMSG_GAMEOBJ_USE,                  STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleGameObjectUseOpcode);
+    DEFINE_HANDLER(CMSG_GAMEOBJ_USE,                  STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleGameObjectUseOpcode);
     INVALID_PACKET(CMSG_GAMEOBJ_CHAIR_USE_OBSOLETE,   Reason::Unhandled);
     INVALID_PACKET(SMSG_GAMEOBJECT_CUSTOM_ANIM,       Reason::SendByServer);
-    LEGACY_HANDLER(CMSG_AREATRIGGER,                  STATUS_LOGGEDIN,  PACKET_PROCESS_SELF_ITEMS,    &WorldSession::HandleAreaTriggerOpcode);
+    DEFINE_HANDLER(CMSG_AREATRIGGER,                  STATUS_LOGGEDIN,  PACKET_PROCESS_SELF_ITEMS,    &WorldSession::HandleAreaTriggerOpcode);
     DEFINE_HANDLER(MSG_MOVE_START_FORWARD,            STATUS_LOGGEDIN,  PACKET_PROCESS_MOVEMENT,      &WorldSession::HandleMovementOpcodes);
     DEFINE_HANDLER(MSG_MOVE_START_BACKWARD,           STATUS_LOGGEDIN,  PACKET_PROCESS_MOVEMENT,      &WorldSession::HandleMovementOpcodes);
     DEFINE_HANDLER(MSG_MOVE_STOP,                     STATUS_LOGGEDIN,  PACKET_PROCESS_MOVEMENT,      &WorldSession::HandleMovementOpcodes);
@@ -350,10 +350,10 @@ constexpr Handlers BuildOpcodeList()
     LEGACY_HANDLER(CMSG_TUTORIAL_FLAG,                STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleTutorialFlagOpcode);
     LEGACY_HANDLER(CMSG_TUTORIAL_CLEAR,               STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleTutorialClearOpcode);
     LEGACY_HANDLER(CMSG_TUTORIAL_RESET,               STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleTutorialResetOpcode);
-    LEGACY_HANDLER(CMSG_STANDSTATECHANGE,             STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleStandStateChangeOpcode);
-    LEGACY_HANDLER(CMSG_EMOTE,                        STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleEmoteOpcode);
+    DEFINE_HANDLER(CMSG_STANDSTATECHANGE,             STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleStandStateChangeOpcode);
+    DEFINE_HANDLER(CMSG_EMOTE,                        STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleEmoteOpcode);
     INVALID_PACKET(SMSG_EMOTE,                        Reason::SendByServer);
-    LEGACY_HANDLER(CMSG_TEXT_EMOTE,                   STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleTextEmoteOpcode);
+    DEFINE_HANDLER(CMSG_TEXT_EMOTE,                   STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleTextEmoteOpcode);
     INVALID_PACKET(SMSG_TEXT_EMOTE,                   Reason::SendByServer);
     INVALID_PACKET(CMSG_AUTOEQUIP_GROUND_ITEM,        Reason::Unhandled);
     INVALID_PACKET(CMSG_AUTOSTORE_GROUND_ITEM,        Reason::Unhandled);
@@ -369,7 +369,7 @@ constexpr Handlers BuildOpcodeList()
     LEGACY_HANDLER(CMSG_DESTROYITEM,                  STATUS_LOGGEDIN,  PACKET_PROCESS_SELF_ITEMS,    &WorldSession::HandleDestroyItemOpcode);
     INVALID_PACKET(SMSG_INVENTORY_CHANGE_FAILURE,     Reason::SendByServer);
     INVALID_PACKET(SMSG_OPEN_CONTAINER,               Reason::SendByServer);
-    LEGACY_HANDLER(CMSG_INSPECT,                      STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleInspectOpcode);
+    DEFINE_HANDLER(CMSG_INSPECT,                      STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleInspectOpcode);
     INVALID_PACKET(SMSG_INSPECT,                      Reason::SendByServer);
     DEFINE_HANDLER(CMSG_INITIATE_TRADE,               STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleInitiateTradeOpcode);
     LEGACY_HANDLER(CMSG_BEGIN_TRADE,                  STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleBeginTradeOpcode);
