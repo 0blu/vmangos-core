@@ -581,30 +581,24 @@ void WorldSession::HandleGuildSetOfficerNoteOpcode(WorldPackets::Guild::GuildSet
     guild->Roster(this);
 }
 
-void WorldSession::HandleGuildRankOpcode(WorldPacket& recvPacket)
+void WorldSession::HandleGuildRankOpcode(WorldPackets::Guild::GuildRank const& packet)
 {
-    std::string rankName;
-    uint32 rankId;
-    uint32 rights;
+    uint32 rankId = packet.rankId;
+    uint32 rights = packet.rights;
+    std::string rankName = packet.rankName;
 
     Guild* guild = sGuildMgr.GetGuildById(GetPlayer()->GetGuildId());
     if (!guild)
     {
-        recvPacket.rpos(recvPacket.wpos());                 // set to end to avoid warnings spam
         SendGuildCommandResult(GUILD_CREATE_S, "", ERR_GUILD_PLAYER_NOT_IN_GUILD);
         return;
     }
 
     if (GetPlayer()->GetObjectGuid() != guild->GetLeaderGuid())
     {
-        recvPacket.rpos(recvPacket.wpos());                 // set to end to avoid warnings spam
         SendGuildCommandResult(GUILD_INVITE_S, "", ERR_GUILD_PERMISSIONS);
         return;
     }
-
-    recvPacket >> rankId;
-    recvPacket >> rights;
-    recvPacket >> rankName;
 
     if (utf8length(rankName) > GUILD_RANK_MAX_LENGTH)
     {
@@ -623,10 +617,9 @@ void WorldSession::HandleGuildRankOpcode(WorldPacket& recvPacket)
     guild->Roster();                                        // broadcast for tab rights update
 }
 
-void WorldSession::HandleGuildAddRankOpcode(WorldPacket& recvPacket)
+void WorldSession::HandleGuildAddRankOpcode(WorldPackets::Guild::GuildAddRank const& packet)
 {
-    std::string rankName;
-    recvPacket >> rankName;
+    std::string rankName = packet.rankName;
 
     if (utf8length(rankName) > GUILD_RANK_MAX_LENGTH)
     {
@@ -656,7 +649,7 @@ void WorldSession::HandleGuildAddRankOpcode(WorldPacket& recvPacket)
     guild->Roster();                                        // broadcast for tab rights update
 }
 
-void WorldSession::HandleGuildDelRankOpcode(WorldPacket& /*recvPacket*/)
+void WorldSession::HandleGuildDelRankOpcode(NullClientPacket const& /*packet*/)
 {
     Guild* guild = sGuildMgr.GetGuildById(GetPlayer()->GetGuildId());
     if (!guild)

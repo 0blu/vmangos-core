@@ -436,12 +436,10 @@ void WorldSession::HandleSendMailCallback(WorldSession::AsyncMailSendRequest* re
  * @param recv_data the packet containing information about the mail the player read.
  *
  */
-void WorldSession::HandleMailMarkAsRead(WorldPacket& recv_data)
+void WorldSession::HandleMailMarkAsRead(WorldPackets::Mail::MailMarkAsRead const& packet)
 {
-    ObjectGuid mailboxGuid;
-    uint32 mailId;
-    recv_data >> mailboxGuid;
-    recv_data >> mailId;
+    ObjectGuid mailboxGuid = packet.mailboxGuid;
+    uint32 mailId = packet.mailId;
 
     if (!CheckMailBox(mailboxGuid))
         return;
@@ -567,12 +565,10 @@ void WorldSession::HandleMailReturnToSender(WorldPackets::Mail::MailReturnToSend
 /**
  * Handles the packet sent by the client when taking an item from the mail.
  */
-void WorldSession::HandleMailTakeItem(WorldPacket& recv_data)
+void WorldSession::HandleMailTakeItem(WorldPackets::Mail::MailTakeItem const& packet)
 {
-    ObjectGuid mailboxGuid;
-    uint32 mailId;
-    recv_data >> mailboxGuid;
-    recv_data >> mailId;
+    ObjectGuid mailboxGuid = packet.mailboxGuid;
+    uint32 mailId = packet.mailId;
 
     if (!CheckMailBox(mailboxGuid))
         return;
@@ -697,12 +693,10 @@ void WorldSession::HandleMailTakeItem(WorldPacket& recv_data)
 /**
  * Handles the packet sent by the client when taking money from the mail.
  */
-void WorldSession::HandleMailTakeMoney(WorldPacket& recv_data)
+void WorldSession::HandleMailTakeMoney(WorldPackets::Mail::MailTakeMoney const& packet)
 {
-    ObjectGuid mailboxGuid;
-    uint32 mailId;
-    recv_data >> mailboxGuid;
-    recv_data >> mailId;
+    ObjectGuid mailboxGuid = packet.mailboxGuid;
+    uint32 mailId = packet.mailId;
 
     if (!CheckMailBox(mailboxGuid))
         return;
@@ -743,10 +737,9 @@ void WorldSession::HandleMailTakeMoney(WorldPacket& recv_data)
  * Handles the packet sent by the client when requesting the current mail list.
  * It will send a list of all available mails in the players mailbox to the client.
  */
-void WorldSession::HandleGetMailList(WorldPacket& recv_data)
+void WorldSession::HandleGetMailList(WorldPackets::Mail::GetMailList const& packet)
 {
-    ObjectGuid mailboxGuid;
-    recv_data >> mailboxGuid;
+    ObjectGuid mailboxGuid = packet.mailboxGuid;
 
     if (!CheckMailBox(mailboxGuid))
         return;
@@ -860,13 +853,10 @@ void WorldSession::HandleGetMailList(WorldPacket& recv_data)
  * This function is called when client needs mail message body,
  * or when player clicks on item which has some flag set
  */
-void WorldSession::HandleItemTextQuery(WorldPacket& recv_data)
+void WorldSession::HandleItemTextQuery(WorldPackets::Misc::ItemTextQuery const& packet)
 {
-    uint32 itemTextId;
-    uint32 mailId;                                          // this value can be item id in bag, but it is also mail id
-    uint32 unk;                                             // maybe something like state - 0x70000000
-
-    recv_data >> itemTextId >> mailId >> unk;
+    uint32 itemTextId = packet.itemTextId;
+    // packet.mailId and packet.unk not used
 
     // TODO: some check needed, if player has item with guid mailId, or has mail with id mailId
 
