@@ -4,3 +4,13 @@ void WorldPackets::Group::GroupInvite::ReadFromWorldPacket(WorldPacket& recv_dat
 {
     recv_data >> memberName;
 }
+
+void WorldPackets::Group::GroupUninvite::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> memberName;
+}
+
+void WorldPackets::Group::GroupUninviteGuid::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> guid;
+}

@@ -2,6 +2,7 @@
 #define MANGOS_PACKETS_GROUP_H
 
 #include "Packet.h"
+#include "ObjectGuid.h"
 
 namespace WorldPackets { namespace Group
 {
@@ -11,6 +12,24 @@ namespace WorldPackets { namespace Group
         std::string memberName;
 
         explicit GroupInvite() : ClientPacket(CMSG_GROUP_INVITE) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class GroupUninvite final : public ClientPacket
+    {
+    public:
+        std::string memberName;
+
+        explicit GroupUninvite() : ClientPacket(CMSG_GROUP_UNINVITE) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class GroupUninviteGuid final : public ClientPacket
+    {
+    public:
+        ObjectGuid guid;
+
+        explicit GroupUninviteGuid() : ClientPacket(CMSG_GROUP_UNINVITE_GUID) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
 }} // namespace WorldPackets::Group

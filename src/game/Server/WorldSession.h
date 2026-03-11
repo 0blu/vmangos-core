@@ -564,12 +564,12 @@ class WorldSession
 
         void HandleRequestRaidInfoOpcode(WorldPacket& recv_data);
         void HandleGroupInviteOpcode(WorldPackets::Group::GroupInvite const& packet);
-        void HandleGroupAcceptOpcode(WorldPacket& recvPacket);
-        void HandleGroupDeclineOpcode(WorldPacket& recvPacket);
-        void HandleGroupUninviteOpcode(WorldPacket& recvPacket);
-        void HandleGroupUninviteGuidOpcode(WorldPacket& recvPacket);
+        void HandleGroupAcceptOpcode(NullClientPacket const& packet);
+        void HandleGroupDeclineOpcode(NullClientPacket const& packet);
+        void HandleGroupUninviteOpcode(WorldPackets::Group::GroupUninvite const& packet);
+        void HandleGroupUninviteGuidOpcode(WorldPackets::Group::GroupUninviteGuid const& packet);
         void HandleGroupSetLeaderOpcode(WorldPacket& recvPacket);
-        void HandleGroupDisbandOpcode(WorldPacket& recvPacket);
+        void HandleGroupDisbandOpcode(NullClientPacket const& packet);
         void HandleLootMethodOpcode(WorldPacket& recvPacket);
         void HandleLootRoll(WorldPacket& recv_data);
         void HandleRequestPartyMemberStatsOpcode(WorldPacket& recv_data);

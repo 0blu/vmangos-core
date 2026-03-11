@@ -152,7 +152,7 @@ void WorldSession::HandleGroupInviteOpcode(WorldPackets::Group::GroupInvite cons
     SendPartyResult(PARTY_OP_INVITE, membername, ERR_PARTY_RESULT_OK);
 }
 
-void WorldSession::HandleGroupAcceptOpcode(WorldPacket& /*recv_data*/)
+void WorldSession::HandleGroupAcceptOpcode(NullClientPacket const& /*packet*/)
 {
     Group* group = GetPlayer()->GetGroupInvite();
     if (!group)
@@ -197,7 +197,7 @@ void WorldSession::HandleGroupAcceptOpcode(WorldPacket& /*recv_data*/)
     group->BroadcastGroupUpdate();
 }
 
-void WorldSession::HandleGroupDeclineOpcode(WorldPacket& /*recv_data*/)
+void WorldSession::HandleGroupDeclineOpcode(NullClientPacket const& /*packet*/)
 {
     Group  *group  = GetPlayer()->GetGroupInvite();
     if (!group)
@@ -218,10 +218,9 @@ void WorldSession::HandleGroupDeclineOpcode(WorldPacket& /*recv_data*/)
     leader->GetSession()->SendPacket(&data);
 }
 
-void WorldSession::HandleGroupUninviteGuidOpcode(WorldPacket& recv_data)
+void WorldSession::HandleGroupUninviteGuidOpcode(WorldPackets::Group::GroupUninviteGuid const& packet)
 {
-    ObjectGuid guid;
-    recv_data >> guid;
+    ObjectGuid guid = packet.guid;
 
     // can't uninvite yourself
     if (guid == GetPlayer()->GetObjectGuid())
@@ -256,10 +255,9 @@ void WorldSession::HandleGroupUninviteGuidOpcode(WorldPacket& recv_data)
     SendPartyResult(PARTY_OP_LEAVE, "", ERR_TARGET_NOT_IN_GROUP_S);
 }
 
-void WorldSession::HandleGroupUninviteOpcode(WorldPacket& recv_data)
+void WorldSession::HandleGroupUninviteOpcode(WorldPackets::Group::GroupUninvite const& packet)
 {
-    std::string membername;
-    recv_data >> membername;
+    std::string membername = packet.memberName;
 
     // player not found
     if (!normalizePlayerName(membername))
@@ -334,7 +332,7 @@ void WorldSession::HandleGroupSetLeaderOpcode(WorldPacket& recv_data)
     group->ChangeLeader(guid);
 }
 
-void WorldSession::HandleGroupDisbandOpcode(WorldPacket& /*recv_data*/)
+void WorldSession::HandleGroupDisbandOpcode(NullClientPacket const& /*packet*/)
 {
     if (!GetPlayer()->GetGroup())
         return;
