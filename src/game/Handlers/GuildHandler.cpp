@@ -691,10 +691,9 @@ void WorldSession::SendGuildCommandResult(uint32 typecmd, std::string const& str
     SendPacket(&data);
 }
 
-void WorldSession::HandleGuildChangeInfoTextOpcode(WorldPacket& recvPacket)
+void WorldSession::HandleGuildChangeInfoTextOpcode(WorldPackets::Guild::GuildChangeInfoText const& packet)
 {
-    std::string GINFO;
-    recvPacket >> GINFO;
+    std::string GINFO = packet.infoText;
 
     if (utf8length(GINFO) > GUILD_INFO_MAX_LENGTH)
     {

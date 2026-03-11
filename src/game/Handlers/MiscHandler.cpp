@@ -942,11 +942,10 @@ void WorldSession::HandleRequestAccountData(WorldPacket& recv_data)
     }
 }
 
-void WorldSession::HandleSetActionButtonOpcode(WorldPacket& recv_data)
+void WorldSession::HandleSetActionButtonOpcode(WorldPackets::Misc::SetActionButton const& packet)
 {
-    uint8 button;
-    uint32 packetData;
-    recv_data >> button >> packetData;
+    uint8 button = packet.button;
+    uint32 packetData = packet.packetData;
 
     uint32 action = ACTION_BUTTON_ACTION(packetData);
     uint8  type   = ACTION_BUTTON_TYPE(packetData);
@@ -1028,10 +1027,9 @@ void WorldSession::HandleInspectOpcode(WorldPackets::Misc::Inspect const& packet
     SendPacket(&data);
 }
 
-void WorldSession::HandleInspectHonorStatsOpcode(WorldPacket& recv_data)
+void WorldSession::HandleInspectHonorStatsOpcode(WorldPackets::Misc::InspectHonorStats const& packet)
 {
-    ObjectGuid guid;
-    recv_data >> guid;
+    ObjectGuid guid = packet.guid;
 
     Player* pTarget = sObjectMgr.GetPlayer(guid);
     if (!pTarget)

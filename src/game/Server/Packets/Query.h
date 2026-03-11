@@ -52,6 +52,15 @@ namespace WorldPackets { namespace Query
         explicit Whois() : ClientPacket(CMSG_WHOIS) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class ItemNameQuery final : public ClientPacket
+    {
+    public:
+        uint32 itemId = 0;
+
+        explicit ItemNameQuery() : ClientPacket(CMSG_ITEM_NAME_QUERY) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
 }} // namespace WorldPackets::Query
 
 #endif // MANGOS_PACKETS_QUERY_H

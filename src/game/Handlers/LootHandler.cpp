@@ -235,7 +235,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPackets::Loot::AutoStoreLo
         player->SendEquipError(msg, nullptr, nullptr, item->itemid);
 }
 
-void WorldSession::HandleLootMoneyOpcode(WorldPacket& /*recv_data*/)
+void WorldSession::HandleLootMoneyOpcode(NullClientPacket const& /*packet*/)
 {
     Player* player = GetPlayer();
     if (!player || !player->IsInWorld())
@@ -339,10 +339,9 @@ void WorldSession::HandleLootMoneyOpcode(WorldPacket& /*recv_data*/)
     }
 }
 
-void WorldSession::HandleLootOpcode(WorldPacket& recv_data)
+void WorldSession::HandleLootOpcode(WorldPackets::Loot::LootUnit const& packet)
 {
-    ObjectGuid guid;
-    recv_data >> guid;
+    ObjectGuid guid = packet.guid;
 
     if (!guid.IsAnyTypeCreature() && !guid.IsPlayer() && !guid.IsCorpse())
     {
@@ -384,12 +383,10 @@ void WorldSession::HandleLootOpcode(WorldPacket& recv_data)
     GetPlayer()->SendLoot(guid, LOOT_CORPSE);
 }
 
-void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
+void WorldSession::HandleLootReleaseOpcode(NullClientPacket const& /*packet*/)
 {
     // cheaters can modify lguid to prevent correct apply loot release code and re-loot
     // use internal stored guid
-    recv_data.read_skip<uint64>();                          // guid;
-
     if (ObjectGuid lootGuid = GetPlayer()->GetLootGuid())
         DoLootRelease(lootGuid);
 }

@@ -884,10 +884,9 @@ void WorldSession::HandleMoveSplineDoneOpcode(WorldPacket& recvData)
     pMover->SendMovementMessageToSet(std::move(data), true, _player);
 }
 
-void WorldSession::HandleSetActiveMoverOpcode(WorldPacket& recvData)
+void WorldSession::HandleSetActiveMoverOpcode(WorldPackets::Misc::SetActiveMover const& packet)
 {
-    ObjectGuid guid;
-    recvData >> guid;
+    ObjectGuid guid = packet.guid;
 
     if (!guid.IsEmpty())
     {

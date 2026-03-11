@@ -76,3 +76,31 @@ void WorldPackets::Misc::TutorialFlag::ReadFromWorldPacket(WorldPacket& recv_dat
 {
     recv_data >> iFlag;
 }
+
+void WorldPackets::Misc::SetActionButton::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> button;
+    recv_data >> packetData;
+}
+
+void WorldPackets::Misc::InspectHonorStats::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> guid;
+}
+
+void WorldPackets::Misc::SetActiveMover::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> guid;
+}
+
+void WorldPackets::Misc::SetFactionAtWar::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> repListId;
+    recv_data >> flag;
+}
+
+void WorldPackets::Misc::SetFactionInactive::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> replistid;
+    recv_data >> inactive;
+}

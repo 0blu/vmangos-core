@@ -40,3 +40,8 @@ void WorldPackets::Guild::GuildMOTD::ReadFromWorldPacket(WorldPacket& recv_data)
     if (!recv_data.empty())
         recv_data >> motd;
 }
+
+void WorldPackets::Guild::GuildChangeInfoText::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> infoText;
+}

@@ -76,6 +76,15 @@ namespace WorldPackets { namespace Guild
         explicit GuildMOTD() : ClientPacket(CMSG_GUILD_MOTD) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class GuildChangeInfoText final : public ClientPacket
+    {
+    public:
+        std::string infoText;
+
+        explicit GuildChangeInfoText() : ClientPacket(CMSG_GUILD_INFO_TEXT) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
 }} // namespace WorldPackets::Guild
 
 #endif // MANGOS_PACKETS_GUILD_H

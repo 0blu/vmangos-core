@@ -19,3 +19,10 @@ void WorldPackets::Group::RequestPartyMemberStats::ReadFromWorldPacket(WorldPack
 {
     recv_data >> guid;
 }
+
+void WorldPackets::Group::LootMethod::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> lootMethod;
+    recv_data >> lootMaster;
+    recv_data >> lootThreshold;
+}

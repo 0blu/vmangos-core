@@ -215,7 +215,7 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(SMSG_GROUP_UNINVITE,               Reason::SendByServer);
     LEGACY_HANDLER(CMSG_GROUP_SET_LEADER,             STATUS_LOGGEDIN,  PACKET_PROCESS_GROUP,         &WorldSession::HandleGroupSetLeaderOpcode);
     INVALID_PACKET(SMSG_GROUP_SET_LEADER,             Reason::SendByServer);
-    LEGACY_HANDLER(CMSG_LOOT_METHOD,                  STATUS_LOGGEDIN,  PACKET_PROCESS_GROUP,         &WorldSession::HandleLootMethodOpcode);
+    DEFINE_HANDLER(CMSG_LOOT_METHOD,                  STATUS_LOGGEDIN,  PACKET_PROCESS_GROUP,         &WorldSession::HandleLootMethodOpcode);
     DEFINE_HANDLER(CMSG_GROUP_DISBAND,                STATUS_LOGGEDIN,  PACKET_PROCESS_GROUP,         &WorldSession::HandleGroupDisbandOpcode);
     INVALID_PACKET(SMSG_GROUP_DESTROYED,              Reason::SendByServer);
     INVALID_PACKET(SMSG_GROUP_LIST,                   Reason::SendByServer);
@@ -386,10 +386,10 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(SMSG_INITIALIZE_FACTIONS,          Reason::SendByServer);
     INVALID_PACKET(SMSG_SET_FACTION_VISIBLE,          Reason::SendByServer);
     INVALID_PACKET(SMSG_SET_FACTION_STANDING,         Reason::SendByServer);
-    LEGACY_HANDLER(CMSG_SET_FACTION_ATWAR,            STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleSetFactionAtWarOpcode);
+    DEFINE_HANDLER(CMSG_SET_FACTION_ATWAR,            STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleSetFactionAtWarOpcode);
     INVALID_PACKET(CMSG_SET_FACTION_CHEAT,            Reason::Unhandled);
     INVALID_PACKET(SMSG_SET_PROFICIENCY,              Reason::SendByServer);
-    LEGACY_HANDLER(CMSG_SET_ACTION_BUTTON,            STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleSetActionButtonOpcode);
+    DEFINE_HANDLER(CMSG_SET_ACTION_BUTTON,            STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleSetActionButtonOpcode);
     INVALID_PACKET(SMSG_ACTION_BUTTONS,               Reason::SendByServer);
     INVALID_PACKET(SMSG_INITIAL_SPELLS,               Reason::SendByServer);
     INVALID_PACKET(SMSG_LEARNED_SPELL,                Reason::SendByServer);
@@ -446,9 +446,9 @@ constexpr Handlers BuildOpcodeList()
     DEFINE_HANDLER(CMSG_REPOP_REQUEST,                STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleRepopRequestOpcode);
     INVALID_PACKET(SMSG_RESURRECT_REQUEST,            Reason::SendByServer);
     LEGACY_HANDLER(CMSG_RESURRECT_RESPONSE,           STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleResurrectResponseOpcode);
-    LEGACY_HANDLER(CMSG_LOOT,                         STATUS_LOGGEDIN,  PACKET_PROCESS_SELF_ITEMS,    &WorldSession::HandleLootOpcode);
-    LEGACY_HANDLER(CMSG_LOOT_MONEY,                   STATUS_LOGGEDIN,  PACKET_PROCESS_SELF_ITEMS,    &WorldSession::HandleLootMoneyOpcode);
-    LEGACY_HANDLER(CMSG_LOOT_RELEASE,                 STATUS_LOGGEDIN,  PACKET_PROCESS_SELF_ITEMS,    &WorldSession::HandleLootReleaseOpcode);
+    DEFINE_HANDLER(CMSG_LOOT,                         STATUS_LOGGEDIN,  PACKET_PROCESS_SELF_ITEMS,    &WorldSession::HandleLootOpcode);
+    DEFINE_HANDLER(CMSG_LOOT_MONEY,                   STATUS_LOGGEDIN,  PACKET_PROCESS_SELF_ITEMS,    &WorldSession::HandleLootMoneyOpcode);
+    DEFINE_HANDLER(CMSG_LOOT_RELEASE,                 STATUS_LOGGEDIN,  PACKET_PROCESS_SELF_ITEMS,    &WorldSession::HandleLootReleaseOpcode);
     INVALID_PACKET(SMSG_LOOT_RESPONSE,                Reason::SendByServer);
     INVALID_PACKET(SMSG_LOOT_RELEASE_RESPONSE,        Reason::SendByServer);
     INVALID_PACKET(SMSG_LOOT_REMOVED,                 Reason::SendByServer);
@@ -724,7 +724,7 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(SMSG_SET_PCT_SPELL_MODIFIER,       Reason::SendByServer);
     DEFINE_HANDLER(CMSG_SET_AMMO,                     STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleSetAmmoOpcode);
     INVALID_PACKET(SMSG_CORPSE_RECLAIM_DELAY,         Reason::SendByServer);
-    LEGACY_HANDLER(CMSG_SET_ACTIVE_MOVER,             STATUS_LOGGEDIN,  PACKET_PROCESS_MOVEMENT,      &WorldSession::HandleSetActiveMoverOpcode);
+    DEFINE_HANDLER(CMSG_SET_ACTIVE_MOVER,             STATUS_LOGGEDIN,  PACKET_PROCESS_MOVEMENT,      &WorldSession::HandleSetActiveMoverOpcode);
     LEGACY_HANDLER(CMSG_PET_CANCEL_AURA,              STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandlePetCancelAuraOpcode);
     INVALID_PACKET(CMSG_PLAYER_AI_CHEAT,              Reason::Unhandled);
     DEFINE_HANDLER(CMSG_CANCEL_AUTO_REPEAT_SPELL,     STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleCancelAutoRepeatSpellOpcode);
@@ -814,7 +814,7 @@ constexpr Handlers BuildOpcodeList()
     LEGACY_HANDLER(MSG_PETITION_RENAME,               STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandlePetitionRenameOpcode);
     INVALID_PACKET(SMSG_INIT_WORLD_STATES,            Reason::SendByServer);
     INVALID_PACKET(SMSG_UPDATE_WORLD_STATE,           Reason::SendByServer);
-    LEGACY_HANDLER(CMSG_ITEM_NAME_QUERY,              STATUS_LOGGEDIN,  PACKET_PROCESS_DB_QUERY,      &WorldSession::HandleItemNameQueryOpcode);
+    DEFINE_HANDLER(CMSG_ITEM_NAME_QUERY,              STATUS_LOGGEDIN,  PACKET_PROCESS_DB_QUERY,      &WorldSession::HandleItemNameQueryOpcode);
     INVALID_PACKET(SMSG_ITEM_NAME_QUERY_RESPONSE,     Reason::SendByServer);
     INVALID_PACKET(SMSG_PET_ACTION_FEEDBACK,          Reason::SendByServer);
     LEGACY_HANDLER(CMSG_CHAR_RENAME,                  STATUS_AUTHED,    PACKET_PROCESS_WORLD,         &WorldSession::HandleCharRenameOpcode);
@@ -832,7 +832,7 @@ constexpr Handlers BuildOpcodeList()
     LEGACY_HANDLER(CMSG_BATTLEFIELD_STATUS,           STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleBattlefieldStatusOpcode);
     INVALID_PACKET(SMSG_BATTLEFIELD_STATUS,           Reason::SendByServer);
     LEGACY_HANDLER(CMSG_BATTLEFIELD_PORT,             STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleBattleFieldPortOpcode);
-    LEGACY_HANDLER(MSG_INSPECT_HONOR_STATS,           STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleInspectHonorStatsOpcode);
+    DEFINE_HANDLER(MSG_INSPECT_HONOR_STATS,           STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleInspectHonorStatsOpcode);
     LEGACY_HANDLER(CMSG_BATTLEMASTER_HELLO,           STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleBattlemasterHelloOpcode);
     INVALID_PACKET(CMSG_MOVE_START_SWIM_CHEAT,        Reason::Unhandled);
     INVALID_PACKET(CMSG_MOVE_STOP_SWIM_CHEAT,         Reason::Unhandled);
@@ -879,7 +879,7 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(SMSG_COMPRESSED_MOVES,             Reason::SendByServer);
 #endif
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
-    LEGACY_HANDLER(CMSG_GUILD_INFO_TEXT,              STATUS_LOGGEDIN,  PACKET_PROCESS_GUILD,         &WorldSession::HandleGuildChangeInfoTextOpcode);
+    DEFINE_HANDLER(CMSG_GUILD_INFO_TEXT,              STATUS_LOGGEDIN,  PACKET_PROCESS_GUILD,         &WorldSession::HandleGuildChangeInfoTextOpcode);
     INVALID_PACKET(SMSG_CHAT_RESTRICTED,              Reason::SendByServer);
     INVALID_PACKET(SMSG_SPLINE_SET_RUN_SPEED,         Reason::SendByServer);
     INVALID_PACKET(SMSG_SPLINE_SET_RUN_BACK_SPEED,    Reason::SendByServer);
@@ -908,7 +908,7 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(SMSG_GAMETIMEBIAS_SET,             Reason::SendByServer);
     INVALID_PACKET(CMSG_DEBUG_ACTIONS_START,          Reason::Unhandled);
     INVALID_PACKET(CMSG_DEBUG_ACTIONS_STOP,           Reason::Unhandled);
-    LEGACY_HANDLER(CMSG_SET_FACTION_INACTIVE,         STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleSetFactionInactiveOpcode);
+    DEFINE_HANDLER(CMSG_SET_FACTION_INACTIVE,         STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleSetFactionInactiveOpcode);
     LEGACY_HANDLER(CMSG_SET_WATCHED_FACTION,          STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleSetWatchedFactionOpcode);
     INVALID_PACKET(MSG_MOVE_TIME_SKIPPED,             Reason::Unhandled);
     INVALID_PACKET(SMSG_SPLINE_MOVE_ROOT,             Reason::SendByServer);

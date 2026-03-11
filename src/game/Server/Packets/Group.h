@@ -41,6 +41,17 @@ namespace WorldPackets { namespace Group
         explicit RequestPartyMemberStats() : ClientPacket(CMSG_REQUEST_PARTY_MEMBER_STATS) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class LootMethod final : public ClientPacket
+    {
+    public:
+        uint32 lootMethod = 0;
+        ObjectGuid lootMaster;
+        uint32 lootThreshold = 0;
+
+        explicit LootMethod() : ClientPacket(CMSG_LOOT_METHOD) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
 }} // namespace WorldPackets::Group
 
 #endif // MANGOS_PACKETS_GROUP_H

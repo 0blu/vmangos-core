@@ -722,13 +722,10 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder *holder)
             pGroup->SendLootStartRollsForPlayer(pCurrChar);
 }
 
-void WorldSession::HandleSetFactionAtWarOpcode(WorldPacket& recv_data)
+void WorldSession::HandleSetFactionAtWarOpcode(WorldPackets::Misc::SetFactionAtWar const& packet)
 {
-    uint32 repListId;
-    uint8  flag;
-
-    recv_data >> repListId;
-    recv_data >> flag;
+    uint32 repListId = packet.repListId;
+    uint8  flag = packet.flag;
 
     Player* pPlayer = GetPlayer();
 
@@ -774,11 +771,10 @@ void WorldSession::HandleSetWatchedFactionOpcode(WorldPacket& recv_data)
 #endif
 }
 
-void WorldSession::HandleSetFactionInactiveOpcode(WorldPacket& recv_data)
+void WorldSession::HandleSetFactionInactiveOpcode(WorldPackets::Misc::SetFactionInactive const& packet)
 {
-    uint32 replistid;
-    uint8 inactive;
-    recv_data >> replistid >> inactive;
+    uint32 replistid = packet.replistid;
+    uint8 inactive = packet.inactive;
 
     _player->GetReputationMgr().SetInactive(replistid, inactive);
 }

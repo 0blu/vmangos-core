@@ -135,6 +135,54 @@ namespace WorldPackets { namespace Misc
         explicit TutorialFlag() : ClientPacket(CMSG_TUTORIAL_FLAG) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class SetActionButton final : public ClientPacket
+    {
+    public:
+        uint8 button = 0;
+        uint32 packetData = 0;
+
+        explicit SetActionButton() : ClientPacket(CMSG_SET_ACTION_BUTTON) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class InspectHonorStats final : public ClientPacket
+    {
+    public:
+        ObjectGuid guid;
+
+        explicit InspectHonorStats() : ClientPacket(MSG_INSPECT_HONOR_STATS) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class SetActiveMover final : public ClientPacket
+    {
+    public:
+        ObjectGuid guid;
+
+        explicit SetActiveMover() : ClientPacket(CMSG_SET_ACTIVE_MOVER) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class SetFactionAtWar final : public ClientPacket
+    {
+    public:
+        uint32 repListId = 0;
+        uint8 flag = 0;
+
+        explicit SetFactionAtWar() : ClientPacket(CMSG_SET_FACTION_ATWAR) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class SetFactionInactive final : public ClientPacket
+    {
+    public:
+        uint32 replistid = 0;
+        uint8 inactive = 0;
+
+        explicit SetFactionInactive() : ClientPacket(CMSG_SET_FACTION_INACTIVE) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
 }} // namespace WorldPackets::Misc
 
 #endif // MANGOS_PACKETS_MISC_H

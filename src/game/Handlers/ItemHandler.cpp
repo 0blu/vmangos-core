@@ -1117,11 +1117,9 @@ void WorldSession::SendItemEnchantTimeUpdate(ObjectGuid playerGuid, ObjectGuid i
     SendPacket(&data);
 }
 
-void WorldSession::HandleItemNameQueryOpcode(WorldPacket& recv_data)
+void WorldSession::HandleItemNameQueryOpcode(WorldPackets::Query::ItemNameQuery const& packet)
 {
-    uint32 itemid;
-    recv_data >> itemid;
-    recv_data.read_skip<uint64>();                          // guid
+    uint32 itemid = packet.itemId;
 
     ItemPrototype const* pProto = sObjectMgr.GetItemPrototype(itemid);
     if (pProto)

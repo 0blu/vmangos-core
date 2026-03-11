@@ -350,12 +350,11 @@ void WorldSession::HandleGroupDisbandOpcode(NullClientPacket const& /*packet*/)
     GetPlayer()->RemoveFromGroup();
 }
 
-void WorldSession::HandleLootMethodOpcode(WorldPacket& recv_data)
+void WorldSession::HandleLootMethodOpcode(WorldPackets::Group::LootMethod const& packet)
 {
-    uint32 lootMethod;
-    ObjectGuid lootMaster;
-    uint32 lootThreshold;
-    recv_data >> lootMethod >> lootMaster >> lootThreshold;
+    uint32 lootMethod = packet.lootMethod;
+    ObjectGuid lootMaster = packet.lootMaster;
+    uint32 lootThreshold = packet.lootThreshold;
 
     // Impossible.
     if (lootMethod > 4)
