@@ -754,15 +754,15 @@ class WorldSession
         void HandleChannelAnnouncementsOpcode(WorldPackets::Channel::ChannelAnnouncements const& packet);
         void HandleChannelModerateOpcode(WorldPackets::Channel::ChannelModerate const& packet);
 
-        void HandleCompleteCinematic(WorldPacket& recvPacket);
-        void HandleNextCinematicCamera(WorldPacket& recvPacket);
+        void HandleCompleteCinematic(NullClientPacket const& packet);
+        void HandleNextCinematicCamera(NullClientPacket const& packet);
 
         void HandlePageQuerySkippedOpcode(WorldPacket& recvPacket);
         void HandlePageTextQueryOpcode(WorldPackets::Query::QueryPageText const& packet);
 
-        void HandleTutorialFlagOpcode(WorldPacket& recv_data);
-        void HandleTutorialClearOpcode(WorldPacket& recv_data);
-        void HandleTutorialResetOpcode(WorldPacket& recv_data);
+        void HandleTutorialFlagOpcode(WorldPackets::Misc::TutorialFlag const& packet);
+        void HandleTutorialClearOpcode(NullClientPacket const& packet);
+        void HandleTutorialResetOpcode(NullClientPacket const& packet);
 
         //Pet
         void HandlePetAction(WorldPackets::Pet::PetAction const& packet);

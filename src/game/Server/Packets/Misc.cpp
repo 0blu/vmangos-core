@@ -71,3 +71,8 @@ void WorldPackets::Misc::FarSight::ReadFromWorldPacket(WorldPacket& recv_data)
 {
     recv_data >> op;
 }
+
+void WorldPackets::Misc::TutorialFlag::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> iFlag;
+}

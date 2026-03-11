@@ -738,10 +738,9 @@ void WorldSession::HandleSetFactionAtWarOpcode(WorldPacket& recv_data)
     pPlayer->GetReputationMgr().SetAtWar(repListId, flag);
 }
 
-void WorldSession::HandleTutorialFlagOpcode(WorldPacket& recv_data)
+void WorldSession::HandleTutorialFlagOpcode(WorldPackets::Misc::TutorialFlag const& packet)
 {
-    uint32 iFlag;
-    recv_data >> iFlag;
+    uint32 iFlag = packet.iFlag;
 
     uint32 wInt = (iFlag / 32);
     if (wInt >= 8)
@@ -754,13 +753,13 @@ void WorldSession::HandleTutorialFlagOpcode(WorldPacket& recv_data)
     SetTutorialInt(wInt, tutflag);
 }
 
-void WorldSession::HandleTutorialClearOpcode(WorldPacket& /*recv_data*/)
+void WorldSession::HandleTutorialClearOpcode(NullClientPacket const& /*packet*/)
 {
     for (uint32 iI = 0; iI < 8; ++iI)
         SetTutorialInt(iI, 0xFFFFFFFF);
 }
 
-void WorldSession::HandleTutorialResetOpcode(WorldPacket& /*recv_data*/)
+void WorldSession::HandleTutorialResetOpcode(NullClientPacket const& /*packet*/)
 {
     for (uint32 iI = 0; iI < 8; iI++)
         SetTutorialInt(iI, 0x00000000);

@@ -126,6 +126,15 @@ namespace WorldPackets { namespace Misc
         explicit FarSight() : ClientPacket(CMSG_FAR_SIGHT) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class TutorialFlag final : public ClientPacket
+    {
+    public:
+        uint32 iFlag = 0;
+
+        explicit TutorialFlag() : ClientPacket(CMSG_TUTORIAL_FLAG) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
 }} // namespace WorldPackets::Misc
 
 #endif // MANGOS_PACKETS_MISC_H
