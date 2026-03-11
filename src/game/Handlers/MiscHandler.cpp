@@ -363,7 +363,7 @@ void WorldSession::HandlePlayerLogoutOpcode(WorldPacket& /*recv_data*/)
 {
 }
 
-void WorldSession::HandleLogoutCancelOpcode(WorldPacket& /*recv_data*/)
+void WorldSession::HandleLogoutCancelOpcode(NullClientPacket const& /*packet*/)
 {
     LogoutRequest(0);
 
