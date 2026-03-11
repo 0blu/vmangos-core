@@ -534,11 +534,11 @@ class WorldSession
         void HandleSetSelectionOpcode(WorldPacket& recvPacket);
         void HandleStandStateChangeOpcode(WorldPacket& recvPacket);
         void HandleEmoteOpcode(WorldPacket& recvPacket);
-        void HandleFriendListOpcode(WorldPacket& recvPacket);
-        void HandleAddFriendOpcode(WorldPacket& recvPacket);
-        void HandleDelFriendOpcode(WorldPacket& recvPacket);
-        void HandleAddIgnoreOpcode(WorldPacket& recvPacket);
-        void HandleDelIgnoreOpcode(WorldPacket& recvPacket);
+        void HandleFriendListOpcode(NullClientPacket const& packet);
+        void HandleAddFriendOpcode(WorldPackets::Misc::AddFriend const& packet);
+        void HandleDelFriendOpcode(WorldPackets::Misc::DelFriend const& packet);
+        void HandleAddIgnoreOpcode(WorldPackets::Misc::AddIgnore const& packet);
+        void HandleDelIgnoreOpcode(WorldPackets::Misc::DelIgnore const& packet);
         void HandleBugOpcode(WorldPacket& recvPacket);
         void HandleSetAmmoOpcode(WorldPacket& recvPacket);
         void HandleItemNameQueryOpcode(WorldPacket& recvPacket);

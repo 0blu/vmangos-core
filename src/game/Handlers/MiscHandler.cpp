@@ -487,18 +487,17 @@ void WorldSession::HandleStandStateChangeOpcode(WorldPacket& recv_data)
     _player->SetStandState(animState);
 }
 
-void WorldSession::HandleFriendListOpcode(WorldPacket& recv_data)
+void WorldSession::HandleFriendListOpcode(NullClientPacket const& /*packet*/)
 {
     ASSERT(GetMasterPlayer());
     GetMasterPlayer()->GetSocial()->SendFriendList();
 }
 
-void WorldSession::HandleAddFriendOpcode(WorldPacket& recv_data)
+void WorldSession::HandleAddFriendOpcode(WorldPackets::Misc::AddFriend const& packet)
 {
     ASSERT(GetMasterPlayer());
 
-    std::string friendName;
-    recv_data >> friendName;
+    std::string friendName = packet.friendName;
 
     if (!normalizePlayerName(friendName))
         return;
@@ -543,25 +542,22 @@ void WorldSession::HandleAddFriendOpcode(WorldPacket& recv_data)
     sSocialMgr.SendFriendStatus(GetMasterPlayer(), friendResult, friendGuid, false);
 }
 
-void WorldSession::HandleDelFriendOpcode(WorldPacket& recv_data)
+void WorldSession::HandleDelFriendOpcode(WorldPackets::Misc::DelFriend const& packet)
 {
     ASSERT(GetMasterPlayer());
 
-    ObjectGuid friendGuid;
-
-    recv_data >> friendGuid;
+    ObjectGuid friendGuid = packet.friendGuid;
 
     GetMasterPlayer()->GetSocial()->RemoveFromSocialList(friendGuid, false);
 
     sSocialMgr.SendFriendStatus(GetMasterPlayer(), FRIEND_REMOVED, friendGuid, false);
 }
 
-void WorldSession::HandleAddIgnoreOpcode(WorldPacket& recv_data)
+void WorldSession::HandleAddIgnoreOpcode(WorldPackets::Misc::AddIgnore const& packet)
 {
     ASSERT(GetMasterPlayer());
 
-    std::string ignoreName;
-    recv_data >> ignoreName;
+    std::string ignoreName = packet.ignoreName;
 
     if (!normalizePlayerName(ignoreName))
         return;
@@ -596,12 +592,11 @@ void WorldSession::HandleAddIgnoreOpcode(WorldPacket& recv_data)
     sSocialMgr.SendFriendStatus(GetMasterPlayer(), ignoreResult, ignoreGuid, false);
 }
 
-void WorldSession::HandleDelIgnoreOpcode(WorldPacket& recv_data)
+void WorldSession::HandleDelIgnoreOpcode(WorldPackets::Misc::DelIgnore const& packet)
 {
     ASSERT(GetMasterPlayer());
 
-    ObjectGuid ignoreGuid;
-    recv_data >> ignoreGuid;
+    ObjectGuid ignoreGuid = packet.ignoreGuid;
 
     GetMasterPlayer()->GetSocial()->RemoveFromSocialList(ignoreGuid, true);
 
