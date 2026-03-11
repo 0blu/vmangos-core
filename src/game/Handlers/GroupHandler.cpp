@@ -432,7 +432,6 @@ void WorldSession::HandleRandomRollOpcode(WorldPackets::Group::RandomRoll const&
 {
     uint32 minimum = packet.minimum;
     uint32 maximum = packet.maximum;
-    uint32 roll;
 
     /** error handling **/
     if (minimum > maximum || maximum > 10000)               // < 32768 for urand call
@@ -440,7 +439,7 @@ void WorldSession::HandleRandomRollOpcode(WorldPackets::Group::RandomRoll const&
     /********************/
 
     // everything is fine, do it
-    roll = urand(minimum, maximum);
+    uint32 roll = urand(minimum, maximum);
 
     //sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "ROLL: MIN: %u, MAX: %u, ROLL: %u", minimum, maximum, roll);
 
