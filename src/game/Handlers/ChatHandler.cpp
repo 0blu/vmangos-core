@@ -770,10 +770,9 @@ void WorldSession::HandleTextEmoteOpcode(WorldPackets::Misc::TextEmote const& pa
         ((Creature*)unit)->AI()->ReceiveEmote(GetPlayer(), textEmote);
 }
 
-void WorldSession::HandleChatIgnoredOpcode(WorldPacket& recv_data)
+void WorldSession::HandleChatIgnoredOpcode(WorldPackets::Misc::ChatIgnored const& packet)
 {
-    ObjectGuid iguid;
-    recv_data >> iguid;
+    ObjectGuid iguid = packet.guid;
 
     Player* player = sObjectMgr.GetPlayer(iguid);
     if (!player)

@@ -717,13 +717,14 @@ void WorldSession::HandleGuildChangeInfoTextOpcode(WorldPackets::Guild::GuildCha
     guild->SetGINFO(GINFO);
 }
 
-void WorldSession::HandleSaveGuildEmblemOpcode(WorldPacket& recvPacket)
+void WorldSession::HandleSaveGuildEmblemOpcode(WorldPackets::Guild::SaveGuildEmblem const& packet)
 {
-    ObjectGuid vendorGuid;
-    int32 emblemStyle, emblemColor, borderStyle, borderColor, backgroundColor;
-
-    recvPacket >> vendorGuid;
-    recvPacket >> emblemStyle >> emblemColor >> borderStyle >> borderColor >> backgroundColor;
+    ObjectGuid vendorGuid = packet.vendorGuid;
+    int32 emblemStyle = packet.emblemStyle;
+    int32 emblemColor = packet.emblemColor;
+    int32 borderStyle = packet.borderStyle;
+    int32 borderColor = packet.borderColor;
+    int32 backgroundColor = packet.backgroundColor;
 
     Creature* pCreature = GetPlayer()->GetNPCIfCanInteractWith(vendorGuid, UNIT_NPC_FLAG_TABARDDESIGNER);
     if (!pCreature)

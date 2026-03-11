@@ -482,7 +482,7 @@ class WorldSession
         void HandlePlayerLoginOpcode(WorldPackets::Character::PlayerLogin const& packet);
         void HandleCharEnum(std::unique_ptr<QueryResult> result);
         void HandlePlayerLogin(LoginQueryHolder* holder);
-        void HandlePlayedTime(WorldPacket& recvPacket);
+        void HandlePlayedTime(NullClientPacket const& packet);
 
         // Movement
         void HandleMoveRootAck(WorldPacket& recvPacket);
@@ -530,7 +530,7 @@ class WorldSession
         void HandleGMSurveySubmitOpcode(WorldPacket& recvPacket);
 
         void HandleTogglePvP(WorldPacket& recvPacket);
-        void HandleZoneUpdateOpcode(WorldPacket& recvPacket);
+        void HandleZoneUpdateOpcode(WorldPackets::Misc::ZoneUpdate const& packet);
         void HandleSetSelectionOpcode(WorldPackets::Misc::SetSelection const& packet);
         void HandleStandStateChangeOpcode(WorldPackets::Misc::StandStateChange const& packet);
         void HandleEmoteOpcode(WorldPackets::Misc::Emote const& packet);
@@ -558,7 +558,7 @@ class WorldSession
         void HandleMeetingStoneInfoOpcode(WorldPacket& recPacket);
 
         void HandleQueryPlayerNameOpcode(WorldPackets::Query::QueryPlayerName const& packet);
-        void HandleQueryTimeOpcode(WorldPacket& recvPacket);
+        void HandleQueryTimeOpcode(NullClientPacket const& packet);
         void HandleCreatureQueryOpcode(WorldPackets::Query::QueryCreature const& packet);
         void HandleGameObjectQueryOpcode(WorldPackets::Query::QueryGameObject const& packet);
 
@@ -609,14 +609,14 @@ class WorldSession
         void HandleGuildAddRankOpcode(WorldPacket& recvPacket);
         void HandleGuildDelRankOpcode(WorldPacket& recvPacket);
         void HandleGuildChangeInfoTextOpcode(WorldPackets::Guild::GuildChangeInfoText const& packet);
-        void HandleSaveGuildEmblemOpcode(WorldPacket& recvPacket);
+        void HandleSaveGuildEmblemOpcode(WorldPackets::Guild::SaveGuildEmblem const& packet);
 
         void HandleTaxiNodeStatusQueryOpcode(WorldPackets::Taxi::TaxiNodeStatusQuery const& packet);
         void HandleTaxiQueryAvailableNodes(WorldPackets::Taxi::TaxiQueryAvailableNodes const& packet);
         void HandleActivateTaxiOpcode(WorldPacket& recvPacket);
         void HandleActivateTaxiExpressOpcode(WorldPacket& recvPacket);
 
-        void HandleTabardVendorActivateOpcode(WorldPacket& recvPacket);
+        void HandleTabardVendorActivateOpcode(WorldPackets::Npc::TabardVendorActivate const& packet);
         void HandleBankerActivateOpcode(WorldPackets::Npc::BankerActivate const& packet);
         void HandleBuyBankSlotOpcode(WorldPackets::Item::BuyBankSlot const& packet);
         void HandleTrainerListOpcode(WorldPackets::Npc::TrainerList const& packet);
@@ -624,7 +624,7 @@ class WorldSession
         void HandlePetitionShowListOpcode(WorldPackets::Petition::PetitionShow const& packet);
         void HandleGossipHelloOpcode(WorldPackets::Npc::GossipHello const& packet);
         void HandleGossipSelectOptionOpcode(WorldPacket& recvPacket);
-        void HandleSpiritHealerActivateOpcode(WorldPacket& recvPacket);
+        void HandleSpiritHealerActivateOpcode(WorldPackets::Npc::SpiritHealerActivate const& packet);
         void HandleNpcTextQueryOpcode(WorldPackets::Npc::NpcTextQuery const& packet);
         void HandleBinderActivateOpcode(WorldPackets::Npc::BinderActivate const& packet);
         void HandleListStabledPetsOpcode(WorldPacket& recvPacket);
@@ -687,11 +687,11 @@ class WorldSession
         void HandleBuybackItem(WorldPacket& recvPacket);
         void HandleAutoBankItemOpcode(WorldPackets::Item::AutoBankItem const& packet);
         void HandleAutoStoreBankItemOpcode(WorldPackets::Item::AutoStoreBankItem const& packet);
-        void HandleWrapItemOpcode(WorldPacket& recvPacket);
+        void HandleWrapItemOpcode(WorldPackets::Item::WrapItem const& packet);
 
         void HandleAttackSwingOpcode(WorldPackets::Combat::AttackSwing const& packet);
         void HandleAttackStopOpcode(NullClientPacket const& packet);
-        void HandleSetSheathedOpcode(WorldPacket& recvPacket);
+        void HandleSetSheathedOpcode(WorldPackets::Combat::SetSheathed const& packet);
 
         void HandleUseItemOpcode(WorldPackets::Spell::UseItem const& packet);
         void HandleOpenItemOpcode(WorldPackets::Spell::OpenItem const& packet);
@@ -703,7 +703,7 @@ class WorldSession
         void HandleSetActionBarTogglesOpcode(WorldPacket& recv_data);
         void HandleLearnTalentOpcode(WorldPackets::Skill::LearnTalent const& packet);
         void HandleTalentWipeConfirmOpcode(WorldPacket& recvPacket);
-        void HandleUnlearnSkillOpcode(WorldPacket& recvPacket);
+        void HandleUnlearnSkillOpcode(WorldPackets::Skill::UnlearnSkill const& packet);
 
         void HandleQuestgiverStatusQueryOpcode(WorldPackets::Quest::QuestgiverStatusQuery const& packet);
         void HandleQuestgiverHelloOpcode(WorldPackets::Quest::QuestgiverHello const& packet);
@@ -729,11 +729,11 @@ class WorldSession
         void SendChatRestrictedNotice();
         void HandleChatMessageOpcode(WorldPackets::Chat::ChatMessage const& packet);
         void HandleTextEmoteOpcode(WorldPackets::Misc::TextEmote const& packet);
-        void HandleChatIgnoredOpcode(WorldPacket& recvPacket);
+        void HandleChatIgnoredOpcode(WorldPackets::Misc::ChatIgnored const& packet);
         uint32_t ChatCooldown();
 
-        void HandleReclaimCorpseOpcode(WorldPacket& recvPacket);
-        void HandleCorpseQueryOpcode(WorldPacket& recvPacket);
+        void HandleReclaimCorpseOpcode(WorldPackets::Misc::ReclaimCorpse const& packet);
+        void HandleCorpseQueryOpcode(NullClientPacket const& packet);
         void HandleResurrectResponseOpcode(WorldPacket& recvPacket);
         void HandleSummonResponseOpcode(WorldPacket& recv_data);
 
@@ -792,8 +792,8 @@ class WorldSession
         void HandleLeaveBattlefieldOpcode(WorldPacket& recv_data);
 
         void HandleWardenDataOpcode(WorldPacket& recv_data);
-        void HandleMinimapPingOpcode(WorldPacket& recv_data);
-        void HandleRandomRollOpcode(WorldPacket& recv_data);
+        void HandleMinimapPingOpcode(WorldPackets::Group::MinimapPing const& packet);
+        void HandleRandomRollOpcode(WorldPackets::Group::RandomRoll const& packet);
         void HandleFarSightOpcode(WorldPackets::Misc::FarSight const& packet);
         void HandleWhoisOpcode(WorldPackets::Query::Whois const& packet);
         void HandleResetInstancesOpcode(NullClientPacket const& packet);

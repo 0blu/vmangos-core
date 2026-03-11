@@ -31,3 +31,13 @@ void WorldPackets::Npc::BankerActivate::ReadFromWorldPacket(WorldPacket& recv_da
 {
     recv_data >> guid;
 }
+
+void WorldPackets::Npc::TabardVendorActivate::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> guid;
+}
+
+void WorldPackets::Npc::SpiritHealerActivate::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> guid;
+}

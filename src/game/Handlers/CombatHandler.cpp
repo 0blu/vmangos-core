@@ -79,10 +79,9 @@ void WorldSession::HandleAttackStopOpcode(NullClientPacket const& /*packet*/)
     GetPlayer()->ResetExtraAttacks();
 }
 
-void WorldSession::HandleSetSheathedOpcode(WorldPacket& recv_data)
+void WorldSession::HandleSetSheathedOpcode(WorldPackets::Combat::SetSheathed const& packet)
 {
-    uint32 sheathed;
-    recv_data >> sheathed;
+    uint32 sheathed = packet.sheathed;
     if (sheathed >= MAX_SHEATH_STATE)
         return;
 

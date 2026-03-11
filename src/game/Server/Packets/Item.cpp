@@ -115,3 +115,9 @@ void WorldPackets::Item::BuyItemInSlot::ReadFromWorldPacket(WorldPacket& recv_da
     recv_data >> bagslot;
     recv_data >> count;
 }
+
+void WorldPackets::Item::WrapItem::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> giftBag >> giftSlot;
+    recv_data >> itemBag >> itemSlot;
+}

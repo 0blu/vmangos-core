@@ -1136,12 +1136,12 @@ void WorldSession::HandleItemNameQueryOpcode(WorldPackets::Query::ItemNameQuery 
     }
 }
 
-void WorldSession::HandleWrapItemOpcode(WorldPacket& recv_data)
+void WorldSession::HandleWrapItemOpcode(WorldPackets::Item::WrapItem const& packet)
 {
-    uint8 gift_bag, gift_slot, item_bag, item_slot;
-
-    recv_data >> gift_bag >> gift_slot;                     // paper
-    recv_data >> item_bag >> item_slot;                     // item
+    uint8 gift_bag = packet.giftBag;
+    uint8 gift_slot = packet.giftSlot;
+    uint8 item_bag = packet.itemBag;
+    uint8 item_slot = packet.itemSlot;
 
     Item *gift = _player->GetItemByPos(gift_bag, gift_slot);
     if (!gift)

@@ -183,6 +183,33 @@ namespace WorldPackets { namespace Misc
         explicit SetFactionInactive() : ClientPacket(CMSG_SET_FACTION_INACTIVE) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class ZoneUpdate final : public ClientPacket
+    {
+    public:
+        uint32 newZone = 0;
+
+        explicit ZoneUpdate() : ClientPacket(CMSG_ZONEUPDATE) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class ReclaimCorpse final : public ClientPacket
+    {
+    public:
+        ObjectGuid guid;
+
+        explicit ReclaimCorpse() : ClientPacket(CMSG_RECLAIM_CORPSE) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class ChatIgnored final : public ClientPacket
+    {
+    public:
+        ObjectGuid guid;
+
+        explicit ChatIgnored() : ClientPacket(CMSG_CHAT_IGNORED) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
 }} // namespace WorldPackets::Misc
 
 #endif // MANGOS_PACKETS_MISC_H

@@ -407,11 +407,10 @@ void WorldSession::HandleLootRoll(WorldPacket& recv_data)
     group->CountRollVote(GetPlayer(), lootedTarget, itemSlot, RollVote(rollType));
 }
 
-void WorldSession::HandleMinimapPingOpcode(WorldPacket& recv_data)
+void WorldSession::HandleMinimapPingOpcode(WorldPackets::Group::MinimapPing const& packet)
 {
-    float x, y;
-    recv_data >> x;
-    recv_data >> y;
+    float x = packet.x;
+    float y = packet.y;
 
     if (!GetPlayer()->GetGroup())
         return;
@@ -429,11 +428,11 @@ void WorldSession::HandleMinimapPingOpcode(WorldPacket& recv_data)
     GetPlayer()->GetGroup()->BroadcastPacket(&data, true, -1, GetPlayer()->GetObjectGuid());
 }
 
-void WorldSession::HandleRandomRollOpcode(WorldPacket& recv_data)
+void WorldSession::HandleRandomRollOpcode(WorldPackets::Group::RandomRoll const& packet)
 {
-    uint32 minimum, maximum, roll;
-    recv_data >> minimum;
-    recv_data >> maximum;
+    uint32 minimum = packet.minimum;
+    uint32 maximum = packet.maximum;
+    uint32 roll;
 
     /** error handling **/
     if (minimum > maximum || maximum > 10000)               // < 32768 for urand call

@@ -185,6 +185,18 @@ namespace WorldPackets { namespace Item
         explicit BuyItemInSlot() : ClientPacket(CMSG_BUY_ITEM_IN_SLOT) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class WrapItem final : public ClientPacket
+    {
+    public:
+        uint8 giftBag = 0;
+        uint8 giftSlot = 0;
+        uint8 itemBag = 0;
+        uint8 itemSlot = 0;
+
+        explicit WrapItem() : ClientPacket(CMSG_WRAP_ITEM) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
 }} // namespace WorldPackets::Item
 
 #endif // MANGOS_PACKETS_ITEM_H

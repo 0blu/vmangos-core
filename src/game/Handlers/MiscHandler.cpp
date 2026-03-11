@@ -405,10 +405,9 @@ void WorldSession::HandleTogglePvP(WorldPacket& recv_data)
         GetPlayer()->UpdatePvP(true);
 }
 
-void WorldSession::HandleZoneUpdateOpcode(WorldPacket& recv_data)
+void WorldSession::HandleZoneUpdateOpcode(WorldPackets::Misc::ZoneUpdate const& packet)
 {
-    uint32 newZone;
-    recv_data >> newZone;
+    uint32 newZone = packet.newZone;
 
     // use server size data
     uint32 newzone, newarea;
@@ -612,10 +611,9 @@ void WorldSession::HandleBugOpcode(WorldPacket& recv_data)
     recv_data >> typeLen >> type;
 }
 
-void WorldSession::HandleReclaimCorpseOpcode(WorldPacket& recv_data)
+void WorldSession::HandleReclaimCorpseOpcode(WorldPackets::Misc::ReclaimCorpse const& packet)
 {
-    ObjectGuid guid;
-    recv_data >> guid;
+    ObjectGuid guid = packet.guid;
 
     if (GetPlayer()->IsAlive())
         return;
@@ -998,7 +996,7 @@ void WorldSession::HandleSetActionBarTogglesOpcode(WorldPacket& recv_data)
     GetPlayer()->SetByteValue(PLAYER_FIELD_BYTES, PLAYER_FIELD_BYTES_OFFSET_ACTION_BARS, actionBar);
 }
 
-void WorldSession::HandlePlayedTime(WorldPacket& /*recv_data*/)
+void WorldSession::HandlePlayedTime(NullClientPacket const& /*packet*/)
 {
     WorldPacket data(SMSG_PLAYED_TIME, 4 + 4);
     data << uint32(_player->GetTotalPlayedTime());

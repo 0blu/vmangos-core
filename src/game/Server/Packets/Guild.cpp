@@ -45,3 +45,9 @@ void WorldPackets::Guild::GuildChangeInfoText::ReadFromWorldPacket(WorldPacket& 
 {
     recv_data >> infoText;
 }
+
+void WorldPackets::Guild::SaveGuildEmblem::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> vendorGuid;
+    recv_data >> emblemStyle >> emblemColor >> borderStyle >> borderColor >> backgroundColor;
+}

@@ -52,6 +52,26 @@ namespace WorldPackets { namespace Group
         explicit LootMethod() : ClientPacket(CMSG_LOOT_METHOD) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class MinimapPing final : public ClientPacket
+    {
+    public:
+        float x = 0.0f;
+        float y = 0.0f;
+
+        explicit MinimapPing() : ClientPacket(MSG_MINIMAP_PING) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class RandomRoll final : public ClientPacket
+    {
+    public:
+        uint32 minimum = 0;
+        uint32 maximum = 0;
+
+        explicit RandomRoll() : ClientPacket(MSG_RANDOM_ROLL) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
 }} // namespace WorldPackets::Group
 
 #endif // MANGOS_PACKETS_GROUP_H

@@ -85,6 +85,20 @@ namespace WorldPackets { namespace Guild
         explicit GuildChangeInfoText() : ClientPacket(CMSG_GUILD_INFO_TEXT) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class SaveGuildEmblem final : public ClientPacket
+    {
+    public:
+        ObjectGuid vendorGuid;
+        int32 emblemStyle = 0;
+        int32 emblemColor = 0;
+        int32 borderStyle = 0;
+        int32 borderColor = 0;
+        int32 backgroundColor = 0;
+
+        explicit SaveGuildEmblem() : ClientPacket(MSG_SAVE_GUILD_EMBLEM) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
 }} // namespace WorldPackets::Guild
 
 #endif // MANGOS_PACKETS_GUILD_H

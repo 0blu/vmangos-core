@@ -104,3 +104,18 @@ void WorldPackets::Misc::SetFactionInactive::ReadFromWorldPacket(WorldPacket& re
     recv_data >> replistid;
     recv_data >> inactive;
 }
+
+void WorldPackets::Misc::ZoneUpdate::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> newZone;
+}
+
+void WorldPackets::Misc::ReclaimCorpse::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> guid;
+}
+
+void WorldPackets::Misc::ChatIgnored::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> guid;
+}

@@ -141,7 +141,7 @@ void WorldSession::HandleQueryPlayerNameOpcode(WorldPackets::Query::QueryPlayerN
         SendNameQueryOpcodeFromDB(packet.playerGuid);
 }
 
-void WorldSession::HandleQueryTimeOpcode(WorldPacket& /*recv_data*/)
+void WorldSession::HandleQueryTimeOpcode(NullClientPacket const& /*packet*/)
 {
     SendQueryTimeResponse();
 }
@@ -294,7 +294,7 @@ void WorldSession::HandleGameObjectQueryOpcode(WorldPackets::Query::QueryGameObj
     }
 }
 
-void WorldSession::HandleCorpseQueryOpcode(WorldPacket& /*recv_data*/)
+void WorldSession::HandleCorpseQueryOpcode(NullClientPacket const& /*packet*/)
 {
     Corpse* corpse = GetPlayer()->GetCorpse();
 

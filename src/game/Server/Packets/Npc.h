@@ -61,6 +61,24 @@ namespace WorldPackets { namespace Npc
         explicit BankerActivate() : ClientPacket(CMSG_BANKER_ACTIVATE) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class TabardVendorActivate final : public ClientPacket
+    {
+    public:
+        ObjectGuid guid;
+
+        explicit TabardVendorActivate() : ClientPacket(MSG_TABARDVENDOR_ACTIVATE) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class SpiritHealerActivate final : public ClientPacket
+    {
+    public:
+        ObjectGuid guid;
+
+        explicit SpiritHealerActivate() : ClientPacket(CMSG_SPIRIT_HEALER_ACTIVATE) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
 }} // namespace WorldPackets::Npc
 
 #endif // MANGOS_PACKETS_NPC_H
