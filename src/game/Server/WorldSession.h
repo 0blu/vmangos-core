@@ -520,7 +520,7 @@ class WorldSession
         void HandleLFGOpcode(WorldPacket& recvPacket);
         void HandleLogoutRequestOpcode(WorldPacket& recvPacket);
         void HandlePlayerLogoutOpcode(WorldPacket& recvPacket);
-        void HandleLogoutCancelOpcode(WorldPacket& recvPacket);
+        void HandleLogoutCancelOpcode(NullClientPacket const& packet);
         void HandleGMTicketGetTicketOpcode(WorldPacket& recvPacket);
         void HandleGMTicketCreateOpcode(WorldPackets::GmTicket::GmTicketCreate const& packet);
         void HandleGMTicketSystemStatusOpcode(WorldPacket& recvPacket);
