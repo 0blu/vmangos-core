@@ -499,7 +499,7 @@ class WorldSession
         void HandleMoveSplineDoneOpcode(WorldPacket& recvPacket);
         void HandleMoveSetRawPosition(WorldPacket& recv_data);
         void HandleWorldTeleportOpcode(WorldPackets::Misc::WorldTeleport const& packet);
-        void HandleMountSpecialAnimOpcode(WorldPacket& recvdata);
+        void HandleMountSpecialAnimOpcode(NullClientPacket const& packet);
         void HandleTeleportToUnitOpcode(WorldPacket& recvdata);
 
         void HandleInspectOpcode(WorldPackets::Misc::Inspect const& packet);
@@ -635,7 +635,7 @@ class WorldSession
         void HandleStableSwapPet(WorldPacket& recvPacket);
 
         void HandleDuelAcceptedOpcode(WorldPackets::Duel::DuelAccepted const& packet);
-        void HandleDuelCancelledOpcode(WorldPacket& recvPacket);
+        void HandleDuelCancelledOpcode(NullClientPacket const& packet);
 
         void HandleAcceptTradeOpcode(WorldPacket& recvPacket);
         void HandleBeginTradeOpcode(WorldPacket& recvPacket);
@@ -705,20 +705,20 @@ class WorldSession
         void HandleTalentWipeConfirmOpcode(WorldPacket& recvPacket);
         void HandleUnlearnSkillOpcode(WorldPacket& recvPacket);
 
-        void HandleQuestgiverStatusQueryOpcode(WorldPacket& recvPacket);
-        void HandleQuestgiverHelloOpcode(WorldPacket& recvPacket);
-        void HandleQuestgiverAcceptQuestOpcode(WorldPacket& recvPacket);
-        void HandleQuestgiverQueryQuestOpcode(WorldPacket& recvPacket);
-        void HandleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket);
-        void HandleQuestgiverRequestRewardOpcode(WorldPacket& recvPacket);
+        void HandleQuestgiverStatusQueryOpcode(WorldPackets::Quest::QuestgiverStatusQuery const& packet);
+        void HandleQuestgiverHelloOpcode(WorldPackets::Quest::QuestgiverHello const& packet);
+        void HandleQuestgiverAcceptQuestOpcode(WorldPackets::Quest::QuestgiverAcceptQuest const& packet);
+        void HandleQuestgiverQueryQuestOpcode(WorldPackets::Quest::QuestgiverQueryQuest const& packet);
+        void HandleQuestgiverChooseRewardOpcode(WorldPackets::Quest::QuestgiverChooseReward const& packet);
+        void HandleQuestgiverRequestRewardOpcode(WorldPackets::Quest::QuestgiverRequestReward const& packet);
         void HandleQuestQueryOpcode(WorldPackets::Quest::QueryQuest const& packet);
-        void HandleQuestgiverCancel(WorldPacket& recv_data);
-        void HandleQuestLogSwapQuest(WorldPacket& recv_data);
-        void HandleQuestLogRemoveQuest(WorldPacket& recv_data);
-        void HandleQuestConfirmAccept(WorldPacket& recv_data);
-        void HandleQuestgiverCompleteQuest(WorldPacket& recv_data);
-        void HandleQuestgiverQuestAutoLaunch(WorldPacket& recvPacket);
-        void HandlePushQuestToParty(WorldPacket& recvPacket);
+        void HandleQuestgiverCancel(NullClientPacket const& packet);
+        void HandleQuestLogSwapQuest(WorldPackets::Quest::QuestLogSwapQuest const& packet);
+        void HandleQuestLogRemoveQuest(WorldPackets::Quest::QuestLogRemoveQuest const& packet);
+        void HandleQuestConfirmAccept(WorldPackets::Quest::QuestConfirmAccept const& packet);
+        void HandleQuestgiverCompleteQuest(WorldPackets::Quest::QuestgiverCompleteQuest const& packet);
+        void HandleQuestgiverQuestAutoLaunch(NullClientPacket const& packet);
+        void HandlePushQuestToParty(WorldPackets::Quest::PushQuestToParty const& packet);
         void HandleQuestPushResult(WorldPacket& recvPacket);
 
         bool SanitizeChatMessage(std::string& msg, uint32 lang, uint32 msgType);

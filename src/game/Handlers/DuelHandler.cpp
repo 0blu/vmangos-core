@@ -46,7 +46,7 @@ void WorldSession::HandleDuelAcceptedOpcode(WorldPackets::Duel::DuelAccepted con
     plTarget->SendDuelCountdown(3000);
 }
 
-void WorldSession::HandleDuelCancelledOpcode(WorldPacket& recvPacket)
+void WorldSession::HandleDuelCancelledOpcode(NullClientPacket const& /*packet*/)
 {
     auto pPlayer = GetPlayer();
     // no duel requested
