@@ -287,6 +287,18 @@ namespace WorldPackets { namespace Misc
         explicit SetWatchedFaction() : ClientPacket(CMSG_SET_WATCHED_FACTION) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class MoveSetRawPosition final : public ClientPacket
+    {
+    public:
+        float posX = 0.0f;
+        float posY = 0.0f;
+        float posZ = 0.0f;
+        float posO = 0.0f;
+
+        MoveSetRawPosition() : ClientPacket(OPCODE_WILL_BE_SET_IN_READ_FUNCTION) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
 }} // namespace WorldPackets::Misc
 
 #endif // MANGOS_PACKETS_MISC_H

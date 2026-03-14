@@ -50,3 +50,22 @@ void WorldPackets::Group::GroupSwapSubGroup::ReadFromWorldPacket(WorldPacket& re
     recv_data >> name;
     recv_data >> nameSwapWith;
 }
+
+void WorldPackets::Group::GroupSetLeader::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_11_2
+    recv_data >> guid;
+#else
+    recv_data >> name;
+#endif
+}
+
+void WorldPackets::Group::GroupAssistantLeader::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_11_2
+    recv_data >> guid;
+#else
+    recv_data >> name;
+#endif
+    recv_data >> flag;
+}

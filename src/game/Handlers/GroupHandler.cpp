@@ -303,14 +303,10 @@ void WorldSession::HandleGroupUninviteOpcode(WorldPackets::Group::GroupUninvite 
     SendPartyResult(PARTY_OP_LEAVE, membername, ERR_TARGET_NOT_IN_GROUP_S);
 }
 
-void WorldSession::HandleGroupSetLeaderOpcode(WorldPacket& recv_data)
+void WorldSession::HandleGroupSetLeaderOpcode(WorldPackets::Group::GroupSetLeader const& packet)
 {
-    ObjectGuid guid;
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_11_2
-    recv_data >> guid;
-#else
-    std::string name;
-    recv_data >> name;
+    ObjectGuid guid = packet.guid;
 #endif
 
     Group* group = GetPlayer()->GetGroup();
@@ -320,7 +316,8 @@ void WorldSession::HandleGroupSetLeaderOpcode(WorldPacket& recv_data)
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_11_2
     Player* player = sObjectMgr.GetPlayer(guid);
 #else
-    Player* player = sObjectMgr.GetPlayer(name.c_str());
+    Player* player = sObjectMgr.GetPlayer(packet.name.c_str());
+    ObjectGuid guid;
     if (player)
         guid = player->GetObjectGuid();
 #endif
@@ -575,17 +572,12 @@ void WorldSession::HandleGroupSwapSubGroupOpcode(WorldPackets::Group::GroupSwapS
     }
 }
 
-void WorldSession::HandleGroupAssistantLeaderOpcode(WorldPacket& recv_data)
+void WorldSession::HandleGroupAssistantLeaderOpcode(WorldPackets::Group::GroupAssistantLeader const& packet)
 {
-    ObjectGuid guid;
-    uint8 flag;
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_11_2
-    recv_data >> guid;
-#else
-    std::string name;
-    recv_data >> name;
+    ObjectGuid guid = packet.guid;
 #endif
-    recv_data >> flag;
+    uint8 flag = packet.flag;
 
     Group* group = GetPlayer()->GetGroup();
     if (!group)
@@ -597,7 +589,8 @@ void WorldSession::HandleGroupAssistantLeaderOpcode(WorldPacket& recv_data)
     /********************/
 
 #if SUPPORTED_CLIENT_BUILD <= CLIENT_BUILD_1_11_2
-    if (Player* player = sObjectMgr.GetPlayer(name.c_str()))
+    ObjectGuid guid;
+    if (Player* player = sObjectMgr.GetPlayer(packet.name.c_str()))
         guid = player->GetObjectGuid();
     else
         return;

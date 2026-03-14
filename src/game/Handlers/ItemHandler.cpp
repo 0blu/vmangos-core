@@ -31,6 +31,7 @@
 #include "Chat.h"
 #include "Conditions.h"
 #include "Anticheat.h"
+#include "Packets/Item.h"
 
 void WorldSession::HandleSplitItemOpcode(WorldPackets::Item::SplitItem const& packet)
 {
@@ -645,14 +646,14 @@ void WorldSession::HandleSellItemOpcode(WorldPackets::Item::SellItem const& pack
     _player->LogModifyMoney(money, "SellItem", pCreature->GetObjectGuid(), pItem->GetEntry());
 }
 
-void WorldSession::HandleBuybackItem(WorldPacket& recv_data)
+void WorldSession::HandleBuybackItem(WorldPackets::Item::BuybackItem const& packet)
 {
-    ObjectGuid vendorGuid;
-    recv_data >> vendorGuid;
+    ObjectGuid vendorGuid = packet.vendorGuid;
 
-    uint32 slot = BUYBACK_SLOT_START;
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_7_1
-    recv_data >> slot;
+    uint32 slot = packet.slot;
+#else
+    uint32 slot = BUYBACK_SLOT_START;
 #endif
 
     Creature* pCreature = GetPlayer()->GetNPCIfCanInteractWith(vendorGuid, UNIT_NPC_FLAG_VENDOR);

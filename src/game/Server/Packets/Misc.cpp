@@ -164,3 +164,9 @@ void WorldPackets::Misc::SetWatchedFaction::ReadFromWorldPacket(WorldPacket& rec
     recv_data >> repId;
 #endif
 }
+
+void WorldPackets::Misc::MoveSetRawPosition::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    opcode = recv_data.GetOpcode();
+    recv_data >> posX >> posY >> posZ >> posO;
+}

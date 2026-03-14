@@ -497,7 +497,7 @@ class WorldSession
         void HandleMoveTimeSkippedOpcode(WorldPackets::Movement::MoveTimeSkipped const& packet);
         void HandleMovementFlagChangeToggleAck(WorldPacket& recvData);
         void HandleMoveSplineDoneOpcode(WorldPacket& recvPacket);
-        void HandleMoveSetRawPosition(WorldPacket& recv_data);
+        void HandleMoveSetRawPosition(WorldPackets::Misc::MoveSetRawPosition const& packet);
         void HandleWorldTeleportOpcode(WorldPackets::Misc::WorldTeleport const& packet);
         void HandleMountSpecialAnimOpcode(NullClientPacket const& packet);
         void HandleTeleportToUnitOpcode(WorldPackets::Misc::TeleportToUnit const& packet);
@@ -568,7 +568,7 @@ class WorldSession
         void HandleGroupDeclineOpcode(NullClientPacket const& packet);
         void HandleGroupUninviteOpcode(WorldPackets::Group::GroupUninvite const& packet);
         void HandleGroupUninviteGuidOpcode(WorldPackets::Group::GroupUninviteGuid const& packet);
-        void HandleGroupSetLeaderOpcode(WorldPacket& recvPacket);
+        void HandleGroupSetLeaderOpcode(WorldPackets::Group::GroupSetLeader const& packet);
         void HandleGroupDisbandOpcode(NullClientPacket const& packet);
         void HandleLootMethodOpcode(WorldPackets::Group::LootMethod const& packet);
         void HandleLootRoll(WorldPackets::Loot::LootRoll const& packet);
@@ -578,7 +578,7 @@ class WorldSession
         void HandleGroupRaidConvertOpcode(NullClientPacket const& packet);
         void HandleGroupChangeSubGroupOpcode(WorldPackets::Group::GroupChangeSubGroup const& packet);
         void HandleGroupSwapSubGroupOpcode(WorldPackets::Group::GroupSwapSubGroup const& packet);
-        void HandleGroupAssistantLeaderOpcode(WorldPacket& recv_data);
+        void HandleGroupAssistantLeaderOpcode(WorldPackets::Group::GroupAssistantLeader const& packet);
 
         void HandlePetitionBuyOpcode(WorldPacket& recv_data);
         void HandlePetitionShowSignOpcode(WorldPackets::Petition::PetitionShowSignatures const& packet);
@@ -684,7 +684,7 @@ class WorldSession
         void HandleReadItemOpcode(WorldPackets::Item::ReadItem const& packet);
         void HandleAutoEquipItemSlotOpcode(WorldPackets::Item::AutoEquipItemSlot const& packet);
         void HandleSwapItem(WorldPackets::Item::SwapItem const& packet);
-        void HandleBuybackItem(WorldPacket& recvPacket);
+        void HandleBuybackItem(WorldPackets::Item::BuybackItem const& packet);
         void HandleAutoBankItemOpcode(WorldPackets::Item::AutoBankItem const& packet);
         void HandleAutoStoreBankItemOpcode(WorldPackets::Item::AutoStoreBankItem const& packet);
         void HandleWrapItemOpcode(WorldPackets::Item::WrapItem const& packet);

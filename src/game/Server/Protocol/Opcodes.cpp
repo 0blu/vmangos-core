@@ -213,7 +213,7 @@ constexpr Handlers BuildOpcodeList()
     DEFINE_HANDLER(CMSG_GROUP_UNINVITE,               STATUS_LOGGEDIN,  PACKET_PROCESS_GROUP,         &WorldSession::HandleGroupUninviteOpcode);
     DEFINE_HANDLER(CMSG_GROUP_UNINVITE_GUID,          STATUS_LOGGEDIN,  PACKET_PROCESS_GROUP,         &WorldSession::HandleGroupUninviteGuidOpcode);
     INVALID_PACKET(SMSG_GROUP_UNINVITE,               Reason::SendByServer);
-    LEGACY_HANDLER(CMSG_GROUP_SET_LEADER,             STATUS_LOGGEDIN,  PACKET_PROCESS_GROUP,         &WorldSession::HandleGroupSetLeaderOpcode);
+    DEFINE_HANDLER(CMSG_GROUP_SET_LEADER,             STATUS_LOGGEDIN,  PACKET_PROCESS_GROUP,         &WorldSession::HandleGroupSetLeaderOpcode);
     INVALID_PACKET(SMSG_GROUP_SET_LEADER,             Reason::SendByServer);
     DEFINE_HANDLER(CMSG_LOOT_METHOD,                  STATUS_LOGGEDIN,  PACKET_PROCESS_GROUP,         &WorldSession::HandleLootMethodOpcode);
     DEFINE_HANDLER(CMSG_GROUP_DISBAND,                STATUS_LOGGEDIN,  PACKET_PROCESS_GROUP,         &WorldSession::HandleGroupDisbandOpcode);
@@ -291,7 +291,7 @@ constexpr Handlers BuildOpcodeList()
     DEFINE_HANDLER(MSG_MOVE_SET_WALK_MODE,            STATUS_LOGGEDIN,  PACKET_PROCESS_MOVEMENT,      &WorldSession::HandleMovementOpcodes);
     INVALID_PACKET(MSG_MOVE_TOGGLE_LOGGING,           Reason::Unhandled);
     INVALID_PACKET(MSG_MOVE_TELEPORT,                 Reason::Unhandled);
-    LEGACY_HANDLER(MSG_MOVE_TELEPORT_CHEAT,           STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleMoveSetRawPosition);
+    DEFINE_HANDLER(MSG_MOVE_TELEPORT_CHEAT,           STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleMoveSetRawPosition);
     DEFINE_HANDLER(MSG_MOVE_TELEPORT_ACK,             STATUS_LOGGEDIN,  PACKET_PROCESS_MOVEMENT,      &WorldSession::HandleMoveTeleportAckOpcode);
     INVALID_PACKET(MSG_MOVE_TOGGLE_FALL_LOGGING,      Reason::Unhandled);
     DEFINE_HANDLER(MSG_MOVE_FALL_LAND,                STATUS_LOGGEDIN,  PACKET_PROCESS_MOVEMENT,      &WorldSession::HandleMovementOpcodes);
@@ -318,7 +318,7 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(SMSG_MOVE_WATER_WALK,              Reason::SendByServer);
     INVALID_PACKET(SMSG_MOVE_LAND_WALK,               Reason::SendByServer);
     INVALID_PACKET(MSG_MOVE_SET_RAW_POSITION_ACK,     Reason::Unhandled);
-    LEGACY_HANDLER(CMSG_MOVE_SET_RAW_POSITION,        STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleMoveSetRawPosition);
+    DEFINE_HANDLER(CMSG_MOVE_SET_RAW_POSITION,        STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleMoveSetRawPosition);
     INVALID_PACKET(SMSG_FORCE_RUN_SPEED_CHANGE,       Reason::SendByServer);
     LEGACY_HANDLER(CMSG_FORCE_RUN_SPEED_CHANGE_ACK,   STATUS_LOGGEDIN,  PACKET_PROCESS_MOVEMENT,      &WorldSession::HandleForceSpeedChangeAckOpcodes);
     INVALID_PACKET(SMSG_FORCE_RUN_BACK_SPEED_CHANGE,  Reason::SendByServer);
@@ -761,8 +761,8 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(SMSG_PVP_CREDIT,                   Reason::SendByServer);
     INVALID_PACKET(SMSG_AUCTION_REMOVED_NOTIFICATION, Reason::SendByServer);
     DEFINE_HANDLER(CMSG_GROUP_RAID_CONVERT,           STATUS_LOGGEDIN,  PACKET_PROCESS_GROUP,         &WorldSession::HandleGroupRaidConvertOpcode);
-    LEGACY_HANDLER(CMSG_GROUP_ASSISTANT_LEADER,       STATUS_LOGGEDIN,  PACKET_PROCESS_GROUP,         &WorldSession::HandleGroupAssistantLeaderOpcode);
-    LEGACY_HANDLER(CMSG_BUYBACK_ITEM,                 STATUS_LOGGEDIN,  PACKET_PROCESS_SELF_ITEMS,    &WorldSession::HandleBuybackItem);
+    DEFINE_HANDLER(CMSG_GROUP_ASSISTANT_LEADER,       STATUS_LOGGEDIN,  PACKET_PROCESS_GROUP,         &WorldSession::HandleGroupAssistantLeaderOpcode);
+    DEFINE_HANDLER(CMSG_BUYBACK_ITEM,                 STATUS_LOGGEDIN,  PACKET_PROCESS_SELF_ITEMS,    &WorldSession::HandleBuybackItem);
     INVALID_PACKET(SMSG_SERVER_MESSAGE,               Reason::SendByServer);
     DEFINE_HANDLER(CMSG_MEETINGSTONE_JOIN,            STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleMeetingStoneJoinOpcode);
     DEFINE_HANDLER(CMSG_MEETINGSTONE_LEAVE,           STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleMeetingStoneLeaveOpcode);

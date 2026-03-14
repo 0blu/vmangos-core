@@ -1151,12 +1151,11 @@ void WorldSession::HandleWorldTeleportOpcode(WorldPackets::Misc::WorldTeleport c
     sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "Received worldport command from player %s", GetPlayer()->GetName());
 }
 
-void WorldSession::HandleMoveSetRawPosition(WorldPacket& recv_data)
+void WorldSession::HandleMoveSetRawPosition(WorldPackets::Misc::MoveSetRawPosition const& packet)
 {
     // write in client console: setrawpos x y z o
     // For now, it is implemented like worldport but on the same map. Consider using MSG_MOVE_SET_RAW_POSITION_ACK.
-    float posX, posY, posZ, posO;
-    recv_data >> posX >> posY >> posZ >> posO;
+    float posX = packet.posX, posY = packet.posY, posZ = packet.posZ, posO = packet.posO;
     //sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "Set to: X=%f, Y=%f, Z=%f, orient=%f", posX, posY, posZ, posO);
 
     if (!GetPlayer()->IsInWorld() || GetPlayer()->IsTaxiFlying())
