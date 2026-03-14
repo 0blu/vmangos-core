@@ -147,3 +147,8 @@ void WorldPackets::Misc::MeetingStoneJoin::ReadFromWorldPacket(WorldPacket& recv
 {
     recv_data >> guid;
 }
+
+void WorldPackets::Misc::TeleportToUnit::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> playerName;
+}

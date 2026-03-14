@@ -258,6 +258,15 @@ namespace WorldPackets { namespace Misc
         explicit MeetingStoneJoin() : ClientPacket(CMSG_MEETINGSTONE_JOIN) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class TeleportToUnit final : public ClientPacket
+    {
+    public:
+        std::string playerName;
+
+        explicit TeleportToUnit() : ClientPacket(CMSG_TELEPORT_TO_UNIT) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
 }} // namespace WorldPackets::Misc
 
 #endif // MANGOS_PACKETS_MISC_H

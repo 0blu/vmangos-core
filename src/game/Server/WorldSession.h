@@ -500,7 +500,7 @@ class WorldSession
         void HandleMoveSetRawPosition(WorldPacket& recv_data);
         void HandleWorldTeleportOpcode(WorldPackets::Misc::WorldTeleport const& packet);
         void HandleMountSpecialAnimOpcode(NullClientPacket const& packet);
-        void HandleTeleportToUnitOpcode(WorldPacket& recvdata);
+        void HandleTeleportToUnitOpcode(WorldPackets::Misc::TeleportToUnit const& packet);
 
         void HandleInspectOpcode(WorldPackets::Misc::Inspect const& packet);
         void HandleInspectHonorStatsOpcode(WorldPackets::Misc::InspectHonorStats const& packet);

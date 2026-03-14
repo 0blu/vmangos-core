@@ -92,7 +92,7 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(CMSG_QUERY_OBJECT_ROTATION,        Reason::Unhandled);
     INVALID_PACKET(SMSG_QUERY_OBJECT_ROTATION,        Reason::SendByServer);
     DEFINE_HANDLER(CMSG_WORLD_TELEPORT,               STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleWorldTeleportOpcode);
-    LEGACY_HANDLER(CMSG_TELEPORT_TO_UNIT,             STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleTeleportToUnitOpcode);
+    DEFINE_HANDLER(CMSG_TELEPORT_TO_UNIT,             STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleTeleportToUnitOpcode);
     INVALID_PACKET(CMSG_ZONE_MAP,                     Reason::Unhandled);
     INVALID_PACKET(SMSG_ZONE_MAP,                     Reason::SendByServer);
     INVALID_PACKET(CMSG_DEBUG_CHANGECELLZONE,         Reason::Unhandled);

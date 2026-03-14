@@ -44,6 +44,7 @@
 #include "Conditions.h"
 #include "Anticheat.h"
 #include "MasterPlayer.h"
+#include "Packets/Misc.h"
 
 void WorldSession::HandleRepopRequestOpcode(NullClientPacket const& /*packet*/)
 {
@@ -1119,10 +1120,9 @@ void WorldSession::HandleInspectHonorStatsOpcode(WorldPackets::Misc::InspectHono
     SendPacket(&data);
 }
 
-void WorldSession::HandleTeleportToUnitOpcode(WorldPacket& recv_data)
+void WorldSession::HandleTeleportToUnitOpcode(WorldPackets::Misc::TeleportToUnit const& packet)
 {
-    std::string playerName;
-    recv_data >> playerName;
+    std::string playerName = packet.playerName;
     if (playerName.length() > MAX_PLAYER_NAME)
         return;
 
