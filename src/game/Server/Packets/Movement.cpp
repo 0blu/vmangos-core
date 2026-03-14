@@ -17,7 +17,6 @@ void WorldPackets::Movement::MoveTeleportAck::ReadFromWorldPacket(WorldPacket& r
     recv_data >> guid;
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
     recv_data >> movementCounter;
-    // Note: older clients do not send movementCounter, so it remains at its default value of 0
 #endif
     recv_data >> time;
 }

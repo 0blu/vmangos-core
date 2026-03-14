@@ -214,7 +214,11 @@ void WorldSession::HandleMoveWorldportAck()
 void WorldSession::HandleMoveTeleportAckOpcode(WorldPackets::Movement::MoveTeleportAck const& packet)
 {
     ObjectGuid guid = packet.guid;
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
     uint32 movementCounter = packet.movementCounter;
+#else
+    uint32 movementCounter = 0;
+#endif
 
     Unit* pMover = _player->GetMover();
     Player* pPlayerMover = pMover->ToPlayer();

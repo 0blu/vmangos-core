@@ -29,7 +29,9 @@ namespace WorldPackets { namespace Movement
     {
     public:
         ObjectGuid guid;
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
         uint32     movementCounter = 0;
+#endif
         uint32     time = 0;
 
         MoveTeleportAck() : ClientPacket(MSG_MOVE_TELEPORT_ACK) {}
