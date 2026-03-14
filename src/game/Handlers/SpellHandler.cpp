@@ -473,7 +473,7 @@ void WorldSession::HandleCancelAutoRepeatSpellOpcode(NullClientPacket const& /*p
     _player->GetMover()->InterruptSpell(CURRENT_AUTOREPEAT_SPELL);
 }
 
-void WorldSession::HandleCancelChanneling(NullClientPacket const& /*packet*/)
+void WorldSession::HandleCancelChanneling(WorldPackets::Spell::CancelChanneling const& /*packet*/)
 {
     // ignore for remote control state (for player case)
     Unit* mover = _player->GetMover();

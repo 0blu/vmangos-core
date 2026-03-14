@@ -514,7 +514,7 @@ class WorldSession
         void HandleAutostoreLootItemOpcode(WorldPackets::Loot::AutoStoreLootItem const& packet);
         void HandleLootMoneyOpcode(NullClientPacket const& packet);
         void HandleLootOpcode(WorldPackets::Loot::LootUnit const& packet);
-        void HandleLootReleaseOpcode(NullClientPacket const& packet);
+        void HandleLootReleaseOpcode(WorldPackets::Loot::LootRelease const& packet);
         void HandleLootMasterGiveOpcode(WorldPacket& recvPacket);
         void HandleWhoOpcode(WorldPacket& recvPacket);
         void HandleLFGOpcode(WorldPacket& recvPacket);
@@ -637,7 +637,7 @@ class WorldSession
         void HandleDuelAcceptedOpcode(WorldPackets::Duel::DuelAccepted const& packet);
         void HandleDuelCancelledOpcode(WorldPackets::Duel::DuelCancelled const& packet);
 
-        void HandleAcceptTradeOpcode(NullClientPacket const& packet);
+        void HandleAcceptTradeOpcode(WorldPackets::Trade::AcceptTrade const& packet);
         void HandleBeginTradeOpcode(NullClientPacket const& packet);
         void HandleBusyTradeOpcode(NullClientPacket const& packet);
         void HandleCancelTradeOpcode(NullClientPacket const& packet);
@@ -669,7 +669,7 @@ class WorldSession
         void HandleItemTextQuery(WorldPackets::Misc::ItemTextQuery const& packet);
         void HandleMailCreateTextItem(WorldPacket& recv_data);
         void HandleQueryNextMailTime(NullClientPacket const& packet);
-        void HandleCancelChanneling(NullClientPacket const& packet);
+        void HandleCancelChanneling(WorldPackets::Spell::CancelChanneling const& packet);
 
         void HandleSplitItemOpcode(WorldPackets::Item::SplitItem const& packet);
         void HandleSwapInvItemOpcode(WorldPackets::Item::SwapInvItem const& packet);

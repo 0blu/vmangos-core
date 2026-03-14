@@ -268,7 +268,7 @@ static void clearAcceptTradeMode(Item **myItems, Item **hisItems)
     }
 }
 
-void WorldSession::HandleAcceptTradeOpcode(NullClientPacket const& /*packet*/)
+void WorldSession::HandleAcceptTradeOpcode(WorldPackets::Trade::AcceptTrade const& /*packet*/)
 {
     TradeData* my_trade = _player->m_trade;
     if (!my_trade)

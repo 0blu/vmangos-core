@@ -21,3 +21,8 @@ void WorldPackets::Trade::ClearTradeItem::ReadFromWorldPacket(WorldPacket& recv_
 {
     recv_data >> tradeSlot;
 }
+
+void WorldPackets::Trade::AcceptTrade::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> unknown;
+}

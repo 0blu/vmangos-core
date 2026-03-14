@@ -383,7 +383,7 @@ void WorldSession::HandleLootOpcode(WorldPackets::Loot::LootUnit const& packet)
     GetPlayer()->SendLoot(guid, LOOT_CORPSE);
 }
 
-void WorldSession::HandleLootReleaseOpcode(NullClientPacket const& /*packet*/)
+void WorldSession::HandleLootReleaseOpcode(WorldPackets::Loot::LootRelease const& /*packet*/)
 {
     // cheaters can modify lguid to prevent correct apply loot release code and re-loot
     // use internal stored guid

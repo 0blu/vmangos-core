@@ -23,3 +23,8 @@ void WorldPackets::Spell::CancelAura::ReadFromWorldPacket(WorldPacket& recv_data
 {
     recv_data >> spellId;
 }
+
+void WorldPackets::Spell::CancelChanneling::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> spellId;
+}

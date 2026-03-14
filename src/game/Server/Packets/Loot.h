@@ -24,6 +24,15 @@ namespace WorldPackets { namespace Loot
         explicit LootUnit() : ClientPacket(CMSG_LOOT) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class LootRelease final : public ClientPacket
+    {
+    public:
+        ObjectGuid guid; // not used by server (uses internally stored guid instead)
+
+        explicit LootRelease() : ClientPacket(CMSG_LOOT_RELEASE) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
 }} // namespace WorldPackets::Loot
 
 #endif // MANGOS_PACKETS_LOOT_H

@@ -43,6 +43,15 @@ namespace WorldPackets { namespace Trade
         explicit ClearTradeItem() : ClientPacket(CMSG_CLEAR_TRADE_ITEM) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class AcceptTrade final : public ClientPacket
+    {
+    public:
+        uint32 unknown = 0; // not used by server
+
+        explicit AcceptTrade() : ClientPacket(CMSG_ACCEPT_TRADE) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
 }} // namespace WorldPackets::Trade
 
 #endif // MANGOS_PACKETS_TRADE_H

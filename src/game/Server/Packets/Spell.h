@@ -45,6 +45,15 @@ namespace WorldPackets { namespace Spell
         explicit CancelAura() : ClientPacket(CMSG_CANCEL_AURA) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class CancelChanneling final : public ClientPacket
+    {
+    public:
+        uint32 spellId = 0; // not used by server
+
+        explicit CancelChanneling() : ClientPacket(CMSG_CANCEL_CHANNELLING) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
 }} // namespace WorldPackets::Spell
 
 #endif // MANGOS_PACKETS_SPELL_H

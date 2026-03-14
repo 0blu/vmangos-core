@@ -9,3 +9,8 @@ void WorldPackets::Loot::LootUnit::ReadFromWorldPacket(WorldPacket& recv_data)
 {
     recv_data >> guid;
 }
+
+void WorldPackets::Loot::LootRelease::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> guid;
+}
