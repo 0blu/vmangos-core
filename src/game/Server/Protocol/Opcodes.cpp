@@ -817,7 +817,7 @@ constexpr Handlers BuildOpcodeList()
     DEFINE_HANDLER(CMSG_ITEM_NAME_QUERY,              STATUS_LOGGEDIN,  PACKET_PROCESS_DB_QUERY,      &WorldSession::HandleItemNameQueryOpcode);
     INVALID_PACKET(SMSG_ITEM_NAME_QUERY_RESPONSE,     Reason::SendByServer);
     INVALID_PACKET(SMSG_PET_ACTION_FEEDBACK,          Reason::SendByServer);
-    LEGACY_HANDLER(CMSG_CHAR_RENAME,                  STATUS_AUTHED,    PACKET_PROCESS_WORLD,         &WorldSession::HandleCharRenameOpcode);
+    DEFINE_HANDLER(CMSG_CHAR_RENAME,                  STATUS_AUTHED,    PACKET_PROCESS_WORLD,         &WorldSession::HandleCharRenameOpcode);
     INVALID_PACKET(SMSG_CHAR_RENAME,                  Reason::SendByServer);
     LEGACY_HANDLER(CMSG_MOVE_SPLINE_DONE,             STATUS_LOGGEDIN,  PACKET_PROCESS_MOVEMENT,      &WorldSession::HandleMoveSplineDoneOpcode);
     DEFINE_HANDLER(CMSG_MOVE_FALL_RESET,              STATUS_LOGGEDIN,  PACKET_PROCESS_MOVEMENT,      &WorldSession::HandleMovementOpcodes);

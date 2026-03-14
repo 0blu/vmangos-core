@@ -43,6 +43,7 @@
 #include "PlayerBotMgr.h"
 #include "MapManager.h"
 #include "AccountMgr.h"
+#include "Packets/Character.h"
 
 class LoginQueryHolder : public SqlQueryHolder
 {
@@ -789,13 +790,10 @@ void WorldSession::HandleShowingCloakOpcode(NullClientPacket const& /*packet*/)
     _player->ToggleFlag(PLAYER_FLAGS, PLAYER_FLAGS_HIDE_CLOAK);
 }
 
-void WorldSession::HandleCharRenameOpcode(WorldPacket& recv_data)
+void WorldSession::HandleCharRenameOpcode(WorldPackets::Character::CharRename const& packet)
 {
-    ObjectGuid guid;
-    std::string newname;
-
-    recv_data >> guid;
-    recv_data >> newname;
+    ObjectGuid guid = packet.guid;
+    std::string newname = packet.newname;
 
     // prevent character rename to invalid name
     if (!normalizePlayerName(newname))

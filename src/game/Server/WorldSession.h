@@ -777,7 +777,7 @@ class WorldSession
         void HandlePetCastSpellOpcode(WorldPacket& recvPacket);
         void HandleRequestPetInfoOpcode(NullClientPacket const& packet);
 
-        void HandleCharRenameOpcode(WorldPacket& recv_data);
+        void HandleCharRenameOpcode(WorldPackets::Character::CharRename const& packet);
         static void HandleChangePlayerNameOpcodeCallBack(std::unique_ptr<QueryResult> result, uint32 accountId, std::string newname);
 
         //BattleGround
