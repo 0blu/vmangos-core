@@ -32,6 +32,7 @@
 #include "GossipDef.h"
 #include "SocialMgr.h"
 #include "Anticheat.h"
+#include "Packets/Petition.h"
 
 // Charters ID in item_template
 #define GUILD_CHARTER               5863
@@ -158,10 +159,9 @@ void WorldSession::HandlePetitionBuyOpcode(WorldPacket& recv_data)
     _player->SaveInventoryAndGoldToDB();
 }
 
-void WorldSession::HandlePetitionShowSignOpcode(WorldPacket& recv_data)
+void WorldSession::HandlePetitionShowSignOpcode(WorldPackets::Petition::PetitionShowSignatures const& packet)
 {
-    ObjectGuid itemguid;
-    recv_data >> itemguid;                                   // item guid
+    ObjectGuid itemguid = packet.itemGuid;
 
     // if guild petition and has guild => error, return;
     if (_player->GetGuildId())
@@ -195,12 +195,10 @@ void WorldSession::HandlePetitionShowSignOpcode(WorldPacket& recv_data)
     SendPacket(&data);
 }
 
-void WorldSession::HandlePetitionQueryOpcode(WorldPacket& recv_data)
+void WorldSession::HandlePetitionQueryOpcode(WorldPackets::Petition::QueryPetition const& packet)
 {
-    uint32 petitionGuid;
-    ObjectGuid itemGuid;
-    recv_data >> petitionGuid;                          // petition guid
-    recv_data >> itemGuid;                              // item guid
+    uint32 petitionGuid = packet.petitionGuid;
+    ObjectGuid itemGuid = packet.itemGuid;
 
     Petition* petition = sGuildMgr.GetPetitionById(petitionGuid);
     if (!petition)
@@ -228,13 +226,10 @@ void WorldSession::HandlePetitionQueryOpcode(WorldPacket& recv_data)
     SendPacket(&data);
 }
 
-void WorldSession::HandlePetitionRenameOpcode(WorldPacket& recv_data)
+void WorldSession::HandlePetitionRenameOpcode(WorldPackets::Petition::PetitionRename const& packet)
 {
-    ObjectGuid itemGuid;
-    std::string newname;
-
-    recv_data >> itemGuid;                              // item
-    recv_data >> newname;                               // new name
+    ObjectGuid itemGuid = packet.itemGuid;
+    std::string newname = packet.newName;
 
     Item *charter = _player->GetItemByGuid(itemGuid);
     if (!charter)
@@ -266,12 +261,9 @@ void WorldSession::HandlePetitionRenameOpcode(WorldPacket& recv_data)
     }
 }
 
-void WorldSession::HandlePetitionSignOpcode(WorldPacket& recv_data)
+void WorldSession::HandlePetitionSignOpcode(WorldPackets::Petition::PetitionSign const& packet)
 {
-    ObjectGuid itemGuid;
-    uint8 unk;
-    recv_data >> itemGuid;                              // item guid
-    recv_data >> unk;
+    ObjectGuid itemGuid = packet.itemGuid;
 
     Petition* petition = sGuildMgr.GetPetitionByCharterGuid(itemGuid);
 
@@ -368,10 +360,9 @@ void WorldSession::HandlePetitionSignOpcode(WorldPacket& recv_data)
     }
 }
 
-void WorldSession::HandlePetitionDeclineOpcode(WorldPacket& recv_data)
+void WorldSession::HandlePetitionDeclineOpcode(WorldPackets::Petition::PetitionDecline const& packet)
 {
-    ObjectGuid itemGuid;
-    recv_data >> itemGuid;                              // item guid
+    ObjectGuid itemGuid = packet.itemGuid;
 
     sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "Petition %s declined by %s", itemGuid.GetString().c_str(), _player->GetGuidStr().c_str());
 
@@ -455,10 +446,9 @@ void WorldSession::HandleOfferPetitionOpcode(WorldPacket& recv_data)
     player->GetSession()->SendPacket(&data);
 }
 
-void WorldSession::HandleTurnInPetitionOpcode(WorldPacket& recv_data)
+void WorldSession::HandleTurnInPetitionOpcode(WorldPackets::Petition::TurnInPetition const& packet)
 {
-    ObjectGuid itemGuid;
-    recv_data >> itemGuid;
+    ObjectGuid itemGuid = packet.itemGuid;
 
     Item *charter = _player->GetItemByGuid(itemGuid);
     if (!charter)

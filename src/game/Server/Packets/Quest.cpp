@@ -66,3 +66,9 @@ void WorldPackets::Quest::PushQuestToParty::ReadFromWorldPacket(WorldPacket& rec
 {
     recv_data >> questId;
 }
+
+void WorldPackets::Quest::QuestPushResult::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> guid;
+    recv_data >> msg;
+}

@@ -121,6 +121,16 @@ namespace WorldPackets { namespace Quest
         explicit PushQuestToParty() : ClientPacket(CMSG_PUSHQUESTTOPARTY) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class QuestPushResult final : public ClientPacket
+    {
+    public:
+        ObjectGuid guid;
+        uint8 msg = 0;
+
+        explicit QuestPushResult() : ClientPacket(MSG_QUEST_PUSH_RESULT) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
 }} // namespace WorldPackets::Quest
 
 #endif // MANGOS_PACKETS_QUEST_H

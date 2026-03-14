@@ -41,3 +41,33 @@ void WorldPackets::Npc::SpiritHealerActivate::ReadFromWorldPacket(WorldPacket& r
 {
     recv_data >> guid;
 }
+
+void WorldPackets::Npc::RepairItem::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> npcGuid >> itemGuid;
+}
+
+void WorldPackets::Npc::ListStabledPets::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> npcGuid;
+}
+
+void WorldPackets::Npc::StablePet::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> npcGuid;
+}
+
+void WorldPackets::Npc::UnstablePet::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> npcGuid >> petNumber;
+}
+
+void WorldPackets::Npc::BuyStableSlot::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> npcGuid;
+}
+
+void WorldPackets::Npc::StableSwapPet::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> npcGuid >> petNumber;
+}

@@ -231,6 +231,33 @@ namespace WorldPackets { namespace Misc
         explicit ItemTextQuery() : ClientPacket(CMSG_ITEM_TEXT_QUERY) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class SummonResponse final : public ClientPacket
+    {
+    public:
+        ObjectGuid summonerGuid;
+
+        explicit SummonResponse() : ClientPacket(CMSG_SUMMON_RESPONSE) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class SetActionBarToggles final : public ClientPacket
+    {
+    public:
+        uint8 actionBar = 0;
+
+        explicit SetActionBarToggles() : ClientPacket(CMSG_SET_ACTIONBAR_TOGGLES) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class MeetingStoneJoin final : public ClientPacket
+    {
+    public:
+        ObjectGuid guid;
+
+        explicit MeetingStoneJoin() : ClientPacket(CMSG_MEETINGSTONE_JOIN) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
 }} // namespace WorldPackets::Misc
 
 #endif // MANGOS_PACKETS_MISC_H

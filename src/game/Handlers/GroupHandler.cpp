@@ -31,6 +31,8 @@
 #include "Group.h"
 #include "SocialMgr.h"
 #include "Util.h"
+#include "Packets/Group.h"
+#include "Packets/Loot.h"
 
 /* differeces from off:
     -you can uninvite yourself - is is useful
@@ -379,14 +381,11 @@ void WorldSession::HandleLootMethodOpcode(WorldPackets::Group::LootMethod const&
     group->SendUpdate();
 }
 
-void WorldSession::HandleLootRoll(WorldPacket& recv_data)
+void WorldSession::HandleLootRoll(WorldPackets::Loot::LootRoll const& packet)
 {
-    ObjectGuid lootedTarget;
-    uint32 itemSlot;
-    uint8  rollType;
-    recv_data >> lootedTarget; // guid of the loot source
-    recv_data >> itemSlot;
-    recv_data >> rollType;
+    ObjectGuid lootedTarget = packet.lootedTarget;
+    uint32 itemSlot = packet.itemSlot;
+    uint8  rollType = packet.rollType;
 
     Group* group = GetPlayer()->GetGroup();
     if (!group)
@@ -510,13 +509,10 @@ void WorldSession::HandleGroupRaidConvertOpcode(NullClientPacket const& /*packet
     group->ConvertToRaid();
 }
 
-void WorldSession::HandleGroupChangeSubGroupOpcode(WorldPacket& recv_data)
+void WorldSession::HandleGroupChangeSubGroupOpcode(WorldPackets::Group::GroupChangeSubGroup const& packet)
 {
-    std::string name;
-    uint8 groupNr;
-    recv_data >> name;
-
-    recv_data >> groupNr;
+    std::string name = packet.name;
+    uint8 groupNr = packet.groupNr;
 
     if (groupNr >= MAX_RAID_SUBGROUPS)
         return;
@@ -545,13 +541,10 @@ void WorldSession::HandleGroupChangeSubGroupOpcode(WorldPacket& recv_data)
     }
 }
 
-void WorldSession::HandleGroupSwapSubGroupOpcode(WorldPacket& recv_data)
+void WorldSession::HandleGroupSwapSubGroupOpcode(WorldPackets::Group::GroupSwapSubGroup const& packet)
 {
-    std::string name;
-    std::string nameSwapWith;
-
-    recv_data >> name;
-    recv_data >> nameSwapWith;
+    std::string name = packet.name;
+    std::string nameSwapWith = packet.nameSwapWith;
 
     Group* group = GetPlayer()->GetGroup();
     if (!group)

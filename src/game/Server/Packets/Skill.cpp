@@ -10,3 +10,8 @@ void WorldPackets::Skill::UnlearnSkill::ReadFromWorldPacket(WorldPacket& recv_da
 {
     recv_data >> skillId;
 }
+
+void WorldPackets::Skill::TalentWipeConfirm::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> guid;
+}

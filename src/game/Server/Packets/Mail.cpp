@@ -48,3 +48,9 @@ void WorldPackets::Mail::GetMailList::ReadFromWorldPacket(WorldPacket& recv_data
 {
     recv_data >> mailboxGuid;
 }
+
+void WorldPackets::Mail::MailDelete::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> mailboxGuid;
+    recv_data >> mailId;
+}

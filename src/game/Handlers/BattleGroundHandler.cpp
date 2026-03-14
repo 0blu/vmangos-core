@@ -36,11 +36,11 @@
 #include "ScriptMgr.h"
 #include "World.h"
 #include "Anticheat.h"
+#include "Packets/Battleground.h"
 
-void WorldSession::HandleBattlemasterHelloOpcode(WorldPacket& recv_data)
+void WorldSession::HandleBattlemasterHelloOpcode(WorldPackets::Battleground::BattlemasterHello const& packet)
 {
-    ObjectGuid guid;
-    recv_data >> guid;
+    ObjectGuid guid = packet.guid;
 
     Creature* pCreature = GetPlayer()->GetMap()->GetCreature(guid);
 
@@ -282,7 +282,7 @@ void WorldSession::HandleBattlemasterJoinOpcode(WorldPacket& recv_data)
     sBattleGroundMgr.ScheduleQueueUpdate(bgQueueTypeId, bgTypeId, bgBracketId);
 }
 
-void WorldSession::HandleBattleGroundPlayerPositionsOpcode(WorldPacket& /*recv_data*/)
+void WorldSession::HandleBattleGroundPlayerPositionsOpcode(NullClientPacket const& /*packet*/)
 {
     // empty opcode
     BattleGround *bg = _player->GetBattleGround();
@@ -342,7 +342,7 @@ void WorldSession::HandleBattleGroundPlayerPositionsOpcode(WorldPacket& /*recv_d
     SendPacket(&data);
 }
 
-void WorldSession::HandlePVPLogDataOpcode(WorldPacket& /*recv_data*/)
+void WorldSession::HandlePVPLogDataOpcode(NullClientPacket const& /*packet*/)
 {
     BattleGround *bg = _player->GetBattleGround();
     if (!bg)
@@ -550,7 +550,7 @@ void WorldSession::HandleLeaveBattlefieldOpcode(WorldPacket& recv_data)
     _player->LeaveBattleground();
 }
 
-void WorldSession::HandleBattlefieldStatusOpcode(WorldPacket& /*recv_data*/)
+void WorldSession::HandleBattlefieldStatusOpcode(NullClientPacket const& /*packet*/)
 {
     // empty opcode
     WorldPacket data;
@@ -605,14 +605,13 @@ void WorldSession::HandleBattlefieldStatusOpcode(WorldPacket& /*recv_data*/)
     }
 }
 
-void WorldSession::HandleAreaSpiritHealerQueryOpcode(WorldPacket& recv_data)
+void WorldSession::HandleAreaSpiritHealerQueryOpcode(WorldPackets::Battleground::AreaSpiritHealerQuery const& packet)
 {
     BattleGround *bg = _player->GetBattleGround();
     if (!bg)
         return;
 
-    ObjectGuid guid;
-    recv_data >> guid;
+    ObjectGuid guid = packet.guid;
 
     Creature* unit = GetPlayer()->GetMap()->GetCreature(guid);
     if (!unit)
@@ -624,14 +623,13 @@ void WorldSession::HandleAreaSpiritHealerQueryOpcode(WorldPacket& recv_data)
     unit->SendAreaSpiritHealerQueryOpcode(GetPlayer());
 }
 
-void WorldSession::HandleAreaSpiritHealerQueueOpcode(WorldPacket& recv_data)
+void WorldSession::HandleAreaSpiritHealerQueueOpcode(WorldPackets::Battleground::AreaSpiritHealerQueue const& packet)
 {
     BattleGround *bg = _player->GetBattleGround();
     if (!bg)
         return;
 
-    ObjectGuid guid;
-    recv_data >> guid;
+    ObjectGuid guid = packet.guid;
 
     Creature* unit = GetPlayer()->GetMap()->GetCreature(guid);
     if (!unit)

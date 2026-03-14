@@ -27,11 +27,11 @@
 #include "World.h"
 #include "Group.h"
 #include "LFGMgr.h"
+#include "Packets/Misc.h"
 
-void WorldSession::HandleMeetingStoneJoinOpcode(WorldPacket& recv_data)
+void WorldSession::HandleMeetingStoneJoinOpcode(WorldPackets::Misc::MeetingStoneJoin const& packet)
 {
-    ObjectGuid guid;
-    recv_data >> guid;
+    ObjectGuid guid = packet.guid;
 
     // ignore for remote control state
     if (!_player->IsSelfMover())
@@ -77,7 +77,7 @@ void WorldSession::HandleMeetingStoneJoinOpcode(WorldPacket& recv_data)
    sLFGMgr.AddToQueue(_player, gInfo->meetingstone.areaID);
 }
 
-void WorldSession::HandleMeetingStoneLeaveOpcode(WorldPacket& /*recv_data*/)
+void WorldSession::HandleMeetingStoneLeaveOpcode(NullClientPacket const& /*packet*/)
 {
     if (Group* grp = _player->GetGroup())
     {
@@ -102,7 +102,7 @@ void WorldSession::HandleMeetingStoneLeaveOpcode(WorldPacket& /*recv_data*/)
     }
 }
 
-void WorldSession::HandleMeetingStoneInfoOpcode(WorldPacket& /*recv_data*/)
+void WorldSession::HandleMeetingStoneInfoOpcode(NullClientPacket const& /*packet*/)
 {
     if (Group* grp = _player->GetGroup())
     {

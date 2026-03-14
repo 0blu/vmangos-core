@@ -4,6 +4,7 @@
 #include "Packet.h"
 #include "SharedDefines.h"
 #include "ObjectGuid.h"
+#include <string>
 
 namespace WorldPackets { namespace Pet
 {
@@ -25,6 +26,64 @@ namespace WorldPackets { namespace Pet
         ObjectGuid targetGuid;
 
         explicit PetAction() : ClientPacket(CMSG_PET_ACTION), data(0) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class PetAbandon final : public ClientPacket
+    {
+    public:
+        ObjectGuid guid;
+
+        explicit PetAbandon() : ClientPacket(CMSG_PET_ABANDON) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class PetRename final : public ClientPacket
+    {
+    public:
+        ObjectGuid petGuid;
+        std::string name;
+
+        explicit PetRename() : ClientPacket(CMSG_PET_RENAME) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class PetStopAttack final : public ClientPacket
+    {
+    public:
+        ObjectGuid petGuid;
+
+        explicit PetStopAttack() : ClientPacket(CMSG_PET_STOP_ATTACK) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class PetUnlearn final : public ClientPacket
+    {
+    public:
+        ObjectGuid guid;
+
+        explicit PetUnlearn() : ClientPacket(CMSG_PET_UNLEARN) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class PetCancelAura final : public ClientPacket
+    {
+    public:
+        ObjectGuid guid;
+        uint32 spellId = 0;
+
+        explicit PetCancelAura() : ClientPacket(CMSG_PET_CANCEL_AURA) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class PetSpellAutocast final : public ClientPacket
+    {
+    public:
+        ObjectGuid guid;
+        uint32 spellId = 0;
+        uint8 state = 0;
+
+        explicit PetSpellAutocast() : ClientPacket(CMSG_PET_SPELL_AUTOCAST) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
 }} // namespace WorldPackets::Pet

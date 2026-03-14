@@ -294,7 +294,7 @@ void WorldSession::HandleWhoOpcode(WorldPacket& recv_data)
     sWorld.AddAsyncTask(std::move(task));
 }
 
-void WorldSession::HandleLFGOpcode(WorldPacket& recv_data)
+void WorldSession::HandleLFGOpcode(NullClientPacket const& /*packet*/)
 {
     WorldPacket data(MSG_LOOKING_FOR_GROUP, 4);
     data << uint32(0);
@@ -979,10 +979,9 @@ void WorldSession::HandleNextCinematicCamera(NullClientPacket const& /*packet*/)
 {
 }
 
-void WorldSession::HandleSetActionBarTogglesOpcode(WorldPacket& recv_data)
+void WorldSession::HandleSetActionBarTogglesOpcode(WorldPackets::Misc::SetActionBarToggles const& packet)
 {
-    uint8 actionBar;
-    recv_data >> actionBar;
+    uint8 actionBar = packet.actionBar;
 
     if (!GetPlayer())                                       // ignore until not logged (check needed because STATUS_AUTHED)
     {
