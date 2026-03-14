@@ -24,5 +24,7 @@ void WorldPackets::Loot::LootRoll::ReadFromWorldPacket(WorldPacket& recv_data)
 
 void WorldPackets::Loot::LootMasterGive::ReadFromWorldPacket(WorldPacket& recv_data)
 {
-    recv_data >> lootGuid >> slotId >> playerGuid;
+    recv_data >> lootGuid;
+    recv_data >> slotId;
+    recv_data >> playerGuid;
 }
