@@ -824,7 +824,7 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(SMSG_INSTANCE_SAVE_CREATED,        Reason::SendByServer);
     INVALID_PACKET(SMSG_RAID_INSTANCE_INFO,           Reason::SendByServer);
     DEFINE_HANDLER(CMSG_REQUEST_RAID_INFO,            STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleRequestRaidInfoOpcode);
-    LEGACY_HANDLER(CMSG_MOVE_TIME_SKIPPED,            STATUS_LOGGEDIN,  PACKET_PROCESS_MOVEMENT,      &WorldSession::HandleMoveTimeSkippedOpcode);
+    DEFINE_HANDLER(CMSG_MOVE_TIME_SKIPPED,            STATUS_LOGGEDIN,  PACKET_PROCESS_MOVEMENT,      &WorldSession::HandleMoveTimeSkippedOpcode);
     LEGACY_HANDLER(CMSG_MOVE_FEATHER_FALL_ACK,        STATUS_LOGGEDIN,  PACKET_PROCESS_MOVEMENT,      &WorldSession::HandleMovementFlagChangeToggleAck);
     LEGACY_HANDLER(CMSG_MOVE_WATER_WALK_ACK,          STATUS_LOGGEDIN,  PACKET_PROCESS_MOVEMENT,      &WorldSession::HandleMovementFlagChangeToggleAck);
     LEGACY_HANDLER(CMSG_MOVE_NOT_ACTIVE_MOVER,        STATUS_LOGGEDIN,  PACKET_PROCESS_MOVEMENT,      &WorldSession::HandleMoveNotActiveMoverOpcode);

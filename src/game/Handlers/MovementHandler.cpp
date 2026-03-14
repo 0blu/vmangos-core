@@ -38,6 +38,7 @@
 #include "MoveSpline.h"
 #include "Geometry.h"
 #include "Packets/Misc.h"
+#include "Packets/Movement.h"
 
 void WorldSession::HandleMoveWorldportAckOpcode(NullClientPacket const& /*packet*/)
 {
@@ -1031,12 +1032,10 @@ void WorldSession::HandleSummonResponseOpcode(WorldPackets::Misc::SummonResponse
     _player->SummonIfPossible(true);
 }
 
-void WorldSession::HandleMoveTimeSkippedOpcode(WorldPacket& recvData)
+void WorldSession::HandleMoveTimeSkippedOpcode(WorldPackets::Movement::MoveTimeSkipped const& packet)
 {
-    ObjectGuid guid;
-    recvData >> guid;
-    uint32 lag;
-    recvData >> lag;
+    ObjectGuid guid = packet.guid;
+    uint32 lag = packet.lag;
 
     Unit* pMover = GetMoverFromGuid(guid);
     if (!pMover)

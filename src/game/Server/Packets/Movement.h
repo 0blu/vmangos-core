@@ -14,6 +14,16 @@ namespace WorldPackets { namespace Movement
         MovementPacket() : ClientPacket(OPCODE_WILL_BE_SET_IN_READ_FUNCTION) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class MoveTimeSkipped final : public ClientPacket
+    {
+    public:
+        ObjectGuid guid;
+        uint32     lag = 0;
+
+        MoveTimeSkipped() : ClientPacket(CMSG_MOVE_TIME_SKIPPED) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
 }} // namespace WorldPackets::Movement
 
 #endif // MANGOS_PACKETS_MOVEMENT_H

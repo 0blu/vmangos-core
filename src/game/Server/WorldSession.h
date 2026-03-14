@@ -494,7 +494,7 @@ class WorldSession
         void HandleMovementOpcodes(WorldPackets::Movement::MovementPacket const& packet);
         void HandleSetActiveMoverOpcode(WorldPackets::Misc::SetActiveMover const& packet);
         void HandleMoveNotActiveMoverOpcode(WorldPacket& recv_data);
-        void HandleMoveTimeSkippedOpcode(WorldPacket& recv_data);
+        void HandleMoveTimeSkippedOpcode(WorldPackets::Movement::MoveTimeSkipped const& packet);
         void HandleMovementFlagChangeToggleAck(WorldPacket& recvData);
         void HandleMoveSplineDoneOpcode(WorldPacket& recvPacket);
         void HandleMoveSetRawPosition(WorldPacket& recv_data);
