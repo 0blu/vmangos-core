@@ -536,7 +536,7 @@ void WorldSession::HandleGuildSetPublicNoteOpcode(WorldPackets::Guild::GuildSetP
 
     if (utf8length(PNOTE) > GUILD_NOTE_MAX_LENGTH)
     {
-        ProcessAnticheatAction("PassiveAnticheat", "Attempt to set guild public note to string longer than client limit.", CHEAT_ACTION_LOG | CHEAT_ACTION_REPORT_GMS | CHEAT_ACTION_KICK);
+        ProcessAnticheatAction("PassiveAnticheat", "Attempt to set guild player note to string longer than client limit.", CHEAT_ACTION_LOG | CHEAT_ACTION_REPORT_GMS | CHEAT_ACTION_KICK);
         return;
     }
 
