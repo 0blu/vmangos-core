@@ -504,9 +504,9 @@ class WorldSession
 
         void HandleInspectOpcode(WorldPackets::Misc::Inspect const& packet);
         void HandleInspectHonorStatsOpcode(WorldPackets::Misc::InspectHonorStats const& packet);
-        void HandleShowingHelmOpcode(WorldPacket& recv_data);
-        void HandleShowingCloakOpcode(WorldPacket& recv_data);
-        void HandleRepairItemOpcode(WorldPacket& recvPacket);
+        void HandleShowingHelmOpcode(NullClientPacket const& packet);
+        void HandleShowingCloakOpcode(NullClientPacket const& packet);
+        void HandleRepairItemOpcode(WorldPackets::Npc::RepairItem const& packet);
 
         void HandlePingOpcode(WorldPacket& recvPacket);
         void HandleAuthSessionOpcode(WorldPacket& recvPacket);
@@ -700,9 +700,9 @@ class WorldSession
         void HandleCancelAuraOpcode(WorldPackets::Spell::CancelAura const& packet);
         void HandleCancelGrowthAuraOpcode(WorldPacket& recvPacket);
         void HandleCancelAutoRepeatSpellOpcode(NullClientPacket const& packet);
-        void HandleSetActionBarTogglesOpcode(WorldPacket& recv_data);
+        void HandleSetActionBarTogglesOpcode(WorldPackets::Misc::SetActionBarToggles const& packet);
         void HandleLearnTalentOpcode(WorldPackets::Skill::LearnTalent const& packet);
-        void HandleTalentWipeConfirmOpcode(WorldPacket& recvPacket);
+        void HandleTalentWipeConfirmOpcode(WorldPackets::Skill::TalentWipeConfirm const& packet);
         void HandleUnlearnSkillOpcode(WorldPackets::Skill::UnlearnSkill const& packet);
 
         void HandleQuestgiverStatusQueryOpcode(WorldPackets::Quest::QuestgiverStatusQuery const& packet);
@@ -719,7 +719,7 @@ class WorldSession
         void HandleQuestgiverCompleteQuest(WorldPackets::Quest::QuestgiverCompleteQuest const& packet);
         void HandleQuestgiverQuestAutoLaunch(NullClientPacket const& packet);
         void HandlePushQuestToParty(WorldPackets::Quest::PushQuestToParty const& packet);
-        void HandleQuestPushResult(WorldPacket& recvPacket);
+        void HandleQuestPushResult(WorldPackets::Quest::QuestPushResult const& packet);
 
         bool SanitizeChatMessage(std::string& msg, uint32 lang, uint32 msgType);
         bool SanitizeChatMessageAndProcessCommand(std::string& msg, uint32 lang, uint32 msgType);
@@ -735,7 +735,7 @@ class WorldSession
         void HandleReclaimCorpseOpcode(WorldPackets::Misc::ReclaimCorpse const& packet);
         void HandleCorpseQueryOpcode(NullClientPacket const& packet);
         void HandleResurrectResponseOpcode(WorldPackets::Misc::ResurrectResponse const& packet);
-        void HandleSummonResponseOpcode(WorldPacket& recv_data);
+        void HandleSummonResponseOpcode(WorldPackets::Misc::SummonResponse const& packet);
 
         void HandleJoinChannelOpcode(WorldPackets::Channel::JoinChannel const& packet);
         void HandleLeaveChannelOpcode(WorldPackets::Channel::LeaveChannel const& packet);
@@ -766,14 +766,14 @@ class WorldSession
 
         //Pet
         void HandlePetAction(WorldPackets::Pet::PetAction const& packet);
-        void HandlePetStopAttack(WorldPacket& recv_data);
+        void HandlePetStopAttack(WorldPackets::Pet::PetStopAttack const& packet);
         void HandlePetNameQueryOpcode(WorldPackets::Pet::QueryPetName const& packet);
         void HandlePetSetAction(WorldPacket& recv_data);
-        void HandlePetAbandon(WorldPacket& recv_data);
-        void HandlePetRename(WorldPacket& recv_data);
-        void HandlePetCancelAuraOpcode(WorldPacket& recvPacket);
-        void HandlePetUnlearnOpcode(WorldPacket& recvPacket);
-        void HandlePetSpellAutocastOpcode(WorldPacket& recvPacket);
+        void HandlePetAbandon(WorldPackets::Pet::PetAbandon const& packet);
+        void HandlePetRename(WorldPackets::Pet::PetRename const& packet);
+        void HandlePetCancelAuraOpcode(WorldPackets::Pet::PetCancelAura const& packet);
+        void HandlePetUnlearnOpcode(WorldPackets::Pet::PetUnlearn const& packet);
+        void HandlePetSpellAutocastOpcode(WorldPackets::Pet::PetSpellAutocast const& packet);
         void HandlePetCastSpellOpcode(WorldPacket& recvPacket);
         void HandleRequestPetInfoOpcode(NullClientPacket const& packet);
 
@@ -786,7 +786,7 @@ class WorldSession
         void HandleBattlemasterJoinOpcode(WorldPacket& recv_data);
         void HandleBattleGroundPlayerPositionsOpcode(WorldPacket& recv_data);
         void HandlePVPLogDataOpcode(WorldPacket& recv_data);
-        void HandleBattlefieldStatusOpcode(WorldPacket& recv_data);
+        void HandleBattlefieldStatusOpcode(NullClientPacket const& packet);
         void HandleBattleFieldPortOpcode(WorldPacket& recv_data);
         void HandleBattlefieldListOpcode(WorldPackets::Battleground::BattlefieldListRequest const& packet);
         void HandleLeaveBattlefieldOpcode(WorldPacket& recv_data);
@@ -798,9 +798,9 @@ class WorldSession
         void HandleWhoisOpcode(WorldPackets::Query::Whois const& packet);
         void HandleResetInstancesOpcode(NullClientPacket const& packet);
 
-        void HandleAreaSpiritHealerQueryOpcode(WorldPacket& recv_data);
-        void HandleAreaSpiritHealerQueueOpcode(WorldPacket& recv_data);
-        void HandleSelfResOpcode(WorldPacket& recv_data);
+        void HandleAreaSpiritHealerQueryOpcode(WorldPackets::Battleground::AreaSpiritHealerQuery const& packet);
+        void HandleAreaSpiritHealerQueueOpcode(WorldPackets::Battleground::AreaSpiritHealerQueue const& packet);
+        void HandleSelfResOpcode(NullClientPacket const& packet);
 
     private:
         // private trade method

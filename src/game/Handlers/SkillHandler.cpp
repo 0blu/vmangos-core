@@ -28,16 +28,16 @@
 #include "WorldSession.h"
 #include "UpdateMask.h"
 #include "Anticheat.h"
+#include "Packets/Skill.h"
 
 void WorldSession::HandleLearnTalentOpcode(WorldPackets::Skill::LearnTalent const& packet)
 {
     _player->LearnTalent(packet.talent_id, packet.requested_rank);
 }
 
-void WorldSession::HandleTalentWipeConfirmOpcode(WorldPacket& recv_data)
+void WorldSession::HandleTalentWipeConfirmOpcode(WorldPackets::Skill::TalentWipeConfirm const& packet)
 {
-    ObjectGuid guid;
-    recv_data >> guid;
+    ObjectGuid guid = packet.guid;
 
     Creature* unit = GetPlayer()->GetNPCIfCanInteractWith(guid, UNIT_NPC_FLAG_TRAINER);
     if (!unit)

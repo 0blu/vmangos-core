@@ -37,6 +37,7 @@
 #include "MovementPacketSender.h"
 #include "MoveSpline.h"
 #include "Geometry.h"
+#include "Packets/Misc.h"
 
 void WorldSession::HandleMoveWorldportAckOpcode(NullClientPacket const& /*packet*/)
 {
@@ -1022,13 +1023,12 @@ void WorldSession::HandleMountSpecialAnimOpcode(NullClientPacket const& /*packet
     GetPlayer()->SendMovementMessageToSet(std::move(data), false);
 }
 
-void WorldSession::HandleSummonResponseOpcode(WorldPacket& recvData)
+void WorldSession::HandleSummonResponseOpcode(WorldPackets::Misc::SummonResponse const& packet)
 {
     if (!_player->IsAlive() || _player->IsInCombat())
         return;
 
-    ObjectGuid summonerGuid;
-    recvData >> summonerGuid;
+    ObjectGuid summonerGuid = packet.summonerGuid;
 
     _player->SummonIfPossible(true);
 }

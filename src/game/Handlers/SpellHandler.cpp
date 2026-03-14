@@ -30,6 +30,7 @@
 #include "SpellAuras.h"
 #include "GameObject.h"
 #include "Map.h"
+#include "Packets/Pet.h"
 
 using namespace Spells;
 
@@ -430,13 +431,10 @@ void WorldSession::HandleCancelAuraOpcode(WorldPackets::Spell::CancelAura const&
     _player->RemoveAurasDueToSpellByCancel(spellId);
 }
 
-void WorldSession::HandlePetCancelAuraOpcode(WorldPacket& recvPacket)
+void WorldSession::HandlePetCancelAuraOpcode(WorldPackets::Pet::PetCancelAura const& packet)
 {
-    ObjectGuid guid;
-    uint32 spellId;
-
-    recvPacket >> guid;
-    recvPacket >> spellId;
+    ObjectGuid guid = packet.guid;
+    uint32 spellId = packet.spellId;
 
     // ignore for remote control state
     if (!_player->IsSelfMover())
@@ -490,7 +488,7 @@ void WorldSession::HandleCancelChanneling(WorldPackets::Spell::CancelChanneling 
     }
 }
 
-void WorldSession::HandleSelfResOpcode(WorldPacket& /*recv_data*/)
+void WorldSession::HandleSelfResOpcode(NullClientPacket const& /*packet*/)
 {
 // World of Warcraft Client Patch 1.6.0 (2005-07-12)
 // - Self-resurrection spells show their name on the button in the release spirit dialog.

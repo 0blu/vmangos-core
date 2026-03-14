@@ -779,12 +779,12 @@ void WorldSession::HandleSetFactionInactiveOpcode(WorldPackets::Misc::SetFaction
     _player->GetReputationMgr().SetInactive(replistid, inactive);
 }
 
-void WorldSession::HandleShowingHelmOpcode(WorldPacket& /*recv_data*/)
+void WorldSession::HandleShowingHelmOpcode(NullClientPacket const& /*packet*/)
 {
     _player->ToggleFlag(PLAYER_FLAGS, PLAYER_FLAGS_HIDE_HELM);
 }
 
-void WorldSession::HandleShowingCloakOpcode(WorldPacket& /*recv_data*/)
+void WorldSession::HandleShowingCloakOpcode(NullClientPacket const& /*packet*/)
 {
     _player->ToggleFlag(PLAYER_FLAGS, PLAYER_FLAGS_HIDE_CLOAK);
 }

@@ -79,6 +79,16 @@ namespace WorldPackets { namespace Npc
         explicit SpiritHealerActivate() : ClientPacket(CMSG_SPIRIT_HEALER_ACTIVATE) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class RepairItem final : public ClientPacket
+    {
+    public:
+        ObjectGuid npcGuid;
+        ObjectGuid itemGuid;
+
+        explicit RepairItem() : ClientPacket(CMSG_REPAIR_ITEM) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
 }} // namespace WorldPackets::Npc
 
 #endif // MANGOS_PACKETS_NPC_H

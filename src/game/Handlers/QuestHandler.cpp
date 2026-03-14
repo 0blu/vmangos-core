@@ -32,6 +32,7 @@
 #include "ObjectAccessor.h"
 #include "ScriptMgr.h"
 #include "Group.h"
+#include "Packets/Quest.h"
 
 void WorldSession::HandleQuestgiverStatusQueryOpcode(WorldPackets::Quest::QuestgiverStatusQuery const& packet)
 {
@@ -652,11 +653,10 @@ void WorldSession::HandlePushQuestToParty(WorldPackets::Quest::PushQuestToParty 
     }
 }
 
-void WorldSession::HandleQuestPushResult(WorldPacket& recvPacket)
+void WorldSession::HandleQuestPushResult(WorldPackets::Quest::QuestPushResult const& packet)
 {
-    ObjectGuid guid;
-    uint8 msg;
-    recvPacket >> guid >> msg;
+    ObjectGuid guid = packet.guid;
+    uint8 msg = packet.msg;
 
     auto const& questShareInfo = _player->GetQuestShareInfo();
     if (!questShareInfo)

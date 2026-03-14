@@ -132,3 +132,13 @@ void WorldPackets::Misc::ItemTextQuery::ReadFromWorldPacket(WorldPacket& recv_da
     recv_data >> mailId;
     recv_data >> unk;
 }
+
+void WorldPackets::Misc::SummonResponse::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> summonerGuid;
+}
+
+void WorldPackets::Misc::SetActionBarToggles::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> actionBar;
+}

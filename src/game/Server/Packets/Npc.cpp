@@ -41,3 +41,8 @@ void WorldPackets::Npc::SpiritHealerActivate::ReadFromWorldPacket(WorldPacket& r
 {
     recv_data >> guid;
 }
+
+void WorldPackets::Npc::RepairItem::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> npcGuid >> itemGuid;
+}

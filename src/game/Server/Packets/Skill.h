@@ -3,6 +3,7 @@
 
 #include "Packet.h"
 #include "SharedDefines.h"
+#include "ObjectGuid.h"
 
 namespace WorldPackets { namespace Skill
 {
@@ -23,6 +24,15 @@ namespace WorldPackets { namespace Skill
         uint32 skillId = 0;
 
         explicit UnlearnSkill() : ClientPacket(CMSG_UNLEARN_SKILL) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class TalentWipeConfirm final : public ClientPacket
+    {
+    public:
+        ObjectGuid guid;
+
+        explicit TalentWipeConfirm() : ClientPacket(MSG_TALENT_WIPE_CONFIRM) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
 }} // namespace WorldPackets::Skill

@@ -31,6 +31,7 @@
 #include "Util.h"
 #include "Pet.h"
 #include "Group.h"
+#include "Packets/Pet.h"
 
 void WorldSession::HandlePetAction(WorldPackets::Pet::PetAction const& packet)
 {
@@ -184,10 +185,9 @@ void WorldSession::HandlePetAction(WorldPackets::Pet::PetAction const& packet)
     }
 }
 
-void WorldSession::HandlePetStopAttack(WorldPacket& recv_data)
+void WorldSession::HandlePetStopAttack(WorldPackets::Pet::PetStopAttack const& packet)
 {
-    ObjectGuid petGuid;
-    recv_data >> petGuid;
+    ObjectGuid petGuid = packet.petGuid;
 
     Unit* pet = GetPlayer()->GetMap()->GetUnit(petGuid);    // pet or controlled creature/player
     if (!pet)
@@ -340,13 +340,10 @@ void WorldSession::HandlePetSetAction(WorldPacket& recv_data)
     }
 }
 
-void WorldSession::HandlePetRename(WorldPacket& recv_data)
+void WorldSession::HandlePetRename(WorldPackets::Pet::PetRename const& packet)
 {
-    ObjectGuid petGuid;
-    std::string name;
-
-    recv_data >> petGuid;
-    recv_data >> name;
+    ObjectGuid petGuid = packet.petGuid;
+    std::string name = packet.name;
 
     Pet* pet = _player->GetMap()->GetPet(petGuid);
     // check it!
@@ -390,10 +387,9 @@ void WorldSession::HandlePetRename(WorldPacket& recv_data)
     pet->SetUInt32Value(UNIT_FIELD_PET_NAME_TIMESTAMP, uint32(time(nullptr)));
 }
 
-void WorldSession::HandlePetAbandon(WorldPacket& recv_data)
+void WorldSession::HandlePetAbandon(WorldPackets::Pet::PetAbandon const& packet)
 {
-    ObjectGuid guid;
-    recv_data >> guid;                                      // pet guid
+    ObjectGuid guid = packet.guid;
 
     if (!_player->IsInWorld())
         return;
@@ -423,10 +419,9 @@ void WorldSession::HandlePetAbandon(WorldPacket& recv_data)
     }
 }
 
-void WorldSession::HandlePetUnlearnOpcode(WorldPacket& recvPacket)
+void WorldSession::HandlePetUnlearnOpcode(WorldPackets::Pet::PetUnlearn const& packet)
 {
-    ObjectGuid guid;
-    recvPacket >> guid;                 // Pet guid
+    ObjectGuid guid = packet.guid;
 
     Pet* pet = _player->GetPet();
 
@@ -478,12 +473,11 @@ void WorldSession::HandlePetUnlearnOpcode(WorldPacket& recvPacket)
     GetPlayer()->PetSpellInitialize();
 }
 
-void WorldSession::HandlePetSpellAutocastOpcode(WorldPacket& recvPacket)
+void WorldSession::HandlePetSpellAutocastOpcode(WorldPackets::Pet::PetSpellAutocast const& packet)
 {
-    ObjectGuid guid;
-    uint32 spellid;
-    uint8  state;                                           // 1 for on, 0 for off
-    recvPacket >> guid >> spellid >> state;
+    ObjectGuid guid = packet.guid;
+    uint32 spellid = packet.spellId;
+    uint8  state = packet.state;                            // 1 for on, 0 for off
 
     Creature* pet = _player->GetMap()->GetAnyTypeCreature(guid);
     if (!pet || (guid != _player->GetPetGuid() && guid != _player->GetCharmGuid()))

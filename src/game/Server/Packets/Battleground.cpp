@@ -4,3 +4,13 @@ void WorldPackets::Battleground::BattlefieldListRequest::ReadFromWorldPacket(Wor
 {
     recv_data >> mapId;
 }
+
+void WorldPackets::Battleground::AreaSpiritHealerQuery::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> guid;
+}
+
+void WorldPackets::Battleground::AreaSpiritHealerQueue::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> guid;
+}
