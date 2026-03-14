@@ -24,6 +24,17 @@ namespace WorldPackets { namespace Movement
         MoveTimeSkipped() : ClientPacket(CMSG_MOVE_TIME_SKIPPED) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class MoveTeleportAck final : public ClientPacket
+    {
+    public:
+        ObjectGuid guid;
+        uint32     movementCounter = 0;
+        uint32     time = 0;
+
+        MoveTeleportAck() : ClientPacket(MSG_MOVE_TELEPORT_ACK) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
 }} // namespace WorldPackets::Movement
 
 #endif // MANGOS_PACKETS_MOVEMENT_H

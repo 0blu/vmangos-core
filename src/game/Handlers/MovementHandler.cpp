@@ -212,16 +212,10 @@ void WorldSession::HandleMoveWorldportAck()
     }
 }
 
-void WorldSession::HandleMoveTeleportAckOpcode(WorldPacket& recvData)
+void WorldSession::HandleMoveTeleportAckOpcode(WorldPackets::Movement::MoveTeleportAck const& packet)
 {
-    ObjectGuid guid;
-    recvData >> guid;
-    uint32 movementCounter = 0;
-#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
-    recvData >> movementCounter;
-#endif
-    uint32 time = 0;
-    recvData >> time;
+    ObjectGuid guid = packet.guid;
+    uint32 movementCounter = packet.movementCounter;
 
     Unit* pMover = _player->GetMover();
     Player* pPlayerMover = pMover->ToPlayer();

@@ -487,7 +487,7 @@ class WorldSession
         // Movement
         void HandleMoveRootAck(WorldPacket& recvPacket);
         void HandleMoveKnockBackAck(WorldPacket& recvPacket);
-        void HandleMoveTeleportAckOpcode(WorldPacket& recvPacket);
+        void HandleMoveTeleportAckOpcode(WorldPackets::Movement::MoveTeleportAck const& packet);
         void HandleForceSpeedChangeAckOpcodes(WorldPacket& recv_data);
         void HandleMoveWorldportAckOpcode(NullClientPacket const& packet);
         void HandleMoveWorldportAck();                // for server-side calls
@@ -787,9 +787,9 @@ class WorldSession
         void HandleBattleGroundPlayerPositionsOpcode(NullClientPacket const& packet);
         void HandlePVPLogDataOpcode(NullClientPacket const& packet);
         void HandleBattlefieldStatusOpcode(NullClientPacket const& packet);
-        void HandleBattleFieldPortOpcode(WorldPacket& recv_data);
+        void HandleBattleFieldPortOpcode(WorldPackets::Battleground::BattleFieldPort const& packet);
         void HandleBattlefieldListOpcode(WorldPackets::Battleground::BattlefieldListRequest const& packet);
-        void HandleLeaveBattlefieldOpcode(WorldPacket& recv_data);
+        void HandleLeaveBattlefieldOpcode(WorldPackets::Battleground::LeaveBattlefield const& packet);
 
         void HandleWardenDataOpcode(WorldPacket& recv_data);
         void HandleMinimapPingOpcode(WorldPackets::Group::MinimapPing const& packet);

@@ -48,6 +48,29 @@ namespace WorldPackets { namespace Battleground
         explicit BattlemasterHello() : ClientPacket(CMSG_BATTLEMASTER_HELLO) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class BattleFieldPort final : public ClientPacket
+    {
+    public:
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
+        uint32 mapId = 0;
+#endif
+        uint8 action = 0;
+
+        explicit BattleFieldPort() : ClientPacket(CMSG_BATTLEFIELD_PORT) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class LeaveBattlefield final : public ClientPacket
+    {
+    public:
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
+        uint32 mapId = 0;
+#endif
+
+        explicit LeaveBattlefield() : ClientPacket(CMSG_LEAVE_BATTLEFIELD) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
 }} // namespace WorldPackets::Battleground
 
 #endif // MANGOS_PACKETS_BATTLEGROUND_H

@@ -292,7 +292,7 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(MSG_MOVE_TOGGLE_LOGGING,           Reason::Unhandled);
     INVALID_PACKET(MSG_MOVE_TELEPORT,                 Reason::Unhandled);
     LEGACY_HANDLER(MSG_MOVE_TELEPORT_CHEAT,           STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleMoveSetRawPosition);
-    LEGACY_HANDLER(MSG_MOVE_TELEPORT_ACK,             STATUS_LOGGEDIN,  PACKET_PROCESS_MOVEMENT,      &WorldSession::HandleMoveTeleportAckOpcode);
+    DEFINE_HANDLER(MSG_MOVE_TELEPORT_ACK,             STATUS_LOGGEDIN,  PACKET_PROCESS_MOVEMENT,      &WorldSession::HandleMoveTeleportAckOpcode);
     INVALID_PACKET(MSG_MOVE_TOGGLE_FALL_LOGGING,      Reason::Unhandled);
     DEFINE_HANDLER(MSG_MOVE_FALL_LAND,                STATUS_LOGGEDIN,  PACKET_PROCESS_MOVEMENT,      &WorldSession::HandleMovementOpcodes);
     DEFINE_HANDLER(MSG_MOVE_START_SWIM,               STATUS_LOGGEDIN,  PACKET_PROCESS_MOVEMENT,      &WorldSession::HandleMovementOpcodes);
@@ -831,7 +831,7 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(SMSG_PLAY_SOUND,                   Reason::SendByServer);
     DEFINE_HANDLER(CMSG_BATTLEFIELD_STATUS,           STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleBattlefieldStatusOpcode);
     INVALID_PACKET(SMSG_BATTLEFIELD_STATUS,           Reason::SendByServer);
-    LEGACY_HANDLER(CMSG_BATTLEFIELD_PORT,             STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleBattleFieldPortOpcode);
+    DEFINE_HANDLER(CMSG_BATTLEFIELD_PORT,             STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleBattleFieldPortOpcode);
     DEFINE_HANDLER(MSG_INSPECT_HONOR_STATS,           STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleInspectHonorStatsOpcode);
     DEFINE_HANDLER(CMSG_BATTLEMASTER_HELLO,           STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleBattlemasterHelloOpcode);
     INVALID_PACKET(CMSG_MOVE_START_SWIM_CHEAT,        Reason::Unhandled);
@@ -843,7 +843,7 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(SMSG_FORCE_TURN_RATE_CHANGE,       Reason::SendByServer);
     LEGACY_HANDLER(CMSG_FORCE_TURN_RATE_CHANGE_ACK,   STATUS_LOGGEDIN,  PACKET_PROCESS_MOVEMENT,      &WorldSession::HandleForceSpeedChangeAckOpcodes);
     DEFINE_HANDLER(MSG_PVP_LOG_DATA,                  STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandlePVPLogDataOpcode);
-    LEGACY_HANDLER(CMSG_LEAVE_BATTLEFIELD,            STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleLeaveBattlefieldOpcode);
+    DEFINE_HANDLER(CMSG_LEAVE_BATTLEFIELD,            STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleLeaveBattlefieldOpcode);
     DEFINE_HANDLER(CMSG_AREA_SPIRIT_HEALER_QUERY,     STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleAreaSpiritHealerQueryOpcode);
     DEFINE_HANDLER(CMSG_AREA_SPIRIT_HEALER_QUEUE,     STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleAreaSpiritHealerQueueOpcode);
     INVALID_PACKET(SMSG_AREA_SPIRIT_HEALER_TIME,      Reason::SendByServer);
