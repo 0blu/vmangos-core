@@ -1028,8 +1028,6 @@ void WorldSession::HandleSummonResponseOpcode(WorldPackets::Misc::SummonResponse
     if (!_player->IsAlive() || _player->IsInCombat())
         return;
 
-    ObjectGuid summonerGuid = packet.summonerGuid;
-
     _player->SummonIfPossible(true);
 }
 
