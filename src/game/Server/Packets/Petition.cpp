@@ -31,3 +31,9 @@ void WorldPackets::Petition::PetitionRename::ReadFromWorldPacket(WorldPacket& re
     recv_data >> itemGuid;
     recv_data >> newName;
 }
+
+void WorldPackets::Petition::PetitionSign::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> itemGuid;
+    recv_data >> unk;
+}

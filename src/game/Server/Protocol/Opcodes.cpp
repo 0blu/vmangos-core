@@ -547,7 +547,7 @@ constexpr Handlers BuildOpcodeList()
     LEGACY_HANDLER(CMSG_PETITION_BUY,                 STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandlePetitionBuyOpcode);
     DEFINE_HANDLER(CMSG_PETITION_SHOW_SIGNATURES,     STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandlePetitionShowSignOpcode);
     INVALID_PACKET(SMSG_PETITION_SHOW_SIGNATURES,     Reason::SendByServer);
-    LEGACY_HANDLER(CMSG_PETITION_SIGN,                STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandlePetitionSignOpcode);
+    DEFINE_HANDLER(CMSG_PETITION_SIGN,                STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandlePetitionSignOpcode);
     INVALID_PACKET(SMSG_PETITION_SIGN_RESULTS,        Reason::SendByServer);
     DEFINE_HANDLER(MSG_PETITION_DECLINE,              STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandlePetitionDeclineOpcode);
     LEGACY_HANDLER(CMSG_OFFER_PETITION,               STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleOfferPetitionOpcode);
@@ -616,7 +616,7 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(SMSG_ENVIRONMENTALDAMAGELOG,       Reason::SendByServer);
     INVALID_PACKET(CMSG_RWHOIS,                       Reason::Unhandled);
     INVALID_PACKET(SMSG_RWHOIS,                       Reason::SendByServer);
-    LEGACY_HANDLER(MSG_LOOKING_FOR_GROUP,             STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleLFGOpcode);
+    DEFINE_HANDLER(MSG_LOOKING_FOR_GROUP,             STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleLFGOpcode);
     INVALID_PACKET(CMSG_SET_LOOKING_FOR_GROUP,        Reason::Unhandled);
     INVALID_PACKET(CMSG_UNLEARN_SPELL,                Reason::Unhandled);
     DEFINE_HANDLER(CMSG_UNLEARN_SKILL,                STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleUnlearnSkillOpcode);

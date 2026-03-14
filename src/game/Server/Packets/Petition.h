@@ -62,6 +62,16 @@ namespace WorldPackets { namespace Petition
         explicit PetitionRename() : ClientPacket(MSG_PETITION_RENAME) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class PetitionSign final : public ClientPacket
+    {
+    public:
+        ObjectGuid itemGuid;
+        uint8 unk = 0;
+
+        explicit PetitionSign() : ClientPacket(CMSG_PETITION_SIGN) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
 }} // namespace WorldPackets::Petition
 
 #endif // MANGOS_PACKETS_PETITION_H

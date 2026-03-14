@@ -294,7 +294,7 @@ void WorldSession::HandleWhoOpcode(WorldPacket& recv_data)
     sWorld.AddAsyncTask(std::move(task));
 }
 
-void WorldSession::HandleLFGOpcode(WorldPacket& recv_data)
+void WorldSession::HandleLFGOpcode(NullClientPacket const& /*packet*/)
 {
     WorldPacket data(MSG_LOOKING_FOR_GROUP, 4);
     data << uint32(0);

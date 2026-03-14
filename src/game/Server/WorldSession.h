@@ -517,7 +517,7 @@ class WorldSession
         void HandleLootReleaseOpcode(WorldPackets::Loot::LootRelease const& packet);
         void HandleLootMasterGiveOpcode(WorldPackets::Loot::LootMasterGive const& packet);
         void HandleWhoOpcode(WorldPacket& recvPacket);
-        void HandleLFGOpcode(WorldPacket& recvPacket);
+        void HandleLFGOpcode(NullClientPacket const& packet);
         void HandleLogoutRequestOpcode(NullClientPacket const& packet);
         void HandlePlayerLogoutOpcode(NullClientPacket const& packet);
         void HandleLogoutCancelOpcode(NullClientPacket const& packet);
@@ -584,7 +584,7 @@ class WorldSession
         void HandlePetitionShowSignOpcode(WorldPackets::Petition::PetitionShowSignatures const& packet);
         void HandlePetitionQueryOpcode(WorldPackets::Petition::QueryPetition const& packet);
         void HandlePetitionRenameOpcode(WorldPackets::Petition::PetitionRename const& packet);
-        void HandlePetitionSignOpcode(WorldPacket& recv_data);
+        void HandlePetitionSignOpcode(WorldPackets::Petition::PetitionSign const& packet);
         void HandlePetitionDeclineOpcode(WorldPackets::Petition::PetitionDecline const& packet);
         void HandleOfferPetitionOpcode(WorldPacket& recv_data);
         void HandleTurnInPetitionOpcode(WorldPackets::Petition::TurnInPetition const& packet);
