@@ -545,11 +545,11 @@ class WorldSession
 
         void HandleAreaTriggerOpcode(WorldPackets::Misc::AreaTrigger const& packet);
         void HandleSetFactionAtWarOpcode(WorldPackets::Misc::SetFactionAtWar const& packet);
-        void HandleSetWatchedFactionOpcode(WorldPacket& recv_data);
+        void HandleSetWatchedFactionOpcode(WorldPackets::Misc::SetWatchedFaction const& packet);
         void HandleSetFactionInactiveOpcode(WorldPackets::Misc::SetFactionInactive const& packet);
 
         void HandleUpdateAccountData(WorldPacket& recvPacket);
-        void HandleRequestAccountData(WorldPacket& recvPacket);
+        void HandleRequestAccountData(WorldPackets::Misc::RequestAccountData const& packet);
         void HandleSetActionButtonOpcode(WorldPackets::Misc::SetActionButton const& packet);
 
         void HandleGameObjectUseOpcode(WorldPackets::Misc::GameObjectUse const& packet);
@@ -586,7 +586,7 @@ class WorldSession
         void HandlePetitionRenameOpcode(WorldPackets::Petition::PetitionRename const& packet);
         void HandlePetitionSignOpcode(WorldPackets::Petition::PetitionSign const& packet);
         void HandlePetitionDeclineOpcode(WorldPackets::Petition::PetitionDecline const& packet);
-        void HandleOfferPetitionOpcode(WorldPacket& recv_data);
+        void HandleOfferPetitionOpcode(WorldPackets::Petition::OfferPetition const& packet);
         void HandleTurnInPetitionOpcode(WorldPackets::Petition::TurnInPetition const& packet);
 
         void HandleGuildQueryOpcode(WorldPackets::Guild::GuildQuery const& packet);
@@ -667,7 +667,7 @@ class WorldSession
         void HandleMailReturnToSender(WorldPackets::Mail::MailReturnToSender const& packet);
         void HandleMailDelete(WorldPackets::Mail::MailDelete const& packet);
         void HandleItemTextQuery(WorldPackets::Misc::ItemTextQuery const& packet);
-        void HandleMailCreateTextItem(WorldPacket& recv_data);
+        void HandleMailCreateTextItem(WorldPackets::Mail::MailCreateTextItem const& packet);
         void HandleQueryNextMailTime(NullClientPacket const& packet);
         void HandleCancelChanneling(WorldPackets::Spell::CancelChanneling const& packet);
 

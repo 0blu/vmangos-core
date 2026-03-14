@@ -37,3 +37,9 @@ void WorldPackets::Petition::PetitionSign::ReadFromWorldPacket(WorldPacket& recv
     recv_data >> itemGuid;
     recv_data.read_skip<int8>(); // argument of `/run SignPetition(123)` is never used in the official interface
 }
+
+void WorldPackets::Petition::OfferPetition::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> itemGuid;
+    recv_data >> playerGuid;
+}

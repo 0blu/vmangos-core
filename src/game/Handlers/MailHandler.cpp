@@ -872,17 +872,10 @@ void WorldSession::HandleItemTextQuery(WorldPackets::Misc::ItemTextQuery const& 
  * a new item with the text of the mail and store it in the players inventory (if possible).
  *
  */
-void WorldSession::HandleMailCreateTextItem(WorldPacket& recv_data)
+void WorldSession::HandleMailCreateTextItem(WorldPackets::Mail::MailCreateTextItem const& packet)
 {
-    ObjectGuid mailboxGuid;
-    uint32 mailId;
-
-    recv_data >> mailboxGuid;
-    recv_data >> mailId;
-
-#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
-    recv_data.read_skip<uint32>();                          // mailTemplateId, non need, Mail store own 100% correct value anyway
-#endif
+    ObjectGuid mailboxGuid = packet.mailboxGuid;
+    uint32 mailId = packet.mailId;
 
     if (!CheckMailBox(mailboxGuid))
         return;

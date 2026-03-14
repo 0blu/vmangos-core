@@ -54,3 +54,12 @@ void WorldPackets::Mail::MailDelete::ReadFromWorldPacket(WorldPacket& recv_data)
     recv_data >> mailboxGuid;
     recv_data >> mailId;
 }
+
+void WorldPackets::Mail::MailCreateTextItem::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> mailboxGuid;
+    recv_data >> mailId;
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
+    recv_data.read_skip<uint32>(); // mailTemplateId, not needed
+#endif
+}

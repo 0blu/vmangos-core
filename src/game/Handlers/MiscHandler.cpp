@@ -894,10 +894,9 @@ void WorldSession::HandleUpdateAccountData(WorldPacket& recv_data)
     SetAccountData(dataType, adata);
 }
 
-void WorldSession::HandleRequestAccountData(WorldPacket& recv_data)
+void WorldSession::HandleRequestAccountData(WorldPackets::Misc::RequestAccountData const& packet)
 {
-    uint32 type;
-    recv_data >> type;
+    uint32 type = packet.type;
 
     NewAccountData::AccountDataType dataType;
     if (GetGameBuild() <= CLIENT_BUILD_1_8_4)

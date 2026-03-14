@@ -381,12 +381,10 @@ void WorldSession::HandlePetitionDeclineOpcode(WorldPackets::Petition::PetitionD
     }
 }
 
-void WorldSession::HandleOfferPetitionOpcode(WorldPacket& recv_data)
+void WorldSession::HandleOfferPetitionOpcode(WorldPackets::Petition::OfferPetition const& packet)
 {
-    ObjectGuid itemGuid;
-    ObjectGuid playerGuid;
-    recv_data >> itemGuid;                              // item guid
-    recv_data >> playerGuid;                            // player guid
+    ObjectGuid itemGuid = packet.itemGuid;
+    ObjectGuid playerGuid = packet.playerGuid;
 
     Player* player = ObjectAccessor::FindPlayer(playerGuid);
     if (!player)

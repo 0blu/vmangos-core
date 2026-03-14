@@ -152,3 +152,15 @@ void WorldPackets::Misc::TeleportToUnit::ReadFromWorldPacket(WorldPacket& recv_d
 {
     recv_data >> playerName;
 }
+
+void WorldPackets::Misc::RequestAccountData::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> type;
+}
+
+void WorldPackets::Misc::SetWatchedFaction::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
+    recv_data >> repId;
+#endif
+}
