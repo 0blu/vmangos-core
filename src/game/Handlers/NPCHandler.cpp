@@ -521,10 +521,9 @@ void WorldSession::SendBindPoint(Creature* npc)
     _player->PlayerTalkClass->CloseGossip();
 }
 
-void WorldSession::HandleListStabledPetsOpcode(WorldPacket& recv_data)
+void WorldSession::HandleListStabledPetsOpcode(WorldPackets::Npc::ListStabledPets const& packet)
 {
-    ObjectGuid npcGUID;
-    recv_data >> npcGUID;
+    ObjectGuid npcGUID = packet.npcGuid;
 
     Creature* unit = GetPlayer()->GetNPCIfCanInteractWith(npcGUID, UNIT_NPC_FLAG_STABLEMASTER);
     if (!unit)
@@ -625,10 +624,9 @@ bool WorldSession::CheckStableMaster(ObjectGuid guid)
     return true;
 }
 
-void WorldSession::HandleStablePet(WorldPacket& recv_data)
+void WorldSession::HandleStablePet(WorldPackets::Npc::StablePet const& packet)
 {
-    ObjectGuid npcGUID;
-    recv_data >> npcGUID;
+    ObjectGuid npcGUID = packet.npcGuid;
 
     if (!GetPlayer()->IsAlive())
     {
@@ -676,12 +674,10 @@ void WorldSession::HandleStablePet(WorldPacket& recv_data)
         SendStableResult(STABLE_ERR_STABLE);
 }
 
-void WorldSession::HandleUnstablePet(WorldPacket& recv_data)
+void WorldSession::HandleUnstablePet(WorldPackets::Npc::UnstablePet const& packet)
 {
-    ObjectGuid npcGUID;
-    uint32 petNumber;
-
-    recv_data >> npcGUID >> petNumber;
+    ObjectGuid npcGUID = packet.npcGuid;
+    uint32 petNumber = packet.petNumber;
 
     if (!CheckStableMaster(npcGUID))
     {
@@ -728,10 +724,9 @@ void WorldSession::HandleUnstablePet(WorldPacket& recv_data)
     SendStableResult(STABLE_SUCCESS_UNSTABLE);
 }
 
-void WorldSession::HandleBuyStableSlot(WorldPacket& recv_data)
+void WorldSession::HandleBuyStableSlot(WorldPackets::Npc::BuyStableSlot const& packet)
 {
-    ObjectGuid npcGUID;
-    recv_data >> npcGUID;
+    ObjectGuid npcGUID = packet.npcGuid;
 
     if (!CheckStableMaster(npcGUID))
     {
@@ -758,16 +753,14 @@ void WorldSession::HandleBuyStableSlot(WorldPacket& recv_data)
         SendStableResult(STABLE_ERR_STABLE);
 }
 
-void WorldSession::HandleStableRevivePet(WorldPacket& /* recv_data */)
+void WorldSession::HandleStableRevivePet(NullClientPacket const& /*packet*/)
 {
 }
 
-void WorldSession::HandleStableSwapPet(WorldPacket& recv_data)
+void WorldSession::HandleStableSwapPet(WorldPackets::Npc::StableSwapPet const& packet)
 {
-    ObjectGuid npcGUID;
-    uint32 pet_number;
-
-    recv_data >> npcGUID >> pet_number;
+    ObjectGuid npcGUID = packet.npcGuid;
+    uint32 pet_number = packet.petNumber;
 
     if (!CheckStableMaster(npcGUID))
     {

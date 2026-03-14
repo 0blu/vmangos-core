@@ -31,6 +31,7 @@
 #include "Group.h"
 #include "SocialMgr.h"
 #include "Util.h"
+#include "Packets/Group.h"
 
 /* differeces from off:
     -you can uninvite yourself - is is useful
@@ -510,13 +511,10 @@ void WorldSession::HandleGroupRaidConvertOpcode(NullClientPacket const& /*packet
     group->ConvertToRaid();
 }
 
-void WorldSession::HandleGroupChangeSubGroupOpcode(WorldPacket& recv_data)
+void WorldSession::HandleGroupChangeSubGroupOpcode(WorldPackets::Group::GroupChangeSubGroup const& packet)
 {
-    std::string name;
-    uint8 groupNr;
-    recv_data >> name;
-
-    recv_data >> groupNr;
+    std::string name = packet.name;
+    uint8 groupNr = packet.groupNr;
 
     if (groupNr >= MAX_RAID_SUBGROUPS)
         return;
@@ -545,13 +543,10 @@ void WorldSession::HandleGroupChangeSubGroupOpcode(WorldPacket& recv_data)
     }
 }
 
-void WorldSession::HandleGroupSwapSubGroupOpcode(WorldPacket& recv_data)
+void WorldSession::HandleGroupSwapSubGroupOpcode(WorldPackets::Group::GroupSwapSubGroup const& packet)
 {
-    std::string name;
-    std::string nameSwapWith;
-
-    recv_data >> name;
-    recv_data >> nameSwapWith;
+    std::string name = packet.name;
+    std::string nameSwapWith = packet.nameSwapWith;
 
     Group* group = GetPlayer()->GetGroup();
     if (!group)

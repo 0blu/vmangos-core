@@ -72,6 +72,26 @@ namespace WorldPackets { namespace Group
         explicit RandomRoll() : ClientPacket(MSG_RANDOM_ROLL) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class GroupChangeSubGroup final : public ClientPacket
+    {
+    public:
+        std::string name;
+        uint8 groupNr = 0;
+
+        explicit GroupChangeSubGroup() : ClientPacket(CMSG_GROUP_CHANGE_SUB_GROUP) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class GroupSwapSubGroup final : public ClientPacket
+    {
+    public:
+        std::string name;
+        std::string nameSwapWith;
+
+        explicit GroupSwapSubGroup() : ClientPacket(CMSG_GROUP_SWAP_SUB_GROUP) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
 }} // namespace WorldPackets::Group
 
 #endif // MANGOS_PACKETS_GROUP_H

@@ -89,6 +89,53 @@ namespace WorldPackets { namespace Npc
         explicit RepairItem() : ClientPacket(CMSG_REPAIR_ITEM) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class ListStabledPets final : public ClientPacket
+    {
+    public:
+        ObjectGuid npcGuid;
+
+        explicit ListStabledPets() : ClientPacket(MSG_LIST_STABLED_PETS) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class StablePet final : public ClientPacket
+    {
+    public:
+        ObjectGuid npcGuid;
+
+        explicit StablePet() : ClientPacket(CMSG_STABLE_PET) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class UnstablePet final : public ClientPacket
+    {
+    public:
+        ObjectGuid npcGuid;
+        uint32 petNumber = 0;
+
+        explicit UnstablePet() : ClientPacket(CMSG_UNSTABLE_PET) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class BuyStableSlot final : public ClientPacket
+    {
+    public:
+        ObjectGuid npcGuid;
+
+        explicit BuyStableSlot() : ClientPacket(CMSG_BUY_STABLE_SLOT) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class StableSwapPet final : public ClientPacket
+    {
+    public:
+        ObjectGuid npcGuid;
+        uint32 petNumber = 0;
+
+        explicit StableSwapPet() : ClientPacket(CMSG_STABLE_SWAP_PET) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
 }} // namespace WorldPackets::Npc
 
 #endif // MANGOS_PACKETS_NPC_H

@@ -691,7 +691,7 @@ constexpr Handlers BuildOpcodeList()
     DEFINE_HANDLER(CMSG_MAIL_TAKE_ITEM,               STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD, /*COD*/ &WorldSession::HandleMailTakeItem);
     DEFINE_HANDLER(CMSG_MAIL_MARK_AS_READ,            STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleMailMarkAsRead);
     DEFINE_HANDLER(CMSG_MAIL_RETURN_TO_SENDER,        STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleMailReturnToSender);
-    LEGACY_HANDLER(CMSG_MAIL_DELETE,                  STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleMailDelete);
+    DEFINE_HANDLER(CMSG_MAIL_DELETE,                  STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleMailDelete);
     LEGACY_HANDLER(CMSG_MAIL_CREATE_TEXT_ITEM,        STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleMailCreateTextItem);
     INVALID_PACKET(SMSG_SPELLLOGMISS,                 Reason::SendByServer);
     INVALID_PACKET(SMSG_SPELLLOGEXECUTE,              Reason::SendByServer);
@@ -729,13 +729,13 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(CMSG_PLAYER_AI_CHEAT,              Reason::Unhandled);
     DEFINE_HANDLER(CMSG_CANCEL_AUTO_REPEAT_SPELL,     STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleCancelAutoRepeatSpellOpcode);
     INVALID_PACKET(MSG_GM_ACCOUNT_ONLINE,             Reason::Unhandled);
-    LEGACY_HANDLER(MSG_LIST_STABLED_PETS,             STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleListStabledPetsOpcode);
-    LEGACY_HANDLER(CMSG_STABLE_PET,                   STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleStablePet);
-    LEGACY_HANDLER(CMSG_UNSTABLE_PET,                 STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleUnstablePet);
-    LEGACY_HANDLER(CMSG_BUY_STABLE_SLOT,              STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleBuyStableSlot);
+    DEFINE_HANDLER(MSG_LIST_STABLED_PETS,             STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleListStabledPetsOpcode);
+    DEFINE_HANDLER(CMSG_STABLE_PET,                   STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleStablePet);
+    DEFINE_HANDLER(CMSG_UNSTABLE_PET,                 STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleUnstablePet);
+    DEFINE_HANDLER(CMSG_BUY_STABLE_SLOT,              STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleBuyStableSlot);
     INVALID_PACKET(SMSG_STABLE_RESULT,                Reason::SendByServer);
-    LEGACY_HANDLER(CMSG_STABLE_REVIVE_PET,            STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleStableRevivePet);
-    LEGACY_HANDLER(CMSG_STABLE_SWAP_PET,              STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleStableSwapPet);
+    DEFINE_HANDLER(CMSG_STABLE_REVIVE_PET,            STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleStableRevivePet);
+    DEFINE_HANDLER(CMSG_STABLE_SWAP_PET,              STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleStableSwapPet);
     DEFINE_HANDLER(MSG_QUEST_PUSH_RESULT,             STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleQuestPushResult);
     INVALID_PACKET(SMSG_PLAY_MUSIC,                   Reason::SendByServer);
     INVALID_PACKET(SMSG_PLAY_OBJECT_SOUND,            Reason::SendByServer);
@@ -744,9 +744,9 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(SMSG_SPELLDISPELLOG,               Reason::SendByServer);
     INVALID_PACKET(SMSG_DAMAGE_CALC_LOG,              Reason::SendByServer);
     INVALID_PACKET(CMSG_ENABLE_DAMAGE_LOG,            Reason::Unhandled);
-    LEGACY_HANDLER(CMSG_GROUP_CHANGE_SUB_GROUP,       STATUS_LOGGEDIN,  PACKET_PROCESS_GROUP,         &WorldSession::HandleGroupChangeSubGroupOpcode);
+    DEFINE_HANDLER(CMSG_GROUP_CHANGE_SUB_GROUP,       STATUS_LOGGEDIN,  PACKET_PROCESS_GROUP,         &WorldSession::HandleGroupChangeSubGroupOpcode);
     DEFINE_HANDLER(CMSG_REQUEST_PARTY_MEMBER_STATS,   STATUS_LOGGEDIN,  PACKET_PROCESS_GROUP,         &WorldSession::HandleRequestPartyMemberStatsOpcode);
-    LEGACY_HANDLER(CMSG_GROUP_SWAP_SUB_GROUP,         STATUS_LOGGEDIN,  PACKET_PROCESS_GROUP,         &WorldSession::HandleGroupSwapSubGroupOpcode);
+    DEFINE_HANDLER(CMSG_GROUP_SWAP_SUB_GROUP,         STATUS_LOGGEDIN,  PACKET_PROCESS_GROUP,         &WorldSession::HandleGroupSwapSubGroupOpcode);
     INVALID_PACKET(CMSG_RESET_FACTION_CHEAT,          Reason::Unhandled);
     DEFINE_HANDLER(CMSG_AUTOSTORE_BANK_ITEM,          STATUS_LOGGEDIN,  PACKET_PROCESS_SELF_ITEMS,    &WorldSession::HandleAutoStoreBankItemOpcode);
     DEFINE_HANDLER(CMSG_AUTOBANK_ITEM,                STATUS_LOGGEDIN,  PACKET_PROCESS_SELF_ITEMS,    &WorldSession::HandleAutoBankItemOpcode);
@@ -773,7 +773,7 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(SMSG_MEETINGSTONE_IN_PROGRESS,     Reason::SendByServer);
     INVALID_PACKET(SMSG_MEETINGSTONE_MEMBER_ADDED,    Reason::SendByServer);
     INVALID_PACKET(CMSG_GMTICKETSYSTEM_TOGGLE,        Reason::Unhandled);
-    LEGACY_HANDLER(CMSG_CANCEL_GROWTH_AURA,           STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleCancelGrowthAuraOpcode);
+    DEFINE_HANDLER(CMSG_CANCEL_GROWTH_AURA,           STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleCancelGrowthAuraOpcode);
     INVALID_PACKET(SMSG_CANCEL_AUTO_REPEAT,           Reason::SendByServer);
     INVALID_PACKET(SMSG_STANDSTATE_UPDATE,            Reason::SendByServer);
     INVALID_PACKET(SMSG_LOOT_ALL_PASSED,              Reason::SendByServer);
@@ -842,7 +842,7 @@ constexpr Handlers BuildOpcodeList()
     LEGACY_HANDLER(CMSG_FORCE_SWIM_BACK_SPEED_CHANGE_ACK,  STATUS_LOGGEDIN,  PACKET_PROCESS_MOVEMENT, &WorldSession::HandleForceSpeedChangeAckOpcodes);
     INVALID_PACKET(SMSG_FORCE_TURN_RATE_CHANGE,       Reason::SendByServer);
     LEGACY_HANDLER(CMSG_FORCE_TURN_RATE_CHANGE_ACK,   STATUS_LOGGEDIN,  PACKET_PROCESS_MOVEMENT,      &WorldSession::HandleForceSpeedChangeAckOpcodes);
-    LEGACY_HANDLER(MSG_PVP_LOG_DATA,                  STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandlePVPLogDataOpcode);
+    DEFINE_HANDLER(MSG_PVP_LOG_DATA,                  STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandlePVPLogDataOpcode);
     LEGACY_HANDLER(CMSG_LEAVE_BATTLEFIELD,            STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleLeaveBattlefieldOpcode);
     DEFINE_HANDLER(CMSG_AREA_SPIRIT_HEALER_QUERY,     STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleAreaSpiritHealerQueryOpcode);
     DEFINE_HANDLER(CMSG_AREA_SPIRIT_HEALER_QUEUE,     STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleAreaSpiritHealerQueueOpcode);
@@ -853,7 +853,7 @@ constexpr Handlers BuildOpcodeList()
     LEGACY_HANDLER(CMSG_WARDEN_DATA,                  STATUS_AUTHED,    PACKET_PROCESS_WORLD,         &WorldSession::HandleWardenDataOpcode);
 #endif
     INVALID_PACKET(SMSG_GROUP_JOINED_BATTLEGROUND,    Reason::SendByServer);
-    LEGACY_HANDLER(MSG_BATTLEGROUND_PLAYER_POSITIONS, STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleBattleGroundPlayerPositionsOpcode);
+    DEFINE_HANDLER(MSG_BATTLEGROUND_PLAYER_POSITIONS, STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleBattleGroundPlayerPositionsOpcode);
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_5_1
     INVALID_PACKET(SMSG_PARTY_MEMBER_STATS_FULL,      Reason::SendByServer);
 #endif

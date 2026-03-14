@@ -38,3 +38,15 @@ void WorldPackets::Group::RandomRoll::ReadFromWorldPacket(WorldPacket& recv_data
     recv_data >> minimum;
     recv_data >> maximum;
 }
+
+void WorldPackets::Group::GroupChangeSubGroup::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> name;
+    recv_data >> groupNr;
+}
+
+void WorldPackets::Group::GroupSwapSubGroup::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> name;
+    recv_data >> nameSwapWith;
+}

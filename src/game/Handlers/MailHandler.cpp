@@ -41,6 +41,7 @@
 #include "AccountMgr.h"
 #include "TransactionLog.h"
 #include "Database/DatabaseImpl.h"
+#include "Packets/Mail.h"
 
 void WorldSession::SendMailResult(uint32 mailId, MailResponseType mailAction, MailResponseResult mailError, uint32 equipError, uint32 item_guid, uint32 item_count)
 {
@@ -473,12 +474,10 @@ void WorldSession::HandleMailMarkAsRead(WorldPackets::Mail::MailMarkAsRead const
  * @param recv_data The packet containing information about the mail being deleted.
  *
  */
-void WorldSession::HandleMailDelete(WorldPacket& recv_data)
+void WorldSession::HandleMailDelete(WorldPackets::Mail::MailDelete const& packet)
 {
-    ObjectGuid mailboxGuid;
-    uint32 mailId;
-    recv_data >> mailboxGuid;
-    recv_data >> mailId;
+    ObjectGuid mailboxGuid = packet.mailboxGuid;
+    uint32 mailId = packet.mailId;
 
     if (!CheckMailBox(mailboxGuid))
         return;

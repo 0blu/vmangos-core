@@ -461,7 +461,7 @@ void WorldSession::HandlePetCancelAuraOpcode(WorldPackets::Pet::PetCancelAura co
     pet->RemoveAurasDueToSpell(spellId);
 }
 
-void WorldSession::HandleCancelGrowthAuraOpcode(WorldPacket& /*recvPacket*/)
+void WorldSession::HandleCancelGrowthAuraOpcode(NullClientPacket const& /*packet*/)
 {
     // nothing do
 }

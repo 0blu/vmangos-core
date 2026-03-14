@@ -73,6 +73,16 @@ namespace WorldPackets { namespace Mail
         explicit GetMailList() : ClientPacket(CMSG_GET_MAIL_LIST) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class MailDelete final : public ClientPacket
+    {
+    public:
+        ObjectGuid mailboxGuid;
+        uint32 mailId = 0;
+
+        explicit MailDelete() : ClientPacket(CMSG_MAIL_DELETE) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
 }} // namespace WorldPackets::Mail
 
 #endif // MANGOS_PACKETS_MAIL_H

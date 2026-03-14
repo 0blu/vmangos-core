@@ -576,8 +576,8 @@ class WorldSession
         void HandleRaidTargetUpdateOpcode(WorldPacket& recv_data);
         void HandleRaidReadyCheckOpcode(WorldPacket& recv_data);
         void HandleGroupRaidConvertOpcode(NullClientPacket const& packet);
-        void HandleGroupChangeSubGroupOpcode(WorldPacket& recv_data);
-        void HandleGroupSwapSubGroupOpcode(WorldPacket& recv_data);
+        void HandleGroupChangeSubGroupOpcode(WorldPackets::Group::GroupChangeSubGroup const& packet);
+        void HandleGroupSwapSubGroupOpcode(WorldPackets::Group::GroupSwapSubGroup const& packet);
         void HandleGroupAssistantLeaderOpcode(WorldPacket& recv_data);
 
         void HandlePetitionBuyOpcode(WorldPacket& recv_data);
@@ -627,12 +627,12 @@ class WorldSession
         void HandleSpiritHealerActivateOpcode(WorldPackets::Npc::SpiritHealerActivate const& packet);
         void HandleNpcTextQueryOpcode(WorldPackets::Npc::NpcTextQuery const& packet);
         void HandleBinderActivateOpcode(WorldPackets::Npc::BinderActivate const& packet);
-        void HandleListStabledPetsOpcode(WorldPacket& recvPacket);
-        void HandleStablePet(WorldPacket& recvPacket);
-        void HandleUnstablePet(WorldPacket& recvPacket);
-        void HandleBuyStableSlot(WorldPacket& recvPacket);
-        void HandleStableRevivePet(WorldPacket& recvPacket);
-        void HandleStableSwapPet(WorldPacket& recvPacket);
+        void HandleListStabledPetsOpcode(WorldPackets::Npc::ListStabledPets const& packet);
+        void HandleStablePet(WorldPackets::Npc::StablePet const& packet);
+        void HandleUnstablePet(WorldPackets::Npc::UnstablePet const& packet);
+        void HandleBuyStableSlot(WorldPackets::Npc::BuyStableSlot const& packet);
+        void HandleStableRevivePet(NullClientPacket const& packet);
+        void HandleStableSwapPet(WorldPackets::Npc::StableSwapPet const& packet);
 
         void HandleDuelAcceptedOpcode(WorldPackets::Duel::DuelAccepted const& packet);
         void HandleDuelCancelledOpcode(WorldPackets::Duel::DuelCancelled const& packet);
@@ -665,7 +665,7 @@ class WorldSession
         void HandleMailTakeItem(WorldPackets::Mail::MailTakeItem const& packet);
         void HandleMailMarkAsRead(WorldPackets::Mail::MailMarkAsRead const& packet);
         void HandleMailReturnToSender(WorldPackets::Mail::MailReturnToSender const& packet);
-        void HandleMailDelete(WorldPacket& recv_data);
+        void HandleMailDelete(WorldPackets::Mail::MailDelete const& packet);
         void HandleItemTextQuery(WorldPackets::Misc::ItemTextQuery const& packet);
         void HandleMailCreateTextItem(WorldPacket& recv_data);
         void HandleQueryNextMailTime(NullClientPacket const& packet);
@@ -698,7 +698,7 @@ class WorldSession
         void HandleCastSpellOpcode(WorldPacket& recvPacket);
         void HandleCancelCastOpcode(WorldPackets::Spell::CancelCast const& packet);
         void HandleCancelAuraOpcode(WorldPackets::Spell::CancelAura const& packet);
-        void HandleCancelGrowthAuraOpcode(WorldPacket& recvPacket);
+        void HandleCancelGrowthAuraOpcode(NullClientPacket const& packet);
         void HandleCancelAutoRepeatSpellOpcode(NullClientPacket const& packet);
         void HandleSetActionBarTogglesOpcode(WorldPackets::Misc::SetActionBarToggles const& packet);
         void HandleLearnTalentOpcode(WorldPackets::Skill::LearnTalent const& packet);
@@ -784,8 +784,8 @@ class WorldSession
         void HandleBattlefieldJoinOpcode(WorldPacket& recv_data);
         void HandleBattlemasterHelloOpcode(WorldPacket& recv_data);
         void HandleBattlemasterJoinOpcode(WorldPacket& recv_data);
-        void HandleBattleGroundPlayerPositionsOpcode(WorldPacket& recv_data);
-        void HandlePVPLogDataOpcode(WorldPacket& recv_data);
+        void HandleBattleGroundPlayerPositionsOpcode(NullClientPacket const& packet);
+        void HandlePVPLogDataOpcode(NullClientPacket const& packet);
         void HandleBattlefieldStatusOpcode(NullClientPacket const& packet);
         void HandleBattleFieldPortOpcode(WorldPacket& recv_data);
         void HandleBattlefieldListOpcode(WorldPackets::Battleground::BattlefieldListRequest const& packet);
