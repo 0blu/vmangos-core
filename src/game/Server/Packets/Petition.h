@@ -67,7 +67,6 @@ namespace WorldPackets { namespace Petition
     {
     public:
         ObjectGuid itemGuid;
-        uint8 unk = 0;
 
         explicit PetitionSign() : ClientPacket(CMSG_PETITION_SIGN) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;

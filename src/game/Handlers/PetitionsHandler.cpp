@@ -264,7 +264,6 @@ void WorldSession::HandlePetitionRenameOpcode(WorldPackets::Petition::PetitionRe
 void WorldSession::HandlePetitionSignOpcode(WorldPackets::Petition::PetitionSign const& packet)
 {
     ObjectGuid itemGuid = packet.itemGuid;
-    uint8 unk = packet.unk;
 
     Petition* petition = sGuildMgr.GetPetitionByCharterGuid(itemGuid);
 

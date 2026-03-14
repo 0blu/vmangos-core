@@ -35,5 +35,5 @@ void WorldPackets::Petition::PetitionRename::ReadFromWorldPacket(WorldPacket& re
 void WorldPackets::Petition::PetitionSign::ReadFromWorldPacket(WorldPacket& recv_data)
 {
     recv_data >> itemGuid;
-    recv_data >> unk;
+    recv_data.read_skip<int8>(); // argument of `/run SignPetition(123)` is never used in the official interface
 }
