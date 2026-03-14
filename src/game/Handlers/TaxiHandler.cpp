@@ -29,6 +29,7 @@
 #include "Player.h"
 #include "Path.h"
 #include "WaypointMovementGenerator.h"
+#include "Packets/Taxi.h"
 
 void WorldSession::HandleTaxiNodeStatusQueryOpcode(WorldPackets::Taxi::TaxiNodeStatusQuery const& packet)
 {
@@ -168,13 +169,13 @@ void WorldSession::HandleActivateTaxiExpressOpcode(WorldPacket& recv_data)
     GetPlayer()->ActivateTaxiPathTo(nodes, npc);
 }
 
-void WorldSession::HandleActivateTaxiOpcode(WorldPacket& recv_data)
+void WorldSession::HandleActivateTaxiOpcode(WorldPackets::Taxi::ActivateTaxi const& packet)
 {
-    ObjectGuid guid;
+    ObjectGuid guid = packet.guid;
     std::vector<uint32> nodes;
     nodes.resize(2);
-
-    recv_data >> guid >> nodes[0] >> nodes[1];
+    nodes[0] = packet.node1;
+    nodes[1] = packet.node2;
 
     Creature* npc = GetPlayer()->GetNPCIfCanInteractWith(guid, UNIT_NPC_FLAG_FLIGHTMASTER);
     if (!npc)

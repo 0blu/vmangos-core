@@ -528,7 +528,7 @@ constexpr Handlers BuildOpcodeList()
     DEFINE_HANDLER(CMSG_TAXINODE_STATUS_QUERY,        STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleTaxiNodeStatusQueryOpcode);
     INVALID_PACKET(SMSG_TAXINODE_STATUS,              Reason::SendByServer);
     DEFINE_HANDLER(CMSG_TAXIQUERYAVAILABLENODES,      STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleTaxiQueryAvailableNodes);
-    LEGACY_HANDLER(CMSG_ACTIVATETAXI,                 STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleActivateTaxiOpcode);
+    DEFINE_HANDLER(CMSG_ACTIVATETAXI,                 STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleActivateTaxiOpcode);
     INVALID_PACKET(SMSG_ACTIVATETAXIREPLY,            Reason::SendByServer);
     INVALID_PACKET(SMSG_NEW_TAXI_PATH,                Reason::SendByServer);
     DEFINE_HANDLER(CMSG_TRAINER_LIST,                 STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleTrainerListOpcode);
