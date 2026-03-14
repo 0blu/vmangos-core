@@ -5423,22 +5423,22 @@ bool ChatHandler::HandlePetInfoCommand(char* args)
     return true;
 }
 
-bool ChatHandler::HandleChannelJoinCommand(char* c)
+bool ChatHandler::HandleChannelJoinCommand(char* args)
 {
     WorldPackets::Channel::JoinChannel pkt;
-    pkt.channelName = c;
+    pkt.channelName = args;
     pkt.channelPassword = "";
     m_session->HandleJoinChannelOpcode(pkt);
-    PSendSysMessage("Joined channel \"%s\"", c);
+    PSendSysMessage("Joined channel \"%s\"", pkt.channelName.c_str());
     return true;
 }
 
-bool ChatHandler::HandleChannelLeaveCommand(char* c)
+bool ChatHandler::HandleChannelLeaveCommand(char* args)
 {
-    WorldPacket pkt(CMSG_LEAVE_CHANNEL, 4);
-    pkt << c;
+    WorldPackets::Channel::LeaveChannel pkt;
+    pkt.channelName = args;
     m_session->HandleLeaveChannelOpcode(pkt);
-    PSendSysMessage("Left channel \"%s\"", c);
+    PSendSysMessage("Left channel \"%s\"", pkt.channelName.c_str());
     return true;
 }
 
