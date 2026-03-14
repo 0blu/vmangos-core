@@ -1163,7 +1163,7 @@ void WorldSession::HandleMoveSetRawPosition(WorldPackets::Misc::MoveSetRawPositi
     }
 
     if (GetSecurity() >= SEC_ADMINISTRATOR)
-        GetPlayer()->NearTeleportTo(packet.location.x, packet.location.y, packet.location.z, packet.location.o);
+        GetPlayer()->NearTeleportTo(packet.location);
     else
         SendNotification(LANG_YOU_NOT_HAVE_PERMISSION);
 
