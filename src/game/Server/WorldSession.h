@@ -637,16 +637,16 @@ class WorldSession
         void HandleDuelAcceptedOpcode(WorldPackets::Duel::DuelAccepted const& packet);
         void HandleDuelCancelledOpcode(WorldPackets::Duel::DuelCancelled const& packet);
 
-        void HandleAcceptTradeOpcode(WorldPacket& recvPacket);
-        void HandleBeginTradeOpcode(WorldPacket& recvPacket);
-        void HandleBusyTradeOpcode(WorldPacket& recvPacket);
-        void HandleCancelTradeOpcode(WorldPacket& recvPacket);
-        void HandleClearTradeItemOpcode(WorldPacket& recvPacket);
-        void HandleIgnoreTradeOpcode(WorldPacket& recvPacket);
+        void HandleAcceptTradeOpcode(NullClientPacket const& packet);
+        void HandleBeginTradeOpcode(NullClientPacket const& packet);
+        void HandleBusyTradeOpcode(NullClientPacket const& packet);
+        void HandleCancelTradeOpcode(NullClientPacket const& packet);
+        void HandleClearTradeItemOpcode(WorldPackets::Trade::ClearTradeItem const& packet);
+        void HandleIgnoreTradeOpcode(NullClientPacket const& packet);
         void HandleInitiateTradeOpcode(WorldPackets::Trade::InitiateTrade const& packet);
-        void HandleSetTradeGoldOpcode(WorldPacket& recvPacket);
-        void HandleSetTradeItemOpcode(WorldPacket& recvPacket);
-        void HandleUnacceptTradeOpcode(WorldPacket& recvPacket);
+        void HandleSetTradeGoldOpcode(WorldPackets::Trade::SetTradeGold const& packet);
+        void HandleSetTradeItemOpcode(WorldPackets::Trade::SetTradeItem const& packet);
+        void HandleUnacceptTradeOpcode(NullClientPacket const& packet);
 
         void HandleAuctionHelloOpcode(WorldPackets::AuctionHouse::AuctionHello const& packet);
         void HandleAuctionListItems(WorldPacket& recv_data);
