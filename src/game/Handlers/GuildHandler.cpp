@@ -570,7 +570,7 @@ void WorldSession::HandleGuildSetOfficerNoteOpcode(WorldPackets::Guild::GuildSet
     if (!slot)
     {
         SendGuildCommandResult(GUILD_INVITE_S, plName, ERR_GUILD_PLAYER_NOT_IN_GUILD_S);
-            return;
+        return;
     }
 
     if (utf8length(OFFNOTE) > GUILD_NOTE_MAX_LENGTH)
