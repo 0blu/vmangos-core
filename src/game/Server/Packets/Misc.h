@@ -291,10 +291,7 @@ namespace WorldPackets { namespace Misc
     class MoveSetRawPosition final : public ClientPacket
     {
     public:
-        float posX = 0.0f;
-        float posY = 0.0f;
-        float posZ = 0.0f;
-        float posO = 0.0f;
+        Position location;
 
         MoveSetRawPosition() : ClientPacket(OPCODE_WILL_BE_SET_IN_READ_FUNCTION) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;

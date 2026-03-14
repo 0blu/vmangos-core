@@ -1154,8 +1154,7 @@ void WorldSession::HandleMoveSetRawPosition(WorldPackets::Misc::MoveSetRawPositi
 {
     // write in client console: setrawpos x y z o
     // For now, it is implemented like worldport but on the same map. Consider using MSG_MOVE_SET_RAW_POSITION_ACK.
-    float posX = packet.posX, posY = packet.posY, posZ = packet.posZ, posO = packet.posO;
-    //sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "Set to: X=%f, Y=%f, Z=%f, orient=%f", posX, posY, posZ, posO);
+    //sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "Set to: X=%f, Y=%f, Z=%f, orient=%f", packet.location.x, packet.location.y, packet.location.z, packet.location.o);
 
     if (!GetPlayer()->IsInWorld() || GetPlayer()->IsTaxiFlying())
     {
@@ -1164,7 +1163,7 @@ void WorldSession::HandleMoveSetRawPosition(WorldPackets::Misc::MoveSetRawPositi
     }
 
     if (GetSecurity() >= SEC_ADMINISTRATOR)
-        GetPlayer()->NearTeleportTo(posX, posY, posZ, posO);
+        GetPlayer()->NearTeleportTo(packet.location.x, packet.location.y, packet.location.z, packet.location.o);
     else
         SendNotification(LANG_YOU_NOT_HAVE_PERMISSION);
 
