@@ -2,6 +2,7 @@
 #define MANGOS_PACKETS_GUILD_H
 
 #include "Packet.h"
+#include "ObjectGuid.h"
 
 namespace WorldPackets { namespace Guild
 {
