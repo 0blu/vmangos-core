@@ -119,6 +119,16 @@ namespace WorldPackets { namespace Group
         explicit GroupAssistantLeader() : ClientPacket(CMSG_GROUP_ASSISTANT_LEADER) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class RaidTargetUpdate final : public ClientPacket
+    {
+    public:
+        uint8      x = 0;
+        ObjectGuid guid; // only valid when x != 0xFF (icon update, not request)
+
+        explicit RaidTargetUpdate() : ClientPacket(MSG_RAID_TARGET_UPDATE) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
 }} // namespace WorldPackets::Group
 
 #endif // MANGOS_PACKETS_GROUP_H

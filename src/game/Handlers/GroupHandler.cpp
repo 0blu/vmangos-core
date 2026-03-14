@@ -458,10 +458,9 @@ void WorldSession::HandleRandomRollOpcode(WorldPackets::Group::RandomRoll const&
 #endif
 }
 
-void WorldSession::HandleRaidTargetUpdateOpcode(WorldPacket& recv_data)
+void WorldSession::HandleRaidTargetUpdateOpcode(WorldPackets::Group::RaidTargetUpdate const& packet)
 {
-    uint8  x;
-    recv_data >> x;
+    uint8 x = packet.x;
 
     Group* group = GetPlayer()->GetGroup();
     if (!group)
@@ -481,9 +480,7 @@ void WorldSession::HandleRaidTargetUpdateOpcode(WorldPacket& recv_data)
             !group->IsAssistant(GetPlayer()->GetObjectGuid()))
             return;
 
-        ObjectGuid guid;
-        recv_data >> guid;
-        group->SetTargetIcon(x, guid);
+        group->SetTargetIcon(x, packet.guid);
     }
 }
 
