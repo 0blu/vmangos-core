@@ -38,10 +38,9 @@
 #include "Anticheat.h"
 #include "Packets/Battleground.h"
 
-void WorldSession::HandleBattlemasterHelloOpcode(WorldPacket& recv_data)
+void WorldSession::HandleBattlemasterHelloOpcode(WorldPackets::Battleground::BattlemasterHello const& packet)
 {
-    ObjectGuid guid;
-    recv_data >> guid;
+    ObjectGuid guid = packet.guid;
 
     Creature* pCreature = GetPlayer()->GetMap()->GetCreature(guid);
 

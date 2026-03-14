@@ -14,3 +14,8 @@ void WorldPackets::Battleground::AreaSpiritHealerQueue::ReadFromWorldPacket(Worl
 {
     recv_data >> guid;
 }
+
+void WorldPackets::Battleground::BattlemasterHello::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> guid;
+}

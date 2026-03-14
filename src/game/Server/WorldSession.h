@@ -581,13 +581,13 @@ class WorldSession
         void HandleGroupAssistantLeaderOpcode(WorldPacket& recv_data);
 
         void HandlePetitionBuyOpcode(WorldPacket& recv_data);
-        void HandlePetitionShowSignOpcode(WorldPacket& recv_data);
-        void HandlePetitionQueryOpcode(WorldPacket& recv_data);
+        void HandlePetitionShowSignOpcode(WorldPackets::Petition::PetitionShowSignatures const& packet);
+        void HandlePetitionQueryOpcode(WorldPackets::Petition::QueryPetition const& packet);
         void HandlePetitionRenameOpcode(WorldPacket& recv_data);
         void HandlePetitionSignOpcode(WorldPacket& recv_data);
-        void HandlePetitionDeclineOpcode(WorldPacket& recv_data);
+        void HandlePetitionDeclineOpcode(WorldPackets::Petition::PetitionDecline const& packet);
         void HandleOfferPetitionOpcode(WorldPacket& recv_data);
-        void HandleTurnInPetitionOpcode(WorldPacket& recv_data);
+        void HandleTurnInPetitionOpcode(WorldPackets::Petition::TurnInPetition const& packet);
 
         void HandleGuildQueryOpcode(WorldPackets::Guild::GuildQuery const& packet);
         void HandleGuildCreateOpcode(WorldPackets::Guild::GuildCreate const& packet);
@@ -782,7 +782,7 @@ class WorldSession
 
         //BattleGround
         void HandleBattlefieldJoinOpcode(WorldPacket& recv_data);
-        void HandleBattlemasterHelloOpcode(WorldPacket& recv_data);
+        void HandleBattlemasterHelloOpcode(WorldPackets::Battleground::BattlemasterHello const& packet);
         void HandleBattlemasterJoinOpcode(WorldPacket& recv_data);
         void HandleBattleGroundPlayerPositionsOpcode(NullClientPacket const& packet);
         void HandlePVPLogDataOpcode(NullClientPacket const& packet);

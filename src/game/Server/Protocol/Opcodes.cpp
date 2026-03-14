@@ -545,15 +545,15 @@ constexpr Handlers BuildOpcodeList()
     DEFINE_HANDLER(CMSG_PETITION_SHOWLIST,            STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandlePetitionShowListOpcode);
     INVALID_PACKET(SMSG_PETITION_SHOWLIST,            Reason::SendByServer);
     LEGACY_HANDLER(CMSG_PETITION_BUY,                 STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandlePetitionBuyOpcode);
-    LEGACY_HANDLER(CMSG_PETITION_SHOW_SIGNATURES,     STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandlePetitionShowSignOpcode);
+    DEFINE_HANDLER(CMSG_PETITION_SHOW_SIGNATURES,     STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandlePetitionShowSignOpcode);
     INVALID_PACKET(SMSG_PETITION_SHOW_SIGNATURES,     Reason::SendByServer);
     LEGACY_HANDLER(CMSG_PETITION_SIGN,                STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandlePetitionSignOpcode);
     INVALID_PACKET(SMSG_PETITION_SIGN_RESULTS,        Reason::SendByServer);
-    LEGACY_HANDLER(MSG_PETITION_DECLINE,              STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandlePetitionDeclineOpcode);
+    DEFINE_HANDLER(MSG_PETITION_DECLINE,              STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandlePetitionDeclineOpcode);
     LEGACY_HANDLER(CMSG_OFFER_PETITION,               STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleOfferPetitionOpcode);
-    LEGACY_HANDLER(CMSG_TURN_IN_PETITION,             STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleTurnInPetitionOpcode);
+    DEFINE_HANDLER(CMSG_TURN_IN_PETITION,             STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleTurnInPetitionOpcode);
     INVALID_PACKET(SMSG_TURN_IN_PETITION_RESULTS,     Reason::SendByServer);
-    LEGACY_HANDLER(CMSG_PETITION_QUERY,               STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandlePetitionQueryOpcode);
+    DEFINE_HANDLER(CMSG_PETITION_QUERY,               STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandlePetitionQueryOpcode);
     INVALID_PACKET(SMSG_PETITION_QUERY_RESPONSE,      Reason::SendByServer);
     INVALID_PACKET(SMSG_FISH_NOT_HOOKED,              Reason::SendByServer);
     INVALID_PACKET(SMSG_FISH_ESCAPED,                 Reason::SendByServer);
@@ -833,7 +833,7 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(SMSG_BATTLEFIELD_STATUS,           Reason::SendByServer);
     LEGACY_HANDLER(CMSG_BATTLEFIELD_PORT,             STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleBattleFieldPortOpcode);
     DEFINE_HANDLER(MSG_INSPECT_HONOR_STATS,           STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleInspectHonorStatsOpcode);
-    LEGACY_HANDLER(CMSG_BATTLEMASTER_HELLO,           STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleBattlemasterHelloOpcode);
+    DEFINE_HANDLER(CMSG_BATTLEMASTER_HELLO,           STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleBattlemasterHelloOpcode);
     INVALID_PACKET(CMSG_MOVE_START_SWIM_CHEAT,        Reason::Unhandled);
     INVALID_PACKET(CMSG_MOVE_STOP_SWIM_CHEAT,         Reason::Unhandled);
     INVALID_PACKET(SMSG_FORCE_WALK_SPEED_CHANGE,      Reason::SendByServer);

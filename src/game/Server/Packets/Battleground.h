@@ -39,6 +39,15 @@ namespace WorldPackets { namespace Battleground
         explicit AreaSpiritHealerQueue() : ClientPacket(CMSG_AREA_SPIRIT_HEALER_QUEUE) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class BattlemasterHello final : public ClientPacket
+    {
+    public:
+        ObjectGuid guid;
+
+        explicit BattlemasterHello() : ClientPacket(CMSG_BATTLEMASTER_HELLO) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
 }} // namespace WorldPackets::Battleground
 
 #endif // MANGOS_PACKETS_BATTLEGROUND_H
