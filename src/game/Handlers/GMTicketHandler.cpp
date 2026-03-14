@@ -29,7 +29,7 @@
 #include "World.h"
 #include "Opcodes.h"
 
-void WorldSession::HandleGMTicketGetTicketOpcode(WorldPacket& /*recv_data*/)
+void WorldSession::HandleGMTicketGetTicketOpcode(NullClientPacket const& /*packet*/)
 {
     SendQueryTimeResponse();
 
@@ -44,11 +44,10 @@ void WorldSession::HandleGMTicketGetTicketOpcode(WorldPacket& /*recv_data*/)
         sTicketMgr->SendTicket(this, nullptr);
 }
 
-void WorldSession::HandleGMTicketUpdateTextOpcode(WorldPacket& recv_data)
+void WorldSession::HandleGMTicketUpdateTextOpcode(WorldPackets::GmTicket::GmTicketUpdateText const& packet)
 {
-    uint8 type;
-    std::string ticketText;
-    recv_data >> type >> ticketText;
+    uint8 type = packet.type;
+    std::string ticketText = packet.ticketText;
 
     GMTicketResponse response = GMTICKET_RESPONSE_UPDATE_ERROR;
     if (GmTicket* ticket = sTicketMgr->GetTicketByPlayer(GetPlayer()->GetGUID()))
@@ -74,7 +73,7 @@ void WorldSession::HandleGMTicketUpdateTextOpcode(WorldPacket& recv_data)
     SendPacket(&data);
 }
 
-void WorldSession::HandleGMTicketDeleteTicketOpcode(WorldPacket& /*recv_data*/)
+void WorldSession::HandleGMTicketDeleteTicketOpcode(NullClientPacket const& /*packet*/)
 {
     if (GmTicket* ticket = sTicketMgr->GetTicketByPlayer(GetPlayer()->GetGUID()))
     {
@@ -134,7 +133,7 @@ void WorldSession::HandleGMTicketCreateOpcode(WorldPackets::GmTicket::GmTicketCr
     SendPacket(&data);
 }
 
-void WorldSession::HandleGMTicketSystemStatusOpcode(WorldPacket& /*recv_data*/)
+void WorldSession::HandleGMTicketSystemStatusOpcode(NullClientPacket const& /*packet*/)
 {
     // Note: This only disables the ticket UI at client side and is not fully reliable
     // are we sure this is a uint32? Should ask Zor

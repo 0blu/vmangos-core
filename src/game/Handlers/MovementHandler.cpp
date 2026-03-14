@@ -884,10 +884,9 @@ void WorldSession::HandleMoveSplineDoneOpcode(WorldPacket& recvData)
     pMover->SendMovementMessageToSet(std::move(data), true, _player);
 }
 
-void WorldSession::HandleSetActiveMoverOpcode(WorldPacket& recvData)
+void WorldSession::HandleSetActiveMoverOpcode(WorldPackets::Misc::SetActiveMover const& packet)
 {
-    ObjectGuid guid;
-    recvData >> guid;
+    ObjectGuid guid = packet.guid;
 
     if (!guid.IsEmpty())
     {
@@ -1015,7 +1014,7 @@ void WorldSession::HandleMoveNotActiveMoverOpcode(WorldPacket& recvData)
     pMover->SendMovementMessageToSet(std::move(data), true, _player);
 }
 
-void WorldSession::HandleMountSpecialAnimOpcode(WorldPacket& /*recvdata*/)
+void WorldSession::HandleMountSpecialAnimOpcode(NullClientPacket const& /*packet*/)
 {
     WorldPacket data(SMSG_MOUNTSPECIAL_ANIM, 8);
     data << GetPlayer()->GetObjectGuid();

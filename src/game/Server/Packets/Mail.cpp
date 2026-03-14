@@ -18,3 +18,33 @@ void WorldPackets::Mail::SendMail::ReadFromWorldPacket(WorldPacket& recv_data)
 #endif
 
 }
+
+
+void WorldPackets::Mail::MailReturnToSender::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> mailboxGuid;
+    recv_data >> mailId;
+}
+
+void WorldPackets::Mail::MailMarkAsRead::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> mailboxGuid;
+    recv_data >> mailId;
+}
+
+void WorldPackets::Mail::MailTakeItem::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> mailboxGuid;
+    recv_data >> mailId;
+}
+
+void WorldPackets::Mail::MailTakeMoney::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> mailboxGuid;
+    recv_data >> mailId;
+}
+
+void WorldPackets::Mail::GetMailList::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> mailboxGuid;
+}

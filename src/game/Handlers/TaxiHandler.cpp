@@ -57,10 +57,9 @@ void WorldSession::SendTaxiStatus(ObjectGuid guid)
     SendPacket(&data);
 }
 
-void WorldSession::HandleTaxiQueryAvailableNodes(WorldPacket& recv_data)
+void WorldSession::HandleTaxiQueryAvailableNodes(WorldPackets::Taxi::TaxiQueryAvailableNodes const& packet)
 {
-    ObjectGuid guid;
-    recv_data >> guid;
+    ObjectGuid guid = packet.guid;
 
     // cheating checks
     Creature* unit = GetPlayer()->GetNPCIfCanInteractWith(guid, UNIT_NPC_FLAG_FLIGHTMASTER);

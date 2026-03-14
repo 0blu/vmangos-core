@@ -146,10 +146,10 @@ void WorldSession::HandleUseItemOpcode(WorldPackets::Spell::UseItem const& packe
     pUser->CastItemUseSpell(pItem, targets);
 }
 
-void WorldSession::HandleOpenItemOpcode(WorldPacket& recvPacket)
+void WorldSession::HandleOpenItemOpcode(WorldPackets::Spell::OpenItem const& packet)
 {
-    uint8 bagIndex, slot;
-    recvPacket >> bagIndex >> slot;
+    uint8 bagIndex = packet.bagIndex;
+    uint8 slot = packet.slot;
 
     Player* pUser = _player;
 
@@ -237,10 +237,9 @@ void WorldSession::HandleOpenItemOpcode(WorldPacket& recvPacket)
         pUser->SendLoot(pItem->GetObjectGuid(), LOOT_CORPSE);
 }
 
-void WorldSession::HandleGameObjectUseOpcode(WorldPacket& recv_data)
+void WorldSession::HandleGameObjectUseOpcode(WorldPackets::Misc::GameObjectUse const& packet)
 {
-    ObjectGuid guid;
-    recv_data >> guid;
+    ObjectGuid guid = packet.guid;
 
     // ignore for remote control state
     if (!_player->IsSelfMover())
@@ -339,10 +338,9 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
     spell->prepare(std::move(targets));
 }
 
-void WorldSession::HandleCancelCastOpcode(WorldPacket& recvPacket)
+void WorldSession::HandleCancelCastOpcode(WorldPackets::Spell::CancelCast const& packet)
 {
-    uint32 spellId;
-    recvPacket >> spellId;
+    uint32 spellId = packet.spellId;
 
     // ignore for remote control state (for player case)
     Unit* mover = _player->GetMover();
@@ -356,10 +354,9 @@ void WorldSession::HandleCancelCastOpcode(WorldPacket& recvPacket)
         _player->InterruptSpell(CURRENT_MELEE_SPELL);
 }
 
-void WorldSession::HandleCancelAuraOpcode(WorldPacket& recvPacket)
+void WorldSession::HandleCancelAuraOpcode(WorldPackets::Spell::CancelAura const& packet)
 {
-    uint32 spellId;
-    recvPacket >> spellId;
+    uint32 spellId = packet.spellId;
 
     SpellEntry const* spellInfo = sSpellMgr.GetSpellEntry(spellId);
     if (!spellInfo)
@@ -471,17 +468,15 @@ void WorldSession::HandleCancelGrowthAuraOpcode(WorldPacket& /*recvPacket*/)
     // nothing do
 }
 
-void WorldSession::HandleCancelAutoRepeatSpellOpcode(WorldPacket& /*recvPacket*/)
+void WorldSession::HandleCancelAutoRepeatSpellOpcode(NullClientPacket const& /*packet*/)
 {
     // may be better send SMSG_CANCEL_AUTO_REPEAT?
     // cancel and prepare for deleting
     _player->GetMover()->InterruptSpell(CURRENT_AUTOREPEAT_SPELL);
 }
 
-void WorldSession::HandleCancelChanneling(WorldPacket& recv_data)
+void WorldSession::HandleCancelChanneling(WorldPackets::Spell::CancelChanneling const& /*packet*/)
 {
-    recv_data.read_skip<uint32>();                          // spellid, not used
-
     // ignore for remote control state (for player case)
     Unit* mover = _player->GetMover();
     if (mover != _player && mover->GetTypeId() == TYPEID_PLAYER)

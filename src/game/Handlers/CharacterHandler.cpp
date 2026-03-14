@@ -722,13 +722,10 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder *holder)
             pGroup->SendLootStartRollsForPlayer(pCurrChar);
 }
 
-void WorldSession::HandleSetFactionAtWarOpcode(WorldPacket& recv_data)
+void WorldSession::HandleSetFactionAtWarOpcode(WorldPackets::Misc::SetFactionAtWar const& packet)
 {
-    uint32 repListId;
-    uint8  flag;
-
-    recv_data >> repListId;
-    recv_data >> flag;
+    uint32 repListId = packet.repListId;
+    uint8  flag = packet.flag;
 
     Player* pPlayer = GetPlayer();
 
@@ -738,10 +735,9 @@ void WorldSession::HandleSetFactionAtWarOpcode(WorldPacket& recv_data)
     pPlayer->GetReputationMgr().SetAtWar(repListId, flag);
 }
 
-void WorldSession::HandleTutorialFlagOpcode(WorldPacket& recv_data)
+void WorldSession::HandleTutorialFlagOpcode(WorldPackets::Misc::TutorialFlag const& packet)
 {
-    uint32 iFlag;
-    recv_data >> iFlag;
+    uint32 iFlag = packet.iFlag;
 
     uint32 wInt = (iFlag / 32);
     if (wInt >= 8)
@@ -754,13 +750,13 @@ void WorldSession::HandleTutorialFlagOpcode(WorldPacket& recv_data)
     SetTutorialInt(wInt, tutflag);
 }
 
-void WorldSession::HandleTutorialClearOpcode(WorldPacket& /*recv_data*/)
+void WorldSession::HandleTutorialClearOpcode(NullClientPacket const& /*packet*/)
 {
     for (uint32 iI = 0; iI < 8; ++iI)
         SetTutorialInt(iI, 0xFFFFFFFF);
 }
 
-void WorldSession::HandleTutorialResetOpcode(WorldPacket& /*recv_data*/)
+void WorldSession::HandleTutorialResetOpcode(NullClientPacket const& /*packet*/)
 {
     for (uint32 iI = 0; iI < 8; iI++)
         SetTutorialInt(iI, 0x00000000);
@@ -775,11 +771,10 @@ void WorldSession::HandleSetWatchedFactionOpcode(WorldPacket& recv_data)
 #endif
 }
 
-void WorldSession::HandleSetFactionInactiveOpcode(WorldPacket& recv_data)
+void WorldSession::HandleSetFactionInactiveOpcode(WorldPackets::Misc::SetFactionInactive const& packet)
 {
-    uint32 replistid;
-    uint8 inactive;
-    recv_data >> replistid >> inactive;
+    uint32 replistid = packet.replistid;
+    uint8 inactive = packet.inactive;
 
     _player->GetReputationMgr().SetInactive(replistid, inactive);
 }

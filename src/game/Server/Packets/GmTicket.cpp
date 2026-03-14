@@ -13,3 +13,9 @@ void WorldPackets::GmTicket::GmTicketCreate::ReadFromWorldPacket(WorldPacket& re
     recv_data >> ticketText;
     recv_data >> reservedForFutureUse;
 }
+
+void WorldPackets::GmTicket::GmTicketUpdateText::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> type;
+    recv_data >> ticketText;
+}

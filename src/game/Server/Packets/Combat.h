@@ -14,6 +14,15 @@ namespace WorldPackets { namespace Combat
         explicit AttackSwing() : ClientPacket(CMSG_ATTACKSWING) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class SetSheathed final : public ClientPacket
+    {
+    public:
+        uint32 sheathed = 0;
+
+        explicit SetSheathed() : ClientPacket(CMSG_SETSHEATHED) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
 }} // namespace WorldPackets::Combat
 
 #endif // MANGOS_PACKETS_COMBAT_H

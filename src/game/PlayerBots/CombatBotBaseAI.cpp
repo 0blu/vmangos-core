@@ -1797,7 +1797,7 @@ void CombatBotBaseAI::PopulateSpellData()
                 }
                 return pHighestRank;
             };
-            
+
             SpellEntry const* pPoisonSpell = nullptr;
             std::vector<SpellEntry const*> vPoisons;
             if (hasDeadlyPoison && (pPoisonSpell = GetHighestRankOfPoisonByName("Deadly Poison", me->GetLevel())))
@@ -2225,7 +2225,7 @@ bool CombatBotBaseAI::IsValidBuffTarget(Unit const* pTarget, SpellEntry const* p
             if (it == i.first)
                 return false;
     }
-        
+
     return true;
 }
 
@@ -2647,7 +2647,7 @@ void CombatBotBaseAI::EquipRandomGearInEmptySlots()
     for (auto& itr : itemsPerSlot)
     {
         bool hasPrimaryStatItem = false;
-        
+
         for (auto const& pItem : itr.second)
         {
             for (auto const& stat : pItem->ItemStat)
@@ -2891,8 +2891,8 @@ void CombatBotBaseAI::AddHunterAmmo()
                     AddItemToInventory(pAmmoProto->ItemId, pAmmoProto->GetMaxStackSize());
                     me->SetAmmo(pAmmoProto->ItemId);
                 }
-            }  
-        }  
+            }
+        }
     }
 }
 
@@ -3120,9 +3120,9 @@ void CombatBotBaseAI::SendBattlemasterJoinPacket(uint8 battlegroundId)
 
 void CombatBotBaseAI::SendAreaTriggerPacket(uint32 areaTriggerId)
 {
-    WorldPacket data(CMSG_AREATRIGGER);
-    data << uint32(areaTriggerId);
-    me->GetSession()->HandleAreaTriggerOpcode(data);
+    WorldPackets::Misc::AreaTrigger packet;
+    packet.triggerId = areaTriggerId;
+    me->GetSession()->HandleAreaTriggerOpcode(packet);
 }
 
 void CombatBotBaseAI::ActivateNearbyAreaTrigger()

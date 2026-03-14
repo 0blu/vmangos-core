@@ -2,6 +2,7 @@
 #define MANGOS_PACKETS_LOOT_H
 
 #include "Packet.h"
+#include "ObjectGuid.h"
 #include "SharedDefines.h"
 
 namespace WorldPackets { namespace Loot
@@ -12,6 +13,24 @@ namespace WorldPackets { namespace Loot
         uint8 lootSlot;
 
         explicit AutoStoreLootItem() : ClientPacket(CMSG_AUTOSTORE_LOOT_ITEM), lootSlot(0) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class LootUnit final : public ClientPacket
+    {
+    public:
+        ObjectGuid guid;
+
+        explicit LootUnit() : ClientPacket(CMSG_LOOT) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class LootRelease final : public ClientPacket
+    {
+    public:
+        ObjectGuid guid; // not used by server (uses internally stored guid instead)
+
+        explicit LootRelease() : ClientPacket(CMSG_LOOT_RELEASE) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
 }} // namespace WorldPackets::Loot

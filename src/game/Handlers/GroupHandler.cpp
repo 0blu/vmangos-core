@@ -152,7 +152,7 @@ void WorldSession::HandleGroupInviteOpcode(WorldPackets::Group::GroupInvite cons
     SendPartyResult(PARTY_OP_INVITE, membername, ERR_PARTY_RESULT_OK);
 }
 
-void WorldSession::HandleGroupAcceptOpcode(WorldPacket& /*recv_data*/)
+void WorldSession::HandleGroupAcceptOpcode(NullClientPacket const& /*packet*/)
 {
     Group* group = GetPlayer()->GetGroupInvite();
     if (!group)
@@ -197,7 +197,7 @@ void WorldSession::HandleGroupAcceptOpcode(WorldPacket& /*recv_data*/)
     group->BroadcastGroupUpdate();
 }
 
-void WorldSession::HandleGroupDeclineOpcode(WorldPacket& /*recv_data*/)
+void WorldSession::HandleGroupDeclineOpcode(NullClientPacket const& /*packet*/)
 {
     Group  *group  = GetPlayer()->GetGroupInvite();
     if (!group)
@@ -218,10 +218,9 @@ void WorldSession::HandleGroupDeclineOpcode(WorldPacket& /*recv_data*/)
     leader->GetSession()->SendPacket(&data);
 }
 
-void WorldSession::HandleGroupUninviteGuidOpcode(WorldPacket& recv_data)
+void WorldSession::HandleGroupUninviteGuidOpcode(WorldPackets::Group::GroupUninviteGuid const& packet)
 {
-    ObjectGuid guid;
-    recv_data >> guid;
+    ObjectGuid guid = packet.guid;
 
     // can't uninvite yourself
     if (guid == GetPlayer()->GetObjectGuid())
@@ -256,10 +255,9 @@ void WorldSession::HandleGroupUninviteGuidOpcode(WorldPacket& recv_data)
     SendPartyResult(PARTY_OP_LEAVE, "", ERR_TARGET_NOT_IN_GROUP_S);
 }
 
-void WorldSession::HandleGroupUninviteOpcode(WorldPacket& recv_data)
+void WorldSession::HandleGroupUninviteOpcode(WorldPackets::Group::GroupUninvite const& packet)
 {
-    std::string membername;
-    recv_data >> membername;
+    std::string membername = packet.memberName;
 
     // player not found
     if (!normalizePlayerName(membername))
@@ -334,7 +332,7 @@ void WorldSession::HandleGroupSetLeaderOpcode(WorldPacket& recv_data)
     group->ChangeLeader(guid);
 }
 
-void WorldSession::HandleGroupDisbandOpcode(WorldPacket& /*recv_data*/)
+void WorldSession::HandleGroupDisbandOpcode(NullClientPacket const& /*packet*/)
 {
     if (!GetPlayer()->GetGroup())
         return;
@@ -352,12 +350,11 @@ void WorldSession::HandleGroupDisbandOpcode(WorldPacket& /*recv_data*/)
     GetPlayer()->RemoveFromGroup();
 }
 
-void WorldSession::HandleLootMethodOpcode(WorldPacket& recv_data)
+void WorldSession::HandleLootMethodOpcode(WorldPackets::Group::LootMethod const& packet)
 {
-    uint32 lootMethod;
-    ObjectGuid lootMaster;
-    uint32 lootThreshold;
-    recv_data >> lootMethod >> lootMaster >> lootThreshold;
+    uint32 lootMethod = packet.lootMethod;
+    ObjectGuid lootMaster = packet.lootMaster;
+    uint32 lootThreshold = packet.lootThreshold;
 
     // Impossible.
     if (lootMethod > 4)
@@ -410,11 +407,10 @@ void WorldSession::HandleLootRoll(WorldPacket& recv_data)
     group->CountRollVote(GetPlayer(), lootedTarget, itemSlot, RollVote(rollType));
 }
 
-void WorldSession::HandleMinimapPingOpcode(WorldPacket& recv_data)
+void WorldSession::HandleMinimapPingOpcode(WorldPackets::Group::MinimapPing const& packet)
 {
-    float x, y;
-    recv_data >> x;
-    recv_data >> y;
+    float x = packet.x;
+    float y = packet.y;
 
     if (!GetPlayer()->GetGroup())
         return;
@@ -432,11 +428,10 @@ void WorldSession::HandleMinimapPingOpcode(WorldPacket& recv_data)
     GetPlayer()->GetGroup()->BroadcastPacket(&data, true, -1, GetPlayer()->GetObjectGuid());
 }
 
-void WorldSession::HandleRandomRollOpcode(WorldPacket& recv_data)
+void WorldSession::HandleRandomRollOpcode(WorldPackets::Group::RandomRoll const& packet)
 {
-    uint32 minimum, maximum, roll;
-    recv_data >> minimum;
-    recv_data >> maximum;
+    uint32 minimum = packet.minimum;
+    uint32 maximum = packet.maximum;
 
     /** error handling **/
     if (minimum > maximum || maximum > 10000)               // < 32768 for urand call
@@ -444,7 +439,7 @@ void WorldSession::HandleRandomRollOpcode(WorldPacket& recv_data)
     /********************/
 
     // everything is fine, do it
-    roll = urand(minimum, maximum);
+    uint32 roll = urand(minimum, maximum);
 
     //sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "ROLL: MIN: %u, MAX: %u, ROLL: %u", minimum, maximum, roll);
 
@@ -496,7 +491,7 @@ void WorldSession::HandleRaidTargetUpdateOpcode(WorldPacket& recv_data)
     }
 }
 
-void WorldSession::HandleGroupRaidConvertOpcode(WorldPacket& /*recv_data*/)
+void WorldSession::HandleGroupRaidConvertOpcode(NullClientPacket const& /*packet*/)
 {
     Group* group = GetPlayer()->GetGroup();
     if (!group)
@@ -838,10 +833,9 @@ void WorldSession::BuildPartyMemberStatsChangedPacket(Player* player, WorldPacke
 }
 
 /*this procedure handles clients CMSG_REQUEST_PARTY_MEMBER_STATS request*/
-void WorldSession::HandleRequestPartyMemberStatsOpcode(WorldPacket& recv_data)
+void WorldSession::HandleRequestPartyMemberStatsOpcode(WorldPackets::Group::RequestPartyMemberStats const& packet)
 {
-    ObjectGuid guid;
-    recv_data >> guid;
+    ObjectGuid guid = packet.guid;
 
     Player* player = HashMapHolder<Player>::Find(guid);
 
@@ -872,7 +866,7 @@ void WorldSession::HandleRequestPartyMemberStatsOpcode(WorldPacket& recv_data)
     SendPacket(&data);
 }
 
-void WorldSession::HandleRequestRaidInfoOpcode(WorldPacket& /*recv_data*/)
+void WorldSession::HandleRequestRaidInfoOpcode(NullClientPacket const& /*packet*/)
 {
     // every time the player checks the character screen
     _player->SendRaidInfo();

@@ -396,8 +396,8 @@ class ChatHandler
         bool HandleDebugControlCommand(char *args);
         bool HandlePvPCommand(char *args);
         // Channel
-        bool HandleChannelJoinCommand(char*);
-        bool HandleChannelLeaveCommand(char*);
+        bool HandleChannelJoinCommand(char* args);
+        bool HandleChannelLeaveCommand(char* args);
 
         bool HandleAccountCommand(char* args);
         bool HandleAccountCharactersCommand(char* args);

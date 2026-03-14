@@ -24,6 +24,55 @@ namespace WorldPackets { namespace Mail
 
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class MailReturnToSender final : public ClientPacket
+    {
+    public:
+        ObjectGuid mailboxGuid;
+        uint32 mailId = 0;
+
+        explicit MailReturnToSender() : ClientPacket(CMSG_MAIL_RETURN_TO_SENDER) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class MailMarkAsRead final : public ClientPacket
+    {
+    public:
+        ObjectGuid mailboxGuid;
+        uint32 mailId = 0;
+
+        explicit MailMarkAsRead() : ClientPacket(CMSG_MAIL_MARK_AS_READ) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class MailTakeItem final : public ClientPacket
+    {
+    public:
+        ObjectGuid mailboxGuid;
+        uint32 mailId = 0;
+
+        explicit MailTakeItem() : ClientPacket(CMSG_MAIL_TAKE_ITEM) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class MailTakeMoney final : public ClientPacket
+    {
+    public:
+        ObjectGuid mailboxGuid;
+        uint32 mailId = 0;
+
+        explicit MailTakeMoney() : ClientPacket(CMSG_MAIL_TAKE_MONEY) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class GetMailList final : public ClientPacket
+    {
+    public:
+        ObjectGuid mailboxGuid;
+
+        explicit GetMailList() : ClientPacket(CMSG_GET_MAIL_LIST) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
 }} // namespace WorldPackets::Mail
 
 #endif // MANGOS_PACKETS_MAIL_H

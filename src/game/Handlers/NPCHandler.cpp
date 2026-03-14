@@ -46,10 +46,9 @@ enum StableResultCode
     STABLE_SUCCESS_BUY_SLOT = 0x0A,                         // buy slot success
 };
 
-void WorldSession::HandleTabardVendorActivateOpcode(WorldPacket& recv_data)
+void WorldSession::HandleTabardVendorActivateOpcode(WorldPackets::Npc::TabardVendorActivate const& packet)
 {
-    ObjectGuid guid;
-    recv_data >> guid;
+    ObjectGuid guid = packet.guid;
 
     Creature* unit = GetPlayer()->GetNPCIfCanInteractWith(guid, UNIT_NPC_FLAG_TABARDDESIGNER);
     if (!unit)
@@ -71,10 +70,9 @@ void WorldSession::SendTabardVendorActivate(ObjectGuid guid)
     SendPacket(&data);
 }
 
-void WorldSession::HandleBankerActivateOpcode(WorldPacket& recv_data)
+void WorldSession::HandleBankerActivateOpcode(WorldPackets::Npc::BankerActivate const& packet)
 {
-    ObjectGuid guid;
-    recv_data >> guid;
+    ObjectGuid guid = packet.guid;
 
     if (!CheckBanker(guid))
         return;
@@ -94,10 +92,9 @@ void WorldSession::SendShowBank(ObjectGuid guid)
     SendPacket(&data);
 }
 
-void WorldSession::HandleTrainerListOpcode(WorldPacket& recv_data)
+void WorldSession::HandleTrainerListOpcode(WorldPackets::Npc::TrainerList const& packet)
 {
-    ObjectGuid guid;
-    recv_data >> guid;
+    ObjectGuid guid = packet.guid;
 
     SendTrainerList(guid);
 }
@@ -267,12 +264,10 @@ void WorldSession::SendTrainingFailure(ObjectGuid guid, uint32 serviceId, uint32
     SendPacket(&data);
 }
 
-void WorldSession::HandleTrainerBuySpellOpcode(WorldPacket& recv_data)
+void WorldSession::HandleTrainerBuySpellOpcode(WorldPackets::Npc::TrainerBuySpell const& packet)
 {
-    ObjectGuid guid;
-    uint32 spellId = 0;
-
-    recv_data >> guid >> spellId;
+    ObjectGuid guid = packet.guid;
+    uint32 spellId = packet.spellId;
     sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "WORLD: Received CMSG_TRAINER_BUY_SPELL Trainer: %s, learn spell id is: %u", guid.GetString().c_str(), spellId);
 
     Creature* unit = GetPlayer()->GetNPCIfCanInteractWith(guid, UNIT_NPC_FLAG_TRAINER);
@@ -429,10 +424,9 @@ void WorldSession::HandleGossipSelectOptionOpcode(WorldPacket& recv_data)
     }
 }
 
-void WorldSession::HandleSpiritHealerActivateOpcode(WorldPacket& recv_data)
+void WorldSession::HandleSpiritHealerActivateOpcode(WorldPackets::Npc::SpiritHealerActivate const& packet)
 {
-    ObjectGuid guid;
-    recv_data >> guid;
+    ObjectGuid guid = packet.guid;
 
     Creature* unit = GetPlayer()->GetNPCIfCanInteractWith(guid, UNIT_NPC_FLAG_SPIRITHEALER);
     if (!unit)
@@ -495,10 +489,9 @@ void WorldSession::SendSpiritResurrect()
     }
 }
 
-void WorldSession::HandleBinderActivateOpcode(WorldPacket& recv_data)
+void WorldSession::HandleBinderActivateOpcode(WorldPackets::Npc::BinderActivate const& packet)
 {
-    ObjectGuid npcGuid;
-    recv_data >> npcGuid;
+    ObjectGuid npcGuid = packet.npcGuid;
 
     if (!GetPlayer()->IsInWorld() || !GetPlayer()->IsAlive())
         return;

@@ -14,6 +14,71 @@ namespace WorldPackets { namespace Npc
         explicit GossipHello() : ClientPacket(CMSG_GOSSIP_HELLO) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class NpcTextQuery final : public ClientPacket
+    {
+    public:
+        uint32 textID = 0;
+        ObjectGuid guid;
+
+        explicit NpcTextQuery() : ClientPacket(CMSG_NPC_TEXT_QUERY) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class TrainerList final : public ClientPacket
+    {
+    public:
+        ObjectGuid guid;
+
+        explicit TrainerList() : ClientPacket(CMSG_TRAINER_LIST) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class TrainerBuySpell final : public ClientPacket
+    {
+    public:
+        ObjectGuid guid;
+        uint32 spellId = 0;
+
+        explicit TrainerBuySpell() : ClientPacket(CMSG_TRAINER_BUY_SPELL) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class BinderActivate final : public ClientPacket
+    {
+    public:
+        ObjectGuid npcGuid;
+
+        explicit BinderActivate() : ClientPacket(CMSG_BINDER_ACTIVATE) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class BankerActivate final : public ClientPacket
+    {
+    public:
+        ObjectGuid guid;
+
+        explicit BankerActivate() : ClientPacket(CMSG_BANKER_ACTIVATE) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class TabardVendorActivate final : public ClientPacket
+    {
+    public:
+        ObjectGuid guid;
+
+        explicit TabardVendorActivate() : ClientPacket(MSG_TABARDVENDOR_ACTIVATE) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class SpiritHealerActivate final : public ClientPacket
+    {
+    public:
+        ObjectGuid guid;
+
+        explicit SpiritHealerActivate() : ClientPacket(CMSG_SPIRIT_HEALER_ACTIVATE) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
 }} // namespace WorldPackets::Npc
 
 #endif // MANGOS_PACKETS_NPC_H

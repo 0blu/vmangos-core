@@ -665,7 +665,7 @@ void WorldSession::HandleChatMessageOpcode(WorldPackets::Chat::ChatMessage const
     }
 }
 
-void WorldSession::HandleEmoteOpcode(WorldPacket& recv_data)
+void WorldSession::HandleEmoteOpcode(WorldPackets::Misc::Emote const& packet)
 {
     if (!GetPlayer()->IsAlive() || GetPlayer()->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PREVENT_ANIM))
         return;
@@ -677,8 +677,7 @@ void WorldSession::HandleEmoteOpcode(WorldPacket& recv_data)
         return;
     }
 
-    uint32 emote;
-    recv_data >> emote;
+    uint32 emote = packet.emote;
 
     // restrict to the only emotes hardcoded in client
     if (emote != EMOTE_ONESHOT_NONE && emote != EMOTE_ONESHOT_WAVE)
@@ -721,7 +720,7 @@ private:
 };
 }                                                           // namespace MaNGOS
 
-void WorldSession::HandleTextEmoteOpcode(WorldPacket& recv_data)
+void WorldSession::HandleTextEmoteOpcode(WorldPackets::Misc::TextEmote const& packet)
 {
     if (!GetPlayer()->IsAlive() || GetPlayer()->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PREVENT_ANIM))
         return;
@@ -733,12 +732,9 @@ void WorldSession::HandleTextEmoteOpcode(WorldPacket& recv_data)
         return;
     }
 
-    uint32 textEmote, emoteNum;
-    ObjectGuid guid;
-
-    recv_data >> textEmote;
-    recv_data >> emoteNum;
-    recv_data >> guid;
+    uint32 textEmote = packet.textEmote;
+    uint32 emoteNum = packet.emoteNum;
+    ObjectGuid guid = packet.guid;
 
     EmotesTextEntry const* em = sEmotesTextStore.LookupEntry(textEmote);
     if (!em)
@@ -774,10 +770,9 @@ void WorldSession::HandleTextEmoteOpcode(WorldPacket& recv_data)
         ((Creature*)unit)->AI()->ReceiveEmote(GetPlayer(), textEmote);
 }
 
-void WorldSession::HandleChatIgnoredOpcode(WorldPacket& recv_data)
+void WorldSession::HandleChatIgnoredOpcode(WorldPackets::Misc::ChatIgnored const& packet)
 {
-    ObjectGuid iguid;
-    recv_data >> iguid;
+    ObjectGuid iguid = packet.guid;
 
     Player* player = sObjectMgr.GetPlayer(iguid);
     if (!player)
