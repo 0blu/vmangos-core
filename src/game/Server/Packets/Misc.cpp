@@ -142,3 +142,8 @@ void WorldPackets::Misc::SetActionBarToggles::ReadFromWorldPacket(WorldPacket& r
 {
     recv_data >> actionBar;
 }
+
+void WorldPackets::Misc::MeetingStoneJoin::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> guid;
+}

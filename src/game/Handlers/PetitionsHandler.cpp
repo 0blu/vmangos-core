@@ -226,13 +226,10 @@ void WorldSession::HandlePetitionQueryOpcode(WorldPackets::Petition::QueryPetiti
     SendPacket(&data);
 }
 
-void WorldSession::HandlePetitionRenameOpcode(WorldPacket& recv_data)
+void WorldSession::HandlePetitionRenameOpcode(WorldPackets::Petition::PetitionRename const& packet)
 {
-    ObjectGuid itemGuid;
-    std::string newname;
-
-    recv_data >> itemGuid;                              // item
-    recv_data >> newname;                               // new name
+    ObjectGuid itemGuid = packet.itemGuid;
+    std::string newname = packet.newName;
 
     Item *charter = _player->GetItemByGuid(itemGuid);
     if (!charter)

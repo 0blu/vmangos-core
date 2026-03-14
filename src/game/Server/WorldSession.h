@@ -515,7 +515,7 @@ class WorldSession
         void HandleLootMoneyOpcode(NullClientPacket const& packet);
         void HandleLootOpcode(WorldPackets::Loot::LootUnit const& packet);
         void HandleLootReleaseOpcode(WorldPackets::Loot::LootRelease const& packet);
-        void HandleLootMasterGiveOpcode(WorldPacket& recvPacket);
+        void HandleLootMasterGiveOpcode(WorldPackets::Loot::LootMasterGive const& packet);
         void HandleWhoOpcode(WorldPacket& recvPacket);
         void HandleLFGOpcode(WorldPacket& recvPacket);
         void HandleLogoutRequestOpcode(NullClientPacket const& packet);
@@ -553,9 +553,9 @@ class WorldSession
         void HandleSetActionButtonOpcode(WorldPackets::Misc::SetActionButton const& packet);
 
         void HandleGameObjectUseOpcode(WorldPackets::Misc::GameObjectUse const& packet);
-        void HandleMeetingStoneJoinOpcode(WorldPacket& recPacket);
-        void HandleMeetingStoneLeaveOpcode(WorldPacket& recPacket);
-        void HandleMeetingStoneInfoOpcode(WorldPacket& recPacket);
+        void HandleMeetingStoneJoinOpcode(WorldPackets::Misc::MeetingStoneJoin const& packet);
+        void HandleMeetingStoneLeaveOpcode(NullClientPacket const& packet);
+        void HandleMeetingStoneInfoOpcode(NullClientPacket const& packet);
 
         void HandleQueryPlayerNameOpcode(WorldPackets::Query::QueryPlayerName const& packet);
         void HandleQueryTimeOpcode(NullClientPacket const& packet);
@@ -571,7 +571,7 @@ class WorldSession
         void HandleGroupSetLeaderOpcode(WorldPacket& recvPacket);
         void HandleGroupDisbandOpcode(NullClientPacket const& packet);
         void HandleLootMethodOpcode(WorldPackets::Group::LootMethod const& packet);
-        void HandleLootRoll(WorldPacket& recv_data);
+        void HandleLootRoll(WorldPackets::Loot::LootRoll const& packet);
         void HandleRequestPartyMemberStatsOpcode(WorldPackets::Group::RequestPartyMemberStats const& packet);
         void HandleRaidTargetUpdateOpcode(WorldPacket& recv_data);
         void HandleRaidReadyCheckOpcode(WorldPacket& recv_data);
@@ -583,7 +583,7 @@ class WorldSession
         void HandlePetitionBuyOpcode(WorldPacket& recv_data);
         void HandlePetitionShowSignOpcode(WorldPackets::Petition::PetitionShowSignatures const& packet);
         void HandlePetitionQueryOpcode(WorldPackets::Petition::QueryPetition const& packet);
-        void HandlePetitionRenameOpcode(WorldPacket& recv_data);
+        void HandlePetitionRenameOpcode(WorldPackets::Petition::PetitionRename const& packet);
         void HandlePetitionSignOpcode(WorldPacket& recv_data);
         void HandlePetitionDeclineOpcode(WorldPackets::Petition::PetitionDecline const& packet);
         void HandleOfferPetitionOpcode(WorldPacket& recv_data);

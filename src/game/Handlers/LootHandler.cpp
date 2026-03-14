@@ -38,6 +38,7 @@
 #include "ScriptMgr.h"
 #include "Util.h"
 #include "Anticheat.h"
+#include "Packets/Loot.h"
 
 void WorldSession::HandleAutostoreLootItemOpcode(WorldPackets::Loot::AutoStoreLootItem const& packet)
 {
@@ -617,13 +618,11 @@ void WorldSession::DoLootRelease(ObjectGuid lguid)
     loot->RemoveLooter(player->GetObjectGuid());
 }
 
-void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
+void WorldSession::HandleLootMasterGiveOpcode(WorldPackets::Loot::LootMasterGive const& packet)
 {
-    uint8 slotid;
-    ObjectGuid lootGuid;
-    ObjectGuid playerGuid;
-
-    recv_data >> lootGuid >> slotid >> playerGuid;
+    uint8 slotid = packet.slotId;
+    ObjectGuid lootGuid = packet.lootGuid;
+    ObjectGuid playerGuid = packet.playerGuid;
 
     if (!_player->GetGroup() || _player->GetGroup()->GetLootMethod() != MASTER_LOOT || _player->GetGroup()->GetLooterGuid() != _player->GetObjectGuid())
     {

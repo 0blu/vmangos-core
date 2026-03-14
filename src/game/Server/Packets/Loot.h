@@ -33,6 +33,28 @@ namespace WorldPackets { namespace Loot
         explicit LootRelease() : ClientPacket(CMSG_LOOT_RELEASE) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class LootRoll final : public ClientPacket
+    {
+    public:
+        ObjectGuid lootedTarget;
+        uint32 itemSlot = 0;
+        uint8 rollType = 0;
+
+        explicit LootRoll() : ClientPacket(CMSG_LOOT_ROLL) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class LootMasterGive final : public ClientPacket
+    {
+    public:
+        ObjectGuid lootGuid;
+        uint8 slotId = 0;
+        ObjectGuid playerGuid;
+
+        explicit LootMasterGive() : ClientPacket(CMSG_LOOT_MASTER_GIVE) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
 }} // namespace WorldPackets::Loot
 
 #endif // MANGOS_PACKETS_LOOT_H

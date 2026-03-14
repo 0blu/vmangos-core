@@ -3,6 +3,7 @@
 
 #include "Packet.h"
 #include "ObjectGuid.h"
+#include <string>
 
 namespace WorldPackets { namespace Petition
 {
@@ -49,6 +50,16 @@ namespace WorldPackets { namespace Petition
         ObjectGuid itemGuid;
 
         explicit TurnInPetition() : ClientPacket(CMSG_TURN_IN_PETITION) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class PetitionRename final : public ClientPacket
+    {
+    public:
+        ObjectGuid itemGuid;
+        std::string newName;
+
+        explicit PetitionRename() : ClientPacket(MSG_PETITION_RENAME) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
 }} // namespace WorldPackets::Petition

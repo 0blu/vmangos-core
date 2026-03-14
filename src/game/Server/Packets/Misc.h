@@ -249,6 +249,15 @@ namespace WorldPackets { namespace Misc
         explicit SetActionBarToggles() : ClientPacket(CMSG_SET_ACTIONBAR_TOGGLES) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class MeetingStoneJoin final : public ClientPacket
+    {
+    public:
+        ObjectGuid guid;
+
+        explicit MeetingStoneJoin() : ClientPacket(CMSG_MEETINGSTONE_JOIN) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
 }} // namespace WorldPackets::Misc
 
 #endif // MANGOS_PACKETS_MISC_H

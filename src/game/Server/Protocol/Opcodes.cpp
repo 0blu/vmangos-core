@@ -764,11 +764,11 @@ constexpr Handlers BuildOpcodeList()
     LEGACY_HANDLER(CMSG_GROUP_ASSISTANT_LEADER,       STATUS_LOGGEDIN,  PACKET_PROCESS_GROUP,         &WorldSession::HandleGroupAssistantLeaderOpcode);
     LEGACY_HANDLER(CMSG_BUYBACK_ITEM,                 STATUS_LOGGEDIN,  PACKET_PROCESS_SELF_ITEMS,    &WorldSession::HandleBuybackItem);
     INVALID_PACKET(SMSG_SERVER_MESSAGE,               Reason::SendByServer);
-    LEGACY_HANDLER(CMSG_MEETINGSTONE_JOIN,            STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleMeetingStoneJoinOpcode);
-    LEGACY_HANDLER(CMSG_MEETINGSTONE_LEAVE,           STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleMeetingStoneLeaveOpcode);
+    DEFINE_HANDLER(CMSG_MEETINGSTONE_JOIN,            STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleMeetingStoneJoinOpcode);
+    DEFINE_HANDLER(CMSG_MEETINGSTONE_LEAVE,           STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleMeetingStoneLeaveOpcode);
     INVALID_PACKET(CMSG_MEETINGSTONE_CHEAT,           Reason::Unhandled);
     INVALID_PACKET(SMSG_MEETINGSTONE_SETQUEUE,        Reason::SendByServer);
-    LEGACY_HANDLER(CMSG_MEETINGSTONE_INFO,            STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleMeetingStoneInfoOpcode);
+    DEFINE_HANDLER(CMSG_MEETINGSTONE_INFO,            STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleMeetingStoneInfoOpcode);
     INVALID_PACKET(SMSG_MEETINGSTONE_COMPLETE,        Reason::SendByServer);
     INVALID_PACKET(SMSG_MEETINGSTONE_IN_PROGRESS,     Reason::SendByServer);
     INVALID_PACKET(SMSG_MEETINGSTONE_MEMBER_ADDED,    Reason::SendByServer);
@@ -778,10 +778,10 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(SMSG_STANDSTATE_UPDATE,            Reason::SendByServer);
     INVALID_PACKET(SMSG_LOOT_ALL_PASSED,              Reason::SendByServer);
     INVALID_PACKET(SMSG_LOOT_ROLL_WON,                Reason::SendByServer);
-    LEGACY_HANDLER(CMSG_LOOT_ROLL,                    STATUS_LOGGEDIN,  PACKET_PROCESS_GROUP,         &WorldSession::HandleLootRoll);
+    DEFINE_HANDLER(CMSG_LOOT_ROLL,                    STATUS_LOGGEDIN,  PACKET_PROCESS_GROUP,         &WorldSession::HandleLootRoll);
     INVALID_PACKET(SMSG_LOOT_START_ROLL,              Reason::SendByServer);
     INVALID_PACKET(SMSG_LOOT_ROLL,                    Reason::SendByServer);
-    LEGACY_HANDLER(CMSG_LOOT_MASTER_GIVE,             STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleLootMasterGiveOpcode);
+    DEFINE_HANDLER(CMSG_LOOT_MASTER_GIVE,             STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleLootMasterGiveOpcode);
     INVALID_PACKET(SMSG_LOOT_MASTER_LIST,             Reason::SendByServer);
     INVALID_PACKET(SMSG_SET_FORCED_REACTIONS,         Reason::SendByServer);
     INVALID_PACKET(SMSG_SPELL_FAILED_OTHER,           Reason::SendByServer);
@@ -811,7 +811,7 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(CMSG_SET_EXPLORATION,              Reason::Unhandled);
     DEFINE_HANDLER(CMSG_SET_ACTIONBAR_TOGGLES,        STATUS_AUTHED,    PACKET_PROCESS_MAP,           &WorldSession::HandleSetActionBarTogglesOpcode);
     INVALID_PACKET(MSG_DELETE_GUILD_CHARTER,          Reason::Unhandled);
-    LEGACY_HANDLER(MSG_PETITION_RENAME,               STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandlePetitionRenameOpcode);
+    DEFINE_HANDLER(MSG_PETITION_RENAME,               STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandlePetitionRenameOpcode);
     INVALID_PACKET(SMSG_INIT_WORLD_STATES,            Reason::SendByServer);
     INVALID_PACKET(SMSG_UPDATE_WORLD_STATE,           Reason::SendByServer);
     DEFINE_HANDLER(CMSG_ITEM_NAME_QUERY,              STATUS_LOGGEDIN,  PACKET_PROCESS_DB_QUERY,      &WorldSession::HandleItemNameQueryOpcode);
