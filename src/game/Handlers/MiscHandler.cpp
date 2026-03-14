@@ -1234,7 +1234,6 @@ void WorldSession::HandleFarSightOpcode(WorldPackets::Misc::FarSight const& pack
     if (!obj)
         return;
 
-    // op = 1 - op;
     switch (op)
     {
         case 0:
