@@ -705,10 +705,10 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(SMSG_ZONE_UNDER_ATTACK,            Reason::SendByServer);
     DEFINE_HANDLER(MSG_AUCTION_HELLO,                 STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleAuctionHelloOpcode);
     LEGACY_HANDLER(CMSG_AUCTION_SELL_ITEM,            STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleAuctionSellItem);
-    LEGACY_HANDLER(CMSG_AUCTION_REMOVE_ITEM,          STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleAuctionRemoveItem);
+    DEFINE_HANDLER(CMSG_AUCTION_REMOVE_ITEM,          STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleAuctionRemoveItem);
     LEGACY_HANDLER(CMSG_AUCTION_LIST_ITEMS,           STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleAuctionListItems);
-    LEGACY_HANDLER(CMSG_AUCTION_LIST_OWNER_ITEMS,     STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleAuctionListOwnerItems);
-    LEGACY_HANDLER(CMSG_AUCTION_PLACE_BID,            STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleAuctionPlaceBid);
+    DEFINE_HANDLER(CMSG_AUCTION_LIST_OWNER_ITEMS,     STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleAuctionListOwnerItems);
+    DEFINE_HANDLER(CMSG_AUCTION_PLACE_BID,            STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleAuctionPlaceBid);
     INVALID_PACKET(SMSG_AUCTION_COMMAND_RESULT,       Reason::SendByServer);
     INVALID_PACKET(SMSG_AUCTION_LIST_RESULT,          Reason::SendByServer);
     INVALID_PACKET(SMSG_AUCTION_OWNER_LIST_RESULT,    Reason::SendByServer);

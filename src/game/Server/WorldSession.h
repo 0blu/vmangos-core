@@ -652,9 +652,9 @@ class WorldSession
         void HandleAuctionListItems(WorldPacket& recv_data);
         void HandleAuctionListBidderItems(WorldPackets::AuctionHouse::AuctionListBidderItem const& packet);
         void HandleAuctionSellItem(WorldPacket& recv_data);
-        void HandleAuctionRemoveItem(WorldPacket& recv_data);
-        void HandleAuctionListOwnerItems(WorldPacket& recv_data);
-        void HandleAuctionPlaceBid(WorldPacket& recv_data);
+        void HandleAuctionRemoveItem(WorldPackets::AuctionHouse::AuctionRemoveItem const& packet);
+        void HandleAuctionListOwnerItems(WorldPackets::AuctionHouse::AuctionListOwnerItems const& packet);
+        void HandleAuctionPlaceBid(WorldPackets::AuctionHouse::AuctionPlaceBid const& packet);
 
         void HandleGetMailList(WorldPackets::Mail::GetMailList const& packet);
         void HandleSendMail(WorldPackets::Mail::SendMail const& packet);
