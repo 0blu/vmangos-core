@@ -29,7 +29,6 @@
 #include "Player.h"
 #include "Path.h"
 #include "WaypointMovementGenerator.h"
-#include "Packets/Taxi.h"
 
 void WorldSession::HandleTaxiNodeStatusQueryOpcode(WorldPackets::Taxi::TaxiNodeStatusQuery const& packet)
 {

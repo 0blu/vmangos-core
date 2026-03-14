@@ -38,7 +38,6 @@
 #include "MoveSpline.h"
 #include "Geometry.h"
 #include "Packets/Misc.h"
-#include "Packets/Movement.h"
 
 void WorldSession::HandleMoveWorldportAckOpcode(NullClientPacket const& /*packet*/)
 {

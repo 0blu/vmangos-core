@@ -43,7 +43,6 @@
 #include "PlayerBotMgr.h"
 #include "MapManager.h"
 #include "AccountMgr.h"
-#include "Packets/Character.h"
 
 class LoginQueryHolder : public SqlQueryHolder
 {
