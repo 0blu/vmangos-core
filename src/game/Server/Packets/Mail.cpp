@@ -60,6 +60,6 @@ void WorldPackets::Mail::MailCreateTextItem::ReadFromWorldPacket(WorldPacket& re
     recv_data >> mailboxGuid;
     recv_data >> mailId;
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
-    recv_data.read_skip<uint32>(); // mailTemplateId, not needed
+    recv_data >> mailTemplateId;
 #endif
 }

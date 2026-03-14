@@ -89,6 +89,9 @@ namespace WorldPackets { namespace Mail
     public:
         ObjectGuid mailboxGuid;
         uint32     mailId = 0;
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
+        uint32     mailTemplateId = 0;
+#endif
 
         explicit MailCreateTextItem() : ClientPacket(CMSG_MAIL_CREATE_TEXT_ITEM) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
