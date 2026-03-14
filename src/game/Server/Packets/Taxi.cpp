@@ -12,5 +12,7 @@ void WorldPackets::Taxi::TaxiQueryAvailableNodes::ReadFromWorldPacket(WorldPacke
 
 void WorldPackets::Taxi::ActivateTaxi::ReadFromWorldPacket(WorldPacket& recv_data)
 {
-    recv_data >> guid >> node1 >> node2;
+    recv_data >> guid;
+    recv_data >> node1;
+    recv_data >> node2;
 }
