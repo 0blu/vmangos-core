@@ -635,7 +635,7 @@ class WorldSession
         void HandleStableSwapPet(WorldPacket& recvPacket);
 
         void HandleDuelAcceptedOpcode(WorldPackets::Duel::DuelAccepted const& packet);
-        void HandleDuelCancelledOpcode(NullClientPacket const& packet);
+        void HandleDuelCancelledOpcode(WorldPackets::Duel::DuelCancelled const& packet);
 
         void HandleAcceptTradeOpcode(WorldPacket& recvPacket);
         void HandleBeginTradeOpcode(WorldPacket& recvPacket);

@@ -46,7 +46,7 @@ void WorldSession::HandleDuelAcceptedOpcode(WorldPackets::Duel::DuelAccepted con
     plTarget->SendDuelCountdown(3000);
 }
 
-void WorldSession::HandleDuelCancelledOpcode(NullClientPacket const& /*packet*/)
+void WorldSession::HandleDuelCancelledOpcode(WorldPackets::Duel::DuelCancelled const& /*packet*/)
 {
     auto pPlayer = GetPlayer();
     // no duel requested
@@ -67,8 +67,5 @@ void WorldSession::HandleDuelCancelledOpcode(NullClientPacket const& /*packet*/)
 
     // player either discarded the duel using the "discard button"
     // or used "/forfeit" before countdown reached 0
-    ObjectGuid guid;
-    recvPacket >> guid;
-
     pPlayer->DuelComplete(DUEL_INTERRUPTED);
 }
