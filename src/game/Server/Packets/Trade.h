@@ -47,8 +47,6 @@ namespace WorldPackets { namespace Trade
     class AcceptTrade final : public ClientPacket
     {
     public:
-        uint32 unknown = 0; // not used by server
-
         explicit AcceptTrade() : ClientPacket(CMSG_ACCEPT_TRADE) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };

@@ -24,5 +24,6 @@ void WorldPackets::Trade::ClearTradeItem::ReadFromWorldPacket(WorldPacket& recv_
 
 void WorldPackets::Trade::AcceptTrade::ReadFromWorldPacket(WorldPacket& recv_data)
 {
-    recv_data >> unknown;
+    // some unused variable with is set to 1 when the player got TRADE_STATUS_OPEN_WINDOW at least once in this session
+    recv_data.read_skip<uint32>();
 }
