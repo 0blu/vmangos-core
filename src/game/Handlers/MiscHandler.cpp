@@ -1239,6 +1239,6 @@ void WorldSession::HandleWardenDataOpcode(WorldPackets::Misc::WardenData const& 
 
     {
         std::lock_guard<std::mutex> lock(m_warden->m_packetDataQueueMutex);
-        m_warden->m_packetDataQueue.emplace(std::move(packet.data));
+        m_warden->m_packetDataQueue.emplace(packet.data);
     }
 }
