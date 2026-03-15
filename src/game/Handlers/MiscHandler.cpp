@@ -820,19 +820,18 @@ void WorldSession::HandleAreaTriggerOpcode(WorldPackets::Misc::AreaTrigger const
 
 void WorldSession::HandleUpdateAccountData(WorldPackets::Misc::UpdateAccountData const& packet)
 {
-    uint32 type = packet.type;
     uint32 decompressedSize = packet.decompressedSize;
 
     NewAccountData::AccountDataType dataType;
     if (GetGameBuild() <= CLIENT_BUILD_1_8_4)
-        dataType = ConvertOldAccountDataToNew(type);
+        dataType = ConvertOldAccountDataToNew(packet.type);
     else
-        dataType = (NewAccountData::AccountDataType)type;
+        dataType = static_cast<NewAccountData::AccountDataType>(packet.type);
 
     if (dataType >= NewAccountData::NUM_ACCOUNT_DATA_TYPES)
     {
         std::stringstream oss;
-        oss << "Client sent invalid account data type " << type << " in CMSG_UPDATE_ACCOUNT_DATA.";
+        oss << "Client sent invalid account data type " << packet.type << " in CMSG_UPDATE_ACCOUNT_DATA.";
         ProcessAnticheatAction("PassiveAnticheat", oss.str().c_str(), CHEAT_ACTION_LOG);
         return;
     }

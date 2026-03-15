@@ -164,7 +164,10 @@ void WorldPackets::Misc::UpdateAccountData::ReadFromWorldPacket(WorldPacket& rec
     recv_data >> decompressedSize;
     uint32 remaining = recv_data.size() - recv_data.rpos();
     compressedData.resize(remaining);
-    recv_data.read(compressedData.data(), remaining);
+    if (compressedData.size() > 0)
+    {
+        recv_data.read(compressedData.data(), compressedData.size());
+    }
 }
 
 void WorldPackets::Misc::SetWatchedFaction::ReadFromWorldPacket(WorldPacket& recv_data)
