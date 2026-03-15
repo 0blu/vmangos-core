@@ -677,15 +677,13 @@ void WorldSession::HandleEmoteOpcode(WorldPackets::Misc::Emote const& packet)
         return;
     }
 
-    uint32 emote = packet.emote;
-
     // restrict to the only emotes hardcoded in client
-    if (emote != EMOTE_ONESHOT_NONE && emote != EMOTE_ONESHOT_WAVE)
+    if (packet.emote != EMOTE_ONESHOT_NONE && packet.emote != EMOTE_ONESHOT_WAVE)
         return;
 
     GetPlayer()->InterruptSpellsWithChannelFlags(AURA_INTERRUPT_ANIM_CANCELS);
     GetPlayer()->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_ANIM_CANCELS);
-    GetPlayer()->HandleEmoteCommand(emote);
+    GetPlayer()->HandleEmoteCommand(packet.emote);
 }
 
 namespace MaNGOS
@@ -732,11 +730,7 @@ void WorldSession::HandleTextEmoteOpcode(WorldPackets::Misc::TextEmote const& pa
         return;
     }
 
-    uint32 textEmote = packet.textEmote;
-    uint32 emoteNum = packet.emoteNum;
-    ObjectGuid guid = packet.guid;
-
-    EmotesTextEntry const* em = sEmotesTextStore.LookupEntry(textEmote);
+    EmotesTextEntry const* em = sEmotesTextStore.LookupEntry(packet.textEmote);
     if (!em)
         return;
 
@@ -758,23 +752,21 @@ void WorldSession::HandleTextEmoteOpcode(WorldPackets::Misc::TextEmote const& pa
         }
     }
 
-    Unit* unit = GetPlayer()->GetMap()->GetUnit(guid);
+    Unit* unit = GetPlayer()->GetMap()->GetUnit(packet.guid);
 
-    MaNGOS::EmoteChatBuilder emote_builder(*GetPlayer(), textEmote, emoteNum, unit);
+    MaNGOS::EmoteChatBuilder emote_builder(*GetPlayer(), packet.textEmote, packet.emoteNum, unit);
     MaNGOS::LocalizedPacketDo<MaNGOS::EmoteChatBuilder > emote_do(emote_builder);
     MaNGOS::CameraDistWorker<MaNGOS::LocalizedPacketDo<MaNGOS::EmoteChatBuilder > > emote_worker(GetPlayer(), sWorld.getConfig(CONFIG_FLOAT_LISTEN_RANGE_TEXTEMOTE), emote_do);
     Cell::VisitWorldObjects(GetPlayer(), emote_worker,  sWorld.getConfig(CONFIG_FLOAT_LISTEN_RANGE_TEXTEMOTE));
 
     //Send scripted event call
     if (unit && unit->IsCreature() && ((Creature*)unit)->AI())
-        ((Creature*)unit)->AI()->ReceiveEmote(GetPlayer(), textEmote);
+        ((Creature*)unit)->AI()->ReceiveEmote(GetPlayer(), packet.textEmote);
 }
 
 void WorldSession::HandleChatIgnoredOpcode(WorldPackets::Misc::ChatIgnored const& packet)
 {
-    ObjectGuid iguid = packet.guid;
-
-    Player* player = sObjectMgr.GetPlayer(iguid);
+    Player* player = sObjectMgr.GetPlayer(packet.guid);
     if (!player)
         return;
 

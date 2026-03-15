@@ -35,10 +35,6 @@ using namespace Spells;
 
 void WorldSession::HandleUseItemOpcode(WorldPackets::Spell::UseItem const& packet)
 {
-    uint8 bagIndex = packet.bagIndex;
-    uint8 slot = packet.slot;
-    uint8 spellSlot = packet.spellSlot; // the position of the spell id on the item template
-
     // TODO: add targets.read() check
     Player* pUser = _player;
 
@@ -48,7 +44,7 @@ void WorldSession::HandleUseItemOpcode(WorldPackets::Spell::UseItem const& packe
         return;
     }
 
-    Item *pItem = pUser->GetItemByPos(bagIndex, slot);
+    Item *pItem = pUser->GetItemByPos(packet.bagIndex, packet.slot);
     if (!pItem)
     {
         pUser->SendEquipError(EQUIP_ERR_ITEM_NOT_FOUND, nullptr, nullptr);
@@ -62,9 +58,9 @@ void WorldSession::HandleUseItemOpcode(WorldPackets::Spell::UseItem const& packe
         return;
     }
 
-    if (spellSlot >= MAX_ITEM_PROTO_SPELLS ||
-        proto->Spells[spellSlot].SpellId == 0 ||
-        proto->Spells[spellSlot].SpellTrigger != ITEM_SPELLTRIGGER_ON_USE)
+    if (packet.spellSlot >= MAX_ITEM_PROTO_SPELLS ||
+        proto->Spells[packet.spellSlot].SpellId == 0 ||
+        proto->Spells[packet.spellSlot].SpellTrigger != ITEM_SPELLTRIGGER_ON_USE)
     {
         pUser->SendEquipError(EQUIP_ERR_ITEM_NOT_FOUND, pItem, nullptr);
         return;
@@ -126,7 +122,7 @@ void WorldSession::HandleUseItemOpcode(WorldPackets::Spell::UseItem const& packe
         // World of Warcraft Client Patch 1.10.0 (2006-03-28)
         // - All shapeshift forms can now use equipped items.
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
-        if (!(bagIndex == INVENTORY_SLOT_BAG_0 && slot < EQUIPMENT_SLOT_END))
+        if (!(packet.bagIndex == INVENTORY_SLOT_BAG_0 && packet.slot < EQUIPMENT_SLOT_END))
 #endif
         itemCastCheckResult = SPELL_FAILED_NO_ITEMS_WHILE_SHAPESHIFTED;
     }
@@ -137,7 +133,7 @@ void WorldSession::HandleUseItemOpcode(WorldPackets::Spell::UseItem const& packe
         pUser->SendEquipError(EQUIP_ERR_NONE, pItem, nullptr);
 
         // send spell error
-        uint32 spellid = proto->Spells[spellSlot].SpellId;
+        uint32 spellid = proto->Spells[packet.spellSlot].SpellId;
         if (SpellEntry const* spellInfo = sSpellMgr.GetSpellEntry(spellid))
             Spell::SendCastResult(_player, spellInfo, itemCastCheckResult);
         return;
@@ -148,16 +144,13 @@ void WorldSession::HandleUseItemOpcode(WorldPackets::Spell::UseItem const& packe
 
 void WorldSession::HandleOpenItemOpcode(WorldPackets::Spell::OpenItem const& packet)
 {
-    uint8 bagIndex = packet.bagIndex;
-    uint8 slot = packet.slot;
-
     Player* pUser = _player;
 
     // ignore for remote control state
     if (!pUser->IsSelfMover())
         return;
 
-    Item *pItem = pUser->GetItemByPos(bagIndex, slot);
+    Item *pItem = pUser->GetItemByPos(packet.bagIndex, packet.slot);
     if (!pItem)
     {
         pUser->SendEquipError(EQUIP_ERR_ITEM_NOT_FOUND, nullptr, nullptr);

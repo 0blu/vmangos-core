@@ -438,10 +438,9 @@ void WorldSession::HandleSendMailCallback(WorldSession::AsyncMailSendRequest* re
  */
 void WorldSession::HandleMailMarkAsRead(WorldPackets::Mail::MailMarkAsRead const& packet)
 {
-    ObjectGuid mailboxGuid = packet.mailboxGuid;
     uint32 mailId = packet.mailId;
 
-    if (!CheckMailBox(mailboxGuid))
+    if (!CheckMailBox(packet.mailboxGuid))
         return;
 
     MasterPlayer* pl = GetMasterPlayer();
@@ -475,10 +474,9 @@ void WorldSession::HandleMailMarkAsRead(WorldPackets::Mail::MailMarkAsRead const
  */
 void WorldSession::HandleMailDelete(WorldPackets::Mail::MailDelete const& packet)
 {
-    ObjectGuid mailboxGuid = packet.mailboxGuid;
     uint32 mailId = packet.mailId;
 
-    if (!CheckMailBox(mailboxGuid))
+    if (!CheckMailBox(packet.mailboxGuid))
         return;
 
     MasterPlayer* pl = GetMasterPlayer();
@@ -509,10 +507,9 @@ void WorldSession::HandleMailDelete(WorldPackets::Mail::MailDelete const& packet
  */
 void WorldSession::HandleMailReturnToSender(WorldPackets::Mail::MailReturnToSender const& packet)
 {
-    ObjectGuid mailboxGuid = packet.mailboxGuid;
     uint32 mailId = packet.mailId;
 
-    if (!CheckMailBox(mailboxGuid))
+    if (!CheckMailBox(packet.mailboxGuid))
         return;
 
     MasterPlayer* pl = GetMasterPlayer();
@@ -565,10 +562,9 @@ void WorldSession::HandleMailReturnToSender(WorldPackets::Mail::MailReturnToSend
  */
 void WorldSession::HandleMailTakeItem(WorldPackets::Mail::MailTakeItem const& packet)
 {
-    ObjectGuid mailboxGuid = packet.mailboxGuid;
     uint32 mailId = packet.mailId;
 
-    if (!CheckMailBox(mailboxGuid))
+    if (!CheckMailBox(packet.mailboxGuid))
         return;
 
     MasterPlayer* pl = GetMasterPlayer();
@@ -693,10 +689,9 @@ void WorldSession::HandleMailTakeItem(WorldPackets::Mail::MailTakeItem const& pa
  */
 void WorldSession::HandleMailTakeMoney(WorldPackets::Mail::MailTakeMoney const& packet)
 {
-    ObjectGuid mailboxGuid = packet.mailboxGuid;
     uint32 mailId = packet.mailId;
 
-    if (!CheckMailBox(mailboxGuid))
+    if (!CheckMailBox(packet.mailboxGuid))
         return;
 
     MasterPlayer* pl = GetMasterPlayer();
@@ -737,9 +732,7 @@ void WorldSession::HandleMailTakeMoney(WorldPackets::Mail::MailTakeMoney const& 
  */
 void WorldSession::HandleGetMailList(WorldPackets::Mail::GetMailList const& packet)
 {
-    ObjectGuid mailboxGuid = packet.mailboxGuid;
-
-    if (!CheckMailBox(mailboxGuid))
+    if (!CheckMailBox(packet.mailboxGuid))
         return;
 
     MasterPlayer* pl = GetMasterPlayer();
@@ -853,14 +846,13 @@ void WorldSession::HandleGetMailList(WorldPackets::Mail::GetMailList const& pack
  */
 void WorldSession::HandleItemTextQuery(WorldPackets::Misc::ItemTextQuery const& packet)
 {
-    uint32 itemTextId = packet.itemTextId;
     // packet.mailId and packet.unk not used
 
     // TODO: some check needed, if player has item with guid mailId, or has mail with id mailId
 
     WorldPacket data(SMSG_ITEM_TEXT_QUERY_RESPONSE, (4 + 10)); // guess size
-    data << itemTextId;
-    data << sObjectMgr.GetItemText(itemTextId);
+    data << packet.itemTextId;
+    data << sObjectMgr.GetItemText(packet.itemTextId);
     SendPacket(&data);
 }
 

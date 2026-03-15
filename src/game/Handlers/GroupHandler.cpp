@@ -220,16 +220,14 @@ void WorldSession::HandleGroupDeclineOpcode(NullClientPacket const& /*packet*/)
 
 void WorldSession::HandleGroupUninviteGuidOpcode(WorldPackets::Group::GroupUninviteGuid const& packet)
 {
-    ObjectGuid guid = packet.guid;
-
     // can't uninvite yourself
-    if (guid == GetPlayer()->GetObjectGuid())
+    if (packet.guid == GetPlayer()->GetObjectGuid())
     {
         sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "WorldSession::HandleGroupUninviteGuidOpcode: leader %s tried to uninvite himself from the group.", GetPlayer()->GetGuidStr().c_str());
         return;
     }
 
-    PartyResult res = GetPlayer()->CanUninviteFromGroup(guid);
+    PartyResult res = GetPlayer()->CanUninviteFromGroup(packet.guid);
     if (res != ERR_PARTY_RESULT_OK)
     {
         SendPartyResult(PARTY_OP_LEAVE, "", res);
@@ -240,13 +238,13 @@ void WorldSession::HandleGroupUninviteGuidOpcode(WorldPackets::Group::GroupUninv
     if (!grp)
         return;
 
-    if (grp->IsMember(guid))
+    if (grp->IsMember(packet.guid))
     {
-        Player::RemoveFromGroup(grp, guid);
+        Player::RemoveFromGroup(grp, packet.guid);
         return;
     }
 
-    if (Player* plr = grp->GetInvited(guid))
+    if (Player* plr = grp->GetInvited(packet.guid))
     {
         plr->UninviteFromGroup();
         return;
@@ -341,12 +339,8 @@ void WorldSession::HandleGroupDisbandOpcode(NullClientPacket const& /*packet*/)
 
 void WorldSession::HandleLootMethodOpcode(WorldPackets::Group::LootMethod const& packet)
 {
-    uint32 lootMethod = packet.lootMethod;
-    ObjectGuid lootMaster = packet.lootMaster;
-    uint32 lootThreshold = packet.lootThreshold;
-
     // Impossible.
-    if (lootMethod > 4)
+    if (packet.lootMethod > 4)
         return;
 
     Group* group = GetPlayer()->GetGroup();
@@ -362,16 +356,14 @@ void WorldSession::HandleLootMethodOpcode(WorldPackets::Group::LootMethod const&
     /********************/
 
     // everything is fine, do it
-    group->SetLootMethod((LootMethod)lootMethod);
-    group->SetLooterGuid(lootMaster);
-    group->SetLootThreshold((ItemQualities)lootThreshold);
+    group->SetLootMethod((LootMethod)packet.lootMethod);
+    group->SetLooterGuid(packet.lootMaster);
+    group->SetLootThreshold((ItemQualities)packet.lootThreshold);
     group->SendUpdate();
 }
 
 void WorldSession::HandleLootRoll(WorldPackets::Loot::LootRoll const& packet)
 {
-    ObjectGuid lootedTarget = packet.lootedTarget;
-    uint32 itemSlot = packet.itemSlot;
     uint8 rollType = packet.rollType;
 
     Group* group = GetPlayer()->GetGroup();
@@ -390,18 +382,15 @@ void WorldSession::HandleLootRoll(WorldPackets::Loot::LootRoll const& packet)
 #endif
 
     // everything is fine, do it, if false then some cheating problem found (result not used in pre-3.0)
-    group->CountRollVote(GetPlayer(), lootedTarget, itemSlot, RollVote(rollType));
+    group->CountRollVote(GetPlayer(), packet.lootedTarget, packet.itemSlot, RollVote(rollType));
 }
 
 void WorldSession::HandleMinimapPingOpcode(WorldPackets::Group::MinimapPing const& packet)
 {
-    float x = packet.x;
-    float y = packet.y;
-
     if (!GetPlayer()->GetGroup())
         return;
 
-    //sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "Received opcode MSG_MINIMAP_PING X: %f, Y: %f", x, y);
+    //sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "Received opcode MSG_MINIMAP_PING X: %f, Y: %f", packet.x, packet.y);
 
     /** error handling **/
     /********************/
@@ -409,29 +398,26 @@ void WorldSession::HandleMinimapPingOpcode(WorldPackets::Group::MinimapPing cons
     // everything is fine, do it
     WorldPacket data(MSG_MINIMAP_PING, (8 + 4 + 4));
     data << GetPlayer()->GetObjectGuid();
-    data << float(x);
-    data << float(y);
+    data << float(packet.x);
+    data << float(packet.y);
     GetPlayer()->GetGroup()->BroadcastPacket(&data, true, -1, GetPlayer()->GetObjectGuid());
 }
 
 void WorldSession::HandleRandomRollOpcode(WorldPackets::Group::RandomRoll const& packet)
 {
-    uint32 minimum = packet.minimum;
-    uint32 maximum = packet.maximum;
-
     /** error handling **/
-    if (minimum > maximum || maximum > 10000) // < 32768 for urand call
+    if (packet.minimum > packet.maximum || packet.maximum > 10000) // < 32768 for urand call
         return;
     /********************/
 
     // everything is fine, do it
-    uint32 roll = urand(minimum, maximum);
+    uint32 roll = urand(packet.minimum, packet.maximum);
 
-    //sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "ROLL: MIN: %u, MAX: %u, ROLL: %u", minimum, maximum, roll);
+    //sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "ROLL: MIN: %u, MAX: %u, ROLL: %u", packet.minimum, packet.maximum, roll);
 
     WorldPacket data(MSG_RANDOM_ROLL, 4 + 4 + 4 + 8);
-    data << uint32(minimum);
-    data << uint32(maximum);
+    data << uint32(packet.minimum);
+    data << uint32(packet.maximum);
     data << uint32(roll);
     data << GetPlayer()->GetObjectGuid();
 

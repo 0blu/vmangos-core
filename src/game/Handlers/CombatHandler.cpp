@@ -31,12 +31,10 @@
 
 void WorldSession::HandleAttackSwingOpcode(WorldPackets::Combat::AttackSwing const& packet)
 {
-    ObjectGuid guid = packet.targetGuid;
-
-    if (!guid.IsUnit())
+    if (!packet.targetGuid.IsUnit())
         return;
 
-    Unit* pEnemy = _player->GetMap()->GetUnit(guid);
+    Unit* pEnemy = _player->GetMap()->GetUnit(packet.targetGuid);
 
     if (!pEnemy)
     {
@@ -81,13 +79,12 @@ void WorldSession::HandleAttackStopOpcode(NullClientPacket const& /*packet*/)
 
 void WorldSession::HandleSetSheathedOpcode(WorldPackets::Combat::SetSheathed const& packet)
 {
-    uint32 sheathed = packet.sheathed;
-    if (sheathed >= MAX_SHEATH_STATE)
+    if (packet.sheathed >= MAX_SHEATH_STATE)
         return;
 
     GetPlayer()->InterruptSpellsWithChannelFlags(AURA_INTERRUPT_SHEATHING_CANCELS);
     GetPlayer()->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_SHEATHING_CANCELS);
-    GetPlayer()->SetSheath(SheathState(sheathed));
+    GetPlayer()->SetSheath(SheathState(packet.sheathed));
 }
 
 void WorldSession::SendAttackStop(Unit const* enemy)

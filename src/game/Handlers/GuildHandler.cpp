@@ -35,9 +35,7 @@
 
 void WorldSession::HandleGuildQueryOpcode(WorldPackets::Guild::GuildQuery const& packet)
 {
-    uint32 guildId = packet.guildId;
-
-    if (Guild* guild = sGuildMgr.GetGuildById(guildId))
+    if (Guild* guild = sGuildMgr.GetGuildById(packet.guildId))
     {
         guild->Query(this);
         return;
@@ -712,19 +710,12 @@ void WorldSession::HandleGuildChangeInfoTextOpcode(WorldPackets::Guild::GuildCha
 
 void WorldSession::HandleSaveGuildEmblemOpcode(WorldPackets::Guild::SaveGuildEmblem const& packet)
 {
-    ObjectGuid vendorGuid = packet.vendorGuid;
-    int32 emblemStyle = packet.emblemStyle;
-    int32 emblemColor = packet.emblemColor;
-    int32 borderStyle = packet.borderStyle;
-    int32 borderColor = packet.borderColor;
-    int32 backgroundColor = packet.backgroundColor;
-
-    Creature* pCreature = GetPlayer()->GetNPCIfCanInteractWith(vendorGuid, UNIT_NPC_FLAG_TABARDDESIGNER);
+    Creature* pCreature = GetPlayer()->GetNPCIfCanInteractWith(packet.vendorGuid, UNIT_NPC_FLAG_TABARDDESIGNER);
     if (!pCreature)
     {
         //[-ZERO] fails silently, not "That's not an emblem vendor!"
         SendSaveGuildEmblem(ERR_GUILDEMBLEM_FAIL_NO_MESSAGE);
-        sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "WORLD: HandleSaveGuildEmblemOpcode - %s not found or you can't interact with him.", vendorGuid.GetString().c_str());
+        sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "WORLD: HandleSaveGuildEmblemOpcode - %s not found or you can't interact with him.", packet.vendorGuid.GetString().c_str());
         return;
     }
 
@@ -755,7 +746,7 @@ void WorldSession::HandleSaveGuildEmblemOpcode(WorldPackets::Guild::SaveGuildEmb
     }
 
     GetPlayer()->ModifyMoney(-10 * GOLD);
-    guild->SetEmblem(emblemStyle, emblemColor, borderStyle, borderColor, backgroundColor);
+    guild->SetEmblem(packet.emblemStyle, packet.emblemColor, packet.borderStyle, packet.borderColor, packet.backgroundColor);
 
     //"Guild Emblem saved."
     SendSaveGuildEmblem(ERR_GUILDEMBLEM_SUCCESS);

@@ -48,19 +48,17 @@ enum StableResultCode
 
 void WorldSession::HandleTabardVendorActivateOpcode(WorldPackets::Npc::TabardVendorActivate const& packet)
 {
-    ObjectGuid guid = packet.guid;
-
-    Creature* unit = GetPlayer()->GetNPCIfCanInteractWith(guid, UNIT_NPC_FLAG_TABARDDESIGNER);
+    Creature* unit = GetPlayer()->GetNPCIfCanInteractWith(packet.guid, UNIT_NPC_FLAG_TABARDDESIGNER);
     if (!unit)
     {
-        sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "WORLD: HandleTabardVendorActivateOpcode - %s not found or you can't interact with him.", guid.GetString().c_str());
+        sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "WORLD: HandleTabardVendorActivateOpcode - %s not found or you can't interact with him.", packet.guid.GetString().c_str());
         return;
     }
 
     GetPlayer()->InterruptSpellsWithChannelFlags(AURA_INTERRUPT_INTERACTING_CANCELS);
     GetPlayer()->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_INTERACTING_CANCELS);
 
-    SendTabardVendorActivate(guid);
+    SendTabardVendorActivate(packet.guid);
 }
 
 void WorldSession::SendTabardVendorActivate(ObjectGuid guid)
@@ -72,16 +70,14 @@ void WorldSession::SendTabardVendorActivate(ObjectGuid guid)
 
 void WorldSession::HandleBankerActivateOpcode(WorldPackets::Npc::BankerActivate const& packet)
 {
-    ObjectGuid guid = packet.guid;
-
-    if (!CheckBanker(guid))
+    if (!CheckBanker(packet.guid))
         return;
 
     // remove fake death
     if (GetPlayer()->HasUnitState(UNIT_STATE_FEIGN_DEATH))
         GetPlayer()->RemoveSpellsCausingAura(SPELL_AURA_FEIGN_DEATH);
 
-    SendShowBank(guid);
+    SendShowBank(packet.guid);
 }
 
 void WorldSession::SendShowBank(ObjectGuid guid)
@@ -94,9 +90,7 @@ void WorldSession::SendShowBank(ObjectGuid guid)
 
 void WorldSession::HandleTrainerListOpcode(WorldPackets::Npc::TrainerList const& packet)
 {
-    ObjectGuid guid = packet.guid;
-
-    SendTrainerList(guid);
+    SendTrainerList(packet.guid);
 }
 
 static void SendTrainerSpellHelper(WorldPacket& data, TrainerSpell const* tSpell, uint32 triggerSpell, TrainerSpellState state, float fDiscountMod, bool can_learn_primary_prof)
@@ -351,12 +345,10 @@ void WorldSession::HandleTrainerBuySpellOpcode(WorldPackets::Npc::TrainerBuySpel
 
 void WorldSession::HandleGossipHelloOpcode(WorldPackets::Npc::GossipHello const& packet)
 {
-    ObjectGuid guid = packet.npcGuid;
-
-    Creature* pCreature = GetPlayer()->GetNPCIfCanInteractWith(guid, UNIT_NPC_FLAG_NONE);
+    Creature* pCreature = GetPlayer()->GetNPCIfCanInteractWith(packet.npcGuid, UNIT_NPC_FLAG_NONE);
     if (!pCreature)
     {
-        sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "WORLD: HandleGossipHelloOpcode - %s not found or you can't interact with him.", guid.GetString().c_str());
+        sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "WORLD: HandleGossipHelloOpcode - %s not found or you can't interact with him.", packet.npcGuid.GetString().c_str());
         return;
     }
 
@@ -489,15 +481,13 @@ void WorldSession::SendSpiritResurrect()
 
 void WorldSession::HandleBinderActivateOpcode(WorldPackets::Npc::BinderActivate const& packet)
 {
-    ObjectGuid npcGuid = packet.npcGuid;
-
     if (!GetPlayer()->IsInWorld() || !GetPlayer()->IsAlive())
         return;
 
-    Creature* unit = GetPlayer()->GetNPCIfCanInteractWith(npcGuid, UNIT_NPC_FLAG_INNKEEPER);
+    Creature* unit = GetPlayer()->GetNPCIfCanInteractWith(packet.npcGuid, UNIT_NPC_FLAG_INNKEEPER);
     if (!unit)
     {
-        sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "WORLD: HandleBinderActivateOpcode - %s not found or you can't interact with him.", npcGuid.GetString().c_str());
+        sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "WORLD: HandleBinderActivateOpcode - %s not found or you can't interact with him.", packet.npcGuid.GetString().c_str());
         return;
     }
 
@@ -520,18 +510,16 @@ void WorldSession::SendBindPoint(Creature* npc)
 
 void WorldSession::HandleListStabledPetsOpcode(WorldPackets::Npc::ListStabledPets const& packet)
 {
-    ObjectGuid npcGUID = packet.npcGuid;
-
-    Creature* unit = GetPlayer()->GetNPCIfCanInteractWith(npcGUID, UNIT_NPC_FLAG_STABLEMASTER);
+    Creature* unit = GetPlayer()->GetNPCIfCanInteractWith(packet.npcGuid, UNIT_NPC_FLAG_STABLEMASTER);
     if (!unit)
     {
-        sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "WORLD: HandleListStabledPetsOpcode - %s not found or you can't interact with him.", npcGUID.GetString().c_str());
+        sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "WORLD: HandleListStabledPetsOpcode - %s not found or you can't interact with him.", packet.npcGuid.GetString().c_str());
         return;
     }
 
     GetPlayer()->InterruptSpellsWithChannelFlags(AURA_INTERRUPT_INTERACTING_CANCELS);
     GetPlayer()->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_INTERACTING_CANCELS);
-    SendStablePet(npcGUID);
+    SendStablePet(packet.npcGuid);
 }
 
 void WorldSession::SendStablePet(ObjectGuid guid)
@@ -623,15 +611,13 @@ bool WorldSession::CheckStableMaster(ObjectGuid guid)
 
 void WorldSession::HandleStablePet(WorldPackets::Npc::StablePet const& packet)
 {
-    ObjectGuid npcGUID = packet.npcGuid;
-
     if (!GetPlayer()->IsAlive())
     {
         SendStableResult(STABLE_ERR_STABLE);
         return;
     }
 
-    if (!CheckStableMaster(npcGUID))
+    if (!CheckStableMaster(packet.npcGuid))
     {
         SendStableResult(STABLE_ERR_STABLE);
         return;
@@ -673,10 +659,9 @@ void WorldSession::HandleStablePet(WorldPackets::Npc::StablePet const& packet)
 
 void WorldSession::HandleUnstablePet(WorldPackets::Npc::UnstablePet const& packet)
 {
-    ObjectGuid npcGUID = packet.npcGuid;
     uint32 petNumber = packet.petNumber;
 
-    if (!CheckStableMaster(npcGUID))
+    if (!CheckStableMaster(packet.npcGuid))
     {
         SendStableResult(STABLE_ERR_STABLE);
         return;
@@ -723,9 +708,7 @@ void WorldSession::HandleUnstablePet(WorldPackets::Npc::UnstablePet const& packe
 
 void WorldSession::HandleBuyStableSlot(WorldPackets::Npc::BuyStableSlot const& packet)
 {
-    ObjectGuid npcGUID = packet.npcGuid;
-
-    if (!CheckStableMaster(npcGUID))
+    if (!CheckStableMaster(packet.npcGuid))
     {
         SendStableResult(STABLE_ERR_STABLE);
         return;
@@ -756,10 +739,9 @@ void WorldSession::HandleStableRevivePet(NullClientPacket const& /*packet*/)
 
 void WorldSession::HandleStableSwapPet(WorldPackets::Npc::StableSwapPet const& packet)
 {
-    ObjectGuid npcGUID = packet.npcGuid;
     uint32 pet_number = packet.petNumber;
 
-    if (!CheckStableMaster(npcGUID))
+    if (!CheckStableMaster(packet.npcGuid))
     {
         SendStableResult(STABLE_ERR_STABLE);
         return;
