@@ -623,7 +623,7 @@ class WorldSession
         void HandleTrainerBuySpellOpcode(WorldPackets::Npc::TrainerBuySpell const& packet);
         void HandlePetitionShowListOpcode(WorldPackets::Petition::PetitionShow const& packet);
         void HandleGossipHelloOpcode(WorldPackets::Npc::GossipHello const& packet);
-        void HandleGossipSelectOptionOpcode(WorldPacket& recvPacket);
+        void HandleGossipSelectOptionOpcode(WorldPackets::Npc::GossipSelectOption const& packet);
         void HandleSpiritHealerActivateOpcode(WorldPackets::Npc::SpiritHealerActivate const& packet);
         void HandleNpcTextQueryOpcode(WorldPackets::Npc::NpcTextQuery const& packet);
         void HandleBinderActivateOpcode(WorldPackets::Npc::BinderActivate const& packet);

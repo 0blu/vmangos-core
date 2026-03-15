@@ -377,51 +377,45 @@ void WorldSession::HandleGossipHelloOpcode(WorldPackets::Npc::GossipHello const&
     }
 }
 
-void WorldSession::HandleGossipSelectOptionOpcode(WorldPacket& recv_data)
+void WorldSession::HandleGossipSelectOptionOpcode(WorldPackets::Npc::GossipSelectOption const& packet)
 {
-    uint32 gossipListId;
-    ObjectGuid guid;
-    std::string code;
-
-    recv_data >> guid >> gossipListId;
-
-    if (_player->PlayerTalkClass->GossipOptionCoded(gossipListId))
-        recv_data >> code;
+    if (!_player->PlayerTalkClass->GossipOptionCoded(packet.gossipListId) && !packet.code.empty())
+        return;
 
     GetPlayer()->InterruptSpellsWithChannelFlags(AURA_INTERRUPT_INTERACTING_CANCELS);
     GetPlayer()->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_INTERACTING_CANCELS);
 
-    uint32 sender = _player->PlayerTalkClass->GossipOptionSender(gossipListId);
-    uint32 action = _player->PlayerTalkClass->GossipOptionAction(gossipListId);
+    uint32 sender = _player->PlayerTalkClass->GossipOptionSender(packet.gossipListId);
+    uint32 action = _player->PlayerTalkClass->GossipOptionAction(packet.gossipListId);
 
-    if (guid.IsAnyTypeCreature())
+    if (packet.guid.IsAnyTypeCreature())
     {
-        Creature* pCreature = GetPlayer()->GetNPCIfCanInteractWith(guid, UNIT_NPC_FLAG_NONE);
+        Creature* pCreature = GetPlayer()->GetNPCIfCanInteractWith(packet.guid, UNIT_NPC_FLAG_NONE);
 
         if (!pCreature)
         {
-            sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "WORLD: HandleGossipSelectOptionOpcode - %s not found or you can't interact with it.", guid.GetString().c_str());
+            sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "WORLD: HandleGossipSelectOptionOpcode - %s not found or you can't interact with it.", packet.guid.GetString().c_str());
             return;
         }
 
         if (!pCreature->HasExtraFlag(CREATURE_FLAG_EXTRA_NO_MOVEMENT_PAUSE))
             pCreature->PauseOutOfCombatMovement();
 
-        if (!sScriptMgr.OnGossipSelect(_player, pCreature, sender, action, code.empty() ? nullptr : code.c_str()))
-            _player->OnGossipSelect(pCreature, gossipListId);
+        if (!sScriptMgr.OnGossipSelect(_player, pCreature, sender, action, packet.code.empty() ? nullptr : packet.code.c_str()))
+            _player->OnGossipSelect(pCreature, packet.gossipListId);
     }
-    else if (guid.IsGameObject())
+    else if (packet.guid.IsGameObject())
     {
-        GameObject* pGo = GetPlayer()->GetGameObjectIfCanInteractWith(guid);
+        GameObject* pGo = GetPlayer()->GetGameObjectIfCanInteractWith(packet.guid);
 
         if (!pGo)
         {
-            sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "WORLD: HandleGossipSelectOptionOpcode - %s not found or you can't interact with it.", guid.GetString().c_str());
+            sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "WORLD: HandleGossipSelectOptionOpcode - %s not found or you can't interact with it.", packet.guid.GetString().c_str());
             return;
         }
 
-        if (!sScriptMgr.OnGossipSelect(_player, pGo, sender, action, code.empty() ? nullptr : code.c_str()))
-            _player->OnGossipSelect(pGo, gossipListId);
+        if (!sScriptMgr.OnGossipSelect(_player, pGo, sender, action, packet.code.empty() ? nullptr : packet.code.c_str()))
+            _player->OnGossipSelect(pGo, packet.gossipListId);
     }
 }
 

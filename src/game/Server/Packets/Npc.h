@@ -3,6 +3,7 @@
 
 #include "Packet.h"
 #include "ObjectGuid.h"
+#include <string>
 
 namespace WorldPackets { namespace Npc
 {
@@ -134,6 +135,17 @@ namespace WorldPackets { namespace Npc
         uint32 petNumber = 0;
 
         explicit StableSwapPet() : ClientPacket(CMSG_STABLE_SWAP_PET) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class GossipSelectOption final : public ClientPacket
+    {
+    public:
+        ObjectGuid  guid;
+        uint32      gossipListId = 0;
+        std::string code;
+
+        explicit GossipSelectOption() : ClientPacket(CMSG_GOSSIP_SELECT_OPTION) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
 }} // namespace WorldPackets::Npc

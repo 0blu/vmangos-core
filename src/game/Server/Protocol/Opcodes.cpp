@@ -479,7 +479,7 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(SMSG_PET_MODE,                     Reason::SendByServer);
 #endif
     DEFINE_HANDLER(CMSG_GOSSIP_HELLO,                 STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleGossipHelloOpcode);
-    LEGACY_HANDLER(CMSG_GOSSIP_SELECT_OPTION,         STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleGossipSelectOptionOpcode);
+    DEFINE_HANDLER(CMSG_GOSSIP_SELECT_OPTION,         STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleGossipSelectOptionOpcode);
     INVALID_PACKET(SMSG_GOSSIP_MESSAGE,               Reason::SendByServer);
     INVALID_PACKET(SMSG_GOSSIP_COMPLETE,              Reason::SendByServer);
     DEFINE_HANDLER(CMSG_NPC_TEXT_QUERY,               STATUS_LOGGEDIN,  PACKET_PROCESS_DB_QUERY,      &WorldSession::HandleNpcTextQueryOpcode);

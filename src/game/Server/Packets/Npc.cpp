@@ -71,3 +71,10 @@ void WorldPackets::Npc::StableSwapPet::ReadFromWorldPacket(WorldPacket& recv_dat
 {
     recv_data >> npcGuid >> petNumber;
 }
+
+void WorldPackets::Npc::GossipSelectOption::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> guid >> gossipListId;
+    if (!recv_data.empty())
+        recv_data >> code;
+}
