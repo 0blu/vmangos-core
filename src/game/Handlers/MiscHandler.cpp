@@ -576,7 +576,7 @@ void WorldSession::HandleDelIgnoreOpcode(WorldPackets::Misc::DelIgnore const& pa
 
 void WorldSession::HandleBugOpcode(WorldPackets::Misc::Bug const& packet)
 {
-    sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "WorldSession::HandleBugOpcode: Player %s (GUID: %u) reported a %s: [%s] %s",
+    sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "WorldSession::HandleBugOpcode: Player %s (AccountId: %u) reported a %s: [%s] %s",
         GetPlayer() ? GetPlayer()->GetName() : "(none)", GetAccountId(),
         packet.suggestion ? "suggestion" : "bug", packet.type.c_str(), packet.content.c_str());
 }
