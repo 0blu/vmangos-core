@@ -768,7 +768,7 @@ class WorldSession
         void HandlePetAction(WorldPackets::Pet::PetAction const& packet);
         void HandlePetStopAttack(WorldPackets::Pet::PetStopAttack const& packet);
         void HandlePetNameQueryOpcode(WorldPackets::Pet::QueryPetName const& packet);
-        void HandlePetSetAction(WorldPacket& recv_data);
+        void HandlePetSetAction(WorldPackets::Pet::PetSetAction const& packet);
         void HandlePetAbandon(WorldPackets::Pet::PetAbandon const& packet);
         void HandlePetRename(WorldPackets::Pet::PetRename const& packet);
         void HandlePetCancelAuraOpcode(WorldPackets::Pet::PetCancelAura const& packet);

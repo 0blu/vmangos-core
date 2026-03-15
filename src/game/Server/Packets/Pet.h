@@ -86,6 +86,23 @@ namespace WorldPackets { namespace Pet
         explicit PetSpellAutocast() : ClientPacket(CMSG_PET_SPELL_AUTOCAST) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class PetSetAction final : public ClientPacket
+    {
+    public:
+        struct ActionEntry
+        {
+            uint32 position = 0;
+            uint32 data = 0;
+        };
+
+        ObjectGuid  petGuid;
+        uint8       count = 0;
+        ActionEntry actions[2];
+
+        explicit PetSetAction() : ClientPacket(CMSG_PET_SET_ACTION) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
 }} // namespace WorldPackets::Pet
 
 #endif // MANGOS_PACKETS_PET_H

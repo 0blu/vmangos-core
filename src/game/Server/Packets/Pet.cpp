@@ -46,3 +46,14 @@ void WorldPackets::Pet::PetSpellAutocast::ReadFromWorldPacket(WorldPacket& recv_
     recv_data >> spellId;
     recv_data >> state;
 }
+
+void WorldPackets::Pet::PetSetAction::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> petGuid;
+    count = (recv_data.size() == 24) ? 2 : 1;
+    for (uint8 i = 0; i < count; ++i)
+    {
+        recv_data >> actions[i].position;
+        recv_data >> actions[i].data;
+    }
+}
