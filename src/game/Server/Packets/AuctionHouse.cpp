@@ -29,7 +29,8 @@ void WorldPackets::AuctionHouse::AuctionListOwnerItems::ReadFromWorldPacket(Worl
 void WorldPackets::AuctionHouse::AuctionPlaceBid::ReadFromWorldPacket(WorldPacket& recv_data)
 {
     recv_data >> auctioneerGuid;
-    recv_data >> auctionId >> price;
+    recv_data >> auctionId;
+    recv_data >> price;
 }
 
 void WorldPackets::AuctionHouse::AuctionRemoveItem::ReadFromWorldPacket(WorldPacket& recv_data)

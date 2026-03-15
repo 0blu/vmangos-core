@@ -49,7 +49,11 @@ void WorldPackets::Guild::GuildChangeInfoText::ReadFromWorldPacket(WorldPacket& 
 void WorldPackets::Guild::SaveGuildEmblem::ReadFromWorldPacket(WorldPacket& recv_data)
 {
     recv_data >> vendorGuid;
-    recv_data >> emblemStyle >> emblemColor >> borderStyle >> borderColor >> backgroundColor;
+    recv_data >> emblemStyle;
+    recv_data >> emblemColor;
+    recv_data >> borderStyle;
+    recv_data >> borderColor;
+    recv_data >> backgroundColor;
 }
 
 void WorldPackets::Guild::GuildSetPublicNote::ReadFromWorldPacket(WorldPacket& recv_data)

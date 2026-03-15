@@ -177,7 +177,10 @@ void WorldPackets::Misc::SetWatchedFaction::ReadFromWorldPacket(WorldPacket& rec
 void WorldPackets::Misc::MoveSetRawPosition::ReadFromWorldPacket(WorldPacket& recv_data)
 {
     opcode = recv_data.GetOpcode();
-    recv_data >> location.x >> location.y >> location.z >> location.o;
+    recv_data >> location.x;
+    recv_data >> location.y;
+    recv_data >> location.z;
+    recv_data >> location.o;
 }
 
 void WorldPackets::Misc::TogglePvP::ReadFromWorldPacket(WorldPacket& recv_data)

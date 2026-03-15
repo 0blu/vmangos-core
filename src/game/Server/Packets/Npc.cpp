@@ -44,7 +44,8 @@ void WorldPackets::Npc::SpiritHealerActivate::ReadFromWorldPacket(WorldPacket& r
 
 void WorldPackets::Npc::RepairItem::ReadFromWorldPacket(WorldPacket& recv_data)
 {
-    recv_data >> npcGuid >> itemGuid;
+    recv_data >> npcGuid;
+    recv_data >> itemGuid;
 }
 
 void WorldPackets::Npc::ListStabledPets::ReadFromWorldPacket(WorldPacket& recv_data)
@@ -59,7 +60,8 @@ void WorldPackets::Npc::StablePet::ReadFromWorldPacket(WorldPacket& recv_data)
 
 void WorldPackets::Npc::UnstablePet::ReadFromWorldPacket(WorldPacket& recv_data)
 {
-    recv_data >> npcGuid >> petNumber;
+    recv_data >> npcGuid;
+    recv_data >> petNumber;
 }
 
 void WorldPackets::Npc::BuyStableSlot::ReadFromWorldPacket(WorldPacket& recv_data)
@@ -69,7 +71,8 @@ void WorldPackets::Npc::BuyStableSlot::ReadFromWorldPacket(WorldPacket& recv_dat
 
 void WorldPackets::Npc::StableSwapPet::ReadFromWorldPacket(WorldPacket& recv_data)
 {
-    recv_data >> npcGuid >> petNumber;
+    recv_data >> npcGuid;
+    recv_data >> petNumber;
 }
 
 void WorldPackets::Npc::GossipSelectOption::ReadFromWorldPacket(WorldPacket& recv_data)
@@ -77,5 +80,7 @@ void WorldPackets::Npc::GossipSelectOption::ReadFromWorldPacket(WorldPacket& rec
     recv_data >> guid;
     recv_data >> gossipListId;
     if (!recv_data.empty())
+    {
         recv_data >> code;
+    }
 }

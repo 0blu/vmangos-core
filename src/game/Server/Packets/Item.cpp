@@ -118,8 +118,10 @@ void WorldPackets::Item::BuyItemInSlot::ReadFromWorldPacket(WorldPacket& recv_da
 
 void WorldPackets::Item::WrapItem::ReadFromWorldPacket(WorldPacket& recv_data)
 {
-    recv_data >> giftBag >> giftSlot;
-    recv_data >> itemBag >> itemSlot;
+    recv_data >> giftBag;
+    recv_data >> giftSlot;
+    recv_data >> itemBag;
+    recv_data >> itemSlot;
 }
 
 void WorldPackets::Item::BuybackItem::ReadFromWorldPacket(WorldPacket& recv_data)
