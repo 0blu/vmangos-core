@@ -186,7 +186,7 @@ class ByteBuffer
 
         ByteBuffer& operator>>(bool& value)
         {
-            value = read<char>() > 0 ? true : false;
+            value = read<char>() != 0;
             return *this;
         }
 
@@ -276,7 +276,7 @@ class ByteBuffer
                 value.assign((char*)(&_storage[startPos]), _rpos - startPos);
                 _rpos++;
             }
-            
+
             return *this;
         }
 
