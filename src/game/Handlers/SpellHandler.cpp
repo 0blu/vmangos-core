@@ -30,7 +30,6 @@
 #include "SpellAuras.h"
 #include "GameObject.h"
 #include "Map.h"
-#include "Packets/Pet.h"
 
 using namespace Spells;
 

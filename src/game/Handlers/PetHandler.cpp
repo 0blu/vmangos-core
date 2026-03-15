@@ -31,7 +31,6 @@
 #include "Util.h"
 #include "Pet.h"
 #include "Group.h"
-#include "Packets/Pet.h"
 
 void WorldSession::HandlePetAction(WorldPackets::Pet::PetAction const& packet)
 {

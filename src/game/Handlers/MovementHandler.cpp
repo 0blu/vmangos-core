@@ -37,8 +37,6 @@
 #include "MovementPacketSender.h"
 #include "MoveSpline.h"
 #include "Geometry.h"
-#include "Packets/Misc.h"
-#include "Packets/Movement.h"
 
 void WorldSession::HandleMoveWorldportAckOpcode(NullClientPacket const& /*packet*/)
 {
@@ -923,12 +921,11 @@ void WorldSession::HandleMoveNotActiveMoverOpcode(WorldPackets::Movement::MoveNo
                        oldMoverGuid.GetString().c_str());
         return;
     }
+
+    MovementInfo movementInfo = packet.movementInfo;
 #else
     ObjectGuid oldMoverGuid = m_clientMoverGuid;
 #endif
-
-    MovementInfo movementInfo = packet.movementInfo;
-    movementInfo.UpdateTime(timeNow);
 
     m_clientMoverGuid = ObjectGuid();
 

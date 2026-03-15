@@ -36,7 +36,6 @@
 #include "ScriptMgr.h"
 #include "World.h"
 #include "Anticheat.h"
-#include "Packets/Battleground.h"
 
 void WorldSession::HandleBattlemasterHelloOpcode(WorldPackets::Battleground::BattlemasterHello const& packet)
 {

@@ -69,7 +69,7 @@ void WorldPackets::Movement::MoveSplineDone::ReadFromWorldPacket(WorldPacket& re
 {
     recv_data >> movementInfo;
     recv_data >> splineId;
-    recv_data >> Unused<float>();
+    recv_data.read_skip<float>();
 }
 
 void WorldPackets::Movement::MoveNotActiveMover::ReadFromWorldPacket(WorldPacket& recv_data)

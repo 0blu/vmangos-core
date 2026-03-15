@@ -32,7 +32,6 @@
 #include "GossipDef.h"
 #include "SocialMgr.h"
 #include "Anticheat.h"
-#include "Packets/Petition.h"
 
 // Charters ID in item_template
 #define GUILD_CHARTER               5863

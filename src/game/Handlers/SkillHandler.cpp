@@ -28,7 +28,6 @@
 #include "WorldSession.h"
 #include "UpdateMask.h"
 #include "Anticheat.h"
-#include "Packets/Skill.h"
 
 void WorldSession::HandleLearnTalentOpcode(WorldPackets::Skill::LearnTalent const& packet)
 {

@@ -27,7 +27,6 @@
 #include "World.h"
 #include "Group.h"
 #include "LFGMgr.h"
-#include "Packets/Misc.h"
 
 void WorldSession::HandleMeetingStoneJoinOpcode(WorldPackets::Misc::MeetingStoneJoin const& packet)
 {
