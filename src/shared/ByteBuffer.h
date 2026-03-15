@@ -82,6 +82,24 @@ class ByteBuffer
             return *this;
         }
 
+        static ByteBuffer from(std::vector<uint8> const& v)
+        {
+            ByteBuffer buf;
+            buf._storage = v;
+            buf._rpos = 0;
+            buf._wpos = buf._storage.size();
+            return buf;
+        }
+
+        static ByteBuffer from(std::vector<uint8> const&& v)
+        {
+            ByteBuffer buf;
+            buf._storage = std::move(v);
+            buf._rpos = 0;
+            buf._wpos = buf._storage.size();
+            return buf;
+        }
+
         void clear()
         {
             _storage.clear();

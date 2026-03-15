@@ -1237,9 +1237,8 @@ void WorldSession::HandleWardenDataOpcode(WorldPackets::Misc::WardenData const& 
         return;
     }
 
-    WorldPacket rawPacket(CMSG_WARDEN_DATA, packet.data.size());
-    rawPacket.append(packet.data);
-
-    std::lock_guard<std::mutex> lock(m_warden->m_packetQueueMutex);
-    m_warden->m_packetQueue.emplace_back(std::move(rawPacket));
+    {
+        std::lock_guard<std::mutex> lock(m_warden->m_packetDataQueueMutex);
+        m_warden->m_packetDataQueue.emplace(std::move(packet.data));
+    }
 }
