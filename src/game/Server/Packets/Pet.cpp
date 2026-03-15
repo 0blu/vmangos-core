@@ -50,6 +50,7 @@ void WorldPackets::Pet::PetSpellAutocast::ReadFromWorldPacket(WorldPacket& recv_
 void WorldPackets::Pet::PetSetAction::ReadFromWorldPacket(WorldPacket& recv_data)
 {
     recv_data >> petGuid;
+    // Packet with 2 actions is 24 bytes: 8 (GUID) + 2 * 8 (position + data per action)
     count = (recv_data.size() == 24) ? 2 : 1;
     for (uint8 i = 0; i < count; ++i)
     {
