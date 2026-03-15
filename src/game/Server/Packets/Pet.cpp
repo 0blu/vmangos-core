@@ -58,3 +58,10 @@ void WorldPackets::Pet::PetSetAction::ReadFromWorldPacket(WorldPacket& recv_data
         recv_data >> actions[i].data;
     }
 }
+
+void WorldPackets::Pet::PetCastSpell::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> petGuid;
+    recv_data >> spellId;
+    recv_data >> targets;
+}

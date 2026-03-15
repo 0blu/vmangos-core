@@ -395,7 +395,7 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(SMSG_LEARNED_SPELL,                Reason::SendByServer);
     INVALID_PACKET(SMSG_SUPERCEDED_SPELL,             Reason::SendByServer);
     INVALID_PACKET(CMSG_NEW_SPELL_SLOT,               Reason::Unhandled);
-    LEGACY_HANDLER(CMSG_CAST_SPELL,                   STATUS_LOGGEDIN,  PACKET_PROCESS_SPELLS,        &WorldSession::HandleCastSpellOpcode);
+    DEFINE_HANDLER(CMSG_CAST_SPELL,                   STATUS_LOGGEDIN,  PACKET_PROCESS_SPELLS,        &WorldSession::HandleCastSpellOpcode);
     DEFINE_HANDLER(CMSG_CANCEL_CAST,                  STATUS_LOGGEDIN,  PACKET_PROCESS_SPELLS,        &WorldSession::HandleCancelCastOpcode);
     INVALID_PACKET(SMSG_CAST_RESULT,                  Reason::SendByServer);
     INVALID_PACKET(SMSG_SPELL_START,                  Reason::SendByServer);
@@ -598,7 +598,7 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(SMSG_AUTH_RESPONSE,                Reason::SendByServer);
     INVALID_PACKET(MSG_GM_SHOWLABEL,                  Reason::Unhandled);
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
-    LEGACY_HANDLER(CMSG_PET_CAST_SPELL,               STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandlePetCastSpellOpcode);
+    DEFINE_HANDLER(CMSG_PET_CAST_SPELL,               STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandlePetCastSpellOpcode);
 #endif
     DEFINE_HANDLER(MSG_SAVE_GUILD_EMBLEM,             STATUS_LOGGEDIN,  PACKET_PROCESS_GUILD,         &WorldSession::HandleSaveGuildEmblemOpcode);
     DEFINE_HANDLER(MSG_TABARDVENDOR_ACTIVATE,         STATUS_LOGGEDIN,  PACKET_PROCESS_GUILD,         &WorldSession::HandleTabardVendorActivateOpcode);

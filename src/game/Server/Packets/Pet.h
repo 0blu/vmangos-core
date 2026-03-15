@@ -4,6 +4,7 @@
 #include "Packet.h"
 #include "SharedDefines.h"
 #include "ObjectGuid.h"
+#include "SpellCastTargetsInfo.h"
 #include <string>
 
 namespace WorldPackets { namespace Pet
@@ -101,6 +102,17 @@ namespace WorldPackets { namespace Pet
         ActionEntry actions[2];
 
         explicit PetSetAction() : ClientPacket(CMSG_PET_SET_ACTION) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class PetCastSpell final : public ClientPacket
+    {
+    public:
+        ObjectGuid           petGuid;
+        uint32               spellId = 0;
+        SpellCastTargetsInfo targets;
+
+        explicit PetCastSpell() : ClientPacket(CMSG_PET_CAST_SPELL) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
 }} // namespace WorldPackets::Pet

@@ -272,32 +272,25 @@ void WorldSession::HandleGameObjectUseOpcode(WorldPackets::Misc::GameObjectUse c
     }
 }
 
-void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
+void WorldSession::HandleCastSpellOpcode(WorldPackets::Spell::CastSpell const& packet)
 {
-    uint32 spellId;
-    recvPacket >> spellId;
+    uint32 spellId = packet.spellId;
 
     SpellEntry const* spellInfo = sSpellMgr.GetSpellEntry(spellId);
 
     if (!spellInfo)
-    {
-        recvPacket.rpos(recvPacket.wpos());                 // prevent spam at ignore packet
         return;
-    }
 
     // not have spell in spellbook or spell passive and not casted by client
     if (!_player->HasActiveSpell(spellId) || spellInfo->IsPassiveSpell())
     {
         sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "World: Player %u casts spell %u which he shouldn't have", _player->GetGUIDLow(), spellId);
         //cheater? kick? ban?
-        recvPacket.rpos(recvPacket.wpos());                 // prevent spam at ignore packet
         return;
     }
 
     // client provided targets
-    SpellCastTargets targets;
-
-    recvPacket >> targets.ReadForCaster(_player);
+    SpellCastTargets targets = SpellCastTargets::FromSpellCastTargetsInfo(packet.targets, _player);
 
     SpellEntry const* originalSpellInfo = spellInfo;
 

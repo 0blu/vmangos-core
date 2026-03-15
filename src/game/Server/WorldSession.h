@@ -695,7 +695,7 @@ class WorldSession
 
         void HandleUseItemOpcode(WorldPackets::Spell::UseItem const& packet);
         void HandleOpenItemOpcode(WorldPackets::Spell::OpenItem const& packet);
-        void HandleCastSpellOpcode(WorldPacket& recvPacket);
+        void HandleCastSpellOpcode(WorldPackets::Spell::CastSpell const& packet);
         void HandleCancelCastOpcode(WorldPackets::Spell::CancelCast const& packet);
         void HandleCancelAuraOpcode(WorldPackets::Spell::CancelAura const& packet);
         void HandleCancelGrowthAuraOpcode(NullClientPacket const& packet);
@@ -774,7 +774,7 @@ class WorldSession
         void HandlePetCancelAuraOpcode(WorldPackets::Pet::PetCancelAura const& packet);
         void HandlePetUnlearnOpcode(WorldPackets::Pet::PetUnlearn const& packet);
         void HandlePetSpellAutocastOpcode(WorldPackets::Pet::PetSpellAutocast const& packet);
-        void HandlePetCastSpellOpcode(WorldPacket& recvPacket);
+        void HandlePetCastSpellOpcode(WorldPackets::Pet::PetCastSpell const& packet);
         void HandleRequestPetInfoOpcode(NullClientPacket const& packet);
 
         void HandleCharRenameOpcode(WorldPackets::Character::CharRename const& packet);

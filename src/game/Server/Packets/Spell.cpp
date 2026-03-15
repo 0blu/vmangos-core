@@ -1,5 +1,11 @@
 #include "Spell.h"
 
+void WorldPackets::Spell::CastSpell::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> spellId;
+    recv_data >> targets;
+}
+
 void WorldPackets::Spell::UseItem::ReadFromWorldPacket(WorldPacket& recv_data)
 {
     recv_data >> bagIndex;

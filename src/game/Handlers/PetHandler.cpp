@@ -494,11 +494,10 @@ void WorldSession::HandlePetSpellAutocastOpcode(WorldPackets::Pet::PetSpellAutoc
     charmInfo->SetSpellAutocast(spellid, state);
 }
 
-void WorldSession::HandlePetCastSpellOpcode(WorldPacket& recvPacket)
+void WorldSession::HandlePetCastSpellOpcode(WorldPackets::Pet::PetCastSpell const& packet)
 {
-    ObjectGuid guid;
-    uint32 spellid;
-    recvPacket >> guid >> spellid;
+    ObjectGuid guid = packet.petGuid;
+    uint32 spellid = packet.spellId;
 
     Creature* pet = _player->GetMap()->GetAnyTypeCreature(guid);
 
@@ -522,9 +521,7 @@ void WorldSession::HandlePetCastSpellOpcode(WorldPacket& recvPacket)
     if (!pet->HasSpell(spellid) || spellInfo->IsPassiveSpell())
         return;
 
-    SpellCastTargets targets;
-
-    recvPacket >> targets.ReadForCaster(pet);
+    SpellCastTargets targets = SpellCastTargets::FromSpellCastTargetsInfo(packet.targets, pet);
 
     pet->ClearUnitState(UNIT_STATE_MOVING);
 

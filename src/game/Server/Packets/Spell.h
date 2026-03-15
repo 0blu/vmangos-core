@@ -3,9 +3,20 @@
 
 #include "Packet.h"
 #include "SpellCastTargetsInfo.h"
+#include "ObjectGuid.h"
 
 namespace WorldPackets { namespace Spell
 {
+    class CastSpell final : public ClientPacket
+    {
+    public:
+        uint32               spellId = 0;
+        SpellCastTargetsInfo targets;
+
+        explicit CastSpell() : ClientPacket(CMSG_CAST_SPELL) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
     class UseItem final : public ClientPacket
     {
     public:
