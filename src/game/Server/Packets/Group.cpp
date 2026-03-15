@@ -76,3 +76,12 @@ void WorldPackets::Group::RaidTargetUpdate::ReadFromWorldPacket(WorldPacket& rec
     if (iconId != 0xFF) // target icon update (not a request)
         recv_data >> guid;
 }
+
+void WorldPackets::Group::RaidReadyCheck::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    if (!recv_data.empty())
+    {
+        isAnswer = true;
+        recv_data >> state;
+    }
+}

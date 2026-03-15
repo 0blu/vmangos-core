@@ -921,7 +921,7 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(SMSG_INSTANCE_RESET_FAILED,        Reason::SendByServer);
     INVALID_PACKET(SMSG_UPDATE_LAST_INSTANCE,         Reason::SendByServer);
     DEFINE_HANDLER(MSG_RAID_TARGET_UPDATE,            STATUS_LOGGEDIN,  PACKET_PROCESS_GROUP,         &WorldSession::HandleRaidTargetUpdateOpcode);
-    LEGACY_HANDLER(MSG_RAID_READY_CHECK,              STATUS_LOGGEDIN,  PACKET_PROCESS_GROUP,         &WorldSession::HandleRaidReadyCheckOpcode);
+    DEFINE_HANDLER(MSG_RAID_READY_CHECK,              STATUS_LOGGEDIN,  PACKET_PROCESS_GROUP,         &WorldSession::HandleRaidReadyCheckOpcode);
     INVALID_PACKET(CMSG_LUA_USAGE,                    Reason::Unhandled);
     INVALID_PACKET(SMSG_PET_ACTION_SOUND,             Reason::SendByServer);
     INVALID_PACKET(SMSG_PET_DISMISS_SOUND,            Reason::SendByServer);

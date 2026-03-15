@@ -129,6 +129,16 @@ namespace WorldPackets { namespace Group
         explicit RaidTargetUpdate() : ClientPacket(MSG_RAID_TARGET_UPDATE) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class RaidReadyCheck final : public ClientPacket
+    {
+    public:
+        bool  isAnswer = false;
+        uint8 state = 0;
+
+        explicit RaidReadyCheck() : ClientPacket(MSG_RAID_READY_CHECK) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
 }} // namespace WorldPackets::Group
 
 #endif // MANGOS_PACKETS_GROUP_H

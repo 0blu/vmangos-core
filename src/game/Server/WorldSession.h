@@ -574,7 +574,7 @@ class WorldSession
         void HandleLootRoll(WorldPackets::Loot::LootRoll const& packet);
         void HandleRequestPartyMemberStatsOpcode(WorldPackets::Group::RequestPartyMemberStats const& packet);
         void HandleRaidTargetUpdateOpcode(WorldPackets::Group::RaidTargetUpdate const& packet);
-        void HandleRaidReadyCheckOpcode(WorldPacket& recv_data);
+        void HandleRaidReadyCheckOpcode(WorldPackets::Group::RaidReadyCheck const& packet);
         void HandleGroupRaidConvertOpcode(NullClientPacket const& packet);
         void HandleGroupChangeSubGroupOpcode(WorldPackets::Group::GroupChangeSubGroup const& packet);
         void HandleGroupSwapSubGroupOpcode(WorldPackets::Group::GroupSwapSubGroup const& packet);
