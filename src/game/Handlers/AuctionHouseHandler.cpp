@@ -431,13 +431,11 @@ void WorldSession::HandleAuctionSellItem(WorldPacket& recv_data)
 }
 
 // this function is called when client bids or buys out auction
-void WorldSession::HandleAuctionPlaceBid(WorldPacket& recv_data)
+void WorldSession::HandleAuctionPlaceBid(WorldPackets::AuctionHouse::AuctionPlaceBid const& packet)
 {
-    ObjectGuid auctioneerGuid;
-    uint32 auctionId;
-    uint32 price;
-    recv_data >> auctioneerGuid;
-    recv_data >> auctionId >> price;
+    ObjectGuid auctioneerGuid = packet.auctioneerGuid;
+    uint32 auctionId = packet.auctionId;
+    uint32 price = packet.price;
 
     if (!sWorld.getConfig(CONFIG_BOOL_GM_ALLOW_TRADES) && GetSecurity() > SEC_PLAYER)
     {
@@ -594,12 +592,10 @@ void WorldSession::HandleAuctionPlaceBid(WorldPacket& recv_data)
 }
 
 // this void is called when auction_owner cancels his auction
-void WorldSession::HandleAuctionRemoveItem(WorldPacket& recv_data)
+void WorldSession::HandleAuctionRemoveItem(WorldPackets::AuctionHouse::AuctionRemoveItem const& packet)
 {
-    ObjectGuid auctioneerGuid;
-    uint32 auctionId;
-    recv_data >> auctioneerGuid;
-    recv_data >> auctionId;
+    ObjectGuid auctioneerGuid = packet.auctioneerGuid;
+    uint32 auctionId = packet.auctionId;
     //sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "Cancel AUCTION AuctionID: %u", auctionId);
 
     AuctionHouseEntry const* auctionHouseEntry = GetCheckedAuctionHouseForAuctioneer(auctioneerGuid);
@@ -763,16 +759,13 @@ void WorldSession::HandleAuctionListBidderItems(WorldPackets::AuctionHouse::Auct
 }
 
 // this void sends player info about his auctions
-void WorldSession::HandleAuctionListOwnerItems(WorldPacket& recv_data)
+void WorldSession::HandleAuctionListOwnerItems(WorldPackets::AuctionHouse::AuctionListOwnerItems const& packet)
 {
     if (ReceivedAHListRequest())
         return;
 
-    ObjectGuid auctioneerGuid;
-    uint32 listfrom;
-
-    recv_data >> auctioneerGuid;
-    recv_data >> listfrom;
+    ObjectGuid auctioneerGuid = packet.auctioneerGuid;
+    uint32 listfrom = packet.listfrom;
 
     AuctionHouseEntry const* auctionHouseEntry = GetCheckedAuctionHouseForAuctioneer(auctioneerGuid);
     if (!auctionHouseEntry)

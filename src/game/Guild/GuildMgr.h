@@ -110,7 +110,7 @@ public:
     uint8 GetSignatureCount() const { return static_cast<uint8>(m_signatures.size()); }
     const PetitionSignatureList& GetSignatureList() { return m_signatures; }
 
-    void BuildSignatureData(WorldPacket& data);
+    void BuildSignatureData(WorldPacket& data) const;
 
     bool Rename(std::string& newname);
 

@@ -893,10 +893,9 @@ void WorldSession::HandleUpdateAccountData(WorldPacket& recv_data)
     SetAccountData(dataType, adata);
 }
 
-void WorldSession::HandleRequestAccountData(WorldPacket& recv_data)
+void WorldSession::HandleRequestAccountData(WorldPackets::Misc::RequestAccountData const& packet)
 {
-    uint32 type;
-    recv_data >> type;
+    uint32 type = packet.type;
 
     NewAccountData::AccountDataType dataType;
     if (GetGameBuild() <= CLIENT_BUILD_1_8_4)
@@ -1119,10 +1118,9 @@ void WorldSession::HandleInspectHonorStatsOpcode(WorldPackets::Misc::InspectHono
     SendPacket(&data);
 }
 
-void WorldSession::HandleTeleportToUnitOpcode(WorldPacket& recv_data)
+void WorldSession::HandleTeleportToUnitOpcode(WorldPackets::Misc::TeleportToUnit const& packet)
 {
-    std::string playerName;
-    recv_data >> playerName;
+    std::string playerName = packet.playerName;
     if (playerName.length() > MAX_PLAYER_NAME)
         return;
 
@@ -1152,13 +1150,11 @@ void WorldSession::HandleWorldTeleportOpcode(WorldPackets::Misc::WorldTeleport c
     sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "Received worldport command from player %s", GetPlayer()->GetName());
 }
 
-void WorldSession::HandleMoveSetRawPosition(WorldPacket& recv_data)
+void WorldSession::HandleMoveSetRawPosition(WorldPackets::Misc::MoveSetRawPosition const& packet)
 {
     // write in client console: setrawpos x y z o
     // For now, it is implemented like worldport but on the same map. Consider using MSG_MOVE_SET_RAW_POSITION_ACK.
-    float posX, posY, posZ, posO;
-    recv_data >> posX >> posY >> posZ >> posO;
-    //sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "Set to: X=%f, Y=%f, Z=%f, orient=%f", posX, posY, posZ, posO);
+    //sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "Set to: X=%f, Y=%f, Z=%f, orient=%f", packet.location.x, packet.location.y, packet.location.z, packet.location.o);
 
     if (!GetPlayer()->IsInWorld() || GetPlayer()->IsTaxiFlying())
     {
@@ -1167,7 +1163,7 @@ void WorldSession::HandleMoveSetRawPosition(WorldPacket& recv_data)
     }
 
     if (GetSecurity() >= SEC_ADMINISTRATOR)
-        GetPlayer()->NearTeleportTo(posX, posY, posZ, posO);
+        GetPlayer()->NearTeleportTo(packet.location);
     else
         SendNotification(LANG_YOU_NOT_HAVE_PERMISSION);
 

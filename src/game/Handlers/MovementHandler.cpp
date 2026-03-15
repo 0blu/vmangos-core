@@ -211,16 +211,14 @@ void WorldSession::HandleMoveWorldportAck()
     }
 }
 
-void WorldSession::HandleMoveTeleportAckOpcode(WorldPacket& recvData)
+void WorldSession::HandleMoveTeleportAckOpcode(WorldPackets::Movement::MoveTeleportAck const& packet)
 {
-    ObjectGuid guid;
-    recvData >> guid;
-    uint32 movementCounter = 0;
+    ObjectGuid guid = packet.guid;
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
-    recvData >> movementCounter;
+    uint32 movementCounter = packet.movementCounter;
+#else
+    uint32 movementCounter = 0;
 #endif
-    uint32 time = 0;
-    recvData >> time;
 
     Unit* pMover = _player->GetMover();
     Player* pPlayerMover = pMover->ToPlayer();
@@ -1031,12 +1029,10 @@ void WorldSession::HandleSummonResponseOpcode(WorldPackets::Misc::SummonResponse
     _player->SummonIfPossible(true);
 }
 
-void WorldSession::HandleMoveTimeSkippedOpcode(WorldPacket& recvData)
+void WorldSession::HandleMoveTimeSkippedOpcode(WorldPackets::Movement::MoveTimeSkipped const& packet)
 {
-    ObjectGuid guid;
-    recvData >> guid;
-    uint32 lag;
-    recvData >> lag;
+    ObjectGuid guid = packet.guid;
+    uint32 lag = packet.lag;
 
     Unit* pMover = GetMoverFromGuid(guid);
     if (!pMover)

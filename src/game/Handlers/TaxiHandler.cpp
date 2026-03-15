@@ -168,18 +168,14 @@ void WorldSession::HandleActivateTaxiExpressOpcode(WorldPacket& recv_data)
     GetPlayer()->ActivateTaxiPathTo(nodes, npc);
 }
 
-void WorldSession::HandleActivateTaxiOpcode(WorldPacket& recv_data)
+void WorldSession::HandleActivateTaxiOpcode(WorldPackets::Taxi::ActivateTaxi const& packet)
 {
-    ObjectGuid guid;
-    std::vector<uint32> nodes;
-    nodes.resize(2);
+    std::vector<uint32> nodes { packet.node1, packet.node2 };
 
-    recv_data >> guid >> nodes[0] >> nodes[1];
-
-    Creature* npc = GetPlayer()->GetNPCIfCanInteractWith(guid, UNIT_NPC_FLAG_FLIGHTMASTER);
+    Creature* npc = GetPlayer()->GetNPCIfCanInteractWith(packet.flightmasterGuid, UNIT_NPC_FLAG_FLIGHTMASTER);
     if (!npc)
     {
-        sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "WORLD: HandleActivateTaxiOpcode - %s not found or you can't interact with it.", guid.GetString().c_str());
+        sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "WORLD: HandleActivateTaxiOpcode - %s not found or you can't interact with it.", packet.flightmasterGuid.GetString().c_str());
         return;
     }
 

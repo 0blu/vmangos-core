@@ -258,6 +258,44 @@ namespace WorldPackets { namespace Misc
         explicit MeetingStoneJoin() : ClientPacket(CMSG_MEETINGSTONE_JOIN) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class TeleportToUnit final : public ClientPacket
+    {
+    public:
+        std::string playerName;
+
+        explicit TeleportToUnit() : ClientPacket(CMSG_TELEPORT_TO_UNIT) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class RequestAccountData final : public ClientPacket
+    {
+    public:
+        uint32 type = 0;
+
+        explicit RequestAccountData() : ClientPacket(CMSG_REQUEST_ACCOUNT_DATA) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class SetWatchedFaction final : public ClientPacket
+    {
+    public:
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
+        int32 repId = 0;
+#endif
+
+        explicit SetWatchedFaction() : ClientPacket(CMSG_SET_WATCHED_FACTION) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class MoveSetRawPosition final : public ClientPacket
+    {
+    public:
+        Position location;
+
+        MoveSetRawPosition() : ClientPacket(OPCODE_WILL_BE_SET_IN_READ_FUNCTION) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
 }} // namespace WorldPackets::Misc
 
 #endif // MANGOS_PACKETS_MISC_H

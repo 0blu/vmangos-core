@@ -9,3 +9,10 @@ void WorldPackets::Taxi::TaxiQueryAvailableNodes::ReadFromWorldPacket(WorldPacke
 {
     recv_data >> guid;
 }
+
+void WorldPackets::Taxi::ActivateTaxi::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> flightmasterGuid;
+    recv_data >> node1;
+    recv_data >> node2;
+}

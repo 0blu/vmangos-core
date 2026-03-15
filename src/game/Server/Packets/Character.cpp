@@ -26,3 +26,9 @@ void WorldPackets::Character::PlayerLogin::ReadFromWorldPacket(WorldPacket& recv
 {
     recv_data >> guid;
 }
+
+void WorldPackets::Character::CharRename::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> guid;
+    recv_data >> newname;
+}

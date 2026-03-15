@@ -121,3 +121,11 @@ void WorldPackets::Item::WrapItem::ReadFromWorldPacket(WorldPacket& recv_data)
     recv_data >> giftBag >> giftSlot;
     recv_data >> itemBag >> itemSlot;
 }
+
+void WorldPackets::Item::BuybackItem::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> vendorGuid;
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_7_1
+    recv_data >> slot;
+#endif
+}

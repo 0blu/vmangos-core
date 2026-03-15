@@ -197,6 +197,18 @@ namespace WorldPackets { namespace Item
         explicit WrapItem() : ClientPacket(CMSG_WRAP_ITEM) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class BuybackItem final : public ClientPacket
+    {
+    public:
+        ObjectGuid vendorGuid;
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_7_1
+        uint32 slot = 0;
+#endif
+
+        explicit BuybackItem() : ClientPacket(CMSG_BUYBACK_ITEM) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
 }} // namespace WorldPackets::Item
 
 #endif // MANGOS_PACKETS_ITEM_H

@@ -35,6 +35,16 @@ namespace WorldPackets { namespace Character
         explicit PlayerLogin() : ClientPacket(CMSG_PLAYER_LOGIN) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class CharRename final : public ClientPacket
+    {
+    public:
+        ObjectGuid  guid;
+        std::string newname;
+
+        explicit CharRename() : ClientPacket(CMSG_CHAR_RENAME) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
 }} // namespace WorldPackets::Character
 
 #endif // MANGOS_PACKETS_CHARACTER_H

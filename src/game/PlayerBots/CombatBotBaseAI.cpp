@@ -3078,14 +3078,15 @@ void CombatBotBaseAI::SendBattlefieldPortPacket()
 {
     for (uint32 i = BATTLEGROUND_QUEUE_AV; i <= BATTLEGROUND_QUEUE_AB; i++)
     {
-        if (me->IsInvitedForBattleGroundQueueType(BattleGroundQueueTypeId(i)))
+        if (me->IsInvitedForBattleGroundQueueType(static_cast<BattleGroundQueueTypeId>(i)))
         {
             WorldPacket data(CMSG_BATTLEFIELD_PORT);
+            WorldPackets::Battleground::BattleFieldPort packet;
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
-            data << uint32(GetBattleGrounMapIdByTypeId(BattleGroundTypeId(i)));
+            packet.mapId = GetBattleGrounMapIdByTypeId(static_cast<BattleGroundTypeId>(i));
 #endif
-            data << uint8(1);
-            me->GetSession()->HandleBattleFieldPortOpcode(data);
+            packet.action = 1;
+            me->GetSession()->HandleBattleFieldPortOpcode(packet);
             break;
         }
     }

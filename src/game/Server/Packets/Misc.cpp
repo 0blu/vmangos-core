@@ -147,3 +147,26 @@ void WorldPackets::Misc::MeetingStoneJoin::ReadFromWorldPacket(WorldPacket& recv
 {
     recv_data >> guid;
 }
+
+void WorldPackets::Misc::TeleportToUnit::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> playerName;
+}
+
+void WorldPackets::Misc::RequestAccountData::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> type;
+}
+
+void WorldPackets::Misc::SetWatchedFaction::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
+    recv_data >> repId;
+#endif
+}
+
+void WorldPackets::Misc::MoveSetRawPosition::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    opcode = recv_data.GetOpcode();
+    recv_data >> location.x >> location.y >> location.z >> location.o;
+}

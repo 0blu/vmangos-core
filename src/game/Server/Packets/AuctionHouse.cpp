@@ -20,3 +20,21 @@ void WorldPackets::AuctionHouse::AuctionListBidderItem::ReadFromWorldPacket(Worl
     }
 }
 
+void WorldPackets::AuctionHouse::AuctionListOwnerItems::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> auctioneerGuid;
+    recv_data >> listfrom;
+}
+
+void WorldPackets::AuctionHouse::AuctionPlaceBid::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> auctioneerGuid;
+    recv_data >> auctionId >> price;
+}
+
+void WorldPackets::AuctionHouse::AuctionRemoveItem::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> auctioneerGuid;
+    recv_data >> auctionId;
+}
+

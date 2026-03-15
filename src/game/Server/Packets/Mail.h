@@ -83,6 +83,19 @@ namespace WorldPackets { namespace Mail
         explicit MailDelete() : ClientPacket(CMSG_MAIL_DELETE) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class MailCreateTextItem final : public ClientPacket
+    {
+    public:
+        ObjectGuid mailboxGuid;
+        uint32     mailId = 0;
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
+        uint32     mailTemplateId = 0;
+#endif
+
+        explicit MailCreateTextItem() : ClientPacket(CMSG_MAIL_CREATE_TEXT_ITEM) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
 }} // namespace WorldPackets::Mail
 
 #endif // MANGOS_PACKETS_MAIL_H

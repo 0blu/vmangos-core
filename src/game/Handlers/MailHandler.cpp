@@ -872,29 +872,19 @@ void WorldSession::HandleItemTextQuery(WorldPackets::Misc::ItemTextQuery const& 
  * a new item with the text of the mail and store it in the players inventory (if possible).
  *
  */
-void WorldSession::HandleMailCreateTextItem(WorldPacket& recv_data)
+void WorldSession::HandleMailCreateTextItem(WorldPackets::Mail::MailCreateTextItem const& packet)
 {
-    ObjectGuid mailboxGuid;
-    uint32 mailId;
-
-    recv_data >> mailboxGuid;
-    recv_data >> mailId;
-
-#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
-    recv_data.read_skip<uint32>();                          // mailTemplateId, non need, Mail store own 100% correct value anyway
-#endif
-
-    if (!CheckMailBox(mailboxGuid))
+    if (!CheckMailBox(packet.mailboxGuid))
         return;
 
     MasterPlayer* pl = GetMasterPlayer();
     ASSERT(pl);
     Player* loadedPlayer = _player;
 
-    Mail* m = pl->GetMail(mailId);
+    Mail* m = pl->GetMail(packet.mailId);
     if (!m || (!m->itemTextId && !m->mailTemplateId) || m->state == MAIL_STATE_DELETED || m->deliver_time > time(nullptr) || m->checked & MAIL_CHECK_MASK_COPIED)
     {
-        SendMailResult(mailId, MAIL_MADE_PERMANENT, MAIL_ERR_INTERNAL_ERROR);
+        SendMailResult(packet.mailId, MAIL_MADE_PERMANENT, MAIL_ERR_INTERNAL_ERROR);
         return;
     }
 
@@ -919,11 +909,11 @@ void WorldSession::HandleMailCreateTextItem(WorldPacket& recv_data)
         pl->MarkMailsUpdated();
 
         loadedPlayer->StoreItem(dest, bodyItem, true);
-        SendMailResult(mailId, MAIL_MADE_PERMANENT, MAIL_OK);
+        SendMailResult(packet.mailId, MAIL_MADE_PERMANENT, MAIL_OK);
     }
     else
     {
-        SendMailResult(mailId, MAIL_MADE_PERMANENT, MAIL_ERR_EQUIP_ERROR, msg);
+        SendMailResult(packet.mailId, MAIL_MADE_PERMANENT, MAIL_ERR_EQUIP_ERROR, msg);
         delete bodyItem;
     }
 }

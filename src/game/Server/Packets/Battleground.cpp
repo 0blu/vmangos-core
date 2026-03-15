@@ -19,3 +19,19 @@ void WorldPackets::Battleground::BattlemasterHello::ReadFromWorldPacket(WorldPac
 {
     recv_data >> guid;
 }
+
+void WorldPackets::Battleground::BattleFieldPort::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
+    recv_data >> mapId >> action;
+#else
+    recv_data >> action;
+#endif
+}
+
+void WorldPackets::Battleground::LeaveBattlefield::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
+    recv_data >> mapId;
+#endif
+}

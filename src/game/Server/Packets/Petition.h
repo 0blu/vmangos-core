@@ -71,6 +71,16 @@ namespace WorldPackets { namespace Petition
         explicit PetitionSign() : ClientPacket(CMSG_PETITION_SIGN) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class OfferPetition final : public ClientPacket
+    {
+    public:
+        ObjectGuid itemGuid;
+        ObjectGuid playerGuid;
+
+        explicit OfferPetition() : ClientPacket(CMSG_OFFER_PETITION) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
 }} // namespace WorldPackets::Petition
 
 #endif // MANGOS_PACKETS_PETITION_H

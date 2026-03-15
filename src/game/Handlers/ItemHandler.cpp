@@ -645,20 +645,18 @@ void WorldSession::HandleSellItemOpcode(WorldPackets::Item::SellItem const& pack
     _player->LogModifyMoney(money, "SellItem", pCreature->GetObjectGuid(), pItem->GetEntry());
 }
 
-void WorldSession::HandleBuybackItem(WorldPacket& recv_data)
+void WorldSession::HandleBuybackItem(WorldPackets::Item::BuybackItem const& packet)
 {
-    ObjectGuid vendorGuid;
-    recv_data >> vendorGuid;
-
-    uint32 slot = BUYBACK_SLOT_START;
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_7_1
-    recv_data >> slot;
+    uint32 slot = packet.slot;
+#else
+    uint32 slot = BUYBACK_SLOT_START;
 #endif
 
-    Creature* pCreature = GetPlayer()->GetNPCIfCanInteractWith(vendorGuid, UNIT_NPC_FLAG_VENDOR);
+    Creature* pCreature = GetPlayer()->GetNPCIfCanInteractWith(packet.vendorGuid, UNIT_NPC_FLAG_VENDOR);
     if (!pCreature)
     {
-        sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "WORLD: HandleBuybackItem - %s not found or you can't interact with him.", vendorGuid.GetString().c_str());
+        sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "WORLD: HandleBuybackItem - %s not found or you can't interact with him.", packet.vendorGuid.GetString().c_str());
         _player->SendSellError(SELL_ERR_CANT_FIND_VENDOR, nullptr, ObjectGuid(), 0);
         return;
     }
@@ -668,30 +666,31 @@ void WorldSession::HandleBuybackItem(WorldPacket& recv_data)
         GetPlayer()->RemoveSpellsCausingAura(SPELL_AURA_FEIGN_DEATH);
 
     Item *pItem = _player->GetItemFromBuyBackSlot(slot);
-    if (pItem)
+    if (!pItem)
     {
-        uint32 price = _player->GetBuyBackItemPrice(slot);
-        if (_player->GetMoney() < price)
-        {
-            _player->SendBuyError(BUY_ERR_NOT_ENOUGHT_MONEY, pCreature, pItem->GetEntry(), 0);
-            return;
-        }
-
-        ItemPosCountVec dest;
-        InventoryResult msg = _player->CanStoreItem(NULL_BAG, NULL_SLOT, dest, pItem, false);
-        if (msg == EQUIP_ERR_OK)
-        {
-            _player->ModifyMoney(-(int32)price);
-            _player->RemoveItemFromBuyBackSlot(slot, false);
-            _player->ItemAddedQuestCheck(pItem->GetEntry(), pItem->GetCount());
-            _player->StoreItem(dest, pItem, true);
-        }
-        else
-            _player->SendEquipError(msg, pItem, nullptr);
+        _player->SendBuyError(BUY_ERR_CANT_FIND_ITEM, pCreature, 0, 0);
         return;
     }
-    else
-        _player->SendBuyError(BUY_ERR_CANT_FIND_ITEM, pCreature, 0, 0);
+
+    uint32 price = _player->GetBuyBackItemPrice(slot);
+    if (_player->GetMoney() < price)
+    {
+        _player->SendBuyError(BUY_ERR_NOT_ENOUGHT_MONEY, pCreature, pItem->GetEntry(), 0);
+        return;
+    }
+
+    ItemPosCountVec dest;
+    InventoryResult msg = _player->CanStoreItem(NULL_BAG, NULL_SLOT, dest, pItem, false);
+    if (msg != EQUIP_ERR_OK)
+    {
+        _player->SendEquipError(msg, pItem, nullptr);
+        return;
+    }
+
+    _player->ModifyMoney(-static_cast<int32>(price));
+    _player->RemoveItemFromBuyBackSlot(slot, false);
+    _player->ItemAddedQuestCheck(pItem->GetEntry(), pItem->GetCount());
+    _player->StoreItem(dest, pItem, true);
 }
 
 void WorldSession::HandleBuyItemInSlotOpcode(WorldPackets::Item::BuyItemInSlot const& packet)

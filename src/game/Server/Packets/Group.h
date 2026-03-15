@@ -92,6 +92,43 @@ namespace WorldPackets { namespace Group
         explicit GroupSwapSubGroup() : ClientPacket(CMSG_GROUP_SWAP_SUB_GROUP) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class GroupSetLeader final : public ClientPacket
+    {
+    public:
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_11_2
+        ObjectGuid guid;
+#else
+        std::string name;
+#endif
+
+        explicit GroupSetLeader() : ClientPacket(CMSG_GROUP_SET_LEADER) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class GroupAssistantLeader final : public ClientPacket
+    {
+    public:
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_11_2
+        ObjectGuid guid;
+#else
+        std::string name;
+#endif
+        uint8 flag = 0;
+
+        explicit GroupAssistantLeader() : ClientPacket(CMSG_GROUP_ASSISTANT_LEADER) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class RaidTargetUpdate final : public ClientPacket
+    {
+    public:
+        uint8      iconId = 0;
+        ObjectGuid guid; // only valid when iconId != 0xFF (icon update, not request)
+
+        explicit RaidTargetUpdate() : ClientPacket(MSG_RAID_TARGET_UPDATE) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
 }} // namespace WorldPackets::Group
 
 #endif // MANGOS_PACKETS_GROUP_H
