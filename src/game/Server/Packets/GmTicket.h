@@ -3,6 +3,8 @@
 
 #include "Packet.h"
 #include "SharedDefines.h"
+#include <string>
+#include <vector>
 
 namespace WorldPackets { namespace GmTicket
 {
@@ -26,6 +28,24 @@ namespace WorldPackets { namespace GmTicket
         std::string ticketText;
 
         explicit GmTicketUpdateText() : ClientPacket(CMSG_GMTICKET_UPDATETEXT) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class GMSurveySubmit final : public ClientPacket
+    {
+    public:
+        struct SubSurvey
+        {
+            uint32      subSurveyId = 0;
+            uint8       rank = 0;
+            std::string comment;
+        };
+
+        uint32                 mainSurvey = 0;
+        std::vector<SubSurvey> subSurveys;
+        std::string            comment;
+
+        explicit GMSurveySubmit() : ClientPacket(CMSG_GMSURVEY_SUBMIT) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
 }} // namespace WorldPackets::GmTicket

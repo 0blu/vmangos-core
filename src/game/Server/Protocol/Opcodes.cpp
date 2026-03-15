@@ -929,7 +929,7 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(CMSG_GM_UPDATE_TICKET_STATUS,      Reason::Unhandled);
     INVALID_PACKET(SMSG_GM_TICKET_STATUS_UPDATE,      Reason::SendByServer);
     INVALID_PACKET(MSG_SET_DUNGEON_DIFFICULTY,        Reason::Unhandled);
-    LEGACY_HANDLER(CMSG_GMSURVEY_SUBMIT,              STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleGMSurveySubmitOpcode);
+    DEFINE_HANDLER(CMSG_GMSURVEY_SUBMIT,              STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleGMSurveySubmitOpcode);
     INVALID_PACKET(SMSG_UPDATE_INSTANCE_OWNERSHIP,    Reason::SendByServer);
     INVALID_PACKET(CMSG_IGNORE_KNOCKBACK_CHEAT,       Reason::Unhandled);
     INVALID_PACKET(SMSG_CHAT_PLAYER_AMBIGUOUS,        Reason::SendByServer);
