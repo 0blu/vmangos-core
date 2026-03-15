@@ -33,7 +33,7 @@
 #include "ObjectMgr.h"
 #include "WorldSession.h"
 #include "ScriptMgr.h"
-#include <zlib.h>
+#include "Compression/ZLib.h"
 #include "ObjectAccessor.h"
 #include "Object.h"
 #include "BattleGround.h"
@@ -818,10 +818,10 @@ void WorldSession::HandleAreaTriggerOpcode(WorldPackets::Misc::AreaTrigger const
     pPlayer->TeleportTo(pTeleTrigger->destination);
 }
 
-void WorldSession::HandleUpdateAccountData(WorldPacket& recv_data)
+void WorldSession::HandleUpdateAccountData(WorldPackets::Misc::UpdateAccountData const& packet)
 {
-    uint32 type, decompressedSize;
-    recv_data >> type >> decompressedSize;
+    uint32 type = packet.type;
+    uint32 decompressedSize = packet.decompressedSize;
 
     NewAccountData::AccountDataType dataType;
     if (GetGameBuild() <= CLIENT_BUILD_1_8_4)
@@ -845,21 +845,18 @@ void WorldSession::HandleUpdateAccountData(WorldPacket& recv_data)
 
     if (decompressedSize > 0xFFFF)
     {
-        recv_data.rpos(recv_data.wpos());                   // unnneded warning spam in this case
         sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "UAD: Account data packet too big, size %u", decompressedSize);
         return;
     }
 
-    std::vector<uint8> dest;
-    dest.resize(decompressedSize);
+    nonstd::optional<std::vector<uint8>> dest = Compression::ZLib::Decompress(packet.compressedData, decompressedSize);
+    if (!dest)
+    {
+        sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "UAD: Failed to decompress account data");
+        return;
+    }
 
-    uint32 currentPosition = recv_data.rpos();
-    uLongf realSize = decompressedSize;
-    uncompress(const_cast<uint8*>(dest.data()), &realSize, const_cast<uint8*>(recv_data.contents() + currentPosition), recv_data.size() - currentPosition);
-
-    recv_data.rpos(recv_data.wpos());                       // uncompress read (recv_data.size() - recv_data.rpos())
-
-    std::string adata((char*)dest.data(), dest.size());
+    std::string adata(reinterpret_cast<char const*>(dest->data()), dest->size());
     SetAccountData(dataType, adata);
 }
 
@@ -893,16 +890,18 @@ void WorldSession::HandleRequestAccountData(WorldPackets::Misc::RequestAccountDa
     }
     else
     {
-        uLongf destSize = compressBound(size);
+        nonstd::optional<std::vector<uint8>> compressedData = Compression::ZLib::Compress(
+            reinterpret_cast<uint8 const*>(adata->data.data()), adata->data.size());
+        if (!compressedData)
+        {
+            sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "SMSG_UPDATE_ACCOUNT_DATA: Failed to compress account data");
+            return;
+        }
 
-        ByteBuffer dest;
-        dest.resize(destSize);
-        compress(const_cast<uint8*>(dest.contents()), &destSize, (uint8*)adata->data.c_str(), size);
-
-        WorldPacket data(SMSG_UPDATE_ACCOUNT_DATA, 4 + 4 + destSize + 1);
+        WorldPacket data(SMSG_UPDATE_ACCOUNT_DATA, 4 + 4 + compressedData->size() + 1);
         data << uint32(type);                                   // use the original type sent by client
         data << uint32(size);                                   // decompressed length
-        data.append(dest);                                      // compressed data
+        data.append(*compressedData);                           // compressed data
         SendPacket(&data);
     }
 }

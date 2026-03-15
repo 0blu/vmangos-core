@@ -158,6 +158,15 @@ void WorldPackets::Misc::RequestAccountData::ReadFromWorldPacket(WorldPacket& re
     recv_data >> type;
 }
 
+void WorldPackets::Misc::UpdateAccountData::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> type;
+    recv_data >> decompressedSize;
+    uint32 remaining = recv_data.size() - recv_data.rpos();
+    compressedData.resize(remaining);
+    recv_data.read(compressedData.data(), remaining);
+}
+
 void WorldPackets::Misc::SetWatchedFaction::ReadFromWorldPacket(WorldPacket& recv_data)
 {
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4

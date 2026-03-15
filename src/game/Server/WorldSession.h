@@ -548,7 +548,7 @@ class WorldSession
         void HandleSetWatchedFactionOpcode(WorldPackets::Misc::SetWatchedFaction const& packet);
         void HandleSetFactionInactiveOpcode(WorldPackets::Misc::SetFactionInactive const& packet);
 
-        void HandleUpdateAccountData(WorldPacket& recvPacket);
+        void HandleUpdateAccountData(WorldPackets::Misc::UpdateAccountData const& packet);
         void HandleRequestAccountData(WorldPackets::Misc::RequestAccountData const& packet);
         void HandleSetActionButtonOpcode(WorldPackets::Misc::SetActionButton const& packet);
 

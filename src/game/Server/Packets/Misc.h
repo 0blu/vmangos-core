@@ -280,6 +280,17 @@ namespace WorldPackets { namespace Misc
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
 
+    class UpdateAccountData final : public ClientPacket
+    {
+    public:
+        uint32             type = 0;
+        uint32             decompressedSize = 0;
+        std::vector<uint8> compressedData;
+
+        explicit UpdateAccountData() : ClientPacket(CMSG_UPDATE_ACCOUNT_DATA) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
     class SetWatchedFaction final : public ClientPacket
     {
     public:
