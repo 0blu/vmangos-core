@@ -334,7 +334,7 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(MSG_MOVE_UNROOT,                   Reason::Unhandled);
     DEFINE_HANDLER(MSG_MOVE_HEARTBEAT,                STATUS_LOGGEDIN,  PACKET_PROCESS_MOVEMENT,      &WorldSession::HandleMovementOpcodes);
     INVALID_PACKET(SMSG_MOVE_KNOCK_BACK,              Reason::SendByServer);
-    LEGACY_HANDLER(CMSG_MOVE_KNOCK_BACK_ACK,          STATUS_LOGGEDIN,  PACKET_PROCESS_MOVEMENT,      &WorldSession::HandleMoveKnockBackAck);
+    DEFINE_HANDLER(CMSG_MOVE_KNOCK_BACK_ACK,          STATUS_LOGGEDIN,  PACKET_PROCESS_MOVEMENT,      &WorldSession::HandleMoveKnockBackAck);
     INVALID_PACKET(MSG_MOVE_KNOCK_BACK,               Reason::Unhandled);
     INVALID_PACKET(SMSG_MOVE_FEATHER_FALL,            Reason::SendByServer);
     INVALID_PACKET(SMSG_MOVE_NORMAL_FALL,             Reason::SendByServer);
@@ -820,7 +820,7 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(SMSG_PET_ACTION_FEEDBACK,          Reason::SendByServer);
     DEFINE_HANDLER(CMSG_CHAR_RENAME,                  STATUS_AUTHED,    PACKET_PROCESS_WORLD,         &WorldSession::HandleCharRenameOpcode);
     INVALID_PACKET(SMSG_CHAR_RENAME,                  Reason::SendByServer);
-    LEGACY_HANDLER(CMSG_MOVE_SPLINE_DONE,             STATUS_LOGGEDIN,  PACKET_PROCESS_MOVEMENT,      &WorldSession::HandleMoveSplineDoneOpcode);
+    DEFINE_HANDLER(CMSG_MOVE_SPLINE_DONE,             STATUS_LOGGEDIN,  PACKET_PROCESS_MOVEMENT,      &WorldSession::HandleMoveSplineDoneOpcode);
     DEFINE_HANDLER(CMSG_MOVE_FALL_RESET,              STATUS_LOGGEDIN,  PACKET_PROCESS_MOVEMENT,      &WorldSession::HandleMovementOpcodes);
     INVALID_PACKET(SMSG_INSTANCE_SAVE_CREATED,        Reason::SendByServer);
     INVALID_PACKET(SMSG_RAID_INSTANCE_INFO,           Reason::SendByServer);
@@ -828,7 +828,7 @@ constexpr Handlers BuildOpcodeList()
     DEFINE_HANDLER(CMSG_MOVE_TIME_SKIPPED,            STATUS_LOGGEDIN,  PACKET_PROCESS_MOVEMENT,      &WorldSession::HandleMoveTimeSkippedOpcode);
     DEFINE_HANDLER(CMSG_MOVE_FEATHER_FALL_ACK,        STATUS_LOGGEDIN,  PACKET_PROCESS_MOVEMENT,      &WorldSession::HandleMovementFlagChangeToggleAck);
     DEFINE_HANDLER(CMSG_MOVE_WATER_WALK_ACK,          STATUS_LOGGEDIN,  PACKET_PROCESS_MOVEMENT,      &WorldSession::HandleMovementFlagChangeToggleAck);
-    LEGACY_HANDLER(CMSG_MOVE_NOT_ACTIVE_MOVER,        STATUS_LOGGEDIN,  PACKET_PROCESS_MOVEMENT,      &WorldSession::HandleMoveNotActiveMoverOpcode);
+    DEFINE_HANDLER(CMSG_MOVE_NOT_ACTIVE_MOVER,        STATUS_LOGGEDIN,  PACKET_PROCESS_MOVEMENT,      &WorldSession::HandleMoveNotActiveMoverOpcode);
     INVALID_PACKET(SMSG_PLAY_SOUND,                   Reason::SendByServer);
     DEFINE_HANDLER(CMSG_BATTLEFIELD_STATUS,           STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleBattlefieldStatusOpcode);
     INVALID_PACKET(SMSG_BATTLEFIELD_STATUS,           Reason::SendByServer);

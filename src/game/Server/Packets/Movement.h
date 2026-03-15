@@ -83,6 +83,41 @@ namespace WorldPackets { namespace Movement
         MoveRootAck() : ClientPacket(OPCODE_WILL_BE_SET_IN_READ_FUNCTION) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class MoveKnockBackAck final : public ClientPacket
+    {
+    public:
+        ObjectGuid   guid;
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
+        uint32       movementCounter = 0;
+#endif
+        MovementInfo movementInfo;
+
+        MoveKnockBackAck() : ClientPacket(CMSG_MOVE_KNOCK_BACK_ACK) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class MoveSplineDone final : public ClientPacket
+    {
+    public:
+        MovementInfo movementInfo;
+        uint32       splineId = 0;
+
+        MoveSplineDone() : ClientPacket(CMSG_MOVE_SPLINE_DONE) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class MoveNotActiveMover final : public ClientPacket
+    {
+    public:
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
+        ObjectGuid   oldMoverGuid;
+#endif
+        MovementInfo movementInfo;
+
+        MoveNotActiveMover() : ClientPacket(CMSG_MOVE_NOT_ACTIVE_MOVER) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
 }} // namespace WorldPackets::Movement
 
 #endif // MANGOS_PACKETS_MOVEMENT_H
