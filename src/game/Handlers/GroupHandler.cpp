@@ -612,7 +612,7 @@ void WorldSession::HandleRaidReadyCheckOpcode(WorldPackets::Group::RaidReadyChec
         {
             WorldPacket data(MSG_RAID_READY_CHECK, 9);
             data << GetPlayer()->GetObjectGuid();
-            data << uint8(*packet.state);
+            data << uint8(packet.state.value());
             gleader->GetSession()->SendPacket(&data);
         }
     }
