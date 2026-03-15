@@ -36,12 +36,10 @@ void WorldSession::HandleLearnTalentOpcode(WorldPackets::Skill::LearnTalent cons
 
 void WorldSession::HandleTalentWipeConfirmOpcode(WorldPackets::Skill::TalentWipeConfirm const& packet)
 {
-    ObjectGuid guid = packet.guid;
-
-    Creature* unit = GetPlayer()->GetNPCIfCanInteractWith(guid, UNIT_NPC_FLAG_TRAINER);
+    Creature* unit = GetPlayer()->GetNPCIfCanInteractWith(packet.guid, UNIT_NPC_FLAG_TRAINER);
     if (!unit)
     {
-        sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "WORLD: HandleTalentWipeConfirmOpcode - %s not found or you can't interact with him.", guid.GetString().c_str());
+        sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "WORLD: HandleTalentWipeConfirmOpcode - %s not found or you can't interact with him.", packet.guid.GetString().c_str());
         return;
     }
 

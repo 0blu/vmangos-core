@@ -34,34 +34,28 @@
 
 void WorldSession::HandleSplitItemOpcode(WorldPackets::Item::SplitItem const& packet)
 {
-    uint8 srcbag = packet.srcbag;
-    uint8 srcslot = packet.srcslot;
-    uint8 dstbag = packet.dstbag;
-    uint8 dstslot = packet.dstslot;
-    uint8 count = packet.count;
-
-    uint16 src = ((srcbag << 8) | srcslot);
-    uint16 dst = ((dstbag << 8) | dstslot);
+    uint16 src = ((packet.srcbag << 8) | packet.srcslot);
+    uint16 dst = ((packet.dstbag << 8) | packet.dstslot);
 
     if (src == dst)
         return;
 
-    if (count == 0)
+    if (packet.count == 0)
         return;                                             //check count - if zero it's fake packet
 
-    if (!_player->IsValidPos(srcbag, srcslot, true))
+    if (!_player->IsValidPos(packet.srcbag, packet.srcslot, true))
     {
         _player->SendEquipError(EQUIP_ERR_ITEM_NOT_FOUND, nullptr, nullptr);
         return;
     }
 
-    if (!_player->IsValidPos(dstbag, dstslot, false))       // can be autostore pos
+    if (!_player->IsValidPos(packet.dstbag, packet.dstslot, false))       // can be autostore pos
     {
         _player->SendEquipError(EQUIP_ERR_ITEM_DOESNT_GO_TO_SLOT, nullptr, nullptr);
         return;
     }
 
-    _player->SplitItem(src, dst, count);
+    _player->SplitItem(src, dst, packet.count);
 }
 
 void WorldSession::HandleSwapInvItemOpcode(WorldPackets::Item::SwapInvItem const& packet)
@@ -247,7 +241,6 @@ void WorldSession::HandleDestroyItemOpcode(WorldPackets::Item::DestroyItem const
 {
     uint8 bag = packet.bag;
     uint8 slot = packet.slot;
-    uint8 count = packet.count;
 
     uint16 pos = (bag << 8) | slot;
 
@@ -276,9 +269,9 @@ void WorldSession::HandleDestroyItemOpcode(WorldPackets::Item::DestroyItem const
         return;
     }
 
-    if (count)
+    if (packet.count)
     {
-        uint32 i_count = count;
+        uint32 i_count = packet.count;
         _player->DestroyItemCount(pItem, i_count, true);
     }
     else

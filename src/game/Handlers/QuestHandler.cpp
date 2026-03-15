@@ -461,9 +461,8 @@ void WorldSession::HandleQuestgiverChooseRewardOpcode(WorldPackets::Quest::Quest
 void WorldSession::HandleQuestgiverRequestRewardOpcode(WorldPackets::Quest::QuestgiverRequestReward const& packet)
 {
     uint32 quest = packet.quest;
-    ObjectGuid guid = packet.guid;
 
-    Object* pObject = _player->GetObjectByTypeMask(guid, TYPEMASK_CREATURE_OR_GAMEOBJECT);
+    Object* pObject = _player->GetObjectByTypeMask(packet.guid, TYPEMASK_CREATURE_OR_GAMEOBJECT);
     if (!pObject || !pObject->HasInvolvedQuest(quest))
         return;
 
@@ -486,7 +485,7 @@ void WorldSession::HandleQuestgiverRequestRewardOpcode(WorldPackets::Quest::Ques
         return;
 
     if (Quest const* pQuest = sObjectMgr.GetQuestTemplate(quest))
-        _player->PlayerTalkClass->SendQuestGiverOfferReward(pQuest, guid, true);
+        _player->PlayerTalkClass->SendQuestGiverOfferReward(pQuest, packet.guid, true);
 }
 
 void WorldSession::HandleQuestgiverCancel(NullClientPacket const& /*packet*/)

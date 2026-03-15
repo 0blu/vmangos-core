@@ -250,6 +250,8 @@ void WorldSession::HandlePetitionSignOpcode(WorldPackets::Petition::PetitionSign
     {
         WorldPacket data(SMSG_PETITION_SIGN_RESULTS, (8 + 8 + 4));
         data << ObjectGuid(packet.itemGuid);
+        data << ObjectGuid(_player->GetObjectGuid());
+        data << uint32(PETITION_SIGN_CANT_SIGN_OWN);
         SendPacket(&data);
         return;
     }
