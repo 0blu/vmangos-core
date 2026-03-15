@@ -38,10 +38,10 @@ void WorldPackets::Battleground::LeaveBattlefield::ReadFromWorldPacket(WorldPack
 
 void WorldPackets::Battleground::BattlemasterJoin::ReadFromWorldPacket(WorldPacket& recv_data)
 {
-    recv_data >> guid;
+    recv_data >> guid;          // battlemaster guid, or player guid if joining queue from BG portal
     recv_data >> mapId;
-    recv_data >> instanceId;
-    recv_data >> joinAsGroup;
+    recv_data >> instanceId;    // instance id, 0 if First Available selected
+    recv_data >> joinAsGroup;   // join as group
 }
 
 void WorldPackets::Battleground::BattlefieldJoin::ReadFromWorldPacket(WorldPacket& recv_data)
