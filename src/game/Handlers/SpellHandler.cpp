@@ -35,8 +35,6 @@ using namespace Spells;
 
 void WorldSession::HandleUseItemOpcode(WorldPackets::Spell::UseItem const& packet)
 {
-    uint8 bagIndex = packet.bagIndex;
-    uint8 slot = packet.slot;
     uint8 spellSlot = packet.spellSlot; // the position of the spell id on the item template
 
     // TODO: add targets.read() check
@@ -48,7 +46,7 @@ void WorldSession::HandleUseItemOpcode(WorldPackets::Spell::UseItem const& packe
         return;
     }
 
-    Item *pItem = pUser->GetItemByPos(bagIndex, slot);
+    Item *pItem = pUser->GetItemByPos(packet.bagIndex, packet.slot);
     if (!pItem)
     {
         pUser->SendEquipError(EQUIP_ERR_ITEM_NOT_FOUND, nullptr, nullptr);
@@ -126,7 +124,7 @@ void WorldSession::HandleUseItemOpcode(WorldPackets::Spell::UseItem const& packe
         // World of Warcraft Client Patch 1.10.0 (2006-03-28)
         // - All shapeshift forms can now use equipped items.
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
-        if (!(bagIndex == INVENTORY_SLOT_BAG_0 && slot < EQUIPMENT_SLOT_END))
+        if (!(packet.bagIndex == INVENTORY_SLOT_BAG_0 && packet.slot < EQUIPMENT_SLOT_END))
 #endif
         itemCastCheckResult = SPELL_FAILED_NO_ITEMS_WHILE_SHAPESHIFTED;
     }
@@ -148,16 +146,13 @@ void WorldSession::HandleUseItemOpcode(WorldPackets::Spell::UseItem const& packe
 
 void WorldSession::HandleOpenItemOpcode(WorldPackets::Spell::OpenItem const& packet)
 {
-    uint8 bagIndex = packet.bagIndex;
-    uint8 slot = packet.slot;
-
     Player* pUser = _player;
 
     // ignore for remote control state
     if (!pUser->IsSelfMover())
         return;
 
-    Item *pItem = pUser->GetItemByPos(bagIndex, slot);
+    Item *pItem = pUser->GetItemByPos(packet.bagIndex, packet.slot);
     if (!pItem)
     {
         pUser->SendEquipError(EQUIP_ERR_ITEM_NOT_FOUND, nullptr, nullptr);
@@ -239,13 +234,11 @@ void WorldSession::HandleOpenItemOpcode(WorldPackets::Spell::OpenItem const& pac
 
 void WorldSession::HandleGameObjectUseOpcode(WorldPackets::Misc::GameObjectUse const& packet)
 {
-    ObjectGuid guid = packet.guid;
-
     // ignore for remote control state
     if (!_player->IsSelfMover())
         return;
 
-    GameObject* obj = GetPlayer()->GetMap()->GetGameObject(guid);
+    GameObject* obj = GetPlayer()->GetMap()->GetGameObject(packet.guid);
     if (!obj || obj->IsDeleted())
         return;
 
@@ -333,15 +326,13 @@ void WorldSession::HandleCastSpellOpcode(WorldPackets::Spell::CastSpell const& p
 
 void WorldSession::HandleCancelCastOpcode(WorldPackets::Spell::CancelCast const& packet)
 {
-    uint32 spellId = packet.spellId;
-
     // ignore for remote control state (for player case)
     Unit* mover = _player->GetMover();
     if (mover != _player && mover->GetTypeId() == TYPEID_PLAYER)
         return;
 
     if (_player->IsNonMeleeSpellCasted(false))
-        _player->InterruptNonMeleeSpells(false, spellId);
+        _player->InterruptNonMeleeSpells(false, packet.spellId);
 
     if (_player->IsNextSwingSpellCasted())
         _player->InterruptSpell(CURRENT_MELEE_SPELL);
@@ -426,13 +417,12 @@ void WorldSession::HandleCancelAuraOpcode(WorldPackets::Spell::CancelAura const&
 void WorldSession::HandlePetCancelAuraOpcode(WorldPackets::Pet::PetCancelAura const& packet)
 {
     ObjectGuid guid = packet.guid;
-    uint32 spellId = packet.spellId;
 
     // ignore for remote control state
     if (!_player->IsSelfMover())
         return;
 
-    SpellEntry const* spellInfo = sSpellMgr.GetSpellEntry(spellId);
+    SpellEntry const* spellInfo = sSpellMgr.GetSpellEntry(packet.spellId);
     if (!spellInfo)
         return;
 
@@ -450,7 +440,7 @@ void WorldSession::HandlePetCancelAuraOpcode(WorldPackets::Pet::PetCancelAura co
         return;
     }
 
-    pet->RemoveAurasDueToSpell(spellId);
+    pet->RemoveAurasDueToSpell(packet.spellId);
 }
 
 void WorldSession::HandleCancelGrowthAuraOpcode(NullClientPacket const& /*packet*/)

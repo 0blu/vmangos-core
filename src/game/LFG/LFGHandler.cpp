@@ -30,13 +30,11 @@
 
 void WorldSession::HandleMeetingStoneJoinOpcode(WorldPackets::Misc::MeetingStoneJoin const& packet)
 {
-    ObjectGuid guid = packet.guid;
-
     // ignore for remote control state
     if (!_player->IsSelfMover())
         return;
 
-    GameObject* obj = _player->GetGameObjectIfCanInteractWith(guid);
+    GameObject* obj = _player->GetGameObjectIfCanInteractWith(packet.guid);
 
     if (!obj)
         return;

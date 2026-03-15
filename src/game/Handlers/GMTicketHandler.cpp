@@ -46,9 +46,6 @@ void WorldSession::HandleGMTicketGetTicketOpcode(NullClientPacket const& /*packe
 
 void WorldSession::HandleGMTicketUpdateTextOpcode(WorldPackets::GmTicket::GmTicketUpdateText const& packet)
 {
-    uint8 type = packet.type;
-    std::string ticketText = packet.ticketText;
-
     GMTicketResponse response = GMTICKET_RESPONSE_UPDATE_ERROR;
     if (GmTicket* ticket = sTicketMgr->GetTicketByPlayer(GetPlayer()->GetGUID()))
     {
@@ -59,8 +56,8 @@ void WorldSession::HandleGMTicketUpdateTextOpcode(WorldPackets::GmTicket::GmTick
         }
         else
         {
-            ticket->SetMessage(ticketText);
-            ticket->SetTicketType(TicketType(type));
+            ticket->SetMessage(packet.ticketText);
+            ticket->SetTicketType(TicketType(packet.type));
             ticket->SaveToDB();
             response = GMTICKET_RESPONSE_UPDATE_SUCCESS;
 

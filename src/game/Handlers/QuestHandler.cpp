@@ -79,13 +79,11 @@ void WorldSession::HandleQuestgiverStatusQueryOpcode(WorldPackets::Quest::Questg
 
 void WorldSession::HandleQuestgiverHelloOpcode(WorldPackets::Quest::QuestgiverHello const& packet)
 {
-    ObjectGuid guid = packet.guid;
-
-    Creature* pCreature = GetPlayer()->GetNPCIfCanInteractWith(guid, UNIT_NPC_FLAG_NONE);
+    Creature* pCreature = GetPlayer()->GetNPCIfCanInteractWith(packet.guid, UNIT_NPC_FLAG_NONE);
 
     if (!pCreature)
     {
-        sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "WORLD: HandleQuestgiverHelloOpcode - %s not found or you can't interact with him.", guid.GetString().c_str());
+        sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "WORLD: HandleQuestgiverHelloOpcode - %s not found or you can't interact with him.", packet.guid.GetString().c_str());
         return;
     }
 
@@ -109,10 +107,9 @@ void WorldSession::HandleQuestgiverHelloOpcode(WorldPackets::Quest::QuestgiverHe
 
 void WorldSession::HandleQuestgiverAcceptQuestOpcode(WorldPackets::Quest::QuestgiverAcceptQuest const& packet)
 {
-    ObjectGuid guid = packet.guid;
     uint32 quest = packet.quest;
 
-    Object* pObject = _player->GetObjectByTypeMask(guid, TYPEMASK_CREATURE_GAMEOBJECT_PLAYER_OR_ITEM);
+    Object* pObject = _player->GetObjectByTypeMask(packet.guid, TYPEMASK_CREATURE_GAMEOBJECT_PLAYER_OR_ITEM);
 
     // no or incorrect quest giver
     if (!pObject
@@ -218,11 +215,10 @@ void WorldSession::HandleQuestgiverAcceptQuestOpcode(WorldPackets::Quest::Questg
 
 void WorldSession::HandleQuestgiverQueryQuestOpcode(WorldPackets::Quest::QuestgiverQueryQuest const& packet)
 {
-    ObjectGuid guid = packet.guid;
     uint32 quest = packet.quest;
 
     // Verify that the guid is valid and is a questgiver or involved in the requested quest
-    Object* pObject = _player->GetObjectByTypeMask(guid, TYPEMASK_CREATURE_GAMEOBJECT_OR_ITEM);
+    Object* pObject = _player->GetObjectByTypeMask(packet.guid, TYPEMASK_CREATURE_GAMEOBJECT_OR_ITEM);
     if (!pObject || (!pObject->HasQuest(quest) && !pObject->HasInvolvedQuest(quest)))
     {
         _player->PlayerTalkClass->CloseGossip();
@@ -511,9 +507,7 @@ void WorldSession::HandleQuestLogSwapQuest(WorldPackets::Quest::QuestLogSwapQues
 
 void WorldSession::HandleQuestLogRemoveQuest(WorldPackets::Quest::QuestLogRemoveQuest const& packet)
 {
-    uint8 slot = packet.slot;
-
-    _player->RemoveQuestAtSlot(slot);
+    _player->RemoveQuestAtSlot(packet.slot);
 }
 
 void WorldSession::HandleQuestConfirmAccept(WorldPackets::Quest::QuestConfirmAccept const& packet)
@@ -571,12 +565,11 @@ void WorldSession::HandleQuestConfirmAccept(WorldPackets::Quest::QuestConfirmAcc
 
 void WorldSession::HandleQuestgiverCompleteQuest(WorldPackets::Quest::QuestgiverCompleteQuest const& packet)
 {
-    uint32 quest = packet.quest;
     ObjectGuid guid = packet.guid;
 
-    if (Quest const* pQuest = sObjectMgr.GetQuestTemplate(quest))
+    if (Quest const* pQuest = sObjectMgr.GetQuestTemplate(packet.quest))
     {
-        if (_player->GetQuestStatus(quest) != QUEST_STATUS_COMPLETE)
+        if (_player->GetQuestStatus(packet.quest) != QUEST_STATUS_COMPLETE)
         {
             if (pQuest->IsRepeatable())
                 _player->PlayerTalkClass->SendQuestGiverRequestItems(pQuest, guid, _player->CanCompleteRepeatableQuest(pQuest), false);
@@ -594,9 +587,7 @@ void WorldSession::HandleQuestgiverQuestAutoLaunch(NullClientPacket const& /*pac
 
 void WorldSession::HandlePushQuestToParty(WorldPackets::Quest::PushQuestToParty const& packet)
 {
-    uint32 questId = packet.questId;
-
-    if (Quest const* pQuest = sObjectMgr.GetQuestTemplate(questId))
+    if (Quest const* pQuest = sObjectMgr.GetQuestTemplate(packet.questId))
     {
         if (Group* pGroup = _player->GetGroup())
         {
@@ -615,7 +606,7 @@ void WorldSession::HandlePushQuestToParty(WorldPackets::Quest::PushQuestToParty 
                     continue;
                 }
 
-                if (pPlayer->GetQuestStatus(questId) == QUEST_STATUS_COMPLETE)
+                if (pPlayer->GetQuestStatus(packet.questId) == QUEST_STATUS_COMPLETE)
                 {
                     _player->SendPushToPartyResponse(pPlayer, QUEST_PARTY_MSG_FINISH_QUEST);
                     continue;
@@ -654,9 +645,6 @@ void WorldSession::HandlePushQuestToParty(WorldPackets::Quest::PushQuestToParty 
 
 void WorldSession::HandleQuestPushResult(WorldPackets::Quest::QuestPushResult const& packet)
 {
-    ObjectGuid guid = packet.guid;
-    uint8 msg = packet.msg;
-
     auto const& questShareInfo = _player->GetQuestShareInfo();
     if (!questShareInfo)
         return;
@@ -665,7 +653,7 @@ void WorldSession::HandleQuestPushResult(WorldPackets::Quest::QuestPushResult co
     {
         WorldPacket data(MSG_QUEST_PUSH_RESULT, (8 + 1));
         data << _player->GetObjectGuid();
-        data << uint8(msg);                             // enum QuestShareMessages
+        data << uint8(packet.msg);                             // enum QuestShareMessages
         pPlayer->GetSession()->SendPacket(&data);
     }
 

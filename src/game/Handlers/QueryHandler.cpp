@@ -150,7 +150,6 @@ void WorldSession::HandleQueryTimeOpcode(NullClientPacket const& /*packet*/)
 void WorldSession::HandleCreatureQueryOpcode(WorldPackets::Query::QueryCreature const& packet)
 {
     uint32 entry = packet.entry;
-    ObjectGuid guid = packet.guid;
 
     CreatureInfo const* ci = sObjectMgr.GetCreatureTemplate(entry);
     if (ci)
@@ -224,7 +223,7 @@ void WorldSession::HandleCreatureQueryOpcode(WorldPackets::Query::QueryCreature 
     else
     {
         sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "WORLD: CMSG_CREATURE_QUERY - Guid: %s Entry: %u NO CREATURE INFO!",
-                  guid.GetString().c_str(), entry);
+                  packet.guid.GetString().c_str(), entry);
         WorldPacket data(SMSG_CREATURE_QUERY_RESPONSE, 4);
         data << uint32(entry | 0x80000000);
         SendPacket(&data);
@@ -235,7 +234,6 @@ void WorldSession::HandleCreatureQueryOpcode(WorldPackets::Query::QueryCreature 
 void WorldSession::HandleGameObjectQueryOpcode(WorldPackets::Query::QueryGameObject const& packet)
 {
     uint32 entryID = packet.entryID;
-    ObjectGuid guid = packet.guid;
 
     GameObjectInfo const* info = sObjectMgr.GetGameObjectTemplate(entryID);
     if (info)
@@ -287,7 +285,7 @@ void WorldSession::HandleGameObjectQueryOpcode(WorldPackets::Query::QueryGameObj
     else
     {
         sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "WORLD: CMSG_GAMEOBJECT_QUERY - Guid: %s Entry: %u Missing gameobject info!",
-                  guid.GetString().c_str(), entryID);
+                  packet.guid.GetString().c_str(), entryID);
         WorldPacket data(SMSG_GAMEOBJECT_QUERY_RESPONSE, 4);
         data << uint32(entryID | 0x80000000);
         SendPacket(&data);
@@ -344,13 +342,10 @@ void WorldSession::HandleCorpseQueryOpcode(NullClientPacket const& /*packet*/)
 
 void WorldSession::HandleNpcTextQueryOpcode(WorldPackets::Npc::NpcTextQuery const& packet)
 {
-    uint32 textID = packet.textID;
-    ObjectGuid guid = packet.guid;
-
-    NpcText const* pGossip = sObjectMgr.GetNpcText(textID);
+    NpcText const* pGossip = sObjectMgr.GetNpcText(packet.textID);
 
     WorldPacket data(SMSG_NPC_TEXT_UPDATE, 512);            // guess size
-    data << textID;
+    data << packet.textID;
 
     if (!pGossip)
     {
