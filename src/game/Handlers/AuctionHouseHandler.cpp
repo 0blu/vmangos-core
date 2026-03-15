@@ -239,29 +239,19 @@ AuctionHouseEntry const* WorldSession::GetCheckedAuctionHouseForAuctioneer(Objec
 }
 
 // this void creates new auction and adds auction to some auctionhouse
-void WorldSession::HandleAuctionSellItem(WorldPacket& recv_data)
+void WorldSession::HandleAuctionSellItem(WorldPackets::AuctionHouse::AuctionSellItem const& packet)
 {
-    ObjectGuid auctioneerGuid;
-    ObjectGuid itemGuid;
-    uint32 etime, bid, buyout;
-
-    recv_data >> auctioneerGuid;
-    recv_data >> itemGuid;
-    recv_data >> bid;
-    recv_data >> buyout;
-    recv_data >> etime;
-
-    if (!bid || !etime)
+    if (!packet.bid || !packet.etime)
         return;                                             // check for cheaters
 
     // Client limit
-    if (bid > 2000000000 || buyout > 2000000000)
+    if (packet.bid > 2000000000 || packet.buyout > 2000000000)
     {
         SendAuctionCommandResult(nullptr, AUCTION_STARTED, AUCTION_ERR_NOT_ENOUGH_MONEY);
         ProcessAnticheatAction("GoldDupe", "Putting too high auction price", CHEAT_ACTION_LOG);
         return;
     }
-    if (buyout && bid > buyout)
+    if (packet.buyout && packet.bid > packet.buyout)
     {
         SendAuctionCommandResult(nullptr, AUCTION_STARTED, AUCTION_ERR_HIGHER_BID);
         ProcessAnticheatAction("GoldDupe", "bid > buyout", CHEAT_ACTION_LOG);
@@ -282,7 +272,7 @@ void WorldSession::HandleAuctionSellItem(WorldPacket& recv_data)
 
     Player* pl = GetPlayer();
 
-    AuctionHouseEntry const* auctionHouseEntry = GetCheckedAuctionHouseForAuctioneer(auctioneerGuid);
+    AuctionHouseEntry const* auctionHouseEntry = GetCheckedAuctionHouseForAuctioneer(packet.auctioneerGuid);
     if (!auctionHouseEntry)
     {
         SendAuctionCommandResult(nullptr, AUCTION_STARTED, AUCTION_ERR_DATABASE);
@@ -301,7 +291,7 @@ void WorldSession::HandleAuctionSellItem(WorldPacket& recv_data)
     }
 
     // client send time in minutes, convert to common used sec time
-    etime *= MINUTE;
+    uint32 etime = packet.etime * MINUTE;
 
     // client understand only 3 auction time
     switch (etime)
@@ -321,18 +311,18 @@ void WorldSession::HandleAuctionSellItem(WorldPacket& recv_data)
     if (GetPlayer()->HasUnitState(UNIT_STATE_FEIGN_DEATH))
         GetPlayer()->RemoveSpellsCausingAura(SPELL_AURA_FEIGN_DEATH);
 
-    if (!itemGuid)
+    if (!packet.itemGuid)
     {
         SendAuctionCommandResult(nullptr, AUCTION_STARTED, AUCTION_ERR_ITEM_NOT_FOUND);
         return;
     }
 
-    Item *it = pl->GetItemByGuid(itemGuid);
+    Item *it = pl->GetItemByGuid(packet.itemGuid);
 
     // do not allow to sell already auctioned items
-    if (sAuctionMgr.GetAItem(itemGuid.GetCounter()))
+    if (sAuctionMgr.GetAItem(packet.itemGuid.GetCounter()))
     {
-        sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "AuctionError, %s is sending %s, but item is already in another auction", pl->GetGuidStr().c_str(), itemGuid.GetString().c_str());
+        sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "AuctionError, %s is sending %s, but item is already in another auction", pl->GetGuidStr().c_str(), packet.itemGuid.GetString().c_str());
         SendAuctionCommandResult(nullptr, AUCTION_STARTED, AUCTION_ERR_INVENTORY, EQUIP_ERR_ITEM_NOT_FOUND);
         return;
     }
@@ -389,10 +379,10 @@ void WorldSession::HandleAuctionSellItem(WorldPacket& recv_data)
     AH->itemTemplate = it->GetEntry();
     AH->owner = pl->GetGUIDLow();
     AH->ownerAccount = pl->GetSession()->GetAccountId();
-    AH->startbid = bid;
+    AH->startbid = packet.bid;
     AH->bidder = 0;
     AH->bid = 0;
-    AH->buyout = buyout;
+    AH->buyout = packet.buyout;
     AH->lockedIpAddress = GetRemoteAddress();
     AH->depositTime = time(nullptr);
     AH->expireTime = time(nullptr) + auction_time;
@@ -401,7 +391,7 @@ void WorldSession::HandleAuctionSellItem(WorldPacket& recv_data)
 
     sLog.Player(this, LOG_MONEY_TRADES, LOG_LVL_MINIMAL, "[AuctionHouse]: Player %s listing %s (%u) at auctioneer %s. Initial bid: %u, buyout: %u, duration: %u, auctionhouse: %u",
                 pl->GetShortDescription().c_str(), it->GetGuidStr().c_str(), it->GetEntry(),
-                auctioneerGuid.GetString().c_str(), bid, buyout, auction_time, AH->GetHouseId());
+                packet.auctioneerGuid.GetString().c_str(), packet.bid, packet.buyout, auction_time, AH->GetHouseId());
 
     // Log this transaction
     PlayerTransactionData data;
@@ -410,9 +400,9 @@ void WorldSession::HandleAuctionSellItem(WorldPacket& recv_data)
     data.parts[0].itemsEntries[0] = AH->itemTemplate;
     data.parts[0].itemsCount[0] = it->GetCount();
     data.parts[0].itemsGuid[0] = it->GetGUIDLow();
-    data.parts[0].money = bid;
-    data.parts[1].lowGuid = auctioneerGuid.GetCounter();
-    data.parts[1].money = buyout;
+    data.parts[0].money = packet.bid;
+    data.parts[1].lowGuid = packet.auctioneerGuid.GetCounter();
+    data.parts[1].money = packet.buyout;
     sWorld.LogTransaction(data);
 
     auctionHouse->AddAuction(AH);
@@ -783,25 +773,24 @@ void WorldSession::HandleAuctionListOwnerItems(WorldPackets::AuctionHouse::Aucti
     sWorld.AddAsyncTask({std::move(task)});
 }
 
-void WorldSession::HandleAuctionListItems(WorldPacket& recv_data)
+void WorldSession::HandleAuctionListItems(WorldPackets::AuctionHouse::AuctionListItems const& packet)
 {
     if (ReceivedAHListRequest())
         return;
 
-    ObjectGuid auctioneerGuid;
-    std::string searchedname;
     AuctionHouseClientQueryTask task(AUCTION_QUERY_LIST);
     task.accountId = GetAccountId();
 
-    recv_data >> auctioneerGuid;
-    recv_data >> task.listfrom;                                  // start, used for page control listing by 50 elements
-    recv_data >> searchedname;
+    task.listfrom = packet.listfrom;
+    task.levelmin = packet.levelmin;
+    task.levelmax = packet.levelmax;
+    task.auctionSlotID = packet.auctionSlotID;
+    task.auctionMainCategory = packet.auctionMainCategory;
+    task.auctionSubCategory = packet.auctionSubCategory;
+    task.quality = packet.quality;
+    task.usable = packet.usable;
 
-    recv_data >> task.levelmin >> task.levelmax;
-    recv_data >> task.auctionSlotID >> task.auctionMainCategory >> task.auctionSubCategory >> task.quality;
-    recv_data >> task.usable;
-
-    AuctionHouseEntry const* auctionHouseEntry = GetCheckedAuctionHouseForAuctioneer(auctioneerGuid);
+    AuctionHouseEntry const* auctionHouseEntry = GetCheckedAuctionHouseForAuctioneer(packet.auctioneerGuid);
     if (!auctionHouseEntry)
         return;
 
@@ -812,11 +801,8 @@ void WorldSession::HandleAuctionListItems(WorldPacket& recv_data)
     if (GetPlayer()->HasUnitState(UNIT_STATE_FEIGN_DEATH))
         GetPlayer()->RemoveSpellsCausingAura(SPELL_AURA_FEIGN_DEATH);
 
-    //sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "Auctionhouse search %s list from: %u, searchedname: %s, levelmin: %u, levelmax: %u, auctionSlotID: %u, auctionMainCategory: %u, auctionSubCategory: %u, quality: %u, usable: %u",
-    //  auctioneerGuid.GetString().c_str(), listfrom, searchedname.c_str(), levelmin, levelmax, auctionSlotID, auctionMainCategory, auctionSubCategory, quality, usable);
-
     // converting string that we try to find to lower case
-    if (!Utf8toWStr(searchedname, task.wsearchedname))
+    if (!Utf8toWStr(packet.searchedname, task.wsearchedname))
         return;
 
     wstrToLower(task.wsearchedname);

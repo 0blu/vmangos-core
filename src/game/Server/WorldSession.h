@@ -649,9 +649,9 @@ class WorldSession
         void HandleUnacceptTradeOpcode(NullClientPacket const& packet);
 
         void HandleAuctionHelloOpcode(WorldPackets::AuctionHouse::AuctionHello const& packet);
-        void HandleAuctionListItems(WorldPacket& recv_data);
+        void HandleAuctionListItems(WorldPackets::AuctionHouse::AuctionListItems const& packet);
         void HandleAuctionListBidderItems(WorldPackets::AuctionHouse::AuctionListBidderItem const& packet);
-        void HandleAuctionSellItem(WorldPacket& recv_data);
+        void HandleAuctionSellItem(WorldPackets::AuctionHouse::AuctionSellItem const& packet);
         void HandleAuctionRemoveItem(WorldPackets::AuctionHouse::AuctionRemoveItem const& packet);
         void HandleAuctionListOwnerItems(WorldPackets::AuctionHouse::AuctionListOwnerItems const& packet);
         void HandleAuctionPlaceBid(WorldPackets::AuctionHouse::AuctionPlaceBid const& packet);

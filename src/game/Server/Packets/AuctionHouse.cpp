@@ -38,3 +38,22 @@ void WorldPackets::AuctionHouse::AuctionRemoveItem::ReadFromWorldPacket(WorldPac
     recv_data >> auctionId;
 }
 
+void WorldPackets::AuctionHouse::AuctionSellItem::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> auctioneerGuid;
+    recv_data >> itemGuid;
+    recv_data >> bid;
+    recv_data >> buyout;
+    recv_data >> etime;
+}
+
+void WorldPackets::AuctionHouse::AuctionListItems::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> auctioneerGuid;
+    recv_data >> listfrom;
+    recv_data >> searchedname;
+    recv_data >> levelmin >> levelmax;
+    recv_data >> auctionSlotID >> auctionMainCategory >> auctionSubCategory >> quality;
+    recv_data >> usable;
+}
+

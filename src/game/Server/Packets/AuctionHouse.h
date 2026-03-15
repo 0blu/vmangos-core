@@ -3,6 +3,8 @@
 
 #include "Packet.h"
 #include "ObjectGuid.h"
+#include <string>
+#include <vector>
 
 namespace WorldPackets { namespace AuctionHouse
 {
@@ -54,6 +56,37 @@ namespace WorldPackets { namespace AuctionHouse
         uint32     auctionId = 0;
 
         explicit AuctionRemoveItem() : ClientPacket(CMSG_AUCTION_REMOVE_ITEM) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class AuctionSellItem final : public ClientPacket
+    {
+    public:
+        ObjectGuid auctioneerGuid;
+        ObjectGuid itemGuid;
+        uint32     bid = 0;
+        uint32     buyout = 0;
+        uint32     etime = 0;
+
+        explicit AuctionSellItem() : ClientPacket(CMSG_AUCTION_SELL_ITEM) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class AuctionListItems final : public ClientPacket
+    {
+    public:
+        ObjectGuid  auctioneerGuid;
+        uint32      listfrom = 0;
+        std::string searchedname;
+        uint8       levelmin = 0;
+        uint8       levelmax = 0;
+        uint32      auctionSlotID = 0;
+        uint32      auctionMainCategory = 0;
+        uint32      auctionSubCategory = 0;
+        uint32      quality = 0;
+        uint8       usable = 0;
+
+        explicit AuctionListItems() : ClientPacket(CMSG_AUCTION_LIST_ITEMS) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
 }} // namespace WorldPackets::AuctionHouse
