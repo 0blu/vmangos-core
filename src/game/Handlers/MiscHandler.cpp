@@ -574,15 +574,11 @@ void WorldSession::HandleDelIgnoreOpcode(WorldPackets::Misc::DelIgnore const& pa
     sSocialMgr.SendFriendStatus(GetMasterPlayer(), FRIEND_IGNORE_REMOVED, ignoreGuid, false);
 }
 
-void WorldSession::HandleBugOpcode(WorldPacket& recv_data)
+void WorldSession::HandleBugOpcode(WorldPackets::Misc::Bug const& packet)
 {
-    uint32 suggestion, contentLen;
-    std::string content;
-    uint32 typeLen;
-    std::string type;
-
-    recv_data >> suggestion >> contentLen >> content;
-    recv_data >> typeLen >> type;
+    sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "WorldSession::HandleBugOpcode: Player %s (GUID: %u) reported a %s: [%s] %s",
+        GetPlayer() ? GetPlayer()->GetName() : "(none)", GetAccountId(),
+        packet.suggestion ? "suggestion" : "bug", packet.type.c_str(), packet.content.c_str());
 }
 
 void WorldSession::HandleReclaimCorpseOpcode(WorldPackets::Misc::ReclaimCorpse const& packet)

@@ -539,7 +539,7 @@ class WorldSession
         void HandleDelFriendOpcode(WorldPackets::Misc::DelFriend const& packet);
         void HandleAddIgnoreOpcode(WorldPackets::Misc::AddIgnore const& packet);
         void HandleDelIgnoreOpcode(WorldPackets::Misc::DelIgnore const& packet);
-        void HandleBugOpcode(WorldPacket& recvPacket);
+        void HandleBugOpcode(WorldPackets::Misc::Bug const& packet);
         void HandleSetAmmoOpcode(WorldPackets::Item::SetAmmo const& packet);
         void HandleItemNameQueryOpcode(WorldPackets::Query::ItemNameQuery const& packet);
 

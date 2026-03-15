@@ -557,7 +557,7 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(SMSG_PETITION_QUERY_RESPONSE,      Reason::SendByServer);
     INVALID_PACKET(SMSG_FISH_NOT_HOOKED,              Reason::SendByServer);
     INVALID_PACKET(SMSG_FISH_ESCAPED,                 Reason::SendByServer);
-    LEGACY_HANDLER(CMSG_BUG,                          STATUS_NEVER,     PACKET_PROCESS_MAP,           &WorldSession::HandleBugOpcode);
+    DEFINE_HANDLER(CMSG_BUG,                          STATUS_NEVER,     PACKET_PROCESS_MAP,           &WorldSession::HandleBugOpcode);
     INVALID_PACKET(SMSG_NOTIFICATION,                 Reason::SendByServer);
     DEFINE_HANDLER(CMSG_PLAYED_TIME,                  STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandlePlayedTime);
     INVALID_PACKET(SMSG_PLAYED_TIME,                  Reason::SendByServer);

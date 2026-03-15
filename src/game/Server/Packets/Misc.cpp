@@ -208,3 +208,12 @@ void WorldPackets::Misc::Who::ReadFromWorldPacket(WorldPacket& recv_data)
         searchTerms.push_back(std::move(term));
     }
 }
+
+void WorldPackets::Misc::Bug::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> suggestion;
+    recv_data.read_skip<uint32>(); // contentLen
+    recv_data >> content;
+    recv_data.read_skip<uint32>(); // typeLen
+    recv_data >> type;
+}

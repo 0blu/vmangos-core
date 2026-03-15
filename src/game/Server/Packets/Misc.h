@@ -324,6 +324,17 @@ namespace WorldPackets { namespace Misc
         explicit Who() : ClientPacket(CMSG_WHO) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class Bug final : public ClientPacket
+    {
+    public:
+        uint32      suggestion = 0;
+        std::string content;
+        std::string type;
+
+        explicit Bug() : ClientPacket(CMSG_BUG) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
 }} // namespace WorldPackets::Misc
 
 #endif // MANGOS_PACKETS_MISC_H
