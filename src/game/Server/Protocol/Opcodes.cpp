@@ -851,7 +851,7 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(CMSG_GM_UNTEACH,                   Reason::Unhandled);
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_5_1
     INVALID_PACKET(SMSG_WARDEN_DATA,                  Reason::SendByServer);
-    LEGACY_HANDLER(CMSG_WARDEN_DATA,                  STATUS_AUTHED,    PACKET_PROCESS_WORLD,         &WorldSession::HandleWardenDataOpcode);
+    DEFINE_HANDLER(CMSG_WARDEN_DATA,                  STATUS_AUTHED,    PACKET_PROCESS_WORLD,         &WorldSession::HandleWardenDataOpcode);
 #endif
     INVALID_PACKET(SMSG_GROUP_JOINED_BATTLEGROUND,    Reason::SendByServer);
     DEFINE_HANDLER(MSG_BATTLEGROUND_PLAYER_POSITIONS, STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleBattleGroundPlayerPositionsOpcode);

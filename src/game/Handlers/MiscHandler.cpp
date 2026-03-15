@@ -1228,7 +1228,7 @@ void WorldSession::HandleRequestPetInfoOpcode(NullClientPacket const& /*packet *
         _player->CharmSpellInitialize();
 }
 
-void WorldSession::HandleWardenDataOpcode(WorldPacket& recv_data)
+void WorldSession::HandleWardenDataOpcode(WorldPackets::Misc::WardenData const& packet)
 {
     if (!m_warden)
     {
@@ -1237,6 +1237,9 @@ void WorldSession::HandleWardenDataOpcode(WorldPacket& recv_data)
         return;
     }
 
+    WorldPacket rawPacket(CMSG_WARDEN_DATA, packet.data.size());
+    rawPacket.append(packet.data);
+
     std::lock_guard<std::mutex> lock(m_warden->m_packetQueueMutex);
-    m_warden->m_packetQueue.emplace_back(std::move(recv_data));
+    m_warden->m_packetQueue.emplace_back(std::move(rawPacket));
 }

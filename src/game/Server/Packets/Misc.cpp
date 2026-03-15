@@ -232,3 +232,12 @@ void WorldPackets::Misc::Bug::ReadFromWorldPacket(WorldPacket& recv_data)
     recv_data.read_skip<uint32>(); // typeLen
     recv_data >> type;
 }
+
+
+void WorldPackets::Misc::WardenData::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    uint32 const remaining = recv_data.size() - recv_data.rpos();
+    data.resize(remaining);
+    if (!data.empty())
+        recv_data.read(data.data(), data.size());
+}

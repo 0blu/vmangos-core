@@ -346,6 +346,15 @@ namespace WorldPackets { namespace Misc
         explicit Bug() : ClientPacket(CMSG_BUG) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class WardenData final : public ClientPacket
+    {
+    public:
+        std::vector<uint8> data;
+
+        explicit WardenData() : ClientPacket(CMSG_WARDEN_DATA) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
 }} // namespace WorldPackets::Misc
 
 #endif // MANGOS_PACKETS_MISC_H

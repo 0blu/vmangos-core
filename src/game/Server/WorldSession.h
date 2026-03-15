@@ -791,7 +791,7 @@ class WorldSession
         void HandleBattlefieldListOpcode(WorldPackets::Battleground::BattlefieldListRequest const& packet);
         void HandleLeaveBattlefieldOpcode(WorldPackets::Battleground::LeaveBattlefield const& packet);
 
-        void HandleWardenDataOpcode(WorldPacket& recv_data);
+        void HandleWardenDataOpcode(WorldPackets::Misc::WardenData const& packet);
         void HandleMinimapPingOpcode(WorldPackets::Group::MinimapPing const& packet);
         void HandleRandomRollOpcode(WorldPackets::Group::RandomRoll const& packet);
         void HandleFarSightOpcode(WorldPackets::Misc::FarSight const& packet);
