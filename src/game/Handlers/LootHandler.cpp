@@ -619,9 +619,7 @@ void WorldSession::DoLootRelease(ObjectGuid lguid)
 
 void WorldSession::HandleLootMasterGiveOpcode(WorldPackets::Loot::LootMasterGive const& packet)
 {
-    uint8 slotid = packet.slotId;
     ObjectGuid lootGuid = packet.lootGuid;
-    ObjectGuid playerGuid = packet.playerGuid;
 
     if (!_player->GetGroup() || _player->GetGroup()->GetLootMethod() != MASTER_LOOT || _player->GetGroup()->GetLooterGuid() != _player->GetObjectGuid())
     {
@@ -629,7 +627,7 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPackets::Loot::LootMasterGive
         return;
     }
 
-    Player* target = ObjectAccessor::FindPlayer(playerGuid);
+    Player* target = ObjectAccessor::FindPlayer(packet.playerGuid);
     if (!target || !target->IsInWorld())
     {
         _player->SendLootError(lootGuid, LOOT_ERROR_PLAYER_NOT_FOUND);
@@ -651,7 +649,7 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPackets::Loot::LootMasterGive
     }
 #endif
 
-    sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "WorldSession::HandleLootMasterGiveOpcode (CMSG_LOOT_MASTER_GIVE, 0x02A3) Target = %s [%s].", playerGuid.GetString().c_str(), target->GetName());
+    sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "WorldSession::HandleLootMasterGiveOpcode (CMSG_LOOT_MASTER_GIVE, 0x02A3) Target = %s [%s].", packet.playerGuid.GetString().c_str(), target->GetName());
 
     if (_player->GetLootGuid() != lootGuid)
     {
@@ -701,23 +699,23 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPackets::Loot::LootMasterGive
         return;
     }
 
-    if (slotid >= pLoot->items.size())
+    if (packet.slotId >= pLoot->items.size())
     {
         _player->SendLootRelease(lootGuid);
         _player->SendEquipError(EQUIP_ERR_ITEM_NOT_FOUND, nullptr, nullptr);
         sLog.Player(this, LOG_BASIC, LOG_LVL_BASIC,
             "AutoLootItem: Player %s might be using a hack! (slot %d, size %lu)",
-            GetPlayer()->GetName(), slotid, (unsigned long)pLoot->items.size());
+            GetPlayer()->GetName(), packet.slotId, (unsigned long)pLoot->items.size());
         return;
     }
 
-    if (!pLoot->IsAllowedLooter(playerGuid, false))
+    if (!pLoot->IsAllowedLooter(packet.playerGuid, false))
     {
         _player->SendLootError(lootGuid, LOOT_ERROR_MASTER_OTHER);
         return;
     }
 
-    LootItem& item = pLoot->items[slotid];
+    LootItem& item = pLoot->items[packet.slotId];
 
     ItemPosCountVec dest;
     InventoryResult msg = target->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, item.itemid, item.count);
@@ -750,6 +748,6 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPackets::Loot::LootMasterGive
     item.count = 0;
     item.is_looted = true;
 
-    pLoot->NotifyItemRemoved(slotid);
+    pLoot->NotifyItemRemoved(packet.slotId);
     --pLoot->unlootedCount;
 }

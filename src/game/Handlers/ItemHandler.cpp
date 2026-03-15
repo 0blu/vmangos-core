@@ -100,15 +100,12 @@ void WorldSession::HandleSwapInvItemOpcode(WorldPackets::Item::SwapInvItem const
 
 void WorldSession::HandleAutoEquipItemSlotOpcode(WorldPackets::Item::AutoEquipItemSlot const& packet)
 {
-    ObjectGuid itemGuid = packet.itemGuid;
-    uint8 dstslot = packet.dstslot;
-
     // cheating attempt, client should never send opcode in that case
-    if (!Player::IsEquipmentPos(INVENTORY_SLOT_BAG_0, dstslot))
+    if (!Player::IsEquipmentPos(INVENTORY_SLOT_BAG_0, packet.dstslot))
         return;
 
-    Item* item = _player->GetItemByGuid(itemGuid);
-    uint16 dstpos = dstslot | (INVENTORY_SLOT_BAG_0 << 8);
+    Item* item = _player->GetItemByGuid(packet.itemGuid);
+    uint16 dstpos = packet.dstslot | (INVENTORY_SLOT_BAG_0 << 8);
 
     if (!item || item->GetPos() == dstpos)
         return;
@@ -439,10 +436,7 @@ void WorldSession::HandleItemQuerySingleOpcode(WorldPackets::Item::QueryItem con
 
 void WorldSession::HandleReadItemOpcode(WorldPackets::Item::ReadItem const& packet)
 {
-    uint8 bag = packet.bag;
-    uint8 slot = packet.slot;
-
-    Item *pItem = _player->GetItemByPos(bag, slot);
+    Item *pItem = _player->GetItemByPos(packet.bag, packet.slot);
 
     if (pItem && pItem->GetProto()->PageText)
     {
@@ -695,16 +689,10 @@ void WorldSession::HandleBuybackItem(WorldPackets::Item::BuybackItem const& pack
 
 void WorldSession::HandleBuyItemInSlotOpcode(WorldPackets::Item::BuyItemInSlot const& packet)
 {
-    ObjectGuid vendorGuid = packet.vendorGuid;
-    ObjectGuid bagGuid = packet.bagGuid;
-    uint32 item = packet.item;
-    uint8 bagslot = packet.bagslot;
-    uint8 count = packet.count;
-
     uint8 bag = NULL_BAG;                                   // init for case invalid bagGUID
 
     // find bag slot by bag guid
-    if (bagGuid == _player->GetObjectGuid())
+    if (packet.bagGuid == _player->GetObjectGuid())
         bag = INVENTORY_SLOT_BAG_0;
     else
     {
@@ -712,7 +700,7 @@ void WorldSession::HandleBuyItemInSlotOpcode(WorldPackets::Item::BuyItemInSlot c
         {
             if (Bag *pBag = (Bag*)_player->GetItemByPos(INVENTORY_SLOT_BAG_0, i))
             {
-                if (bagGuid == pBag->GetObjectGuid())
+                if (packet.bagGuid == pBag->GetObjectGuid())
                 {
                     bag = i;
                     break;
@@ -725,26 +713,20 @@ void WorldSession::HandleBuyItemInSlotOpcode(WorldPackets::Item::BuyItemInSlot c
     if (bag == NULL_BAG)
         return;
 
-    GetPlayer()->BuyItemFromVendor(vendorGuid, item, count, bag, bagslot);
+    GetPlayer()->BuyItemFromVendor(packet.vendorGuid, packet.item, packet.count, bag, packet.bagslot);
 }
 
 void WorldSession::HandleBuyItemOpcode(WorldPackets::Item::BuyItem const& packet)
 {
-    ObjectGuid vendorGuid = packet.vendorGuid;
-    uint32 item = packet.item;
-    uint8 count = packet.count;
-
-    GetPlayer()->BuyItemFromVendor(vendorGuid, item, count, NULL_BAG, NULL_SLOT);
+    GetPlayer()->BuyItemFromVendor(packet.vendorGuid, packet.item, packet.count, NULL_BAG, NULL_SLOT);
 }
 
 void WorldSession::HandleListInventoryOpcode(WorldPackets::Item::ListInventory const& packet)
 {
-    ObjectGuid guid = packet.guid;
-
     if (!GetPlayer()->IsAlive())
         return;
 
-    SendListInventory(guid);
+    SendListInventory(packet.guid);
 }
 
 void WorldSession::SendListInventory(ObjectGuid vendorguid, uint8 menu_type)
@@ -950,11 +932,9 @@ bool WorldSession::CheckBanker(ObjectGuid guid)
 
 void WorldSession::HandleBuyBankSlotOpcode(WorldPackets::Item::BuyBankSlot const& packet)
 {
-    ObjectGuid guid = packet.guid;
-
     WorldPacket data(SMSG_BUY_BANK_SLOT_RESULT, 4);
 
-    if (!CheckBanker(guid))
+    if (!CheckBanker(packet.guid))
     {
         data << uint32(ERR_BANKSLOT_NOTBANKER);
         SendPacket(&data);
@@ -990,10 +970,7 @@ void WorldSession::HandleBuyBankSlotOpcode(WorldPackets::Item::BuyBankSlot const
 
 void WorldSession::HandleAutoBankItemOpcode(WorldPackets::Item::AutoBankItem const& packet)
 {
-    uint8 srcbag = packet.srcbag;
-    uint8 srcslot = packet.srcslot;
-
-    Item *pItem = _player->GetItemByPos(srcbag, srcslot);
+    Item *pItem = _player->GetItemByPos(packet.srcbag, packet.srcslot);
     if (!pItem)
         return;
 
@@ -1019,7 +996,7 @@ void WorldSession::HandleAutoBankItemOpcode(WorldPackets::Item::AutoBankItem con
         return;
     }
 
-    _player->RemoveItem(srcbag, srcslot, true);
+    _player->RemoveItem(packet.srcbag, packet.srcslot, true);
     _player->BankItem(dest, pItem, true);
 }
 
@@ -1106,9 +1083,7 @@ void WorldSession::SendItemEnchantTimeUpdate(ObjectGuid playerGuid, ObjectGuid i
 
 void WorldSession::HandleItemNameQueryOpcode(WorldPackets::Query::ItemNameQuery const& packet)
 {
-    uint32 itemid = packet.itemId;
-
-    ItemPrototype const* pProto = sObjectMgr.GetItemPrototype(itemid);
+    ItemPrototype const* pProto = sObjectMgr.GetItemPrototype(packet.itemId);
     if (pProto)
     {
         char const* name = pProto->Name1;
@@ -1137,12 +1112,7 @@ void WorldSession::HandleItemNameQueryOpcode(WorldPackets::Query::ItemNameQuery 
 
 void WorldSession::HandleWrapItemOpcode(WorldPackets::Item::WrapItem const& packet)
 {
-    uint8 gift_bag = packet.giftBag;
-    uint8 gift_slot = packet.giftSlot;
-    uint8 item_bag = packet.itemBag;
-    uint8 item_slot = packet.itemSlot;
-
-    Item *gift = _player->GetItemByPos(gift_bag, gift_slot);
+    Item *gift = _player->GetItemByPos(packet.giftBag, packet.giftSlot);
     if (!gift)
     {
         _player->SendEquipError(EQUIP_ERR_ITEM_NOT_FOUND, gift, nullptr);
@@ -1155,7 +1125,7 @@ void WorldSession::HandleWrapItemOpcode(WorldPackets::Item::WrapItem const& pack
         return;
     }
 
-    Item *item = _player->GetItemByPos(item_bag, item_slot);
+    Item *item = _player->GetItemByPos(packet.itemBag, packet.itemSlot);
 
     if (!item)
     {

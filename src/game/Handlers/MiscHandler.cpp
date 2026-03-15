@@ -381,8 +381,6 @@ void WorldSession::HandleTogglePvP(WorldPackets::Misc::TogglePvP const& packet)
 
 void WorldSession::HandleZoneUpdateOpcode(WorldPackets::Misc::ZoneUpdate const& packet)
 {
-    uint32 newZone = packet.newZone;
-
     // use server size data
     uint32 newzone, newarea;
     GetPlayer()->GetZoneAndAreaId(newzone, newarea);
@@ -401,12 +399,10 @@ void WorldSession::HandleZoneUpdateOpcode(WorldPackets::Misc::ZoneUpdate const& 
 
 void WorldSession::HandleSetSelectionOpcode(WorldPackets::Misc::SetSelection const& packet)
 {
-    ObjectGuid guid = packet.guid;
-
-    _player->SetSelectionGuid(guid);
+    _player->SetSelectionGuid(packet.guid);
 
     // update reputation list if need
-    Unit* unit = ObjectAccessor::GetUnit(*_player, guid);   // can select group members at diff maps
+    Unit* unit = ObjectAccessor::GetUnit(*_player, packet.guid);   // can select group members at diff maps
 
     if (unit)
         if (FactionTemplateEntry const* factionTemplateEntry = unit->GetFactionTemplateEntry())
@@ -415,7 +411,7 @@ void WorldSession::HandleSetSelectionOpcode(WorldPackets::Misc::SetSelection con
 
     // Drop combo points only for rogues and druids
     // Warriors use combo points internally, do no reset for everyone
-    if ((_player->GetClass() == CLASS_ROGUE || _player->GetClass() == CLASS_DRUID) && unit && guid != _player->GetComboTargetGuid())
+    if ((_player->GetClass() == CLASS_ROGUE || _player->GetClass() == CLASS_DRUID) && unit && packet.guid != _player->GetComboTargetGuid())
         _player->ClearComboPoints();
 
     // Update autoshot if need
@@ -437,9 +433,7 @@ void WorldSession::HandleSetSelectionOpcode(WorldPackets::Misc::SetSelection con
 
 void WorldSession::HandleStandStateChangeOpcode(WorldPackets::Misc::StandStateChange const& packet)
 {
-    uint32 animState = packet.animState;
-
-    switch (animState)
+    switch (packet.animState)
     {
         case UNIT_STAND_STATE_STAND:
         case UNIT_STAND_STATE_SIT:
@@ -455,7 +449,7 @@ void WorldSession::HandleStandStateChangeOpcode(WorldPackets::Misc::StandStateCh
 
     _player->InterruptSpellsWithChannelFlags(AURA_INTERRUPT_ANIM_CANCELS);
     _player->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_ANIM_CANCELS);
-    _player->SetStandState(animState);
+    _player->SetStandState(packet.animState);
 }
 
 void WorldSession::HandleFriendListOpcode(NullClientPacket const& /*packet*/)
@@ -517,11 +511,9 @@ void WorldSession::HandleDelFriendOpcode(WorldPackets::Misc::DelFriend const& pa
 {
     ASSERT(GetMasterPlayer());
 
-    ObjectGuid friendGuid = packet.friendGuid;
+    GetMasterPlayer()->GetSocial()->RemoveFromSocialList(packet.friendGuid, false);
 
-    GetMasterPlayer()->GetSocial()->RemoveFromSocialList(friendGuid, false);
-
-    sSocialMgr.SendFriendStatus(GetMasterPlayer(), FRIEND_REMOVED, friendGuid, false);
+    sSocialMgr.SendFriendStatus(GetMasterPlayer(), FRIEND_REMOVED, packet.friendGuid, false);
 }
 
 void WorldSession::HandleAddIgnoreOpcode(WorldPackets::Misc::AddIgnore const& packet)
@@ -567,11 +559,9 @@ void WorldSession::HandleDelIgnoreOpcode(WorldPackets::Misc::DelIgnore const& pa
 {
     ASSERT(GetMasterPlayer());
 
-    ObjectGuid ignoreGuid = packet.ignoreGuid;
+    GetMasterPlayer()->GetSocial()->RemoveFromSocialList(packet.ignoreGuid, true);
 
-    GetMasterPlayer()->GetSocial()->RemoveFromSocialList(ignoreGuid, true);
-
-    sSocialMgr.SendFriendStatus(GetMasterPlayer(), FRIEND_IGNORE_REMOVED, ignoreGuid, false);
+    sSocialMgr.SendFriendStatus(GetMasterPlayer(), FRIEND_IGNORE_REMOVED, packet.ignoreGuid, false);
 }
 
 void WorldSession::HandleBugOpcode(WorldPackets::Misc::Bug const& packet)
@@ -583,8 +573,6 @@ void WorldSession::HandleBugOpcode(WorldPackets::Misc::Bug const& packet)
 
 void WorldSession::HandleReclaimCorpseOpcode(WorldPackets::Misc::ReclaimCorpse const& packet)
 {
-    ObjectGuid guid = packet.guid;
-
     if (GetPlayer()->IsAlive())
         return;
 
@@ -617,10 +605,7 @@ void WorldSession::HandleReclaimCorpseOpcode(WorldPackets::Misc::ReclaimCorpse c
 
 void WorldSession::HandleResurrectResponseOpcode(WorldPackets::Misc::ResurrectResponse const& packet)
 {
-    ObjectGuid guid = packet.guid;
-    uint8 status = packet.status;
-
-    if (!guid) // Cheating attempt
+    if (!packet.guid) // Cheating attempt
     {
         ProcessAnticheatAction("PassiveAnticheat", "Instant resurrect hack detected", CHEAT_ACTION_LOG | CHEAT_ACTION_REPORT_GMS);
         return;
@@ -629,13 +614,13 @@ void WorldSession::HandleResurrectResponseOpcode(WorldPackets::Misc::ResurrectRe
     if (GetPlayer()->IsAlive())
         return;
 
-    if (status == 0)
+    if (packet.status == 0)
     {
         GetPlayer()->ClearResurrectRequestData();           // reject
         return;
     }
 
-    if (!GetPlayer()->IsRessurectRequestedBy(guid))
+    if (!GetPlayer()->IsRessurectRequestedBy(packet.guid))
         return;
 
     GetPlayer()->ResurectUsingRequestData();                // will call spawncorpsebones
@@ -1087,11 +1072,10 @@ void WorldSession::HandleInspectHonorStatsOpcode(WorldPackets::Misc::InspectHono
 
 void WorldSession::HandleTeleportToUnitOpcode(WorldPackets::Misc::TeleportToUnit const& packet)
 {
-    std::string playerName = packet.playerName;
-    if (playerName.length() > MAX_PLAYER_NAME)
+    if (packet.playerName.length() > MAX_PLAYER_NAME)
         return;
 
-    std::string command = ".goname " + playerName;
+    std::string command = ".goname " + packet.playerName;
     SanitizeChatMessageAndProcessCommand(command, LANG_UNIVERSAL, CHAT_MSG_SYSTEM);
 }
 
@@ -1190,13 +1174,11 @@ void WorldSession::HandleWhoisOpcode(WorldPackets::Query::Whois const& packet)
 
 void WorldSession::HandleFarSightOpcode(WorldPackets::Misc::FarSight const& packet)
 {
-    uint8 op = packet.op;
-
     WorldObject* obj = _player->GetMap()->GetWorldObject(_player->GetFarSightGuid());
     if (!obj)
         return;
 
-    switch (op)
+    switch (packet.op)
     {
         case 0:
             sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "Removed FarSight from %s", _player->GetGuidStr().c_str());
