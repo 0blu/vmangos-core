@@ -3,6 +3,7 @@
 
 #include "Packet.h"
 #include "ObjectGuid.h"
+#include "nonstd/optional.hpp"
 
 namespace WorldPackets { namespace Group
 {
@@ -133,8 +134,7 @@ namespace WorldPackets { namespace Group
     class RaidReadyCheck final : public ClientPacket
     {
     public:
-        bool  isAnswer = false;
-        uint8 state = 0;
+        nonstd::optional<uint8> state;
 
         explicit RaidReadyCheck() : ClientPacket(MSG_RAID_READY_CHECK) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;

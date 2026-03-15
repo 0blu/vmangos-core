@@ -583,7 +583,7 @@ void WorldSession::HandleGroupAssistantLeaderOpcode(WorldPackets::Group::GroupAs
 void WorldSession::HandleRaidReadyCheckOpcode(WorldPackets::Group::RaidReadyCheck const& packet)
 {
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_10_2
-    if (!packet.isAnswer) // request
+    if (!packet.state.has_value()) // request
     {
         Group* group = GetPlayer()->GetGroup();
         if (!group)
@@ -612,7 +612,7 @@ void WorldSession::HandleRaidReadyCheckOpcode(WorldPackets::Group::RaidReadyChec
         {
             WorldPacket data(MSG_RAID_READY_CHECK, 9);
             data << GetPlayer()->GetObjectGuid();
-            data << uint8(packet.state);
+            data << uint8(*packet.state);
             gleader->GetSession()->SendPacket(&data);
         }
     }

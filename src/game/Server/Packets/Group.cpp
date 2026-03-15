@@ -81,7 +81,8 @@ void WorldPackets::Group::RaidReadyCheck::ReadFromWorldPacket(WorldPacket& recv_
 {
     if (!recv_data.empty())
     {
-        isAnswer = true;
-        recv_data >> state;
+        uint8 s;
+        recv_data >> s;
+        state = s;
     }
 }
