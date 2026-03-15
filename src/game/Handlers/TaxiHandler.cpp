@@ -140,6 +140,7 @@ bool WorldSession::SendLearnNewTaxiNode(Creature* unit)
         return false;
 }
 
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
 void WorldSession::HandleActivateTaxiExpressOpcode(WorldPackets::Taxi::ActivateTaxiExpress const& packet)
 {
     Creature* npc = GetPlayer()->GetNPCIfCanInteractWith(packet.flightmasterGuid, UNIT_NPC_FLAG_FLIGHTMASTER);
@@ -154,6 +155,7 @@ void WorldSession::HandleActivateTaxiExpressOpcode(WorldPackets::Taxi::ActivateT
 
     GetPlayer()->ActivateTaxiPathTo(packet.nodes, npc);
 }
+#endif
 
 void WorldSession::HandleActivateTaxiOpcode(WorldPackets::Taxi::ActivateTaxi const& packet)
 {

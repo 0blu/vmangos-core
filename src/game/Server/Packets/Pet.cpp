@@ -24,6 +24,13 @@ void WorldPackets::Pet::PetRename::ReadFromWorldPacket(WorldPacket& recv_data)
     recv_data >> name;
 }
 
+void WorldPackets::Pet::PetCancelAura::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> guid;
+    recv_data >> spellId;
+}
+
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_6_1
 void WorldPackets::Pet::PetStopAttack::ReadFromWorldPacket(WorldPacket& recv_data)
 {
     recv_data >> petGuid;
@@ -34,18 +41,13 @@ void WorldPackets::Pet::PetUnlearn::ReadFromWorldPacket(WorldPacket& recv_data)
     recv_data >> guid;
 }
 
-void WorldPackets::Pet::PetCancelAura::ReadFromWorldPacket(WorldPacket& recv_data)
-{
-    recv_data >> guid;
-    recv_data >> spellId;
-}
-
 void WorldPackets::Pet::PetSpellAutocast::ReadFromWorldPacket(WorldPacket& recv_data)
 {
     recv_data >> guid;
     recv_data >> spellId;
     recv_data >> state;
 }
+#endif
 
 void WorldPackets::Pet::PetSetAction::ReadFromWorldPacket(WorldPacket& recv_data)
 {
@@ -59,9 +61,11 @@ void WorldPackets::Pet::PetSetAction::ReadFromWorldPacket(WorldPacket& recv_data
     }
 }
 
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
 void WorldPackets::Pet::PetCastSpell::ReadFromWorldPacket(WorldPacket& recv_data)
 {
     recv_data >> petGuid;
     recv_data >> spellId;
     recv_data >> targets;
 }
+#endif

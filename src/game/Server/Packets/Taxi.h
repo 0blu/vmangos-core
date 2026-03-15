@@ -35,6 +35,7 @@ namespace WorldPackets { namespace Taxi
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
 
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
     class ActivateTaxiExpress final : public ClientPacket
     {
     public:
@@ -45,6 +46,8 @@ namespace WorldPackets { namespace Taxi
         explicit ActivateTaxiExpress() : ClientPacket(CMSG_ACTIVATETAXIEXPRESS) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+#endif
+
 }} // namespace WorldPackets::Taxi
 
 #endif // MANGOS_PACKETS_TAXI_H

@@ -682,6 +682,7 @@ void WorldSession::SendGuildCommandResult(uint32 typecmd, std::string const& str
     SendPacket(&data);
 }
 
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
 void WorldSession::HandleGuildChangeInfoTextOpcode(WorldPackets::Guild::GuildChangeInfoText const& packet)
 {
     std::string GINFO = packet.infoText;
@@ -707,6 +708,7 @@ void WorldSession::HandleGuildChangeInfoTextOpcode(WorldPackets::Guild::GuildCha
 
     guild->SetGINFO(GINFO);
 }
+#endif
 
 void WorldSession::HandleSaveGuildEmblemOpcode(WorldPackets::Guild::SaveGuildEmblem const& packet)
 {

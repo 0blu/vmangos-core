@@ -70,6 +70,7 @@ void WorldPackets::Group::GroupAssistantLeader::ReadFromWorldPacket(WorldPacket&
     recv_data >> flag;
 }
 
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_10_2
 void WorldPackets::Group::RaidTargetUpdate::ReadFromWorldPacket(WorldPacket& recv_data)
 {
     recv_data >> iconId;
@@ -86,3 +87,4 @@ void WorldPackets::Group::RaidReadyCheck::ReadFromWorldPacket(WorldPacket& recv_
         state = s;
     }
 }
+#endif

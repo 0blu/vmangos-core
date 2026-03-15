@@ -448,6 +448,7 @@ void WorldSession::HandleRandomRollOpcode(WorldPackets::Group::RandomRoll const&
 #endif
 }
 
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_10_2
 void WorldSession::HandleRaidTargetUpdateOpcode(WorldPackets::Group::RaidTargetUpdate const& packet)
 {
     Group* group = GetPlayer()->GetGroup();
@@ -471,6 +472,7 @@ void WorldSession::HandleRaidTargetUpdateOpcode(WorldPackets::Group::RaidTargetU
         group->SetTargetIcon(packet.iconId, packet.guid);
     }
 }
+#endif
 
 void WorldSession::HandleGroupRaidConvertOpcode(NullClientPacket const& /*packet*/)
 {
@@ -578,9 +580,9 @@ void WorldSession::HandleGroupAssistantLeaderOpcode(WorldPackets::Group::GroupAs
     group->SetAssistant(player->GetObjectGuid(), (packet.flag != 0));
 }
 
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_10_2
 void WorldSession::HandleRaidReadyCheckOpcode(WorldPackets::Group::RaidReadyCheck const& packet)
 {
-#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_10_2
     if (!packet.state.has_value()) // request
     {
         Group* group = GetPlayer()->GetGroup();
@@ -614,8 +616,8 @@ void WorldSession::HandleRaidReadyCheckOpcode(WorldPackets::Group::RaidReadyChec
             gleader->GetSession()->SendPacket(&data);
         }
     }
-#endif
 }
+#endif
 
 void WorldSession::BuildPartyMemberStatsPacket(Player* player, WorldPacket* data, uint32 mask, bool sendAllAuras)
 {

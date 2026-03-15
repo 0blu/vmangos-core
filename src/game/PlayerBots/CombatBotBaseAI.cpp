@@ -3094,19 +3094,18 @@ void CombatBotBaseAI::SendBattlefieldPortPacket()
 
 void CombatBotBaseAI::SendBattlemasterJoinPacket(uint8 battlegroundId)
 {
-    WorldPackets::Battleground::BattlemasterJoin packet;
-    packet.guid = me->GetObjectGuid(); // battlemaster guid, or player guid if joining queue from BG portal
-
+    uint32 instanceId = 0; // first available
+    uint32 mapId;
     switch (battlegroundId)
     {
         case BATTLEGROUND_QUEUE_AV:
-            packet.mapId = MAP_ALTERAC_VALLEY;
+            mapId = MAP_ALTERAC_VALLEY;
             break;
         case BATTLEGROUND_QUEUE_WS:
-            packet.mapId = MAP_WARSONG_GULCH;
+            mapId = MAP_WARSONG_GULCH;
             break;
         case BATTLEGROUND_QUEUE_AB:
-            packet.mapId = MAP_ARATHI_BASIN;
+            mapId = MAP_ARATHI_BASIN;
             break;
         default:
             sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "BattleBot: Invalid BG queue type!");
@@ -3114,9 +3113,7 @@ void CombatBotBaseAI::SendBattlemasterJoinPacket(uint8 battlegroundId)
             return;
     }
 
-    packet.instanceId = 0; // first available
-    packet.joinAsGroup = 0;
-    me->GetSession()->HandleBattlemasterJoinOpcode(packet);
+    me->GetSession()->RequestBgJoinQueue(me->GetObjectGuid(), instanceId, mapId, false);
 }
 
 void CombatBotBaseAI::SendAreaTriggerPacket(uint32 areaTriggerId)

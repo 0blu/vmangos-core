@@ -78,6 +78,7 @@ namespace WorldPackets { namespace Guild
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
 
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
     class GuildChangeInfoText final : public ClientPacket
     {
     public:
@@ -86,6 +87,7 @@ namespace WorldPackets { namespace Guild
         explicit GuildChangeInfoText() : ClientPacket(CMSG_GUILD_INFO_TEXT) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+#endif
 
     class SaveGuildEmblem final : public ClientPacket
     {

@@ -424,8 +424,12 @@ void WorldSession::HandleForceSpeedChangeAckOpcodes(WorldPackets::Movement::Move
 {
     uint32 timeNow = World::GetCurrentMSTime();
 
-    uint32 const opcode = packet.GetOpcode();
-    uint32 const movementCounter = packet.movementCounter;
+    uint32 opcode = packet.GetOpcode();
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
+    uint32 movementCounter = packet.movementCounter;
+#else
+    uint32 movementCounter = 0;
+#endif
 
     MovementInfo movementInfo = packet.movementInfo;
     movementInfo.UpdateTime(timeNow);
@@ -534,8 +538,12 @@ void WorldSession::HandleMovementFlagChangeToggleAck(WorldPackets::Movement::Mov
 {
     uint32 timeNow = World::GetCurrentMSTime();
 
-    uint32 const opcode = packet.GetOpcode();
-    uint32 const movementCounter = packet.movementCounter;
+    uint32 opcode = packet.GetOpcode();
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
+    uint32 movementCounter = packet.movementCounter;
+#else
+    uint32 movementCounter = 0;
+#endif
 
     MovementInfo movementInfo = packet.movementInfo;
     movementInfo.UpdateTime(timeNow);
@@ -644,8 +652,12 @@ void WorldSession::HandleMoveRootAck(WorldPackets::Movement::MoveRootAck const& 
 {
     uint32 timeNow = World::GetCurrentMSTime();
 
-    uint32 const opcode = packet.GetOpcode();
-    uint32 const movementCounter = packet.movementCounter;
+    uint32 opcode = packet.GetOpcode();
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
+    uint32 movementCounter = packet.movementCounter;
+#else
+    uint32 movementCounter = 0;
+#endif
 
     MovementInfo movementInfo = packet.movementInfo;
     movementInfo.UpdateTime(timeNow);
@@ -746,7 +758,11 @@ void WorldSession::HandleMoveKnockBackAck(WorldPackets::Movement::MoveKnockBackA
 {
     uint32 timeNow = World::GetCurrentMSTime();
 
-    uint32 const movementCounter = packet.movementCounter;
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
+    uint32 movementCounter = packet.movementCounter;
+#else
+    uint32 movementCounter = 0;
+#endif
 
     MovementInfo movementInfo = packet.movementInfo;
     movementInfo.UpdateTime(timeNow);
@@ -921,11 +937,11 @@ void WorldSession::HandleMoveNotActiveMoverOpcode(WorldPackets::Movement::MoveNo
                        oldMoverGuid.GetString().c_str());
         return;
     }
-
-    MovementInfo movementInfo = packet.movementInfo;
 #else
     ObjectGuid oldMoverGuid = m_clientMoverGuid;
 #endif
+
+    MovementInfo movementInfo = packet.movementInfo;
 
     m_clientMoverGuid = ObjectGuid();
 

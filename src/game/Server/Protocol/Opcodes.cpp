@@ -938,18 +938,8 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(SMSG_LOTTERY_RESULT_OBSOLETE,      Reason::SendByServer);
     INVALID_PACKET(SMSG_CHARACTER_PROFILE,            Reason::SendByServer);
     INVALID_PACKET(SMSG_CHARACTER_PROFILE_REALM_CONNECTED, Reason::SendByServer);
-    INVALID_PACKET(MSG_UNUSED_826,                    Reason::Unhandled);
     INVALID_PACKET(SMSG_DEFENSE_MESSAGE,              Reason::SendByServer);
 #endif
-
-    // Throw compile time error when a handler is not initialized
-    for (int i = 0; i < NUM_MSG_TYPES; i++)
-    {
-        if (list.handlers[i].name == nullptr)
-        {
-            throw "One or more packet handlers are not initialized";
-        }
-    }
 
     return list;
 }

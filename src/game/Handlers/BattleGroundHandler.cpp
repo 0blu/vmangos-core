@@ -79,23 +79,24 @@ void WorldSession::SendBattleGroundList(ObjectGuid guid, BattleGroundTypeId bgTy
 
 void WorldSession::HandleBattlefieldJoinOpcode(WorldPackets::Battleground::BattlefieldJoin const& packet)
 {
-    WorldPackets::Battleground::BattlemasterJoin join;
-    join.mapId = packet.mapId;
-    HandleBattlemasterJoinOpcode(join);
+    RequestBgJoinQueue(ObjectGuid{}, 0, packet.mapId, false);
 }
 
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_6_1
 void WorldSession::HandleBattlemasterJoinOpcode(WorldPackets::Battleground::BattlemasterJoin const& packet)
 {
-    ObjectGuid guid       = packet.guid;
-    uint32     instanceId = packet.instanceId;
-    uint32     mapId      = packet.mapId;
-    uint8      joinAsGroup = packet.joinAsGroup;
+    RequestBgJoinQueue(packet.guid, packet.instanceId, packet.mapId, packet.joinAsGroup);
+}
+#endif
+
+void WorldSession::RequestBgJoinQueue(ObjectGuid battlemaster, uint32 instanceId, uint32 mapId, bool joinAsGroup)
+{
     bool queuedAtBGPortal = false;
     bool isPremade = false;
     Group* grp;
 
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_6_1
-    if (guid == GetPlayer()->GetObjectGuid())
+    if (battlemaster == GetPlayer()->GetObjectGuid())
         queuedAtBGPortal = true;
 #endif
 
@@ -124,7 +125,7 @@ void WorldSession::HandleBattlemasterJoinOpcode(WorldPackets::Battleground::Batt
     }
     else
     {
-        if (!_player->GetNPCIfCanInteractWith(guid, UNIT_NPC_FLAG_BATTLEMASTER))
+        if (!_player->GetNPCIfCanInteractWith(battlemaster, UNIT_NPC_FLAG_BATTLEMASTER))
         {
             ProcessAnticheatAction("PassiveAnticheat", "Attempt to queue for BG through invalid creature", CHEAT_ACTION_LOG | CHEAT_ACTION_REPORT_GMS);
             return;

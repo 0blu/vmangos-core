@@ -527,7 +527,9 @@ class WorldSession
 
         void HandleGMTicketDeleteTicketOpcode(NullClientPacket const& packet);
         void HandleGMTicketUpdateTextOpcode(WorldPackets::GmTicket::GmTicketUpdateText const& packet);
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_10_2
         void HandleGMSurveySubmitOpcode(WorldPackets::GmTicket::GMSurveySubmit const& packet);
+#endif
 
         void HandleTogglePvP(WorldPackets::Misc::TogglePvP const& packet);
         void HandleZoneUpdateOpcode(WorldPackets::Misc::ZoneUpdate const& packet);
@@ -545,8 +547,10 @@ class WorldSession
 
         void HandleAreaTriggerOpcode(WorldPackets::Misc::AreaTrigger const& packet);
         void HandleSetFactionAtWarOpcode(WorldPackets::Misc::SetFactionAtWar const& packet);
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
         void HandleSetWatchedFactionOpcode(WorldPackets::Misc::SetWatchedFaction const& packet);
         void HandleSetFactionInactiveOpcode(WorldPackets::Misc::SetFactionInactive const& packet);
+#endif
 
         void HandleUpdateAccountData(WorldPackets::Misc::UpdateAccountData const& packet);
         void HandleRequestAccountData(WorldPackets::Misc::RequestAccountData const& packet);
@@ -573,8 +577,10 @@ class WorldSession
         void HandleLootMethodOpcode(WorldPackets::Group::LootMethod const& packet);
         void HandleLootRoll(WorldPackets::Loot::LootRoll const& packet);
         void HandleRequestPartyMemberStatsOpcode(WorldPackets::Group::RequestPartyMemberStats const& packet);
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_10_2
         void HandleRaidTargetUpdateOpcode(WorldPackets::Group::RaidTargetUpdate const& packet);
         void HandleRaidReadyCheckOpcode(WorldPackets::Group::RaidReadyCheck const& packet);
+#endif
         void HandleGroupRaidConvertOpcode(NullClientPacket const& packet);
         void HandleGroupChangeSubGroupOpcode(WorldPackets::Group::GroupChangeSubGroup const& packet);
         void HandleGroupSwapSubGroupOpcode(WorldPackets::Group::GroupSwapSubGroup const& packet);
@@ -608,13 +614,17 @@ class WorldSession
         void HandleGuildRankOpcode(WorldPackets::Guild::GuildRank const& packet);
         void HandleGuildAddRankOpcode(WorldPackets::Guild::GuildAddRank const& packet);
         void HandleGuildDelRankOpcode(NullClientPacket const& packet);
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
         void HandleGuildChangeInfoTextOpcode(WorldPackets::Guild::GuildChangeInfoText const& packet);
+#endif
         void HandleSaveGuildEmblemOpcode(WorldPackets::Guild::SaveGuildEmblem const& packet);
 
         void HandleTaxiNodeStatusQueryOpcode(WorldPackets::Taxi::TaxiNodeStatusQuery const& packet);
         void HandleTaxiQueryAvailableNodes(WorldPackets::Taxi::TaxiQueryAvailableNodes const& packet);
         void HandleActivateTaxiOpcode(WorldPackets::Taxi::ActivateTaxi const& packet);
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
         void HandleActivateTaxiExpressOpcode(WorldPackets::Taxi::ActivateTaxiExpress const& packet);
+#endif
 
         void HandleTabardVendorActivateOpcode(WorldPackets::Npc::TabardVendorActivate const& packet);
         void HandleBankerActivateOpcode(WorldPackets::Npc::BankerActivate const& packet);
@@ -766,16 +776,20 @@ class WorldSession
 
         //Pet
         void HandlePetAction(WorldPackets::Pet::PetAction const& packet);
-        void HandlePetStopAttack(WorldPackets::Pet::PetStopAttack const& packet);
         void HandlePetNameQueryOpcode(WorldPackets::Pet::QueryPetName const& packet);
         void HandlePetSetAction(WorldPackets::Pet::PetSetAction const& packet);
         void HandlePetAbandon(WorldPackets::Pet::PetAbandon const& packet);
         void HandlePetRename(WorldPackets::Pet::PetRename const& packet);
         void HandlePetCancelAuraOpcode(WorldPackets::Pet::PetCancelAura const& packet);
+        void HandleRequestPetInfoOpcode(NullClientPacket const& packet);
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_6_1
+        void HandlePetStopAttack(WorldPackets::Pet::PetStopAttack const& packet);
         void HandlePetUnlearnOpcode(WorldPackets::Pet::PetUnlearn const& packet);
         void HandlePetSpellAutocastOpcode(WorldPackets::Pet::PetSpellAutocast const& packet);
+#endif
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
         void HandlePetCastSpellOpcode(WorldPackets::Pet::PetCastSpell const& packet);
-        void HandleRequestPetInfoOpcode(NullClientPacket const& packet);
+#endif
 
         void HandleCharRenameOpcode(WorldPackets::Character::CharRename const& packet);
         static void HandleChangePlayerNameOpcodeCallBack(std::unique_ptr<QueryResult> result, uint32 accountId, std::string newname);
@@ -783,7 +797,10 @@ class WorldSession
         //BattleGround
         void HandleBattlefieldJoinOpcode(WorldPackets::Battleground::BattlefieldJoin const& packet);
         void HandleBattlemasterHelloOpcode(WorldPackets::Battleground::BattlemasterHello const& packet);
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_6_1
         void HandleBattlemasterJoinOpcode(WorldPackets::Battleground::BattlemasterJoin const& packet);
+#endif
+        void RequestBgJoinQueue(ObjectGuid battlemaster, uint32 instanceId, uint32 mapId, bool joinAsGroup);
         void HandleBattleGroundPlayerPositionsOpcode(NullClientPacket const& packet);
         void HandlePVPLogDataOpcode(NullClientPacket const& packet);
         void HandleBattlefieldStatusOpcode(NullClientPacket const& packet);
@@ -791,7 +808,9 @@ class WorldSession
         void HandleBattlefieldListOpcode(WorldPackets::Battleground::BattlefieldListRequest const& packet);
         void HandleLeaveBattlefieldOpcode(WorldPackets::Battleground::LeaveBattlefield const& packet);
 
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_5_1
         void HandleWardenDataOpcode(WorldPackets::Misc::WardenData const& packet);
+#endif
         void HandleMinimapPingOpcode(WorldPackets::Group::MinimapPing const& packet);
         void HandleRandomRollOpcode(WorldPackets::Group::RandomRoll const& packet);
         void HandleFarSightOpcode(WorldPackets::Misc::FarSight const& packet);

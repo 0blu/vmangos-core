@@ -177,6 +177,7 @@ namespace WorldPackets { namespace Misc
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
 
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
     class SetFactionInactive final : public ClientPacket
     {
     public:
@@ -186,6 +187,7 @@ namespace WorldPackets { namespace Misc
         explicit SetFactionInactive() : ClientPacket(CMSG_SET_FACTION_INACTIVE) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+#endif
 
     class ZoneUpdate final : public ClientPacket
     {
@@ -291,16 +293,16 @@ namespace WorldPackets { namespace Misc
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
 
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
     class SetWatchedFaction final : public ClientPacket
     {
     public:
-#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
         int32 repId = 0;
-#endif
 
         explicit SetWatchedFaction() : ClientPacket(CMSG_SET_WATCHED_FACTION) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+#endif
 
     class MoveSetRawPosition final : public ClientPacket
     {
@@ -347,6 +349,7 @@ namespace WorldPackets { namespace Misc
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
 
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_5_1
     class WardenData final : public ClientPacket
     {
     public:
@@ -355,6 +358,8 @@ namespace WorldPackets { namespace Misc
         explicit WardenData() : ClientPacket(CMSG_WARDEN_DATA) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+#endif
+
 }} // namespace WorldPackets::Misc
 
 #endif // MANGOS_PACKETS_MISC_H

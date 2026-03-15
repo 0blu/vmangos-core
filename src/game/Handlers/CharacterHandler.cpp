@@ -762,11 +762,10 @@ void WorldSession::HandleTutorialResetOpcode(NullClientPacket const& /*packet*/)
         SetTutorialInt(iI, 0x00000000);
 }
 
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
 void WorldSession::HandleSetWatchedFactionOpcode(WorldPackets::Misc::SetWatchedFaction const& packet)
 {
-#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
     GetPlayer()->SetInt32Value(PLAYER_FIELD_WATCHED_FACTION_INDEX, packet.repId);
-#endif
 }
 
 void WorldSession::HandleSetFactionInactiveOpcode(WorldPackets::Misc::SetFactionInactive const& packet)
@@ -776,6 +775,7 @@ void WorldSession::HandleSetFactionInactiveOpcode(WorldPackets::Misc::SetFaction
 
     _player->GetReputationMgr().SetInactive(replistid, inactive);
 }
+#endif
 
 void WorldSession::HandleShowingHelmOpcode(NullClientPacket const& /*packet*/)
 {

@@ -20,6 +20,7 @@ void WorldPackets::GmTicket::GmTicketUpdateText::ReadFromWorldPacket(WorldPacket
     recv_data >> ticketText;
 }
 
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_10_2
 void WorldPackets::GmTicket::GMSurveySubmit::ReadFromWorldPacket(WorldPacket& recv_data)
 {
     recv_data >> mainSurvey;
@@ -38,3 +39,4 @@ void WorldPackets::GmTicket::GMSurveySubmit::ReadFromWorldPacket(WorldPacket& re
 
     recv_data >> comment;
 }
+#endif

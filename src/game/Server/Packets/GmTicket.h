@@ -31,6 +31,7 @@ namespace WorldPackets { namespace GmTicket
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
 
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_10_2
     class GMSurveySubmit final : public ClientPacket
     {
     public:
@@ -48,6 +49,8 @@ namespace WorldPackets { namespace GmTicket
         explicit GMSurveySubmit() : ClientPacket(CMSG_GMSURVEY_SUBMIT) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+#endif
+
 }} // namespace WorldPackets::GmTicket
 
 #endif // MANGOS_PACKETS_GMTICKET_H

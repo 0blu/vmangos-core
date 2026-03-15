@@ -10,14 +10,10 @@ namespace WorldPackets { namespace Battleground
     {
     public:
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
-        uint32 mapId;
+        uint32 mapId = 0;
 #endif
 
-        explicit BattlefieldListRequest() : ClientPacket(CMSG_BATTLEFIELD_LIST)
-#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
-        , mapId(0)
-#endif
-        {}
+        explicit BattlefieldListRequest() : ClientPacket(CMSG_BATTLEFIELD_LIST) {}
 
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
@@ -72,6 +68,7 @@ namespace WorldPackets { namespace Battleground
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
 
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_6_1
     class BattlemasterJoin final : public ClientPacket
     {
     public:
@@ -84,6 +81,7 @@ namespace WorldPackets { namespace Battleground
         explicit BattlemasterJoin() : ClientPacket(CMSG_BATTLEMASTER_JOIN) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+#endif
 
     class BattlefieldJoin final : public ClientPacket
     {

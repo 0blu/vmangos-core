@@ -184,29 +184,6 @@ void WorldSession::HandlePetAction(WorldPackets::Pet::PetAction const& packet)
     }
 }
 
-void WorldSession::HandlePetStopAttack(WorldPackets::Pet::PetStopAttack const& packet)
-{
-    ObjectGuid petGuid = packet.petGuid;
-
-    Unit* pet = GetPlayer()->GetMap()->GetUnit(petGuid);    // pet or controlled creature/player
-    if (!pet)
-    {
-        sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "HandlePetStopAttack: %s doesn't exist.", petGuid.GetString().c_str());
-        return;
-    }
-
-    if (GetPlayer()->GetObjectGuid() != pet->GetCharmerOrOwnerGuid())
-    {
-        sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "HandlePetStopAttack: %s isn't charm/pet of %s.", petGuid.GetString().c_str(), GetPlayer()->GetGuidStr().c_str());
-        return;
-    }
-
-    if (!pet->IsAlive())
-        return;
-
-    pet->AttackStop();
-}
-
 void WorldSession::HandlePetNameQueryOpcode(WorldPackets::Pet::QueryPetName const& packet)
 {
     SendPetNameQuery(packet.petGuid, packet.petNumber);
@@ -406,6 +383,30 @@ void WorldSession::HandlePetAbandon(WorldPackets::Pet::PetAbandon const& packet)
     }
 }
 
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_6_1
+void WorldSession::HandlePetStopAttack(WorldPackets::Pet::PetStopAttack const& packet)
+{
+    ObjectGuid petGuid = packet.petGuid;
+
+    Unit* pet = GetPlayer()->GetMap()->GetUnit(petGuid);    // pet or controlled creature/player
+    if (!pet)
+    {
+        sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "HandlePetStopAttack: %s doesn't exist.", petGuid.GetString().c_str());
+        return;
+    }
+
+    if (GetPlayer()->GetObjectGuid() != pet->GetCharmerOrOwnerGuid())
+    {
+        sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "HandlePetStopAttack: %s isn't charm/pet of %s.", petGuid.GetString().c_str(), GetPlayer()->GetGuidStr().c_str());
+        return;
+    }
+
+    if (!pet->IsAlive())
+        return;
+
+    pet->AttackStop();
+}
+
 void WorldSession::HandlePetUnlearnOpcode(WorldPackets::Pet::PetUnlearn const& packet)
 {
     ObjectGuid guid = packet.guid;
@@ -492,7 +493,9 @@ void WorldSession::HandlePetSpellAutocastOpcode(WorldPackets::Pet::PetSpellAutoc
 
     charmInfo->SetSpellAutocast(spellid, state);
 }
+#endif
 
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
 void WorldSession::HandlePetCastSpellOpcode(WorldPackets::Pet::PetCastSpell const& packet)
 {
     ObjectGuid guid = packet.petGuid;
@@ -554,6 +557,7 @@ void WorldSession::HandlePetCastSpellOpcode(WorldPackets::Pet::PetCastSpell cons
         spell->Delete();
     }
 }
+#endif
 
 void WorldSession::SendPetNameInvalid(uint32 error, std::string const& name)
 {

@@ -142,6 +142,7 @@ void WorldSession::HandleGMTicketSystemStatusOpcode(NullClientPacket const& /*pa
     SendPacket(&data);
 }
 
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_10_2
 void WorldSession::HandleGMSurveySubmitOpcode(WorldPackets::GmTicket::GMSurveySubmit const& packet)
 {
     uint32 nextSurveyID = sTicketMgr->GetNextSurveyID();
@@ -170,3 +171,4 @@ void WorldSession::HandleGMSurveySubmitOpcode(WorldPackets::GmTicket::GMSurveySu
     stmt.addString(packet.comment);
     stmt.Execute();
 }
+#endif

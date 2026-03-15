@@ -2,7 +2,9 @@
 
 void WorldPackets::Battleground::BattlefieldListRequest::ReadFromWorldPacket(WorldPacket& recv_data)
 {
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
     recv_data >> mapId;
+#endif
 }
 
 void WorldPackets::Battleground::AreaSpiritHealerQuery::ReadFromWorldPacket(WorldPacket& recv_data)
@@ -35,6 +37,7 @@ void WorldPackets::Battleground::LeaveBattlefield::ReadFromWorldPacket(WorldPack
 #endif
 }
 
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_6_1
 void WorldPackets::Battleground::BattlemasterJoin::ReadFromWorldPacket(WorldPacket& recv_data)
 {
     recv_data >> guid;          // battlemaster guid, or player guid if joining queue from BG portal
@@ -42,6 +45,7 @@ void WorldPackets::Battleground::BattlemasterJoin::ReadFromWorldPacket(WorldPack
     recv_data >> instanceId;    // instance id, 0 if First Available selected
     recv_data >> joinAsGroup;   // join as group
 }
+#endif
 
 void WorldPackets::Battleground::BattlefieldJoin::ReadFromWorldPacket(WorldPacket& recv_data)
 {

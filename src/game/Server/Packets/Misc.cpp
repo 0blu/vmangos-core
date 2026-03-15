@@ -99,11 +99,13 @@ void WorldPackets::Misc::SetFactionAtWar::ReadFromWorldPacket(WorldPacket& recv_
     recv_data >> flag;
 }
 
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
 void WorldPackets::Misc::SetFactionInactive::ReadFromWorldPacket(WorldPacket& recv_data)
 {
     recv_data >> replistid;
     recv_data >> inactive;
 }
+#endif
 
 void WorldPackets::Misc::ZoneUpdate::ReadFromWorldPacket(WorldPacket& recv_data)
 {
@@ -170,12 +172,12 @@ void WorldPackets::Misc::UpdateAccountData::ReadFromWorldPacket(WorldPacket& rec
     }
 }
 
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
 void WorldPackets::Misc::SetWatchedFaction::ReadFromWorldPacket(WorldPacket& recv_data)
 {
-#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
     recv_data >> repId;
-#endif
 }
+#endif
 
 void WorldPackets::Misc::MoveSetRawPosition::ReadFromWorldPacket(WorldPacket& recv_data)
 {

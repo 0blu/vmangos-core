@@ -49,6 +49,7 @@ namespace WorldPackets { namespace Pet
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
 
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_6_1
     class PetStopAttack final : public ClientPacket
     {
     public:
@@ -66,6 +67,7 @@ namespace WorldPackets { namespace Pet
         explicit PetUnlearn() : ClientPacket(CMSG_PET_UNLEARN) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+#endif
 
     class PetCancelAura final : public ClientPacket
     {
@@ -77,6 +79,7 @@ namespace WorldPackets { namespace Pet
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
 
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_6_1
     class PetSpellAutocast final : public ClientPacket
     {
     public:
@@ -87,6 +90,7 @@ namespace WorldPackets { namespace Pet
         explicit PetSpellAutocast() : ClientPacket(CMSG_PET_SPELL_AUTOCAST) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+#endif
 
     class PetSetAction final : public ClientPacket
     {
@@ -105,6 +109,7 @@ namespace WorldPackets { namespace Pet
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
 
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
     class PetCastSpell final : public ClientPacket
     {
     public:
@@ -115,6 +120,8 @@ namespace WorldPackets { namespace Pet
         explicit PetCastSpell() : ClientPacket(CMSG_PET_CAST_SPELL) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+#endif
+
 }} // namespace WorldPackets::Pet
 
 #endif // MANGOS_PACKETS_PET_H

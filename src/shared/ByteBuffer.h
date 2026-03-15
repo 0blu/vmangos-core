@@ -85,7 +85,8 @@ class ByteBuffer
             return buf;
         }
 
-        static ByteBuffer from(std::vector<uint8> const&& v)
+        // `std::move` v into the buffer
+        static ByteBuffer from(std::vector<uint8>&& v)
         {
             ByteBuffer buf;
             buf._storage = std::move(v);

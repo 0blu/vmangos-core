@@ -41,10 +41,12 @@ void WorldPackets::Guild::GuildMOTD::ReadFromWorldPacket(WorldPacket& recv_data)
         recv_data >> motd;
 }
 
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
 void WorldPackets::Guild::GuildChangeInfoText::ReadFromWorldPacket(WorldPacket& recv_data)
 {
     recv_data >> infoText;
 }
+#endif
 
 void WorldPackets::Guild::SaveGuildEmblem::ReadFromWorldPacket(WorldPacket& recv_data)
 {

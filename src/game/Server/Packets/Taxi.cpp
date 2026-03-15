@@ -17,6 +17,7 @@ void WorldPackets::Taxi::ActivateTaxi::ReadFromWorldPacket(WorldPacket& recv_dat
     recv_data >> node2;
 }
 
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
 void WorldPackets::Taxi::ActivateTaxiExpress::ReadFromWorldPacket(WorldPacket& recv_data)
 {
     uint32 node_count;
@@ -30,3 +31,4 @@ void WorldPackets::Taxi::ActivateTaxiExpress::ReadFromWorldPacket(WorldPacket& r
         nodes.push_back(node);
     }
 }
+#endif
