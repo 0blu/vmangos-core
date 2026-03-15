@@ -39,9 +39,7 @@
 
 void WorldSession::HandleBattlemasterHelloOpcode(WorldPackets::Battleground::BattlemasterHello const& packet)
 {
-    ObjectGuid guid = packet.guid;
-
-    Creature* pCreature = GetPlayer()->GetMap()->GetCreature(guid);
+    Creature* pCreature = GetPlayer()->GetMap()->GetCreature(packet.guid);
 
     if (!pCreature)
         return;
@@ -67,7 +65,7 @@ void WorldSession::HandleBattlemasterHelloOpcode(WorldPackets::Battleground::Bat
 
     _player->InterruptSpellsWithChannelFlags(AURA_INTERRUPT_INTERACTING_CANCELS);
     _player->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_INTERACTING_CANCELS);
-    SendBattleGroundList(guid, bgTypeId);
+    SendBattleGroundList(packet.guid, bgTypeId);
 }
 
 void WorldSession::SendBattleGroundList(ObjectGuid guid, BattleGroundTypeId bgTypeId)
@@ -593,9 +591,7 @@ void WorldSession::HandleAreaSpiritHealerQueryOpcode(WorldPackets::Battleground:
     if (!bg)
         return;
 
-    ObjectGuid guid = packet.guid;
-
-    Creature* unit = GetPlayer()->GetMap()->GetCreature(guid);
+    Creature* unit = GetPlayer()->GetMap()->GetCreature(packet.guid);
     if (!unit)
         return;
 
@@ -611,9 +607,7 @@ void WorldSession::HandleAreaSpiritHealerQueueOpcode(WorldPackets::Battleground:
     if (!bg)
         return;
 
-    ObjectGuid guid = packet.guid;
-
-    Creature* unit = GetPlayer()->GetMap()->GetCreature(guid);
+    Creature* unit = GetPlayer()->GetMap()->GetCreature(packet.guid);
     if (!unit)
         return;
 
