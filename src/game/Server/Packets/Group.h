@@ -123,8 +123,8 @@ namespace WorldPackets { namespace Group
     class RaidTargetUpdate final : public ClientPacket
     {
     public:
-        uint8      x = 0;
-        ObjectGuid guid; // only valid when x != 0xFF (icon update, not request)
+        uint8      iconId = 0;
+        ObjectGuid guid; // only valid when iconId != 0xFF (icon update, not request)
 
         explicit RaidTargetUpdate() : ClientPacket(MSG_RAID_TARGET_UPDATE) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;

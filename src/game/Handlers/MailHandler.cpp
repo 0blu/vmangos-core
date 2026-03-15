@@ -874,20 +874,17 @@ void WorldSession::HandleItemTextQuery(WorldPackets::Misc::ItemTextQuery const& 
  */
 void WorldSession::HandleMailCreateTextItem(WorldPackets::Mail::MailCreateTextItem const& packet)
 {
-    ObjectGuid mailboxGuid = packet.mailboxGuid;
-    uint32 mailId = packet.mailId;
-
-    if (!CheckMailBox(mailboxGuid))
+    if (!CheckMailBox(packet.mailboxGuid))
         return;
 
     MasterPlayer* pl = GetMasterPlayer();
     ASSERT(pl);
     Player* loadedPlayer = _player;
 
-    Mail* m = pl->GetMail(mailId);
+    Mail* m = pl->GetMail(packet.mailId);
     if (!m || (!m->itemTextId && !m->mailTemplateId) || m->state == MAIL_STATE_DELETED || m->deliver_time > time(nullptr) || m->checked & MAIL_CHECK_MASK_COPIED)
     {
-        SendMailResult(mailId, MAIL_MADE_PERMANENT, MAIL_ERR_INTERNAL_ERROR);
+        SendMailResult(packet.mailId, MAIL_MADE_PERMANENT, MAIL_ERR_INTERNAL_ERROR);
         return;
     }
 
@@ -912,11 +909,11 @@ void WorldSession::HandleMailCreateTextItem(WorldPackets::Mail::MailCreateTextIt
         pl->MarkMailsUpdated();
 
         loadedPlayer->StoreItem(dest, bodyItem, true);
-        SendMailResult(mailId, MAIL_MADE_PERMANENT, MAIL_OK);
+        SendMailResult(packet.mailId, MAIL_MADE_PERMANENT, MAIL_OK);
     }
     else
     {
-        SendMailResult(mailId, MAIL_MADE_PERMANENT, MAIL_ERR_EQUIP_ERROR, msg);
+        SendMailResult(packet.mailId, MAIL_MADE_PERMANENT, MAIL_ERR_EQUIP_ERROR, msg);
         delete bodyItem;
     }
 }

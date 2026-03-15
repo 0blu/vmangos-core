@@ -355,7 +355,7 @@ void Petition::Delete()
     }
 }
 
-void Petition::BuildSignatureData(WorldPacket& data)
+void Petition::BuildSignatureData(WorldPacket& data) const
 {
     for (const auto signature : m_signatures)
     {

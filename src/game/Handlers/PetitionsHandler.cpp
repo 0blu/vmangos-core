@@ -383,10 +383,7 @@ void WorldSession::HandlePetitionDeclineOpcode(WorldPackets::Petition::PetitionD
 
 void WorldSession::HandleOfferPetitionOpcode(WorldPackets::Petition::OfferPetition const& packet)
 {
-    ObjectGuid itemGuid = packet.itemGuid;
-    ObjectGuid playerGuid = packet.playerGuid;
-
-    Player* player = ObjectAccessor::FindPlayer(playerGuid);
+    Player* player = ObjectAccessor::FindPlayer(packet.playerGuid);
     if (!player)
         return;
 
@@ -414,29 +411,29 @@ void WorldSession::HandleOfferPetitionOpcode(WorldPackets::Petition::OfferPetiti
         return;
     }
 
-    Item *charter = _player->GetItemByGuid(itemGuid);
+    Item const* charter = _player->GetItemByGuid(packet.itemGuid);
     if (!charter)
         return;
 
     uint32 petitionGuid = charter->GetEnchantmentId(EnchantmentSlot(0));
 
-    Petition* petition = sGuildMgr.GetPetitionById(petitionGuid);
+    Petition const* petition = sGuildMgr.GetPetitionById(petitionGuid);
     if (!petition)
     {
         sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "[PetitionHandler] No petition exists for charter with guid %u for signer %s",
-            itemGuid.GetCounter(), _player->GetGuidStr().c_str());
+            charter->GetObjectGuid().GetCounter(), _player->GetGuidStr().c_str());
         return;
     }
 
-    sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "OFFER PETITION: petition %u to %s", petitionGuid, playerGuid.GetString().c_str());
+    sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "OFFER PETITION: petition %u to %s", petitionGuid, player->GetName());
 
     // Get petition signs count
     uint8 signs = petition->GetSignatureCount();
 
     // Send response
     WorldPacket data(SMSG_PETITION_SHOW_SIGNATURES, (8 + 8 + 4 + 1 + signs * 12));
-    data << ObjectGuid(itemGuid);                           // item guid
-    data << ObjectGuid(_player->GetObjectGuid());           // owner guid
+    data << charter->GetObjectGuid();                       // item guid
+    data << _player->GetObjectGuid();                       // owner guid
     data << uint32(petitionGuid);                           // petition guid
     data << uint8(signs);                                   // sign's count
 

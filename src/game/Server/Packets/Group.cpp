@@ -72,7 +72,7 @@ void WorldPackets::Group::GroupAssistantLeader::ReadFromWorldPacket(WorldPacket&
 
 void WorldPackets::Group::RaidTargetUpdate::ReadFromWorldPacket(WorldPacket& recv_data)
 {
-    recv_data >> x;
-    if (x != 0xFF) // target icon update (not a request)
+    recv_data >> iconId;
+    if (iconId != 0xFF) // target icon update (not a request)
         recv_data >> guid;
 }

@@ -27,7 +27,7 @@ namespace WorldPackets { namespace Taxi
     class ActivateTaxi final : public ClientPacket
     {
     public:
-        ObjectGuid guid;
+        ObjectGuid flightmasterGuid;
         uint32     node1 = 0;
         uint32     node2 = 0;
 

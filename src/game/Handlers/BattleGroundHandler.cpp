@@ -379,7 +379,7 @@ void WorldSession::HandleBattlefieldListOpcode(WorldPackets::Battleground::Battl
 
 void WorldSession::HandleBattleFieldPortOpcode(WorldPackets::Battleground::BattleFieldPort const& packet)
 {
-    uint8 action = packet.action;
+    uint8 action = packet.action; // enter battle 0x1, leave queue 0x0
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
     uint32 mapId = packet.mapId;
     BattleGroundTypeId bgTypeId = GetBattleGroundTypeIdByMapId(mapId);
@@ -531,8 +531,7 @@ void WorldSession::HandleBattleFieldPortOpcode(WorldPackets::Battleground::Battl
 void WorldSession::HandleLeaveBattlefieldOpcode(WorldPackets::Battleground::LeaveBattlefield const& packet)
 {
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
-    uint32 mapId = packet.mapId;
-    if (_player->GetMapId() != mapId)
+    if (_player->GetMapId() != packet.mapId)
         return;
 #endif
 
