@@ -35,3 +35,16 @@ void WorldPackets::Battleground::LeaveBattlefield::ReadFromWorldPacket(WorldPack
     recv_data >> mapId;
 #endif
 }
+
+void WorldPackets::Battleground::BattlemasterJoin::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> guid;
+    recv_data >> mapId;
+    recv_data >> instanceId;
+    recv_data >> joinAsGroup;
+}
+
+void WorldPackets::Battleground::BattlefieldJoin::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> mapId;
+}

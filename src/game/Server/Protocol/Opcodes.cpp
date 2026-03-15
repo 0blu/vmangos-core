@@ -680,7 +680,7 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(SMSG_MAIL_LIST_RESULT,             Reason::SendByServer);
     DEFINE_HANDLER(CMSG_BATTLEFIELD_LIST,             STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleBattlefieldListOpcode);
     INVALID_PACKET(SMSG_BATTLEFIELD_LIST,             Reason::SendByServer);
-    LEGACY_HANDLER(CMSG_BATTLEFIELD_JOIN,             STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleBattlefieldJoinOpcode);
+    DEFINE_HANDLER(CMSG_BATTLEFIELD_JOIN,             STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleBattlefieldJoinOpcode);
     INVALID_PACKET(SMSG_BATTLEFIELD_WIN,              Reason::SendByServer);
     INVALID_PACKET(SMSG_BATTLEFIELD_LOSE,             Reason::SendByServer);
     INVALID_PACKET(CMSG_TAXICLEARNODE,                Reason::Unhandled);
@@ -862,7 +862,7 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(SMSG_BINDER_CONFIRM,               Reason::SendByServer);
     INVALID_PACKET(SMSG_BATTLEGROUND_PLAYER_JOINED,   Reason::SendByServer);
     INVALID_PACKET(SMSG_BATTLEGROUND_PLAYER_LEFT,     Reason::SendByServer);
-    LEGACY_HANDLER(CMSG_BATTLEMASTER_JOIN,            STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleBattlemasterJoinOpcode);
+    DEFINE_HANDLER(CMSG_BATTLEMASTER_JOIN,            STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleBattlemasterJoinOpcode);
     INVALID_PACKET(SMSG_ADDON_INFO,                   Reason::SendByServer);
     DEFINE_HANDLER(CMSG_PET_UNLEARN,                  STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandlePetUnlearnOpcode);
     INVALID_PACKET(SMSG_PET_UNLEARN_CONFIRM,          Reason::SendByServer);

@@ -71,6 +71,27 @@ namespace WorldPackets { namespace Battleground
         explicit LeaveBattlefield() : ClientPacket(CMSG_LEAVE_BATTLEFIELD) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class BattlemasterJoin final : public ClientPacket
+    {
+    public:
+        ObjectGuid guid;
+        uint32     mapId = 0;
+        uint32     instanceId = 0;
+        uint8      joinAsGroup = 0;
+
+        explicit BattlemasterJoin() : ClientPacket(CMSG_BATTLEMASTER_JOIN) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class BattlefieldJoin final : public ClientPacket
+    {
+    public:
+        uint32 mapId = 0;
+
+        explicit BattlefieldJoin() : ClientPacket(CMSG_BATTLEFIELD_JOIN) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
 }} // namespace WorldPackets::Battleground
 
 #endif // MANGOS_PACKETS_BATTLEGROUND_H

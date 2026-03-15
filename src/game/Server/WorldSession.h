@@ -781,9 +781,9 @@ class WorldSession
         static void HandleChangePlayerNameOpcodeCallBack(std::unique_ptr<QueryResult> result, uint32 accountId, std::string newname);
 
         //BattleGround
-        void HandleBattlefieldJoinOpcode(WorldPacket& recv_data);
+        void HandleBattlefieldJoinOpcode(WorldPackets::Battleground::BattlefieldJoin const& packet);
         void HandleBattlemasterHelloOpcode(WorldPackets::Battleground::BattlemasterHello const& packet);
-        void HandleBattlemasterJoinOpcode(WorldPacket& recv_data);
+        void HandleBattlemasterJoinOpcode(WorldPackets::Battleground::BattlemasterJoin const& packet);
         void HandleBattleGroundPlayerPositionsOpcode(NullClientPacket const& packet);
         void HandlePVPLogDataOpcode(NullClientPacket const& packet);
         void HandleBattlefieldStatusOpcode(NullClientPacket const& packet);

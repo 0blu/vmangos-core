@@ -78,34 +78,22 @@ void WorldSession::SendBattleGroundList(ObjectGuid guid, BattleGroundTypeId bgTy
     SendPacket(&data);
 }
 
-void WorldSession::HandleBattlefieldJoinOpcode(WorldPacket& recv_data)
+void WorldSession::HandleBattlefieldJoinOpcode(WorldPackets::Battleground::BattlefieldJoin const& packet)
 {
-    uint32 mapId;
-    recv_data >> mapId;
-
-    WorldPacket data(recv_data.GetOpcode());
-    data << uint64(0);
-    data << uint32(mapId);
-    data << uint32(0);
-    data << uint8(0);
-
-    HandleBattlemasterJoinOpcode(data);
+    WorldPackets::Battleground::BattlemasterJoin join;
+    join.mapId = packet.mapId;
+    HandleBattlemasterJoinOpcode(join);
 }
 
-void WorldSession::HandleBattlemasterJoinOpcode(WorldPacket& recv_data)
+void WorldSession::HandleBattlemasterJoinOpcode(WorldPackets::Battleground::BattlemasterJoin const& packet)
 {
-    ObjectGuid guid;
-    uint32 instanceId;
-    uint32 mapId;
-    uint8 joinAsGroup;
+    ObjectGuid guid       = packet.guid;
+    uint32     instanceId = packet.instanceId;
+    uint32     mapId      = packet.mapId;
+    uint8      joinAsGroup = packet.joinAsGroup;
     bool queuedAtBGPortal = false;
     bool isPremade = false;
     Group* grp;
-
-    recv_data >> guid;                                      // battlemaster guid, or player guid if joining queue from BG portal
-    recv_data >> mapId;
-    recv_data >> instanceId;                                // instance id, 0 if First Available selected
-    recv_data >> joinAsGroup;                               // join as group
 
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_6_1
     if (guid == GetPlayer()->GetObjectGuid())
