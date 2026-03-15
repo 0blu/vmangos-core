@@ -382,8 +382,6 @@ void WorldSession::HandleGossipSelectOptionOpcode(WorldPackets::Npc::GossipSelec
     bool const isCoded = _player->PlayerTalkClass->GossipOptionCoded(packet.gossipListId);
     if (isCoded && packet.code.empty())
         return;  // coded option requires a code from the client
-    if (!isCoded && !packet.code.empty())
-        return;  // non-coded option should not carry a code
 
     GetPlayer()->InterruptSpellsWithChannelFlags(AURA_INTERRUPT_INTERACTING_CANCELS);
     GetPlayer()->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_INTERACTING_CANCELS);

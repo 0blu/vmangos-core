@@ -230,7 +230,7 @@ void WorldSession::HandleWhoOpcode(WorldPackets::Misc::Who const& packet)
     if (ReceivedWhoRequest())
         return;
 
-    if (packet.zoneIds.size() > 10 || packet.searchTerms.size() > 4)
+    if (packet.zoneIds.size() > 10 || packet.searchTerms.size() > 4) // client limits: 10 zones, 4 search strings
         return;                                                // can't be received from real client or broken packet
 
     WhoListClientQueryTask task;
