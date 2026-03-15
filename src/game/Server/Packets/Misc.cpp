@@ -179,3 +179,28 @@ void WorldPackets::Misc::TogglePvP::ReadFromWorldPacket(WorldPacket& recv_data)
         recv_data >> targetState;
     }
 }
+
+void WorldPackets::Misc::Who::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> levelMin >> levelMax;
+    recv_data >> playerName >> guildName;
+    recv_data >> raceMask >> classMask;
+
+    uint32 zonesCount;
+    recv_data >> zonesCount;
+    for (uint32 i = 0; i < zonesCount; ++i)
+    {
+        uint32 zone;
+        recv_data >> zone;
+        zoneIds.push_back(zone);
+    }
+
+    uint32 strCount;
+    recv_data >> strCount;
+    for (uint32 i = 0; i < strCount; ++i)
+    {
+        std::string term;
+        recv_data >> term;
+        searchTerms.push_back(std::move(term));
+    }
+}

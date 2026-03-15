@@ -4,6 +4,8 @@
 #include "Packet.h"
 #include "ObjectGuid.h"
 #include "SharedDefines.h"
+#include <string>
+#include <vector>
 
 namespace WorldPackets { namespace Misc
 {
@@ -304,6 +306,22 @@ namespace WorldPackets { namespace Misc
         bool targetState = false;
 
         explicit TogglePvP() : ClientPacket(CMSG_TOGGLE_PVP) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
+
+    class Who final : public ClientPacket
+    {
+    public:
+        uint32                   levelMin = 0;
+        uint32                   levelMax = 0;
+        std::string              playerName;
+        std::string              guildName;
+        uint32                   raceMask = 0;
+        uint32                   classMask = 0;
+        std::vector<uint32>      zoneIds;
+        std::vector<std::string> searchTerms;
+
+        explicit Who() : ClientPacket(CMSG_WHO) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
 }} // namespace WorldPackets::Misc

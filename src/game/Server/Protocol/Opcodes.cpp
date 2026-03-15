@@ -191,7 +191,7 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(SMSG_GAMEOBJECT_QUERY_RESPONSE,    Reason::SendByServer);
     DEFINE_HANDLER(CMSG_CREATURE_QUERY,               STATUS_LOGGEDIN,  PACKET_PROCESS_DB_QUERY,      &WorldSession::HandleCreatureQueryOpcode);
     INVALID_PACKET(SMSG_CREATURE_QUERY_RESPONSE,      Reason::SendByServer);
-    LEGACY_HANDLER(CMSG_WHO,                          STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleWhoOpcode);
+    DEFINE_HANDLER(CMSG_WHO,                          STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleWhoOpcode);
     INVALID_PACKET(SMSG_WHO,                          Reason::SendByServer);
     DEFINE_HANDLER(CMSG_WHOIS,                        STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleWhoisOpcode);
     INVALID_PACKET(SMSG_WHOIS,                        Reason::SendByServer);

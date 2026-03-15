@@ -225,63 +225,43 @@ public:
     }
 };
 
-void WorldSession::HandleWhoOpcode(WorldPacket& recv_data)
+void WorldSession::HandleWhoOpcode(WorldPackets::Misc::Who const& packet)
 {
     if (ReceivedWhoRequest())
         return;
 
+    if (packet.zoneIds.size() > 10 || packet.searchTerms.size() > 4)
+        return;                                                // can't be received from real client or broken packet
+
     WhoListClientQueryTask task;
     task.accountId = GetAccountId();
-    std::string playerName, guildName;
+    task.levelMin = packet.levelMin;
+    task.levelMax = packet.levelMax;
+    task.raceMask = packet.raceMask;
+    task.classMask = packet.classMask;
+    task.zonesCount = static_cast<uint32>(packet.zoneIds.size());
+    task.strCount   = static_cast<uint32>(packet.searchTerms.size());
 
-    recv_data >> task.levelMin;                                // maximal player level, default 0
-    recv_data >> task.levelMax;                                // minimal player level, default 100 (MAX_LEVEL)
-    recv_data >> playerName;                                   // player name, case sensitive...
-    recv_data >> guildName;                                    // guild name, case sensitive...
-    recv_data >> task.raceMask;                                // race mask
-    recv_data >> task.classMask;                               // class mask
-    recv_data >> task.zonesCount;                              // zones count, client limit=10 (2.0.10)
+    sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "Minlvl %u, maxlvl %u, name %s, guild %s, racemask %u, classmask %u, zones %u, strings %u", task.levelMin, task.levelMax, packet.playerName.c_str(), packet.guildName.c_str(), task.raceMask, task.classMask, task.zonesCount, task.strCount);
 
-    if (task.zonesCount > 10)
-    {
-        // delete task;
-        return;                                                // can't be received from real client or broken packet
-    }
     for (uint32 i = 0; i < task.zonesCount; ++i)
     {
-        uint32 temp;
-        recv_data >> temp;                                     // zone id, 0 if zone is unknown...
-        task.zoneIds[i] = temp;
+        task.zoneIds[i] = packet.zoneIds[i];
         sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "Zone %u: %u", i, task.zoneIds[i]);
     }
 
-    recv_data >> task.strCount;                                // user entered strings count, client limit=4 (checked on 2.0.10)
-
-    if (task.strCount > 4)
-    {
-        // delete task;
-        return;                                                // can't be received from real client or broken packet
-    }
-    sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "Minlvl %u, maxlvl %u, name %s, guild %s, racemask %u, classmask %u, zones %u, strings %u", task.levelMin, task.levelMax, playerName.c_str(), guildName.c_str(), task.raceMask, task.classMask, task.zonesCount, task.strCount);
-
     for (uint32 i = 0; i < task.strCount; ++i)
     {
-        std::string temp;
-        recv_data >> temp;                                     // user entered string, it used as universal search pattern(guild+player name)?
-
-        if (!Utf8toWStr(temp, task.str[i]))
+        if (!Utf8toWStr(packet.searchTerms[i], task.str[i]))
             continue;
 
         wstrToLower(task.str[i]);
-
-        sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "String %u: %s", i, temp.c_str());
+        sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "String %u: %s", i, packet.searchTerms[i].c_str());
     }
 
-    if (!(Utf8toWStr(playerName, task.wplayerName) && Utf8toWStr(guildName, task.wguildName)))
-    {
-        // delete task;
+    if (!(Utf8toWStr(packet.playerName, task.wplayerName) && Utf8toWStr(packet.guildName, task.wguildName)))
         return;
-    }
+
     wstrToLower(task.wplayerName);
     wstrToLower(task.wguildName);
 

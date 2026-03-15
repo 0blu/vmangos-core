@@ -516,7 +516,7 @@ class WorldSession
         void HandleLootOpcode(WorldPackets::Loot::LootUnit const& packet);
         void HandleLootReleaseOpcode(WorldPackets::Loot::LootRelease const& packet);
         void HandleLootMasterGiveOpcode(WorldPackets::Loot::LootMasterGive const& packet);
-        void HandleWhoOpcode(WorldPacket& recvPacket);
+        void HandleWhoOpcode(WorldPackets::Misc::Who const& packet);
         void HandleLFGOpcode(NullClientPacket const& packet);
         void HandleLogoutRequestOpcode(NullClientPacket const& packet);
         void HandlePlayerLogoutOpcode(NullClientPacket const& packet);
