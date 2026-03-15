@@ -4,12 +4,15 @@
 
 nonstd::optional<std::vector<uint8>> Compression::ZLib::Decompress(std::vector<uint8> const& input, uint32 decompressedSize)
 {
-    std::vector<uint8> output(decompressedSize);
-    uLongf realSize = decompressedSize;
-    int result = uncompress(output.data(), &realSize, input.data(), static_cast<uLong>(input.size()));
+    // Round up to the next block boundary to avoid Z_BUF_ERROR (-5) when the
+    // actual uncompressed size slightly exceeds the reported decompressedSize.
+    constexpr uLongf BlockSize = 1024;
+    uLongf bufferSize = ((static_cast<uLongf>(decompressedSize) + BlockSize - 1) / BlockSize) * BlockSize;
+    std::vector<uint8> output(bufferSize);
+    int result = uncompress(output.data(), &bufferSize, input.data(), static_cast<uLong>(input.size()));
     if (result != Z_OK)
         return nonstd::nullopt;
-    output.resize(realSize);
+    output.resize(bufferSize);
     return output;
 }
 
