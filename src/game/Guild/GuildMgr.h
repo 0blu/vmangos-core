@@ -65,7 +65,7 @@ class GuildMgr
             return nullptr;
         }
 
-        void CreatePetition(uint32 id, Player* player, ObjectGuid const& charterGuid, std::string& name);
+        void CreatePetition(uint32 id, Player* player, ObjectGuid const& charterGuid, std::string const& name);
         void DeletePetition(Petition* petition);
         Petition* GetPetitionByCharterGuid(ObjectGuid const& charterGuid);
         Petition* GetPetitionById(uint32 id);
@@ -89,7 +89,7 @@ class Petition
 {
 public:
     Petition() : m_id(0) {};
-    Petition(uint32 id, ObjectGuid charterGuid, ObjectGuid ownerGuid, std::string& name)
+    Petition(uint32 id, ObjectGuid charterGuid, ObjectGuid ownerGuid, std::string const& name)
         : m_id(id), m_charterGuid(charterGuid), m_ownerGuid(ownerGuid), m_name(name)
     {
     }

@@ -254,7 +254,7 @@ Petition::~Petition()
     m_signatures.clear();
 }
 
-void GuildMgr::CreatePetition(uint32 id, Player* player, ObjectGuid const& charterGuid, std::string& name)
+void GuildMgr::CreatePetition(uint32 id, Player* player, ObjectGuid const& charterGuid, std::string const& name)
 {
     Petition* petition = new Petition(id, ObjectGuid(charterGuid), ObjectGuid(player->GetObjectGuid()), name);
     petition->SetTeam(player->GetTeam());

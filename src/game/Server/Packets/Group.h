@@ -134,6 +134,7 @@ namespace WorldPackets { namespace Group
     class RaidReadyCheck final : public ClientPacket
     {
     public:
+        // packet can be used in two was request: `hasValue() = false`, response: `hasValue() = true`
         nonstd::optional<uint8> state;
 
         explicit RaidReadyCheck() : ClientPacket(MSG_RAID_READY_CHECK) {}
