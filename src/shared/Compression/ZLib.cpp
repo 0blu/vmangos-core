@@ -7,12 +7,19 @@ nonstd::optional<std::vector<uint8>> Compression::ZLib::Decompress(std::vector<u
     // Round up to the next block boundary to avoid Z_BUF_ERROR (-5) when the
     // actual uncompressed size slightly exceeds the reported decompressedSize.
     constexpr uLongf BlockSize = 1024;
-    uLongf bufferSize = ((static_cast<uLongf>(decompressedSize) + BlockSize - 1) / BlockSize) * BlockSize;
-    std::vector<uint8> output(bufferSize);
-    int result = uncompress(output.data(), &bufferSize, input.data(), static_cast<uLong>(input.size()));
+    uLongf const paddedSize = ((static_cast<uLongf>(decompressedSize) + BlockSize - 1) / BlockSize) * BlockSize;
+    std::vector<uint8> output(paddedSize);
+    uLongf actualSize = paddedSize;
+    int result = uncompress(output.data(), &actualSize, input.data(), static_cast<uLong>(input.size()));
     if (result != Z_OK)
         return nonstd::nullopt;
-    output.resize(bufferSize);
+    // Verify that the bytes beyond the actual decompressed size are untouched (all zero).
+    // Non-zero bytes in the padding region would indicate the decompressor wrote past
+    // the reported size, which signals invalid or corrupt data.
+    for (uLongf i = actualSize; i < paddedSize; ++i)
+        if (output[i] != 0)
+            return nonstd::nullopt;
+    output.resize(actualSize);
     return output;
 }
 
