@@ -53,16 +53,6 @@ constexpr Handlers BuildOpcodeList()
 {
     Handlers list{};
 
-    // For WorldPacket handlers
-    #define LEGACY_HANDLER(opcode, requiredState, schedulingStrategy, handlerPtr) \
-    { \
-        OpcodeHandler& ref = list.handlers[(opcode)]; \
-        ref.name = #opcode; \
-        ref.status = (requiredState); \
-        ref.packetProcessing = (schedulingStrategy); \
-        ref.handler = (handlerPtr); \
-    }
-
     // For generic handlers
     #define DEFINE_HANDLER(opcode, requiredState, schedulingStrategy, handlerPtr) \
     { \
