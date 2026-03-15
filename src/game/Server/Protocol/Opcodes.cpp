@@ -29,6 +29,7 @@ enum class Reason
 {
     Invalid,
     Unhandled,
+    AlreadyHandledElsewhere, // should already be handled before the packet reaches this opcode map
     SendByServer,
 };
 
@@ -79,7 +80,7 @@ constexpr Handlers BuildOpcodeList()
         ref.name = #opcode; \
         ref.status = STATUS_NEVER; \
         ref.packetProcessing = PACKET_PROCESS_MAX_TYPE; \
-        ref.handler = (reason) == Reason::SendByServer ? &WorldSession::Handle_ServerSide : &WorldSession::Handle_NULL; \
+        ref.handler = (reason) == Reason::SendByServer ? &WorldSession::Handle_ServerSide : ((reason) == Reason::AlreadyHandledElsewhere ? &WorldSession::Handle_EarlyProccess : &WorldSession::Handle_NULL); \
     }
 
     // Correspondence between opcodes and their names
@@ -205,7 +206,7 @@ constexpr Handlers BuildOpcodeList()
     DEFINE_HANDLER(CMSG_DEL_IGNORE,                   STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleDelIgnoreOpcode);
     DEFINE_HANDLER(CMSG_GROUP_INVITE,                 STATUS_LOGGEDIN,  PACKET_PROCESS_GROUP,         &WorldSession::HandleGroupInviteOpcode);
     INVALID_PACKET(SMSG_GROUP_INVITE,                 Reason::SendByServer);
-    LEGACY_HANDLER(CMSG_GROUP_CANCEL,                 STATUS_LOGGEDIN,  PACKET_PROCESS_MAX_TYPE,      &WorldSession::Handle_NULL);
+    INVALID_PACKET(CMSG_GROUP_CANCEL,                 Reason::Unhandled);
     INVALID_PACKET(SMSG_GROUP_CANCEL,                 Reason::SendByServer);
     DEFINE_HANDLER(CMSG_GROUP_ACCEPT,                 STATUS_LOGGEDIN,  PACKET_PROCESS_GROUP,         &WorldSession::HandleGroupAcceptOpcode);
     DEFINE_HANDLER(CMSG_GROUP_DECLINE,                STATUS_LOGGEDIN,  PACKET_PROCESS_GROUP,         &WorldSession::HandleGroupDeclineOpcode);
@@ -577,7 +578,7 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(SMSG_START_MIRROR_TIMER,           Reason::SendByServer);
     INVALID_PACKET(SMSG_PAUSE_MIRROR_TIMER,           Reason::SendByServer);
     INVALID_PACKET(SMSG_STOP_MIRROR_TIMER,            Reason::SendByServer);
-    LEGACY_HANDLER(CMSG_PING,                         STATUS_NEVER,     PACKET_PROCESS_MAX_TYPE,      &WorldSession::Handle_EarlyProccess);
+    INVALID_PACKET(CMSG_PING,                         Reason::AlreadyHandledElsewhere);
     INVALID_PACKET(SMSG_PONG,                         Reason::SendByServer);
     INVALID_PACKET(SMSG_CLEAR_COOLDOWN,               Reason::SendByServer);
     INVALID_PACKET(SMSG_GAMEOBJECT_PAGETEXT,          Reason::SendByServer);
@@ -594,7 +595,7 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(SMSG_ITEM_TIME_UPDATE,             Reason::SendByServer);
     INVALID_PACKET(SMSG_ITEM_ENCHANT_TIME_UPDATE,     Reason::SendByServer);
     INVALID_PACKET(SMSG_AUTH_CHALLENGE,               Reason::SendByServer);
-    LEGACY_HANDLER(CMSG_AUTH_SESSION,                 STATUS_NEVER,     PACKET_PROCESS_MAP,           &WorldSession::Handle_EarlyProccess);
+    INVALID_PACKET(CMSG_AUTH_SESSION,                 Reason::AlreadyHandledElsewhere);
     INVALID_PACKET(SMSG_AUTH_RESPONSE,                Reason::SendByServer);
     INVALID_PACKET(MSG_GM_SHOWLABEL,                  Reason::Unhandled);
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4

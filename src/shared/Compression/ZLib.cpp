@@ -13,12 +13,8 @@ nonstd::optional<std::vector<uint8>> Compression::ZLib::Decompress(std::vector<u
     int result = uncompress(output.data(), &actualSize, input.data(), static_cast<uLong>(input.size()));
     if (result != Z_OK)
         return nonstd::nullopt;
-    // Verify that the bytes beyond the actual decompressed size are untouched (all zero).
-    // Non-zero bytes in the padding region would indicate the decompressor wrote past
-    // the reported size, which signals invalid or corrupt data.
-    for (uLongf i = actualSize; i < paddedSize; ++i)
-        if (output[i] != 0)
-            return nonstd::nullopt;
+    if (actualSize != decompressedSize)
+        return nonstd::nullopt;
     output.resize(actualSize);
     return output;
 }

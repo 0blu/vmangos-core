@@ -889,8 +889,7 @@ void WorldSession::HandleRequestAccountData(WorldPackets::Misc::RequestAccountDa
     }
     else
     {
-        nonstd::optional<std::vector<uint8>> compressedData = Compression::ZLib::Compress(
-            reinterpret_cast<uint8 const*>(adata->data.data()), adata->data.size());
+        nonstd::optional<std::vector<uint8>> compressedData = Compression::ZLib::Compress(reinterpret_cast<uint8 const*>(adata->data.data()), adata->data.size());
         if (!compressedData)
         {
             sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "SMSG_UPDATE_ACCOUNT_DATA: Failed to compress account data");
