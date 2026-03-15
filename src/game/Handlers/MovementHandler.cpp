@@ -212,7 +212,6 @@ void WorldSession::HandleMoveWorldportAck()
 
 void WorldSession::HandleMoveTeleportAckOpcode(WorldPackets::Movement::MoveTeleportAck const& packet)
 {
-    ObjectGuid guid = packet.guid;
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
     uint32 movementCounter = packet.movementCounter;
 #else
@@ -225,7 +224,7 @@ void WorldSession::HandleMoveTeleportAckOpcode(WorldPackets::Movement::MoveTelep
     if (!pPlayerMover || !pPlayerMover->IsBeingTeleportedNear())
         return;
 
-    if (guid != pPlayerMover->GetObjectGuid())
+    if (packet.guid != pPlayerMover->GetObjectGuid())
         return;
 
     if (!pMover->FindPendingMovementTeleportChange(movementCounter))
@@ -1015,10 +1014,9 @@ void WorldSession::HandleSummonResponseOpcode(WorldPackets::Misc::SummonResponse
 
 void WorldSession::HandleMoveTimeSkippedOpcode(WorldPackets::Movement::MoveTimeSkipped const& packet)
 {
-    ObjectGuid guid = packet.guid;
     uint32 lag = packet.lag;
 
-    Unit* pMover = GetMoverFromGuid(guid);
+    Unit* pMover = GetMoverFromGuid(packet.guid);
     if (!pMover)
         return;
 

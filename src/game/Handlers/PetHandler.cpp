@@ -35,11 +35,10 @@
 void WorldSession::HandlePetAction(WorldPackets::Pet::PetAction const& packet)
 {
     ObjectGuid petGuid = packet.petGuid;
-    uint32 data = packet.data;
     ObjectGuid targetGuid = packet.targetGuid;
 
-    uint32 spellid = UNIT_ACTION_BUTTON_ACTION(data);
-    uint8 flag = UNIT_ACTION_BUTTON_TYPE(data);             // delete = 0x07 CastSpell = C1
+    uint32 spellid = UNIT_ACTION_BUTTON_ACTION(packet.data);
+    uint8 flag = UNIT_ACTION_BUTTON_TYPE(packet.data);             // delete = 0x07 CastSpell = C1
 
     // used also for charmed creature/player
     Unit* pCharmedUnit = _player->GetMap()->GetUnit(petGuid);
@@ -306,10 +305,9 @@ void WorldSession::HandlePetSetAction(WorldPackets::Pet::PetSetAction const& pac
 
 void WorldSession::HandlePetRename(WorldPackets::Pet::PetRename const& packet)
 {
-    ObjectGuid petGuid = packet.petGuid;
     std::string name = packet.name;
 
-    Pet* pet = _player->GetMap()->GetPet(petGuid);
+    Pet* pet = _player->GetMap()->GetPet(packet.petGuid);
     // check it!
     if (!pet || pet->GetPetType() != HUNTER_PET ||
             !pet->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PET_RENAME) ||
@@ -353,13 +351,11 @@ void WorldSession::HandlePetRename(WorldPackets::Pet::PetRename const& packet)
 
 void WorldSession::HandlePetAbandon(WorldPackets::Pet::PetAbandon const& packet)
 {
-    ObjectGuid guid = packet.guid;
-
     if (!_player->IsInWorld())
         return;
 
     // pet/charmed
-    if (Unit* petUnit = _player->GetMap()->GetUnit(guid))
+    if (Unit* petUnit = _player->GetMap()->GetUnit(packet.guid))
     {
         if (petUnit->GetOwnerGuid() != _player->GetObjectGuid() || !petUnit->GetCharmInfo())
             return;
@@ -409,13 +405,11 @@ void WorldSession::HandlePetStopAttack(WorldPackets::Pet::PetStopAttack const& p
 
 void WorldSession::HandlePetUnlearnOpcode(WorldPackets::Pet::PetUnlearn const& packet)
 {
-    ObjectGuid guid = packet.guid;
-
     Pet* pet = _player->GetPet();
 
-    if (!pet || guid != pet->GetObjectGuid())
+    if (!pet || packet.guid != pet->GetObjectGuid())
     {
-        sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "HandlePetUnlearnOpcode. %s isn't pet of %s .", guid.GetString().c_str(), GetPlayer()->GetGuidStr().c_str());
+        sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "HandlePetUnlearnOpcode. %s isn't pet of %s .", packet.guid.GetString().c_str(), GetPlayer()->GetGuidStr().c_str());
         return;
     }
 
