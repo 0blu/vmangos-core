@@ -607,7 +607,7 @@ void WorldSession::HandleRaidReadyCheckOpcode(WorldPackets::Group::RaidReadyChec
         if (!group)
             return;
 
-        // On transmet au chef de raid
+        // Forward to the raid leader
         if (Player* gleader = sObjectMgr.GetPlayer(group->GetLeaderGuid()))
         {
             WorldPacket data(MSG_RAID_READY_CHECK, 9);
