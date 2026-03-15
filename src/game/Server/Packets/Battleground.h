@@ -75,6 +75,7 @@ namespace WorldPackets { namespace Battleground
     class BattlemasterJoin final : public ClientPacket
     {
     public:
+        // battlemaster guid, or player guid if joining queue from BG portal
         ObjectGuid guid;
         uint32     mapId = 0;
         uint32     instanceId = 0;
