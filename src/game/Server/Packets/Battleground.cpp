@@ -23,10 +23,9 @@ void WorldPackets::Battleground::BattlemasterHello::ReadFromWorldPacket(WorldPac
 void WorldPackets::Battleground::BattleFieldPort::ReadFromWorldPacket(WorldPacket& recv_data)
 {
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
-    recv_data >> mapId >> action;
-#else
-    recv_data >> action;
+    recv_data >> mapId;
 #endif
+    recv_data >> action;
 }
 
 void WorldPackets::Battleground::LeaveBattlefield::ReadFromWorldPacket(WorldPacket& recv_data)
