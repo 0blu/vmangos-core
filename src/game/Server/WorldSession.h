@@ -614,7 +614,7 @@ class WorldSession
         void HandleTaxiNodeStatusQueryOpcode(WorldPackets::Taxi::TaxiNodeStatusQuery const& packet);
         void HandleTaxiQueryAvailableNodes(WorldPackets::Taxi::TaxiQueryAvailableNodes const& packet);
         void HandleActivateTaxiOpcode(WorldPackets::Taxi::ActivateTaxi const& packet);
-        void HandleActivateTaxiExpressOpcode(WorldPacket& recvPacket);
+        void HandleActivateTaxiExpressOpcode(WorldPackets::Taxi::ActivateTaxiExpress const& packet);
 
         void HandleTabardVendorActivateOpcode(WorldPackets::Npc::TabardVendorActivate const& packet);
         void HandleBankerActivateOpcode(WorldPackets::Npc::BankerActivate const& packet);

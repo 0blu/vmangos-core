@@ -140,32 +140,19 @@ bool WorldSession::SendLearnNewTaxiNode(Creature* unit)
         return false;
 }
 
-void WorldSession::HandleActivateTaxiExpressOpcode(WorldPacket& recv_data)
+void WorldSession::HandleActivateTaxiExpressOpcode(WorldPackets::Taxi::ActivateTaxiExpress const& packet)
 {
-    ObjectGuid guid;
-    uint32 node_count, _totalcost;
-
-    recv_data >> guid >> _totalcost >> node_count;
-
-    Creature* npc = GetPlayer()->GetNPCIfCanInteractWith(guid, UNIT_NPC_FLAG_FLIGHTMASTER);
+    Creature* npc = GetPlayer()->GetNPCIfCanInteractWith(packet.flightmasterGuid, UNIT_NPC_FLAG_FLIGHTMASTER);
     if (!npc)
     {
-        sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "WORLD: HandleActivateTaxiExpressOpcode - %s not found or you can't interact with it.", guid.GetString().c_str());
+        sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "WORLD: HandleActivateTaxiExpressOpcode - %s not found or you can't interact with it.", packet.flightmasterGuid.GetString().c_str());
         return;
     }
-    std::vector<uint32> nodes;
 
-    for (uint32 i = 0; i < node_count; ++i)
-    {
-        uint32 node;
-        recv_data >> node;
-        nodes.push_back(node);
-    }
-
-    if (nodes.empty())
+    if (packet.nodes.empty())
         return;
 
-    GetPlayer()->ActivateTaxiPathTo(nodes, npc);
+    GetPlayer()->ActivateTaxiPathTo(packet.nodes, npc);
 }
 
 void WorldSession::HandleActivateTaxiOpcode(WorldPackets::Taxi::ActivateTaxi const& packet)

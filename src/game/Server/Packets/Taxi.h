@@ -34,6 +34,17 @@ namespace WorldPackets { namespace Taxi
         explicit ActivateTaxi() : ClientPacket(CMSG_ACTIVATETAXI) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class ActivateTaxiExpress final : public ClientPacket
+    {
+    public:
+        ObjectGuid          flightmasterGuid;
+        uint32              totalcost = 0;
+        std::vector<uint32> nodes;
+
+        explicit ActivateTaxiExpress() : ClientPacket(CMSG_ACTIVATETAXIEXPRESS) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
 }} // namespace WorldPackets::Taxi
 
 #endif // MANGOS_PACKETS_TAXI_H

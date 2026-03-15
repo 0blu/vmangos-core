@@ -903,7 +903,7 @@ constexpr Handlers BuildOpcodeList()
     INVALID_PACKET(CMSG_GM_NUKE_ACCOUNT,              Reason::Unhandled);
     INVALID_PACKET(MSG_GM_DESTROY_CORPSE,             Reason::Unhandled);
     INVALID_PACKET(CMSG_GM_DESTROY_ONLINE_CORPSE,     Reason::Unhandled);
-    LEGACY_HANDLER(CMSG_ACTIVATETAXIEXPRESS,          STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleActivateTaxiExpressOpcode);
+    DEFINE_HANDLER(CMSG_ACTIVATETAXIEXPRESS,          STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleActivateTaxiExpressOpcode);
     INVALID_PACKET(SMSG_SET_FACTION_ATWAR,            Reason::SendByServer);
     INVALID_PACKET(SMSG_GAMETIMEBIAS_SET,             Reason::SendByServer);
     INVALID_PACKET(CMSG_DEBUG_ACTIONS_START,          Reason::Unhandled);
