@@ -580,7 +580,7 @@ class WorldSession
         void HandleGroupSwapSubGroupOpcode(WorldPackets::Group::GroupSwapSubGroup const& packet);
         void HandleGroupAssistantLeaderOpcode(WorldPackets::Group::GroupAssistantLeader const& packet);
 
-        void HandlePetitionBuyOpcode(WorldPacket& recv_data);
+        void HandlePetitionBuyOpcode(WorldPackets::Petition::PetitionBuy const& packet);
         void HandlePetitionShowSignOpcode(WorldPackets::Petition::PetitionShowSignatures const& packet);
         void HandlePetitionQueryOpcode(WorldPackets::Petition::QueryPetition const& packet);
         void HandlePetitionRenameOpcode(WorldPackets::Petition::PetitionRename const& packet);

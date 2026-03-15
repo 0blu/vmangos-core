@@ -39,37 +39,13 @@
 #define GUILD_CHARTER_COST          1000                    // 10 S
 #define CHARTER_DISPLAY_ID          16161
 
-void WorldSession::HandlePetitionBuyOpcode(WorldPacket& recv_data)
+void WorldSession::HandlePetitionBuyOpcode(WorldPackets::Petition::PetitionBuy const& packet)
 {
-    ObjectGuid guidNPC;
-    uint32 unk2;
-    std::string name;
-
-    recv_data >> guidNPC;                                   // NPC GUID
-    recv_data.read_skip<uint32>();                          // 0
-    recv_data.read_skip<uint64>();                          // 0
-    recv_data >> name;                                      // name
-    recv_data.read_skip<uint32>();                          // 0
-    recv_data.read_skip<uint32>();                          // 0
-    recv_data.read_skip<uint32>();                          // 0
-    recv_data.read_skip<uint32>();                          // 0
-    recv_data.read_skip<uint32>();                          // 0
-    recv_data.read_skip<uint32>();                          // 0
-    recv_data.read_skip<uint32>();                          // 0
-    recv_data.read_skip<uint32>();                          // 0
-    recv_data.read_skip<uint32>();                          // 0
-    recv_data.read_skip<uint32>();                          // 0
-    recv_data.read_skip<uint16>();                          // 0
-    recv_data.read_skip<uint8>();                           // 0
-
-    recv_data >> unk2;                                      // index
-    recv_data.read_skip<uint32>();                          // 0
-
     // prevent cheating
-    Creature* pCreature = GetPlayer()->GetNPCIfCanInteractWith(guidNPC, UNIT_NPC_FLAG_PETITIONER);
+    Creature* pCreature = GetPlayer()->GetNPCIfCanInteractWith(packet.guidNPC, UNIT_NPC_FLAG_PETITIONER);
     if (!pCreature)
     {
-        sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "WORLD: HandlePetitionBuyOpcode - %s not found or you can't interact with him.", guidNPC.GetString().c_str());
+        sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "WORLD: HandlePetitionBuyOpcode - %s not found or you can't interact with him.", packet.guidNPC.GetString().c_str());
         return;
     }
 
@@ -98,24 +74,24 @@ void WorldSession::HandlePetitionBuyOpcode(WorldPacket& recv_data)
     uint32 charterid = GUILD_CHARTER;
     uint32 cost = GUILD_CHARTER_COST;
 
-    if (sGuildMgr.GetGuildByName(name))
+    if (sGuildMgr.GetGuildByName(packet.name))
     {
-        SendGuildCommandResult(GUILD_CREATE_S, name, ERR_GUILD_NAME_EXISTS_S);
+        SendGuildCommandResult(GUILD_CREATE_S, packet.name, ERR_GUILD_NAME_EXISTS_S);
         return;
     }
-    if (sObjectMgr.IsReservedName(name) || !ObjectMgr::IsValidCharterName(name))
+    if (sObjectMgr.IsReservedName(packet.name) || !ObjectMgr::IsValidCharterName(packet.name))
     {
-        SendGuildCommandResult(GUILD_CREATE_S, name, ERR_GUILD_NAME_INVALID);
+        SendGuildCommandResult(GUILD_CREATE_S, packet.name, ERR_GUILD_NAME_INVALID);
         return;
     }
 
     // Check guild petition name (use whisper type - 6)
     if (AntispamInterface *a = sAnticheatMgr->GetAntispam())
     {
-        if (a->filterMessage(name))
+        if (a->filterMessage(packet.name))
         {
             sWorld.LogChat(this, "Guild", "Attempt to create guild petition with spam name");
-            SendGuildCommandResult(GUILD_CREATE_S, name, ERR_GUILD_NAME_INVALID);
+            SendGuildCommandResult(GUILD_CREATE_S, packet.name, ERR_GUILD_NAME_INVALID);
             return;
         }
     }
@@ -154,7 +130,7 @@ void WorldSession::HandlePetitionBuyOpcode(WorldPacket& recv_data)
     charter->SetState(ITEM_CHANGED, _player);
     _player->SendNewItem(charter, 1, true, false);
 
-    sGuildMgr.CreatePetition(petitionId, _player, charter->GetObjectGuid(), name);
+    sGuildMgr.CreatePetition(petitionId, _player, charter->GetObjectGuid(), packet.name);
 
     _player->SaveInventoryAndGoldToDB();
 }

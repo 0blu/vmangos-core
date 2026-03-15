@@ -43,3 +43,25 @@ void WorldPackets::Petition::OfferPetition::ReadFromWorldPacket(WorldPacket& rec
     recv_data >> itemGuid;
     recv_data >> playerGuid;
 }
+
+void WorldPackets::Petition::PetitionBuy::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    recv_data >> guidNPC;                                   // NPC GUID
+    recv_data.read_skip<uint32>();                          // 0
+    recv_data.read_skip<uint64>();                          // 0
+    recv_data >> name;                                      // name
+    recv_data.read_skip<uint32>();                          // 0
+    recv_data.read_skip<uint32>();                          // 0
+    recv_data.read_skip<uint32>();                          // 0
+    recv_data.read_skip<uint32>();                          // 0
+    recv_data.read_skip<uint32>();                          // 0
+    recv_data.read_skip<uint32>();                          // 0
+    recv_data.read_skip<uint32>();                          // 0
+    recv_data.read_skip<uint32>();                          // 0
+    recv_data.read_skip<uint32>();                          // 0
+    recv_data.read_skip<uint32>();                          // 0
+    recv_data.read_skip<uint16>();                          // 0
+    recv_data.read_skip<uint8>();                           // 0
+    recv_data >> unk;                                       // index
+    recv_data.read_skip<uint32>();                          // 0
+}

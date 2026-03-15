@@ -81,6 +81,17 @@ namespace WorldPackets { namespace Petition
         explicit OfferPetition() : ClientPacket(CMSG_OFFER_PETITION) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class PetitionBuy final : public ClientPacket
+    {
+    public:
+        ObjectGuid  guidNPC;
+        std::string name;
+        uint32      unk = 0;
+
+        explicit PetitionBuy() : ClientPacket(CMSG_PETITION_BUY) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
 }} // namespace WorldPackets::Petition
 
 #endif // MANGOS_PACKETS_PETITION_H
