@@ -52,8 +52,12 @@ void WorldPackets::AuctionHouse::AuctionListItems::ReadFromWorldPacket(WorldPack
     recv_data >> auctioneerGuid;
     recv_data >> listfrom;
     recv_data >> searchedname;
-    recv_data >> levelmin >> levelmax;
-    recv_data >> auctionSlotID >> auctionMainCategory >> auctionSubCategory >> quality;
+    recv_data >> levelmin;
+    recv_data >> levelmax;
+    recv_data >> auctionSlotID;
+    recv_data >> auctionMainCategory;
+    recv_data >> auctionSubCategory;
+    recv_data >> quality;
     recv_data >> usable;
 }
 

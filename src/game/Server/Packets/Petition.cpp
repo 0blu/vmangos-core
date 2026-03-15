@@ -62,6 +62,6 @@ void WorldPackets::Petition::PetitionBuy::ReadFromWorldPacket(WorldPacket& recv_
     recv_data.read_skip<uint32>();                          // 0
     recv_data.read_skip<uint16>();                          // 0
     recv_data.read_skip<uint8>();                           // 0
-    recv_data >> unk;                                       // index
+    recv_data.read_skip<uint32>();                          // index (unused)
     recv_data.read_skip<uint32>();                          // 0
 }

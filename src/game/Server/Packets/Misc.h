@@ -4,6 +4,7 @@
 #include "Packet.h"
 #include "ObjectGuid.h"
 #include "SharedDefines.h"
+#include "nonstd/optional.hpp"
 #include <string>
 #include <vector>
 
@@ -302,8 +303,7 @@ namespace WorldPackets { namespace Misc
     class TogglePvP final : public ClientPacket
     {
     public:
-        bool hasNewPvPState = false;
-        bool targetState = false;
+        nonstd::optional<bool> targetState;
 
         explicit TogglePvP() : ClientPacket(CMSG_TOGGLE_PVP) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;

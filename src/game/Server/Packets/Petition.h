@@ -87,7 +87,6 @@ namespace WorldPackets { namespace Petition
     public:
         ObjectGuid  guidNPC;
         std::string name;
-        uint32      unk = 0;
 
         explicit PetitionBuy() : ClientPacket(CMSG_PETITION_BUY) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;

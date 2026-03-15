@@ -20,7 +20,9 @@ void WorldPackets::Taxi::ActivateTaxi::ReadFromWorldPacket(WorldPacket& recv_dat
 void WorldPackets::Taxi::ActivateTaxiExpress::ReadFromWorldPacket(WorldPacket& recv_data)
 {
     uint32 node_count;
-    recv_data >> flightmasterGuid >> totalcost >> node_count;
+    recv_data >> flightmasterGuid;
+    recv_data >> totalcost;
+    recv_data >> node_count;
     for (uint32 i = 0; i < node_count; ++i)
     {
         uint32 node;

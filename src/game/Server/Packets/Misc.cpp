@@ -175,16 +175,20 @@ void WorldPackets::Misc::TogglePvP::ReadFromWorldPacket(WorldPacket& recv_data)
 {
     if (recv_data.size() == 1)
     {
-        hasNewPvPState = true;
-        recv_data >> targetState;
+        bool state;
+        recv_data >> state;
+        targetState = state;
     }
 }
 
 void WorldPackets::Misc::Who::ReadFromWorldPacket(WorldPacket& recv_data)
 {
-    recv_data >> levelMin >> levelMax;
-    recv_data >> playerName >> guildName;
-    recv_data >> raceMask >> classMask;
+    recv_data >> levelMin;
+    recv_data >> levelMax;
+    recv_data >> playerName;
+    recv_data >> guildName;
+    recv_data >> raceMask;
+    recv_data >> classMask;
 
     uint32 zonesCount;
     recv_data >> zonesCount;

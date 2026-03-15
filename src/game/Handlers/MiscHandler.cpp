@@ -370,8 +370,8 @@ void WorldSession::HandleLogoutCancelOpcode(NullClientPacket const& /*packet*/)
 void WorldSession::HandleTogglePvP(WorldPackets::Misc::TogglePvP const& packet)
 {
     // this opcode can be used in two ways: Either set explicit new status or toggle old status
-    if (packet.hasNewPvPState)
-        GetPlayer()->ApplyModFlag(PLAYER_FLAGS, PLAYER_FLAGS_PVP_DESIRED, packet.targetState);
+    if (packet.targetState.has_value())
+        GetPlayer()->ApplyModFlag(PLAYER_FLAGS, PLAYER_FLAGS_PVP_DESIRED, *packet.targetState);
     else
         GetPlayer()->ToggleFlag(PLAYER_FLAGS, PLAYER_FLAGS_PVP_DESIRED);
 
