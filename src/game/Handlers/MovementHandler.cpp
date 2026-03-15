@@ -423,11 +423,13 @@ CMSG_FORCE_TURN_RATE_CHANGE_ACK
 */
 void WorldSession::HandleForceSpeedChangeAckOpcodes(WorldPackets::Movement::MoveSpeedAck const& packet)
 {
+    uint32 timeNow = World::GetCurrentMSTime();
+
     uint32 const opcode = packet.GetOpcode();
     uint32 const movementCounter = packet.movementCounter;
 
     MovementInfo movementInfo = packet.movementInfo;
-    movementInfo.UpdateTime(packet.packetTime);
+    movementInfo.UpdateTime(timeNow);
     float const speedReceived = packet.speed;
 
     UnitMoveType move_type;
@@ -482,7 +484,7 @@ void WorldSession::HandleForceSpeedChangeAckOpcodes(WorldPackets::Movement::Move
     Player* const pPlayerMover = pMover->ToPlayer();
 
     // Check if position and movement flags are fine before speed update.
-    bool canRelocate = packet.packetTime > m_moveRejectTime && !pMover->HasPendingSplineDone() && VerifyMovementInfo(movementInfo);
+    bool canRelocate = timeNow > m_moveRejectTime && !pMover->HasPendingSplineDone() && VerifyMovementInfo(movementInfo);
     if (canRelocate && pPlayerMover)
     {
         if ((m_moveRejectTime = _player->GetCheatData()->HandleFlagTests(pPlayerMover, movementInfo, opcode)) ||
@@ -531,11 +533,13 @@ CMSG_MOVE_FEATHER_FALL_ACK
 */
 void WorldSession::HandleMovementFlagChangeToggleAck(WorldPackets::Movement::MoveFlagChangeAck const& packet)
 {
+    uint32 timeNow = World::GetCurrentMSTime();
+
     uint32 const opcode = packet.GetOpcode();
     uint32 const movementCounter = packet.movementCounter;
 
     MovementInfo movementInfo = packet.movementInfo;
-    movementInfo.UpdateTime(packet.packetTime);
+    movementInfo.UpdateTime(timeNow);
     bool const applyReceived = packet.apply;
 
     Unit* pMover = GetMoverFromGuid(packet.guid);
@@ -584,7 +588,7 @@ void WorldSession::HandleMovementFlagChangeToggleAck(WorldPackets::Movement::Mov
             break;
 
         // Do not accept packets sent before this time.
-        if (packet.packetTime <= m_moveRejectTime)
+        if (timeNow <= m_moveRejectTime)
             break;
 
         if (!VerifyMovementInfo(movementInfo))
@@ -639,11 +643,13 @@ CMSG_FORCE_MOVE_UNROOT_ACK
 */
 void WorldSession::HandleMoveRootAck(WorldPackets::Movement::MoveRootAck const& packet)
 {
+    uint32 timeNow = World::GetCurrentMSTime();
+
     uint32 const opcode = packet.GetOpcode();
     uint32 const movementCounter = packet.movementCounter;
 
     MovementInfo movementInfo = packet.movementInfo;
-    movementInfo.UpdateTime(packet.packetTime);
+    movementInfo.UpdateTime(timeNow);
 
     Unit* pMover = GetMoverFromGuid(packet.guid);
     if (!pMover)
@@ -677,7 +683,7 @@ void WorldSession::HandleMoveRootAck(WorldPackets::Movement::MoveRootAck const& 
             break;
 
         // Do not accept packets sent before this time.
-        if (packet.packetTime <= m_moveRejectTime)
+        if (timeNow <= m_moveRejectTime)
             break;
 
         if (!VerifyMovementInfo(movementInfo))

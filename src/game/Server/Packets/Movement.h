@@ -45,10 +45,11 @@ namespace WorldPackets { namespace Movement
     {
     public:
         ObjectGuid   guid;
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
         uint32       movementCounter = 0;
+#endif
         MovementInfo movementInfo;
         float        speed = 0.0f;
-        uint32       packetTime = 0;
 
         MoveSpeedAck() : ClientPacket(OPCODE_WILL_BE_SET_IN_READ_FUNCTION) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
@@ -59,10 +60,11 @@ namespace WorldPackets { namespace Movement
     {
     public:
         ObjectGuid   guid;
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
         uint32       movementCounter = 0;
+#endif
         MovementInfo movementInfo;
         bool         apply = false;
-        uint32       packetTime = 0;
 
         MoveFlagChangeAck() : ClientPacket(OPCODE_WILL_BE_SET_IN_READ_FUNCTION) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
@@ -73,9 +75,10 @@ namespace WorldPackets { namespace Movement
     {
     public:
         ObjectGuid   guid;
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
         uint32       movementCounter = 0;
+#endif
         MovementInfo movementInfo;
-        uint32       packetTime = 0;
 
         MoveRootAck() : ClientPacket(OPCODE_WILL_BE_SET_IN_READ_FUNCTION) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;

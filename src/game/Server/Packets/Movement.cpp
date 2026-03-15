@@ -25,7 +25,6 @@ void WorldPackets::Movement::MoveTeleportAck::ReadFromWorldPacket(WorldPacket& r
 void WorldPackets::Movement::MoveSpeedAck::ReadFromWorldPacket(WorldPacket& recv_data)
 {
     opcode = recv_data.GetOpcode();
-    packetTime = World::GetCurrentMSTime();
     recv_data >> guid;
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
     recv_data >> movementCounter;
@@ -37,7 +36,6 @@ void WorldPackets::Movement::MoveSpeedAck::ReadFromWorldPacket(WorldPacket& recv
 void WorldPackets::Movement::MoveFlagChangeAck::ReadFromWorldPacket(WorldPacket& recv_data)
 {
     opcode = recv_data.GetOpcode();
-    packetTime = World::GetCurrentMSTime();
     recv_data >> guid;
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
     recv_data >> movementCounter;
@@ -51,7 +49,6 @@ void WorldPackets::Movement::MoveFlagChangeAck::ReadFromWorldPacket(WorldPacket&
 void WorldPackets::Movement::MoveRootAck::ReadFromWorldPacket(WorldPacket& recv_data)
 {
     opcode = recv_data.GetOpcode();
-    packetTime = World::GetCurrentMSTime();
     recv_data >> guid;
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
     recv_data >> movementCounter;
