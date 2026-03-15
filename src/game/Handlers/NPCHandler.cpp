@@ -388,6 +388,9 @@ void WorldSession::HandleGossipSelectOptionOpcode(WorldPackets::Npc::GossipSelec
     uint32 sender = _player->PlayerTalkClass->GossipOptionSender(packet.gossipListId);
     uint32 action = _player->PlayerTalkClass->GossipOptionAction(packet.gossipListId);
 
+    // Only forward a non-null code to scripts for coded gossip options.
+    const char* code = (isCoded && !packet.code.empty()) ? packet.code.c_str() : nullptr;
+
     if (packet.guid.IsAnyTypeCreature())
     {
         Creature* pCreature = GetPlayer()->GetNPCIfCanInteractWith(packet.guid, UNIT_NPC_FLAG_NONE);
@@ -401,7 +404,7 @@ void WorldSession::HandleGossipSelectOptionOpcode(WorldPackets::Npc::GossipSelec
         if (!pCreature->HasExtraFlag(CREATURE_FLAG_EXTRA_NO_MOVEMENT_PAUSE))
             pCreature->PauseOutOfCombatMovement();
 
-        if (!sScriptMgr.OnGossipSelect(_player, pCreature, sender, action, packet.code.empty() ? nullptr : packet.code.c_str()))
+        if (!sScriptMgr.OnGossipSelect(_player, pCreature, sender, action, code))
             _player->OnGossipSelect(pCreature, packet.gossipListId);
     }
     else if (packet.guid.IsGameObject())
@@ -414,7 +417,7 @@ void WorldSession::HandleGossipSelectOptionOpcode(WorldPackets::Npc::GossipSelec
             return;
         }
 
-        if (!sScriptMgr.OnGossipSelect(_player, pGo, sender, action, packet.code.empty() ? nullptr : packet.code.c_str()))
+        if (!sScriptMgr.OnGossipSelect(_player, pGo, sender, action, code))
             _player->OnGossipSelect(pGo, packet.gossipListId);
     }
 }
