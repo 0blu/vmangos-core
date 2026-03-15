@@ -421,23 +421,14 @@ CMSG_FORCE_WALK_SPEED_CHANGE_ACK
 CMSG_FORCE_SWIM_BACK_SPEED_CHANGE_ACK
 CMSG_FORCE_TURN_RATE_CHANGE_ACK
 */
-void WorldSession::HandleForceSpeedChangeAckOpcodes(WorldPacket& recvData)
+void WorldSession::HandleForceSpeedChangeAckOpcodes(WorldPackets::Movement::MoveSpeedAck const& packet)
 {
-    uint32 const opcode = recvData.GetOpcode();
+    uint32 const opcode = packet.GetOpcode();
+    uint32 const movementCounter = packet.movementCounter;
 
-    /* extract packet */
-    ObjectGuid guid;
-    recvData >> guid;
-    uint32 movementCounter = 0;
-#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
-    recvData >> movementCounter;
-#endif
-    MovementInfo movementInfo;
-    recvData >> movementInfo;
-    float  speedReceived;
-    recvData >> speedReceived;
-    movementInfo.UpdateTime(recvData.GetPacketTime());
-    /*----------------*/
+    MovementInfo movementInfo = packet.movementInfo;
+    movementInfo.UpdateTime(packet.packetTime);
+    float const speedReceived = packet.speed;
 
     UnitMoveType move_type;
     switch (opcode)
@@ -465,7 +456,7 @@ void WorldSession::HandleForceSpeedChangeAckOpcodes(WorldPacket& recvData)
             return;
     }
 
-    Unit* pMover = GetMoverFromGuid(guid);
+    Unit* pMover = GetMoverFromGuid(packet.guid);
     if (!pMover)
         return;
 
@@ -491,7 +482,7 @@ void WorldSession::HandleForceSpeedChangeAckOpcodes(WorldPacket& recvData)
     Player* const pPlayerMover = pMover->ToPlayer();
 
     // Check if position and movement flags are fine before speed update.
-    bool canRelocate = recvData.GetPacketTime() > m_moveRejectTime && !pMover->HasPendingSplineDone() && VerifyMovementInfo(movementInfo);
+    bool canRelocate = packet.packetTime > m_moveRejectTime && !pMover->HasPendingSplineDone() && VerifyMovementInfo(movementInfo);
     if (canRelocate && pPlayerMover)
     {
         if ((m_moveRejectTime = _player->GetCheatData()->HandleFlagTests(pPlayerMover, movementInfo, opcode)) ||
@@ -538,26 +529,16 @@ CMSG_MOVE_WATER_WALK_ACK
 CMSG_MOVE_HOVER_ACK
 CMSG_MOVE_FEATHER_FALL_ACK
 */
-void WorldSession::HandleMovementFlagChangeToggleAck(WorldPacket& recvData)
+void WorldSession::HandleMovementFlagChangeToggleAck(WorldPackets::Movement::MoveFlagChangeAck const& packet)
 {
-    uint32 const opcode = recvData.GetOpcode();
+    uint32 const opcode = packet.GetOpcode();
+    uint32 const movementCounter = packet.movementCounter;
 
-    /* extract packet */
-    ObjectGuid guid;
-    recvData >> guid;
-    uint32 movementCounter = 0;
-#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
-    recvData >> movementCounter;
-#endif
-    MovementInfo movementInfo;
-    recvData >> movementInfo;
-    movementInfo.UpdateTime(recvData.GetPacketTime());
-    uint32 applyInt;
-    recvData >> applyInt;
-    bool applyReceived = applyInt != 0u;
-    /*----------------*/
+    MovementInfo movementInfo = packet.movementInfo;
+    movementInfo.UpdateTime(packet.packetTime);
+    bool const applyReceived = packet.apply;
 
-    Unit* pMover = GetMoverFromGuid(guid);
+    Unit* pMover = GetMoverFromGuid(packet.guid);
     if (!pMover)
         return;
 
@@ -603,7 +584,7 @@ void WorldSession::HandleMovementFlagChangeToggleAck(WorldPacket& recvData)
             break;
 
         // Do not accept packets sent before this time.
-        if (recvData.GetPacketTime() <= m_moveRejectTime)
+        if (packet.packetTime <= m_moveRejectTime)
             break;
 
         if (!VerifyMovementInfo(movementInfo))
@@ -656,23 +637,15 @@ handles those packets:
 CMSG_FORCE_MOVE_ROOT_ACK
 CMSG_FORCE_MOVE_UNROOT_ACK
 */
-void WorldSession::HandleMoveRootAck(WorldPacket& recvData)
+void WorldSession::HandleMoveRootAck(WorldPackets::Movement::MoveRootAck const& packet)
 {
-    uint32 const opcode = recvData.GetOpcode();
+    uint32 const opcode = packet.GetOpcode();
+    uint32 const movementCounter = packet.movementCounter;
 
-    /* extract packet */
-    ObjectGuid guid;
-    recvData >> guid;
-    uint32 movementCounter = 0;
-#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
-    recvData >> movementCounter;
-#endif
-    MovementInfo movementInfo;
-    recvData >> movementInfo;
-    movementInfo.UpdateTime(recvData.GetPacketTime());
-    /*----------------*/
+    MovementInfo movementInfo = packet.movementInfo;
+    movementInfo.UpdateTime(packet.packetTime);
 
-    Unit* pMover = GetMoverFromGuid(guid);
+    Unit* pMover = GetMoverFromGuid(packet.guid);
     if (!pMover)
         return;
 
@@ -704,7 +677,7 @@ void WorldSession::HandleMoveRootAck(WorldPacket& recvData)
             break;
 
         // Do not accept packets sent before this time.
-        if (recvData.GetPacketTime() <= m_moveRejectTime)
+        if (packet.packetTime <= m_moveRejectTime)
             break;
 
         if (!VerifyMovementInfo(movementInfo))

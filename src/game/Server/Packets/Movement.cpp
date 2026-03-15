@@ -20,3 +20,40 @@ void WorldPackets::Movement::MoveTeleportAck::ReadFromWorldPacket(WorldPacket& r
 #endif
     recv_data >> time;
 }
+
+void WorldPackets::Movement::MoveSpeedAck::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    opcode = recv_data.GetOpcode();
+    packetTime = recv_data.GetPacketTime();
+    recv_data >> guid;
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
+    recv_data >> movementCounter;
+#endif
+    recv_data >> movementInfo;
+    recv_data >> speed;
+}
+
+void WorldPackets::Movement::MoveFlagChangeAck::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    opcode = recv_data.GetOpcode();
+    packetTime = recv_data.GetPacketTime();
+    recv_data >> guid;
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
+    recv_data >> movementCounter;
+#endif
+    recv_data >> movementInfo;
+    uint32 applyInt;
+    recv_data >> applyInt;
+    apply = applyInt != 0u;
+}
+
+void WorldPackets::Movement::MoveRootAck::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    opcode = recv_data.GetOpcode();
+    packetTime = recv_data.GetPacketTime();
+    recv_data >> guid;
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
+    recv_data >> movementCounter;
+#endif
+    recv_data >> movementInfo;
+}

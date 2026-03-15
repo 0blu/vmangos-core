@@ -485,17 +485,17 @@ class WorldSession
         void HandlePlayedTime(NullClientPacket const& packet);
 
         // Movement
-        void HandleMoveRootAck(WorldPacket& recvPacket);
+        void HandleMoveRootAck(WorldPackets::Movement::MoveRootAck const& packet);
         void HandleMoveKnockBackAck(WorldPacket& recvPacket);
         void HandleMoveTeleportAckOpcode(WorldPackets::Movement::MoveTeleportAck const& packet);
-        void HandleForceSpeedChangeAckOpcodes(WorldPacket& recv_data);
+        void HandleForceSpeedChangeAckOpcodes(WorldPackets::Movement::MoveSpeedAck const& packet);
         void HandleMoveWorldportAckOpcode(NullClientPacket const& packet);
         void HandleMoveWorldportAck();                // for server-side calls
         void HandleMovementOpcodes(WorldPackets::Movement::MovementPacket const& packet);
         void HandleSetActiveMoverOpcode(WorldPackets::Misc::SetActiveMover const& packet);
         void HandleMoveNotActiveMoverOpcode(WorldPacket& recv_data);
         void HandleMoveTimeSkippedOpcode(WorldPackets::Movement::MoveTimeSkipped const& packet);
-        void HandleMovementFlagChangeToggleAck(WorldPacket& recvData);
+        void HandleMovementFlagChangeToggleAck(WorldPackets::Movement::MoveFlagChangeAck const& packet);
         void HandleMoveSplineDoneOpcode(WorldPacket& recvPacket);
         void HandleMoveSetRawPosition(WorldPackets::Misc::MoveSetRawPosition const& packet);
         void HandleWorldTeleportOpcode(WorldPackets::Misc::WorldTeleport const& packet);
