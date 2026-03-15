@@ -35,9 +35,7 @@
 
 void WorldSession::HandleGuildQueryOpcode(WorldPackets::Guild::GuildQuery const& packet)
 {
-    uint32 guildId = packet.guildId;
-
-    if (Guild* guild = sGuildMgr.GetGuildById(guildId))
+    if (Guild* guild = sGuildMgr.GetGuildById(packet.guildId))
     {
         guild->Query(this);
         return;
@@ -48,8 +46,6 @@ void WorldSession::HandleGuildQueryOpcode(WorldPackets::Guild::GuildQuery const&
 
 void WorldSession::HandleGuildCreateOpcode(WorldPackets::Guild::GuildCreate const& packet)
 {
-    std::string gname = packet.desiredGuildName;
-
     if (GetPlayer()->GetGuildId())                          // already in guild
         return;
 
@@ -59,14 +55,14 @@ void WorldSession::HandleGuildCreateOpcode(WorldPackets::Guild::GuildCreate cons
         return;
     }
 
-    if (utf8length(gname) > GUILD_NAME_MAX_LENGTH)
+    if (utf8length(packet.desiredGuildName) > GUILD_NAME_MAX_LENGTH)
     {
         ProcessAnticheatAction("PassiveAnticheat", "Attempt to set guild name to string longer than client limit.", CHEAT_ACTION_LOG | CHEAT_ACTION_REPORT_GMS | CHEAT_ACTION_KICK);
         return;
     }
 
     Guild *guild = new Guild;
-    if (!guild->Create(GetPlayer(), gname))
+    if (!guild->Create(GetPlayer(), packet.desiredGuildName))
     {
         delete guild;
         return;
@@ -509,7 +505,6 @@ void WorldSession::HandleGuildMOTDOpcode(WorldPackets::Guild::GuildMOTD const& p
 void WorldSession::HandleGuildSetPublicNoteOpcode(WorldPackets::Guild::GuildSetPublicNote const& packet)
 {
     std::string name = packet.playerName;
-    std::string PNOTE = packet.note;
 
     if (!normalizePlayerName(name))
         return;
@@ -534,13 +529,13 @@ void WorldSession::HandleGuildSetPublicNoteOpcode(WorldPackets::Guild::GuildSetP
         return;
     }
 
-    if (utf8length(PNOTE) > GUILD_NOTE_MAX_LENGTH)
+    if (utf8length(packet.note) > GUILD_NOTE_MAX_LENGTH)
     {
         ProcessAnticheatAction("PassiveAnticheat", "Attempt to set guild player note to string longer than client limit.", CHEAT_ACTION_LOG | CHEAT_ACTION_REPORT_GMS | CHEAT_ACTION_KICK);
         return;
     }
 
-    slot->SetPNOTE(PNOTE);
+    slot->SetPNOTE(packet.note);
 
     guild->Roster(this);
 }
@@ -548,7 +543,6 @@ void WorldSession::HandleGuildSetPublicNoteOpcode(WorldPackets::Guild::GuildSetP
 void WorldSession::HandleGuildSetOfficerNoteOpcode(WorldPackets::Guild::GuildSetOfficerNote const& packet)
 {
     std::string plName = packet.playerName;
-    std::string OFFNOTE = packet.note;
 
     if (!normalizePlayerName(plName))
         return;
@@ -573,13 +567,13 @@ void WorldSession::HandleGuildSetOfficerNoteOpcode(WorldPackets::Guild::GuildSet
         return;
     }
 
-    if (utf8length(OFFNOTE) > GUILD_NOTE_MAX_LENGTH)
+    if (utf8length(packet.note) > GUILD_NOTE_MAX_LENGTH)
     {
         ProcessAnticheatAction("PassiveAnticheat", "Attempt to set guild officer note to string longer than client limit.", CHEAT_ACTION_LOG | CHEAT_ACTION_REPORT_GMS | CHEAT_ACTION_KICK);
         return;
     }
 
-    slot->SetOFFNOTE(OFFNOTE);
+    slot->SetOFFNOTE(packet.note);
 
     guild->Roster(this);
 }
@@ -588,7 +582,6 @@ void WorldSession::HandleGuildRankOpcode(WorldPackets::Guild::GuildRank const& p
 {
     uint32 rankId = packet.rankId;
     uint32 rights = packet.rights;
-    std::string rankName = packet.rankName;
 
     Guild* guild = sGuildMgr.GetGuildById(GetPlayer()->GetGuildId());
     if (!guild)
@@ -603,13 +596,13 @@ void WorldSession::HandleGuildRankOpcode(WorldPackets::Guild::GuildRank const& p
         return;
     }
 
-    if (utf8length(rankName) > GUILD_RANK_MAX_LENGTH)
+    if (utf8length(packet.rankName) > GUILD_RANK_MAX_LENGTH)
     {
         ProcessAnticheatAction("PassiveAnticheat", "Attempt to set guild rank name to string longer than client limit.", CHEAT_ACTION_LOG | CHEAT_ACTION_REPORT_GMS | CHEAT_ACTION_KICK);
         return;
     }
 
-    guild->SetRankName(rankId, rankName);
+    guild->SetRankName(rankId, packet.rankName);
 
     if (rankId == GR_GUILDMASTER)                           // prevent loss leader rights
         rights = GR_RIGHT_ALL;
@@ -622,9 +615,7 @@ void WorldSession::HandleGuildRankOpcode(WorldPackets::Guild::GuildRank const& p
 
 void WorldSession::HandleGuildAddRankOpcode(WorldPackets::Guild::GuildAddRank const& packet)
 {
-    std::string rankName = packet.rankName;
-
-    if (utf8length(rankName) > GUILD_RANK_MAX_LENGTH)
+    if (utf8length(packet.rankName) > GUILD_RANK_MAX_LENGTH)
     {
         ProcessAnticheatAction("PassiveAnticheat", "Attempt to set guild rank name to string longer than client limit.", CHEAT_ACTION_LOG | CHEAT_ACTION_REPORT_GMS | CHEAT_ACTION_KICK);
         return;
@@ -646,7 +637,7 @@ void WorldSession::HandleGuildAddRankOpcode(WorldPackets::Guild::GuildAddRank co
     if (guild->GetRanksSize() >= GUILD_RANKS_MAX_COUNT)     // client not let create more 10 than ranks
         return;
 
-    guild->CreateRank(rankName, GR_RIGHT_GCHATLISTEN | GR_RIGHT_GCHATSPEAK);
+    guild->CreateRank(packet.rankName, GR_RIGHT_GCHATLISTEN | GR_RIGHT_GCHATSPEAK);
 
     guild->Query(this);
     guild->Roster();                                        // broadcast for tab rights update
@@ -685,9 +676,7 @@ void WorldSession::SendGuildCommandResult(uint32 typecmd, std::string const& str
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
 void WorldSession::HandleGuildChangeInfoTextOpcode(WorldPackets::Guild::GuildChangeInfoText const& packet)
 {
-    std::string GINFO = packet.infoText;
-
-    if (utf8length(GINFO) > GUILD_INFO_MAX_LENGTH)
+    if (utf8length(packet.infoText) > GUILD_INFO_MAX_LENGTH)
     {
         ProcessAnticheatAction("PassiveAnticheat", "Attempt to set guild info to string longer than client limit.", CHEAT_ACTION_LOG | CHEAT_ACTION_REPORT_GMS | CHEAT_ACTION_KICK);
         return;
@@ -706,25 +695,18 @@ void WorldSession::HandleGuildChangeInfoTextOpcode(WorldPackets::Guild::GuildCha
         return;
     }
 
-    guild->SetGINFO(GINFO);
+    guild->SetGINFO(packet.infoText);
 }
 #endif
 
 void WorldSession::HandleSaveGuildEmblemOpcode(WorldPackets::Guild::SaveGuildEmblem const& packet)
 {
-    ObjectGuid vendorGuid = packet.vendorGuid;
-    int32 emblemStyle = packet.emblemStyle;
-    int32 emblemColor = packet.emblemColor;
-    int32 borderStyle = packet.borderStyle;
-    int32 borderColor = packet.borderColor;
-    int32 backgroundColor = packet.backgroundColor;
-
-    Creature* pCreature = GetPlayer()->GetNPCIfCanInteractWith(vendorGuid, UNIT_NPC_FLAG_TABARDDESIGNER);
+    Creature* pCreature = GetPlayer()->GetNPCIfCanInteractWith(packet.vendorGuid, UNIT_NPC_FLAG_TABARDDESIGNER);
     if (!pCreature)
     {
         //[-ZERO] fails silently, not "That's not an emblem vendor!"
         SendSaveGuildEmblem(ERR_GUILDEMBLEM_FAIL_NO_MESSAGE);
-        sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "WORLD: HandleSaveGuildEmblemOpcode - %s not found or you can't interact with him.", vendorGuid.GetString().c_str());
+        sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "WORLD: HandleSaveGuildEmblemOpcode - %s not found or you can't interact with him.", packet.vendorGuid.GetString().c_str());
         return;
     }
 
@@ -755,7 +737,7 @@ void WorldSession::HandleSaveGuildEmblemOpcode(WorldPackets::Guild::SaveGuildEmb
     }
 
     GetPlayer()->ModifyMoney(-10 * GOLD);
-    guild->SetEmblem(emblemStyle, emblemColor, borderStyle, borderColor, backgroundColor);
+    guild->SetEmblem(packet.emblemStyle, packet.emblemColor, packet.borderStyle, packet.borderColor, packet.backgroundColor);
 
     //"Guild Emblem saved."
     SendSaveGuildEmblem(ERR_GUILDEMBLEM_SUCCESS);

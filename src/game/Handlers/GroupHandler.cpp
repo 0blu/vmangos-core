@@ -341,12 +341,8 @@ void WorldSession::HandleGroupDisbandOpcode(NullClientPacket const& /*packet*/)
 
 void WorldSession::HandleLootMethodOpcode(WorldPackets::Group::LootMethod const& packet)
 {
-    uint32 lootMethod = packet.lootMethod;
-    ObjectGuid lootMaster = packet.lootMaster;
-    uint32 lootThreshold = packet.lootThreshold;
-
     // Impossible.
-    if (lootMethod > 4)
+    if (packet.lootMethod > 4)
         return;
 
     Group* group = GetPlayer()->GetGroup();
@@ -362,16 +358,14 @@ void WorldSession::HandleLootMethodOpcode(WorldPackets::Group::LootMethod const&
     /********************/
 
     // everything is fine, do it
-    group->SetLootMethod((LootMethod)lootMethod);
-    group->SetLooterGuid(lootMaster);
-    group->SetLootThreshold((ItemQualities)lootThreshold);
+    group->SetLootMethod((LootMethod)packet.lootMethod);
+    group->SetLooterGuid(packet.lootMaster);
+    group->SetLootThreshold((ItemQualities)packet.lootThreshold);
     group->SendUpdate();
 }
 
 void WorldSession::HandleLootRoll(WorldPackets::Loot::LootRoll const& packet)
 {
-    ObjectGuid lootedTarget = packet.lootedTarget;
-    uint32 itemSlot = packet.itemSlot;
     uint8 rollType = packet.rollType;
 
     Group* group = GetPlayer()->GetGroup();
@@ -390,14 +384,11 @@ void WorldSession::HandleLootRoll(WorldPackets::Loot::LootRoll const& packet)
 #endif
 
     // everything is fine, do it, if false then some cheating problem found (result not used in pre-3.0)
-    group->CountRollVote(GetPlayer(), lootedTarget, itemSlot, RollVote(rollType));
+    group->CountRollVote(GetPlayer(), packet.lootedTarget, packet.itemSlot, RollVote(rollType));
 }
 
 void WorldSession::HandleMinimapPingOpcode(WorldPackets::Group::MinimapPing const& packet)
 {
-    float x = packet.x;
-    float y = packet.y;
-
     if (!GetPlayer()->GetGroup())
         return;
 
@@ -409,8 +400,8 @@ void WorldSession::HandleMinimapPingOpcode(WorldPackets::Group::MinimapPing cons
     // everything is fine, do it
     WorldPacket data(MSG_MINIMAP_PING, (8 + 4 + 4));
     data << GetPlayer()->GetObjectGuid();
-    data << float(x);
-    data << float(y);
+    data << float(packet.x);
+    data << float(packet.y);
     GetPlayer()->GetGroup()->BroadcastPacket(&data, true, -1, GetPlayer()->GetObjectGuid());
 }
 
@@ -495,7 +486,6 @@ void WorldSession::HandleGroupRaidConvertOpcode(NullClientPacket const& /*packet
 
 void WorldSession::HandleGroupChangeSubGroupOpcode(WorldPackets::Group::GroupChangeSubGroup const& packet)
 {
-    std::string name = packet.name;
     uint8 groupNr = packet.groupNr;
 
     if (groupNr >= MAX_RAID_SUBGROUPS)
@@ -516,20 +506,17 @@ void WorldSession::HandleGroupChangeSubGroupOpcode(WorldPackets::Group::GroupCha
     /********************/
 
     // everything is fine, do it
-    if (Player* player = sObjectMgr.GetPlayer(name.c_str()))
+    if (Player* player = sObjectMgr.GetPlayer(packet.name.c_str()))
         group->ChangeMembersGroup(player, groupNr);
     else
     {
-        if (ObjectGuid guid = sObjectMgr.GetPlayerGuidByName(name))
+        if (ObjectGuid guid = sObjectMgr.GetPlayerGuidByName(packet.name))
             group->ChangeMembersGroup(guid, groupNr);
     }
 }
 
 void WorldSession::HandleGroupSwapSubGroupOpcode(WorldPackets::Group::GroupSwapSubGroup const& packet)
 {
-    std::string name = packet.name;
-    std::string nameSwapWith = packet.nameSwapWith;
-
     Group* group = GetPlayer()->GetGroup();
     if (!group)
         return;
@@ -541,8 +528,8 @@ void WorldSession::HandleGroupSwapSubGroupOpcode(WorldPackets::Group::GroupSwapS
     /********************/
     // If both players are online do swap with Player objects, else
     // do swap with Guids
-    Player* player = sObjectMgr.GetPlayer(name.c_str());
-    Player* swapPlayer = sObjectMgr.GetPlayer(nameSwapWith.c_str());
+    Player* player = sObjectMgr.GetPlayer(packet.name.c_str());
+    Player* swapPlayer = sObjectMgr.GetPlayer(packet.nameSwapWith.c_str());
 
     if (player && swapPlayer)
     {
@@ -550,8 +537,8 @@ void WorldSession::HandleGroupSwapSubGroupOpcode(WorldPackets::Group::GroupSwapS
     }
     else
     {
-        ObjectGuid swapGuid = sObjectMgr.GetPlayerGuidByName(name);
-        ObjectGuid swapWithGuid = sObjectMgr.GetPlayerGuidByName(nameSwapWith);
+        ObjectGuid swapGuid = sObjectMgr.GetPlayerGuidByName(packet.name);
+        ObjectGuid swapWithGuid = sObjectMgr.GetPlayerGuidByName(packet.nameSwapWith);
 
         if (!swapGuid || !swapWithGuid)
             return;

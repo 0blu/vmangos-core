@@ -377,10 +377,8 @@ void WorldSession::HandleCharDeleteOpcode(WorldPackets::Character::CharDelete co
 
 void WorldSession::HandlePlayerLoginOpcode(WorldPackets::Character::PlayerLogin const& packet)
 {
-    ObjectGuid playerGuid = packet.guid;
-
     if ((!sWorld.getConfig(CONFIG_BOOL_WORLD_AVAILABLE) && GetSecurity() == SEC_PLAYER) ||
-        PlayerLoading() || GetPlayer() != nullptr || !playerGuid.IsPlayer())
+        PlayerLoading() || GetPlayer() != nullptr || !packet.guid.IsPlayer())
     {
         WorldPacket data(SMSG_CHARACTER_LOGIN_FAILED, 1);
         data << (uint8)1;
@@ -388,7 +386,7 @@ void WorldSession::HandlePlayerLoginOpcode(WorldPackets::Character::PlayerLogin 
         return;
     }
 
-    LoginQueryHolder* holder = new LoginQueryHolder(GetAccountId(), playerGuid);
+    LoginQueryHolder* holder = new LoginQueryHolder(GetAccountId(), packet.guid);
     if (!holder->Initialize())
     {
         delete holder;                                      // delete all unprocessed queries
@@ -724,26 +722,21 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder *holder)
 
 void WorldSession::HandleSetFactionAtWarOpcode(WorldPackets::Misc::SetFactionAtWar const& packet)
 {
-    uint32 repListId = packet.repListId;
-    uint8  flag = packet.flag;
-
     Player* pPlayer = GetPlayer();
 
     if (pPlayer->IsInCombat())
         return;
 
-    pPlayer->GetReputationMgr().SetAtWar(repListId, flag);
+    pPlayer->GetReputationMgr().SetAtWar(packet.repListId, packet.flag);
 }
 
 void WorldSession::HandleTutorialFlagOpcode(WorldPackets::Misc::TutorialFlag const& packet)
 {
-    uint32 iFlag = packet.iFlag;
-
-    uint32 wInt = (iFlag / 32);
+    uint32 wInt = (packet.iFlag / 32);
     if (wInt >= 8)
         return;
 
-    uint32 rInt = (iFlag % 32);
+    uint32 rInt = (packet.iFlag % 32);
 
     uint32 tutflag = GetTutorialInt(wInt);
     tutflag |= (1 << rInt);
@@ -770,10 +763,7 @@ void WorldSession::HandleSetWatchedFactionOpcode(WorldPackets::Misc::SetWatchedF
 
 void WorldSession::HandleSetFactionInactiveOpcode(WorldPackets::Misc::SetFactionInactive const& packet)
 {
-    uint32 replistid = packet.replistid;
-    uint8 inactive = packet.inactive;
-
-    _player->GetReputationMgr().SetInactive(replistid, inactive);
+    _player->GetReputationMgr().SetInactive(packet.replistid, packet.inactive);
 }
 #endif
 
@@ -789,7 +779,6 @@ void WorldSession::HandleShowingCloakOpcode(NullClientPacket const& /*packet*/)
 
 void WorldSession::HandleCharRenameOpcode(WorldPackets::Character::CharRename const& packet)
 {
-    ObjectGuid guid = packet.guid;
     std::string newname = packet.newname;
 
     // prevent character rename to invalid name
@@ -827,7 +816,7 @@ void WorldSession::HandleCharRenameOpcode(WorldPackets::Character::CharRename co
     CharacterDatabase.AsyncPQuery(&WorldSession::HandleChangePlayerNameOpcodeCallBack,
                                   GetAccountId(), newname,
                                   "SELECT `guid`, `name` FROM `characters` WHERE `guid` = %u AND `account` = %u AND (`character_flags` & %u) = %u AND NOT EXISTS (SELECT NULL FROM `characters` WHERE `name` = '%s')",
-                                  guid.GetCounter(), GetAccountId(), CHARACTER_FLAG_RENAME, CHARACTER_FLAG_RENAME, escaped_newname.c_str()
+                                  packet.guid.GetCounter(), GetAccountId(), CHARACTER_FLAG_RENAME, CHARACTER_FLAG_RENAME, escaped_newname.c_str()
                                  );
 }
 
