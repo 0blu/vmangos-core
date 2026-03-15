@@ -529,7 +529,7 @@ class WorldSession
         void HandleGMTicketUpdateTextOpcode(WorldPackets::GmTicket::GmTicketUpdateText const& packet);
         void HandleGMSurveySubmitOpcode(WorldPacket& recvPacket);
 
-        void HandleTogglePvP(WorldPacket& recvPacket);
+        void HandleTogglePvP(WorldPackets::Misc::TogglePvP const& packet);
         void HandleZoneUpdateOpcode(WorldPackets::Misc::ZoneUpdate const& packet);
         void HandleSetSelectionOpcode(WorldPackets::Misc::SetSelection const& packet);
         void HandleStandStateChangeOpcode(WorldPackets::Misc::StandStateChange const& packet);

@@ -170,3 +170,12 @@ void WorldPackets::Misc::MoveSetRawPosition::ReadFromWorldPacket(WorldPacket& re
     opcode = recv_data.GetOpcode();
     recv_data >> location.x >> location.y >> location.z >> location.o;
 }
+
+void WorldPackets::Misc::TogglePvP::ReadFromWorldPacket(WorldPacket& recv_data)
+{
+    if (recv_data.size() == 1)
+    {
+        hasNewPvPState = true;
+        recv_data >> targetState;
+    }
+}

@@ -296,6 +296,16 @@ namespace WorldPackets { namespace Misc
         MoveSetRawPosition() : ClientPacket(OPCODE_WILL_BE_SET_IN_READ_FUNCTION) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class TogglePvP final : public ClientPacket
+    {
+    public:
+        bool hasNewPvPState = false;
+        bool targetState = false;
+
+        explicit TogglePvP() : ClientPacket(CMSG_TOGGLE_PVP) {}
+        void ReadFromWorldPacket(WorldPacket& recv_data) override;
+    };
 }} // namespace WorldPackets::Misc
 
 #endif // MANGOS_PACKETS_MISC_H
