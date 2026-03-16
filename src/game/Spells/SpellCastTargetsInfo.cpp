@@ -16,12 +16,14 @@ void SpellCastTargetsInfo::ReadFromBuffer(ByteBuffer& data)
     if (m_targetMask == TARGET_FLAG_SELF)
         return; // Will be statefully filled when using FromSpellCastTargetsInfo
 
-    // TARGET_FLAG_UNIT_MINIPET is used for non-combat pets, maybe other?
-    if (m_targetMask & (TARGET_FLAG_UNIT | TARGET_FLAG_UNIT_MINIPET))
+    if (m_targetMask & TARGET_FLAG_UNIT)
         data >> m_unitTargetGUID.ReadAsPackedClientBuildAware();
 
-    if (m_targetMask & (TARGET_FLAG_GAMEOBJECT | TARGET_FLAG_LOCKED))
+    if (m_targetMask & (TARGET_FLAG_GAMEOBJECT))
         data >> m_GOTargetGUID.ReadAsPackedClientBuildAware();
+
+    if (m_targetMask & (TARGET_FLAG_CORPSE_ALLY | TARGET_FLAG_CORPSE_ENEMY))
+        data >> m_CorpseTargetGUID.ReadAsPackedClientBuildAware();
 
     if (m_targetMask & (TARGET_FLAG_ITEM | TARGET_FLAG_TRADE_ITEM))
         data >> m_itemTargetGUID.ReadAsPackedClientBuildAware();
@@ -42,8 +44,4 @@ void SpellCastTargetsInfo::ReadFromBuffer(ByteBuffer& data)
 
     if (m_targetMask & TARGET_FLAG_STRING)
         data >> m_strTarget;
-
-    if (m_targetMask & (TARGET_FLAG_CORPSE_ALLY | TARGET_FLAG_CORPSE_ENEMY))
-        data >> m_CorpseTargetGUID.ReadAsPackedClientBuildAware();
 }
-
