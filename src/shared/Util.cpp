@@ -372,16 +372,17 @@ uint32 CreatePIDFile(std::string const& filename)
     return (uint32)pid;
 }
 
-size_t utf8length(std::string& utf8str)
+nonstd::optional<size_t> utf8length(std::string const& utf8str)
 {
     try
     {
-        return utf8::distance(utf8str.c_str(),utf8str.c_str()+utf8str.size());
+        char const* startPtr = utf8str.c_str();
+        char const* endPtr = startPtr + utf8str.size();
+        return utf8::distance(startPtr, endPtr);
     }
     catch(std::exception)
     {
-        utf8str = "";
-        return 0;
+        return nonstd::nullopt;
     }
 }
 

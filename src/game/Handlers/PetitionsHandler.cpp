@@ -177,7 +177,7 @@ void WorldSession::HandlePetitionQueryOpcode(WorldPackets::Petition::QueryPetiti
         return;
 
     WorldPacket data(SMSG_PETITION_QUERY_RESPONSE, (4 + 8 + petition->GetName().size() + 1 + 2 + 4 * 11));
-    data << uint32(packet.petitionGuid);                           // int m_petitionID;
+    data << uint32(packet.petitionGuid);                    // int m_petitionID;
     data << ObjectGuid(petition->GetOwnerGuid());           // unsigned __int64 m_petitioner;
     data << petition->GetName();                            // char m_title[256];
     data << uint8(0);                                       // char m_bodyText[4096];
