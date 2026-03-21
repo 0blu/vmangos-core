@@ -402,8 +402,6 @@ constexpr Handlers BuildOpcodeList()
     DEFINE_HANDLER(CMSG_CANCEL_CHANNELLING,           STATUS_LOGGEDIN,  PACKET_PROCESS_SPELLS,        &WorldSession::HandleCancelChanneling);
     INVALID_PACKET(SMSG_AI_REACTION,                  Reason::SendByServer);
     DEFINE_HANDLER(CMSG_SET_SELECTION,                STATUS_LOGGEDIN,  PACKET_PROCESS_SPELLS,        &WorldSession::HandleSetSelectionOpcode);
-    INVALID_PACKET(CMSG_SET_TARGET_OBSOLETE,          Reason::Unhandled);
-    INVALID_PACKET(CMSG_UNUSED,                       Reason::Unhandled);
     INVALID_PACKET(CMSG_UNUSED2,                      Reason::Unhandled);
     DEFINE_HANDLER(CMSG_ATTACKSWING,                  STATUS_LOGGEDIN,  PACKET_PROCESS_SPELLS,        &WorldSession::HandleAttackSwingOpcode);
     DEFINE_HANDLER(CMSG_ATTACKSTOP,                   STATUS_LOGGEDIN,  PACKET_PROCESS_SPELLS,        &WorldSession::HandleAttackStopOpcode);
@@ -944,8 +942,6 @@ constexpr Handlers BuildOpcodeList()
     return list;
 }
 
-// If you get "Constexpr variable 'handlerList' must be initialized by a constant expression"
-// you have to verify that every MSG type has a handler.
 constexpr Handlers handlerList = BuildOpcodeList();
 
 constexpr OpcodeHandler emptyHandler = {
