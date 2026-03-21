@@ -3311,8 +3311,8 @@ void CombatBotBaseAI::OnPacketReceived(WorldPacket const* packet)
                 return;
 
             auto data = std::make_unique<WorldPackets::Misc::ResurrectResponse>();
-            data->guid = me->GetResurrector();
-            data->status = 1;
+            data->resurrectorGuid = me->GetResurrector();
+            data->accept = true;
             me->GetSession()->QueuePacket(std::move(data));
             break;
         }
@@ -3347,7 +3347,7 @@ void CombatBotBaseAI::OnPacketReceived(WorldPacket const* packet)
             auto data = std::make_unique<WorldPackets::Loot::LootRoll>();
             data->lootedTarget = ObjectGuid(guid);
             data->itemSlot = slot;
-            data->rollType = 0; // pass
+            data->rollType = ROLL_PASS;
             me->GetSession()->QueuePacket(std::move(data));
             return;
         }
