@@ -451,7 +451,7 @@ void WorldSession::HandlePageTextQueryOpcode(WorldPackets::Query::QueryPageText 
 
 void WorldSession::SendQueryTimeResponse()
 {
-    WorldPacket data(SMSG_QUERY_TIME_RESPONSE, 4);
-    data << uint32(time(nullptr));
-    SendPacket(&data);
+    auto packet = std::make_unique<WorldPackets::Query::QueryTimeResponse>();
+    packet->time = static_cast<uint32>(time(nullptr));
+    SendPacket(std::move(packet));
 }

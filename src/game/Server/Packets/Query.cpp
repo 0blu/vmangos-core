@@ -36,3 +36,8 @@ void WorldPackets::Query::ItemNameQuery::ReadFromWorldPacket(WorldPacket& recv_d
     recv_data >> itemId;
     recv_data.read_skip<uint64>(); // guid, not used
 }
+
+void WorldPackets::Query::QueryTimeResponse::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << uint32(time);
+}
