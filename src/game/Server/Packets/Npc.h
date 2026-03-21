@@ -148,6 +148,54 @@ namespace WorldPackets { namespace Npc
         explicit GossipSelectOption() : ClientPacket(CMSG_GOSSIP_SELECT_OPTION) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class ShowBankResponse final : public ServerPacket
+    {
+    public:
+        ObjectGuid guid;
+
+        explicit ShowBankResponse() : ServerPacket(SMSG_SHOW_BANK) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class TabardVendorActivateResponse final : public ServerPacket
+    {
+    public:
+        ObjectGuid guid;
+
+        explicit TabardVendorActivateResponse() : ServerPacket(MSG_TABARDVENDOR_ACTIVATE) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class TrainerBuySucceeded final : public ServerPacket
+    {
+    public:
+        ObjectGuid trainerGuid;
+        uint32 spellId = 0;
+
+        explicit TrainerBuySucceeded() : ServerPacket(SMSG_TRAINER_BUY_SUCCEEDED) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class TrainerBuyFailed final : public ServerPacket
+    {
+    public:
+        ObjectGuid trainerGuid;
+        uint32 serviceId = 0;
+        uint32 errorCode = 0;
+
+        explicit TrainerBuyFailed() : ServerPacket(SMSG_TRAINER_BUY_FAILED) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class StableResult final : public ServerPacket
+    {
+    public:
+        uint8 result = 0;
+
+        explicit StableResult() : ServerPacket(SMSG_STABLE_RESULT) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
 }} // namespace WorldPackets::Npc
 
 #endif // MANGOS_PACKETS_NPC_H

@@ -65,9 +65,9 @@ void WorldSession::HandleTabardVendorActivateOpcode(WorldPackets::Npc::TabardVen
 
 void WorldSession::SendTabardVendorActivate(ObjectGuid guid)
 {
-    WorldPacket data(MSG_TABARDVENDOR_ACTIVATE, 8);
-    data << ObjectGuid(guid);
-    SendPacket(&data);
+    auto response = std::make_unique<WorldPackets::Npc::TabardVendorActivateResponse>();
+    response->guid = guid;
+    SendPacket(std::move(response));
 }
 
 void WorldSession::HandleBankerActivateOpcode(WorldPackets::Npc::BankerActivate const& packet)
@@ -84,10 +84,10 @@ void WorldSession::HandleBankerActivateOpcode(WorldPackets::Npc::BankerActivate 
 
 void WorldSession::SendShowBank(ObjectGuid guid)
 {
-    WorldPacket data(SMSG_SHOW_BANK, 8);
-    data << ObjectGuid(guid);
+    auto response = std::make_unique<WorldPackets::Npc::ShowBankResponse>();
+    response->guid = guid;
     GetPlayer()->m_currentBankerGuid = guid;
-    SendPacket(&data);
+    SendPacket(std::move(response));
 }
 
 void WorldSession::HandleTrainerListOpcode(WorldPackets::Npc::TrainerList const& packet)
@@ -245,19 +245,19 @@ void WorldSession::SendTrainerList(ObjectGuid guid)
 
 void WorldSession::SendTrainingSuccess(ObjectGuid guid, uint32 spellId)
 {
-    WorldPacket data(SMSG_TRAINER_BUY_SUCCEEDED, 12);
-    data << ObjectGuid(guid);
-    data << uint32(spellId);                                // should be same as in packet from client
-    SendPacket(&data);
+    auto response = std::make_unique<WorldPackets::Npc::TrainerBuySucceeded>();
+    response->trainerGuid = guid;
+    response->spellId = spellId;
+    SendPacket(std::move(response));
 }
 
 void WorldSession::SendTrainingFailure(ObjectGuid guid, uint32 serviceId, uint32 errorCode)
 {
-    WorldPacket data(SMSG_TRAINER_BUY_FAILED, 16);
-    data << ObjectGuid(guid);
-    data << uint32(serviceId);
-    data << uint32(errorCode);
-    SendPacket(&data);
+    auto response = std::make_unique<WorldPackets::Npc::TrainerBuyFailed>();
+    response->trainerGuid = guid;
+    response->serviceId = serviceId;
+    response->errorCode = errorCode;
+    SendPacket(std::move(response));
 }
 
 void WorldSession::HandleTrainerBuySpellOpcode(WorldPackets::Npc::TrainerBuySpell const& packet)
@@ -581,9 +581,9 @@ void WorldSession::SendStablePet(ObjectGuid guid)
 
 void WorldSession::SendStableResult(uint8 res)
 {
-    WorldPacket data(SMSG_STABLE_RESULT, 1);
-    data << uint8(res);
-    SendPacket(&data);
+    auto response = std::make_unique<WorldPackets::Npc::StableResult>();
+    response->result = res;
+    SendPacket(std::move(response));
 }
 
 bool WorldSession::CheckStableMaster(ObjectGuid guid)

@@ -45,12 +45,11 @@
 
 void WorldSession::SendPartyResult(PartyOperation operation, std::string const& member, PartyResult res)
 {
-    WorldPacket data(SMSG_PARTY_COMMAND_RESULT, (4 + member.size() + 1 + 4));
-    data << uint32(operation);
-    data << member; // max len 48
-    data << uint32(res);
-
-    SendPacket(&data);
+    auto response = std::make_unique<WorldPackets::Group::PartyCommandResult>();
+    response->operation = uint32(operation);
+    response->member = member;
+    response->result = uint32(res);
+    SendPacket(std::move(response));
 }
 
 void WorldSession::HandleGroupInviteOpcode(WorldPackets::Group::GroupInvite const& packet)
@@ -145,9 +144,9 @@ void WorldSession::HandleGroupInviteOpcode(WorldPackets::Group::GroupInvite cons
     }
 
     // ok, we do it
-    WorldPacket data(SMSG_GROUP_INVITE, 10); // guess size
-    data << GetPlayer()->GetName();
-    player->GetSession()->SendPacket(&data);
+    auto notify = std::make_unique<WorldPackets::Group::GroupInviteNotification>();
+    notify->inviterName = GetPlayer()->GetName();
+    player->GetSession()->SendPacket(std::move(notify));
 
     SendPartyResult(PARTY_OP_INVITE, membername, ERR_PARTY_RESULT_OK);
 }
@@ -213,9 +212,9 @@ void WorldSession::HandleGroupDeclineOpcode(NullClientPacket const& /*packet*/)
         return;
 
     // report
-    WorldPacket data(SMSG_GROUP_DECLINE, 10); // guess size
-    data << GetPlayer()->GetName();
-    leader->GetSession()->SendPacket(&data);
+    auto notify = std::make_unique<WorldPackets::Group::GroupDeclineNotification>();
+    notify->playerName = GetPlayer()->GetName();
+    leader->GetSession()->SendPacket(std::move(notify));
 }
 
 void WorldSession::HandleGroupUninviteGuidOpcode(WorldPackets::Group::GroupUninviteGuid const& packet)
