@@ -29,6 +29,7 @@
 #include "Player.h"
 #include "Path.h"
 #include "WaypointMovementGenerator.h"
+#include "Packets/Taxi.h"
 
 void WorldSession::HandleTaxiNodeStatusQueryOpcode(WorldPackets::Taxi::TaxiNodeStatusQuery const& packet)
 {
@@ -51,10 +52,10 @@ void WorldSession::SendTaxiStatus(ObjectGuid guid)
     if (curloc == 0)
         return;
 
-    WorldPacket data(SMSG_TAXINODE_STATUS, 9);
-    data << ObjectGuid(guid);
-    data << uint8(GetPlayer()->m_taxi.IsTaximaskNodeKnown(curloc) ? 1 : 0);
-    SendPacket(&data);
+    auto taxiStatus = std::make_unique<WorldPackets::Taxi::TaxiNodeStatus>();
+    taxiStatus->guid = guid;
+    taxiStatus->isKnown = GetPlayer()->m_taxi.IsTaximaskNodeKnown(curloc) ? 1 : 0;
+    SendPacket(std::move(taxiStatus));
 }
 
 void WorldSession::HandleTaxiQueryAvailableNodes(WorldPackets::Taxi::TaxiQueryAvailableNodes const& packet)
@@ -87,12 +88,11 @@ void WorldSession::SendTaxiMenu(Creature* unit)
     if (curloc == 0)
         return;
 
-    WorldPacket data(SMSG_SHOWTAXINODES, (4 + 8 + 4 + 8 * 4));
-    data << uint32(1);
-    data << unit->GetObjectGuid();
-    data << uint32(curloc);
-    GetPlayer()->m_taxi.AppendTaximaskTo(data, GetPlayer()->IsTaxiCheater());
-    SendPacket(&data);
+    auto showTaxi = std::make_unique<WorldPackets::Taxi::ShowTaxiNodes>();
+    showTaxi->unitGuid = unit->GetObjectGuid();
+    showTaxi->currentNode = curloc;
+    GetPlayer()->m_taxi.AppendTaximaskTo(showTaxi->taximaskBuffer, GetPlayer()->IsTaxiCheater());
+    SendPacket(std::move(showTaxi));
 }
 
 void WorldSession::SendDoFlight(uint32 mountDisplayId, uint32 path, uint32 pathNode)
@@ -124,13 +124,13 @@ bool WorldSession::SendLearnNewTaxiNode(Creature* unit)
 
     if (GetPlayer()->m_taxi.SetTaximaskNode(curloc))
     {
-        WorldPacket msg(SMSG_NEW_TAXI_PATH, 0);
-        SendPacket(&msg);
+        auto newPath = std::make_unique<WorldPackets::Taxi::NewTaxiPath>();
+        SendPacket(std::move(newPath));
 
-        WorldPacket update(SMSG_TAXINODE_STATUS, 9);
-        update << ObjectGuid(unit->GetObjectGuid());
-        update << uint8(1);
-        SendPacket(&update);
+        auto taxiStatus = std::make_unique<WorldPackets::Taxi::TaxiNodeStatus>();
+        taxiStatus->guid = unit->GetObjectGuid();
+        taxiStatus->isKnown = 1;
+        SendPacket(std::move(taxiStatus));
 
         return true;
     }

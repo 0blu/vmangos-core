@@ -30,6 +30,7 @@
 #include "SpellAuras.h"
 #include "GameObject.h"
 #include "Map.h"
+#include "Packets/Spell.h"
 
 using namespace Spells;
 
@@ -293,11 +294,11 @@ void WorldSession::HandleCastSpellOpcode(WorldPackets::Spell::CastSpell const& p
         // spells on yourself is frequently used within the core itself for certain mechanics.
         if (target == _player && IsExplicitlySelectedUnitTarget(spellInfo->EffectImplicitTargetA[0]) && !spellInfo->IsPositiveSpell(_player, target))
         {
-            WorldPacket data(SMSG_CAST_RESULT, (4 + 1 + 1));
-            data << uint32(spellId);
-            data << uint8(2); // status = fail
-            data << uint8(SPELL_FAILED_BAD_TARGETS);
-            SendPacket(&data);
+            auto castFailed = std::make_unique<WorldPackets::Spell::SpellCastFailed>();
+            castFailed->spellId = spellId;
+            castFailed->result = 2;
+            castFailed->reason = SPELL_FAILED_BAD_TARGETS;
+            SendPacket(std::move(castFailed));
             return;
         }
 

@@ -36,6 +36,7 @@
 #include "ScriptMgr.h"
 #include "World.h"
 #include "Anticheat.h"
+#include "Packets/Battleground.h"
 
 void WorldSession::HandleBattlemasterHelloOpcode(WorldPackets::Battleground::BattlemasterHello const& packet)
 {
@@ -174,9 +175,9 @@ void WorldSession::RequestBgJoinQueue(ObjectGuid battlemaster, uint32 instanceId
         // check Deserter debuff
         if (!_player->CanJoinToBattleground())
         {
-            WorldPacket data(SMSG_GROUP_JOINED_BATTLEGROUND, 4);
-            data << uint32(0xFFFFFFFE);
-            _player->GetSession()->SendPacket(&data);
+            auto bgJoined = std::make_unique<WorldPackets::Battleground::GroupJoinedBattleground>();
+            bgJoined->mapOrError = 0xFFFFFFFE;
+            _player->GetSession()->SendPacket(std::move(bgJoined));
             return;
         }
         // check if already in queue
@@ -421,9 +422,9 @@ void WorldSession::HandleBattleFieldPortOpcode(WorldPackets::Battleground::Battl
         if (!_player->CanJoinToBattleground())
         {
             //send bg command result to show nice message
-            WorldPacket data2(SMSG_GROUP_JOINED_BATTLEGROUND, 4);
-            data2 << uint32(0xFFFFFFFE);
-            _player->GetSession()->SendPacket(&data2);
+            auto bgJoined = std::make_unique<WorldPackets::Battleground::GroupJoinedBattleground>();
+            bgJoined->mapOrError = 0xFFFFFFFE;
+            _player->GetSession()->SendPacket(std::move(bgJoined));
             action = 0;
             sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "Battleground: player %s (%u) has a deserter debuff, do not port him to battleground!", _player->GetName(), _player->GetGUIDLow());
         }

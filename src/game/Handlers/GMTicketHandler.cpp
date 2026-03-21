@@ -28,6 +28,7 @@
 #include "Chat.h"
 #include "World.h"
 #include "Opcodes.h"
+#include "Packets/GmTicket.h"
 
 void WorldSession::HandleGMTicketGetTicketOpcode(NullClientPacket const& /*packet*/)
 {
@@ -65,18 +66,18 @@ void WorldSession::HandleGMTicketUpdateTextOpcode(WorldPackets::GmTicket::GmTick
         }
     }
 
-    WorldPacket data(SMSG_GMTICKET_UPDATETEXT, 4);
-    data << uint32(response);
-    SendPacket(&data);
+    auto updateResp = std::make_unique<WorldPackets::GmTicket::GmTicketUpdateTextResponse>();
+    updateResp->response = response;
+    SendPacket(std::move(updateResp));
 }
 
 void WorldSession::HandleGMTicketDeleteTicketOpcode(NullClientPacket const& /*packet*/)
 {
     if (GmTicket* ticket = sTicketMgr->GetTicketByPlayer(GetPlayer()->GetGUID()))
     {
-        WorldPacket data(SMSG_GMTICKET_DELETETICKET, 4);
-        data << uint32(GMTICKET_RESPONSE_TICKET_DELETED);
-        SendPacket(&data);
+        auto deleteResp = std::make_unique<WorldPackets::GmTicket::GmTicketDeleteTicketResponse>();
+        deleteResp->response = GMTICKET_RESPONSE_TICKET_DELETED;
+        SendPacket(std::move(deleteResp));
 
         sWorld.SendGMTicketText(LANG_COMMAND_TICKETPLAYERABANDON, GetPlayer()->GetName(), ticket->GetId());
 
@@ -125,18 +126,18 @@ void WorldSession::HandleGMTicketCreateOpcode(WorldPackets::GmTicket::GmTicketCr
         response = GMTICKET_RESPONSE_CREATE_SUCCESS;
     }
 
-    WorldPacket data(SMSG_GMTICKET_CREATE, 4);
-    data << uint32(response);
-    SendPacket(&data);
+    auto createResp = std::make_unique<WorldPackets::GmTicket::GmTicketCreateResponse>();
+    createResp->response = response;
+    SendPacket(std::move(createResp));
 }
 
 void WorldSession::HandleGMTicketSystemStatusOpcode(NullClientPacket const& /*packet*/)
 {
     // Note: This only disables the ticket UI at client side and is not fully reliable
     // are we sure this is a uint32? Should ask Zor
-    WorldPacket data(SMSG_GMTICKET_SYSTEMSTATUS, 4);
-    data << uint32(sTicketMgr->GetStatus() ? GMTICKET_QUEUE_STATUS_ENABLED : GMTICKET_QUEUE_STATUS_DISABLED);
-    SendPacket(&data);
+    auto sysStatus = std::make_unique<WorldPackets::GmTicket::GmTicketSystemStatus>();
+    sysStatus->status = sTicketMgr->GetStatus() ? GMTICKET_QUEUE_STATUS_ENABLED : GMTICKET_QUEUE_STATUS_DISABLED;
+    SendPacket(std::move(sysStatus));
 }
 
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_10_2

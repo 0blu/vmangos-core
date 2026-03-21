@@ -360,6 +360,69 @@ namespace WorldPackets { namespace Misc
     };
 #endif
 
+    class LogoutResponse final : public ServerPacket
+    {
+    public:
+        uint32 reason = 0;
+        uint8 instantLogout = 0;
+
+        explicit LogoutResponse() : ServerPacket(SMSG_LOGOUT_RESPONSE) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class LogoutCancelAck final : public ServerPacket
+    {
+    public:
+        explicit LogoutCancelAck() : ServerPacket(SMSG_LOGOUT_CANCEL_ACK) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class StandStateUpdate final : public ServerPacket
+    {
+    public:
+        uint8 standState = 0;
+
+        explicit StandStateUpdate() : ServerPacket(SMSG_STANDSTATE_UPDATE) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class PlayedTime final : public ServerPacket
+    {
+    public:
+        uint32 totalTime = 0;
+        uint32 levelTime = 0;
+
+        explicit PlayedTime() : ServerPacket(SMSG_PLAYED_TIME) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class InspectResult final : public ServerPacket
+    {
+    public:
+        ObjectGuid guid;
+
+        explicit InspectResult() : ServerPacket(SMSG_INSPECT) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class WhoIsResult final : public ServerPacket
+    {
+    public:
+        std::string message;
+
+        explicit WhoIsResult() : ServerPacket(SMSG_WHOIS) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class LookingForGroupResponse final : public ServerPacket
+    {
+    public:
+        uint32 unk = 0;
+
+        explicit LookingForGroupResponse() : ServerPacket(MSG_LOOKING_FOR_GROUP) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
 }} // namespace WorldPackets::Misc
 
 #endif // MANGOS_PACKETS_MISC_H

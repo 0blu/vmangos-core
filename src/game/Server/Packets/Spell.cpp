@@ -34,3 +34,10 @@ void WorldPackets::Spell::CancelChanneling::ReadFromWorldPacket(WorldPacket& rec
 {
     recv_data >> spellId;
 }
+
+void WorldPackets::Spell::SpellCastFailed::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << uint32(spellId);
+    buffer << uint8(result);
+    buffer << uint8(reason);
+}

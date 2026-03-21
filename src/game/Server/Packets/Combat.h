@@ -23,6 +23,16 @@ namespace WorldPackets { namespace Combat
         explicit SetSheathed() : ClientPacket(CMSG_SETSHEATHED) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+    class AttackStop final : public ServerPacket
+    {
+    public:
+        ObjectGuid attackerGuid;
+        ObjectGuid victimGuid;
+        uint32 nowDead = 0;
+
+        explicit AttackStop() : ServerPacket(SMSG_ATTACKSTOP) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
 }} // namespace WorldPackets::Combat
 
 #endif // MANGOS_PACKETS_COMBAT_H

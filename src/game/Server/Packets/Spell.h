@@ -65,6 +65,16 @@ namespace WorldPackets { namespace Spell
         explicit CancelChanneling() : ClientPacket(CMSG_CANCEL_CHANNELLING) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+    class SpellCastFailed final : public ServerPacket
+    {
+    public:
+        uint32 spellId = 0;
+        uint8 result = 2;
+        uint8 reason = 0;
+
+        explicit SpellCastFailed() : ServerPacket(SMSG_CAST_RESULT) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
 }} // namespace WorldPackets::Spell
 
 #endif // MANGOS_PACKETS_SPELL_H

@@ -243,3 +243,39 @@ void WorldPackets::Misc::WardenData::ReadFromWorldPacket(WorldPacket& recv_data)
     if (!data.empty())
         recv_data.read(data.data(), data.size());
 }
+
+void WorldPackets::Misc::LogoutResponse::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << uint32(reason);
+    buffer << uint8(instantLogout);
+}
+
+void WorldPackets::Misc::LogoutCancelAck::AppendBodyTo(ByteBuffer& /*buffer*/) const
+{
+}
+
+void WorldPackets::Misc::StandStateUpdate::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << uint8(standState);
+}
+
+void WorldPackets::Misc::PlayedTime::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << uint32(totalTime);
+    buffer << uint32(levelTime);
+}
+
+void WorldPackets::Misc::InspectResult::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << guid;
+}
+
+void WorldPackets::Misc::WhoIsResult::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << message;
+}
+
+void WorldPackets::Misc::LookingForGroupResponse::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << uint32(unk);
+}

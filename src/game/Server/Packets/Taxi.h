@@ -3,6 +3,7 @@
 
 #include "Packet.h"
 #include "ObjectGuid.h"
+#include "ByteBuffer.h"
 
 namespace WorldPackets { namespace Taxi
 {
@@ -47,6 +48,34 @@ namespace WorldPackets { namespace Taxi
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
 #endif
+
+    class TaxiNodeStatus final : public ServerPacket
+    {
+    public:
+        ObjectGuid guid;
+        uint8 isKnown = 0;
+
+        explicit TaxiNodeStatus() : ServerPacket(SMSG_TAXINODE_STATUS) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class NewTaxiPath final : public ServerPacket
+    {
+    public:
+        explicit NewTaxiPath() : ServerPacket(SMSG_NEW_TAXI_PATH) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class ShowTaxiNodes final : public ServerPacket
+    {
+    public:
+        ObjectGuid unitGuid;
+        uint32 currentNode = 0;
+        ByteBuffer taximaskBuffer;
+
+        explicit ShowTaxiNodes() : ServerPacket(SMSG_SHOWTAXINODES) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
 
 }} // namespace WorldPackets::Taxi
 

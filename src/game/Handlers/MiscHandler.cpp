@@ -44,6 +44,7 @@
 #include "Conditions.h"
 #include "Anticheat.h"
 #include "MasterPlayer.h"
+#include "Packets/Misc.h"
 
 void WorldSession::HandleRepopRequestOpcode(NullClientPacket const& /*packet*/)
 {
@@ -276,9 +277,8 @@ void WorldSession::HandleWhoOpcode(WorldPackets::Misc::Who const& packet)
 
 void WorldSession::HandleLFGOpcode(NullClientPacket const& /*packet*/)
 {
-    WorldPacket data(MSG_LOOKING_FOR_GROUP, 4);
-    data << uint32(0);
-    SendPacket(&data);
+    auto packet = std::make_unique<WorldPackets::Misc::LookingForGroupResponse>();
+    SendPacket(std::move(packet));
 }
 
 void WorldSession::HandleLogoutRequestOpcode(NullClientPacket const& /*packet*/)
@@ -297,10 +297,10 @@ void WorldSession::HandleLogoutRequestOpcode(NullClientPacket const& /*packet*/)
 
     if (reason)
     {
-        WorldPacket data(SMSG_LOGOUT_RESPONSE, 1 + 4);
-        data << uint32(reason);
-        data << uint8(0);
-        SendPacket(&data);
+        auto logoutResp = std::make_unique<WorldPackets::Misc::LogoutResponse>();
+        logoutResp->reason = reason;
+        logoutResp->instantLogout = 0;
+        SendPacket(std::move(logoutResp));
         LogoutRequest(0);
         return;
     }
@@ -310,10 +310,10 @@ void WorldSession::HandleLogoutRequestOpcode(NullClientPacket const& /*packet*/)
         GetPlayer()->IsTaxiFlying() ||
         GetSecurity() >= (AccountTypes)sWorld.getConfig(CONFIG_UINT32_INSTANT_LOGOUT))
     {
-        WorldPacket data(SMSG_LOGOUT_RESPONSE, 1 + 4);
-        data << uint32(0);
-        data << uint8(1);
-        SendPacket(&data);
+        auto logoutResp = std::make_unique<WorldPackets::Misc::LogoutResponse>();
+        logoutResp->reason = 0;
+        logoutResp->instantLogout = 1;
+        SendPacket(std::move(logoutResp));
         LogoutPlayer(true);
         return;
     }
@@ -332,10 +332,10 @@ void WorldSession::HandleLogoutRequestOpcode(NullClientPacket const& /*packet*/)
 
     GetPlayer()->ApplyModByteFlag(PLAYER_FIELD_BYTES, PLAYER_FIELD_BYTES_OFFSET_FLAGS, PLAYER_FIELD_BYTE_LOGGING_OUT, true);
 
-    WorldPacket data(SMSG_LOGOUT_RESPONSE, 1 + 4);
-    data << uint32(0);
-    data << uint8(0);
-    SendPacket(&data);
+    auto logoutResp = std::make_unique<WorldPackets::Misc::LogoutResponse>();
+    logoutResp->reason = 0;
+    logoutResp->instantLogout = 0;
+    SendPacket(std::move(logoutResp));
     LogoutRequest(time(nullptr));
 }
 
@@ -347,8 +347,8 @@ void WorldSession::HandleLogoutCancelOpcode(NullClientPacket const& /*packet*/)
 {
     LogoutRequest(0);
 
-    WorldPacket data(SMSG_LOGOUT_CANCEL_ACK, 0);
-    SendPacket(&data);
+    auto packet = std::make_unique<WorldPackets::Misc::LogoutCancelAck>();
+    SendPacket(std::move(packet));
 
     // not remove flags if can't free move - its not set in Logout request code.
     if (GetPlayer()->CanFreeMove())
@@ -391,9 +391,9 @@ void WorldSession::HandleZoneUpdateOpcode(WorldPackets::Misc::ZoneUpdate const& 
     // Note: There might be a better place to perform this trigger
     if (m_clientOS == CLIENT_OS_MAC && GetPlayer()->m_movementInfo.HasMovementFlag(MOVEFLAG_ONTRANSPORT))
     {
-        WorldPacket data(SMSG_STANDSTATE_UPDATE, 1);
-        data << GetPlayer()->GetStandState();
-        GetPlayer()->GetSession()->SendPacket(&data);
+        auto packet = std::make_unique<WorldPackets::Misc::StandStateUpdate>();
+        packet->standState = GetPlayer()->GetStandState();
+        GetPlayer()->GetSession()->SendPacket(std::move(packet));
     }
 }
 
@@ -940,10 +940,10 @@ void WorldSession::HandleSetActionBarTogglesOpcode(WorldPackets::Misc::SetAction
 
 void WorldSession::HandlePlayedTime(NullClientPacket const& /*packet*/)
 {
-    WorldPacket data(SMSG_PLAYED_TIME, 4 + 4);
-    data << uint32(_player->GetTotalPlayedTime());
-    data << uint32(_player->GetLevelPlayedTime());
-    SendPacket(&data);
+    auto packet = std::make_unique<WorldPackets::Misc::PlayedTime>();
+    packet->totalTime = _player->GetTotalPlayedTime();
+    packet->levelTime = _player->GetLevelPlayedTime();
+    SendPacket(std::move(packet));
 }
 
 void WorldSession::HandleInspectOpcode(WorldPackets::Misc::Inspect const& packet)
@@ -962,9 +962,9 @@ void WorldSession::HandleInspectOpcode(WorldPackets::Misc::Inspect const& packet
     if (_player->IsValidAttackTarget(pTarget))
         return;
 
-    WorldPacket data(SMSG_INSPECT, 8);
-    data << ObjectGuid(guid);
-    SendPacket(&data);
+    auto inspectPacket = std::make_unique<WorldPackets::Misc::InspectResult>();
+    inspectPacket->guid = guid;
+    SendPacket(std::move(inspectPacket));
 }
 
 void WorldSession::HandleInspectHonorStatsOpcode(WorldPackets::Misc::InspectHonorStats const& packet)
@@ -1161,9 +1161,9 @@ void WorldSession::HandleWhoisOpcode(WorldPackets::Query::Whois const& packet)
 
     std::string msg = charName + "'s " + "account is " + acc + ", e-mail: " + email + ", last ip: " + lastIp;
 
-    WorldPacket data(SMSG_WHOIS, msg.size() + 1); // max CString length allowed: 256
-    data << msg;
-    _player->GetSession()->SendPacket(&data);
+    auto whoIsPacket = std::make_unique<WorldPackets::Misc::WhoIsResult>();
+    whoIsPacket->message = msg;
+    _player->GetSession()->SendPacket(std::move(whoIsPacket));
 }
 
 void WorldSession::HandleFarSightOpcode(WorldPackets::Misc::FarSight const& packet)
