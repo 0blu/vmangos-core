@@ -484,11 +484,11 @@ void BattleBotAI::OnPacketReceived(WorldPacket const* packet)
                     botEntry->requestRemoval = true;
                 else
                 {
-                    auto packet = std::make_unique<WorldPackets::Battleground::LeaveBattlefield>();
+                    auto data = std::make_unique<WorldPackets::Battleground::LeaveBattlefield>();
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
-                    packet->mapId = me->GetMapId();
+                    data->mapId = me->GetMapId();
 #endif
-                    me->GetSession()->QueuePacket(std::move(packet));
+                    me->GetSession()->QueuePacket(std::move(data));
                 }
             }
             return;

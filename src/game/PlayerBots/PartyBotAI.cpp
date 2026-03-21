@@ -561,9 +561,9 @@ void PartyBotAI::OnPacketReceived(WorldPacket const* packet)
         }
         case SMSG_DUEL_REQUESTED:
         {
-            auto packet = std::make_unique<WorldPackets::Duel::DuelAccepted>();
-            packet->playerGuid = me->GetObjectGuid();
-            me->GetSession()->QueuePacket(std::move(packet));
+            auto data = std::make_unique<WorldPackets::Duel::DuelAccepted>();
+            data->playerGuid = me->GetObjectGuid();
+            me->GetSession()->QueuePacket(std::move(data));
             return;
         }
     }
