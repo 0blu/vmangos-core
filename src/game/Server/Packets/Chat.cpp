@@ -20,6 +20,8 @@ void WorldPackets::Chat::ChatWrongFaction::AppendBodyTo(ByteBuffer& /*buffer*/) 
 {
 }
 
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
 void WorldPackets::Chat::ChatRestricted::AppendBodyTo(ByteBuffer& /*buffer*/) const
 {
 }
+#endif

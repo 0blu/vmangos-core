@@ -1063,7 +1063,9 @@ void WorldSession::SendItemEnchantTimeUpdate(ObjectGuid playerGuid, ObjectGuid i
     packet->itemGuid = itemGuid;
     packet->slot = slot;
     packet->duration = duration;
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_10_2
     packet->playerGuid = playerGuid;
+#endif
     SendPacket(std::move(packet));
 }
 

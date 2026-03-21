@@ -33,12 +33,14 @@ namespace WorldPackets { namespace Chat
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
 
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
     class ChatRestricted final : public ServerPacket
     {
     public:
         explicit ChatRestricted() : ServerPacket(SMSG_CHAT_RESTRICTED) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
+#endif
 
 }} // namespace WorldPackets::Chat
 
