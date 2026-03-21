@@ -3257,7 +3257,7 @@ void CombatBotBaseAI::OnPacketReceived(WorldPacket const* packet)
                 return;
 
             std::unique_ptr<WorldPacket> data = std::make_unique<WorldPacket>(MSG_MOVE_WORLDPORT_ACK);
-            me->GetSession()->QueuePacket(std::move(data));
+            me->GetSession()->QueueBinaryPacket(std::move(data));
             break;
         }
         case MSG_MOVE_TELEPORT_ACK:
@@ -3271,7 +3271,7 @@ void CombatBotBaseAI::OnPacketReceived(WorldPacket const* packet)
             *data << me->GetLastCounterForMovementChangeType(TELEPORT);
 #endif
             *data << uint32(time(nullptr));
-            me->GetSession()->QueuePacket(std::move(data));
+            me->GetSession()->QueueBinaryPacket(std::move(data));
             break;
         }
         case SMSG_LOGIN_SETTIMESPEED:
@@ -3291,13 +3291,13 @@ void CombatBotBaseAI::OnPacketReceived(WorldPacket const* packet)
             if (status == TRADE_STATUS_BEGIN_TRADE)
             {
                 std::unique_ptr<WorldPacket> data = std::make_unique<WorldPacket>(CMSG_BEGIN_TRADE);
-                me->GetSession()->QueuePacket(std::move(data));
+                me->GetSession()->QueueBinaryPacket(std::move(data));
             }
             else if (status == TRADE_STATUS_TRADE_ACCEPT)
             {
                 std::unique_ptr<WorldPacket> data = std::make_unique<WorldPacket>(CMSG_ACCEPT_TRADE);
                 *data << uint32(1);
-                me->GetSession()->QueuePacket(std::move(data));
+                me->GetSession()->QueueBinaryPacket(std::move(data));
             }
             else if (status == TRADE_STATUS_TRADE_COMPLETE)
             {
@@ -3314,7 +3314,7 @@ void CombatBotBaseAI::OnPacketReceived(WorldPacket const* packet)
             std::unique_ptr<WorldPacket> data = std::make_unique<WorldPacket>(CMSG_RESURRECT_RESPONSE);
             *data << me->GetResurrector();
             *data << uint8(1);
-            me->GetSession()->QueuePacket(std::move(data));
+            me->GetSession()->QueueBinaryPacket(std::move(data));
             break;
         }
         case SMSG_BATTLEFIELD_STATUS:
@@ -3349,7 +3349,7 @@ void CombatBotBaseAI::OnPacketReceived(WorldPacket const* packet)
             *data << uint64(guid);
             *data << uint32(slot);
             *data << uint8(0); // pass
-            me->GetSession()->QueuePacket(std::move(data));
+            me->GetSession()->QueueBinaryPacket(std::move(data));
             return;
         }
     }
