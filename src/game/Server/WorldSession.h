@@ -360,6 +360,9 @@ class WorldSession
         static void VerifyPacketWasCorrectlyRead(WorldPacket const& recvPacket, ClientPacket const& clientPacket);
 
     public:
+        // Sends a packet to the client.
+        void SendPacket(std::unique_ptr<ServerPacket> packet);
+        __declspec(deprecated("Use SendPacket with ServerPacket class"))
         void SendPacket(WorldPacket const* packet);
         void SendMovementPacket(WorldPacket const* packet);
         void SendNotification(char const* format, ...) ATTR_PRINTF(2, 3);
@@ -776,7 +779,6 @@ class WorldSession
         void HandleCompleteCinematic(NullClientPacket const& packet);
         void HandleNextCinematicCamera(NullClientPacket const& packet);
 
-        void HandlePageQuerySkippedOpcode(WorldPacket& recvPacket);
         void HandlePageTextQueryOpcode(WorldPackets::Query::QueryPageText const& packet);
 
         void HandleTutorialFlagOpcode(WorldPackets::Misc::TutorialFlag const& packet);

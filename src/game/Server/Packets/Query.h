@@ -61,6 +61,15 @@ namespace WorldPackets { namespace Query
         explicit ItemNameQuery() : ClientPacket(CMSG_ITEM_NAME_QUERY) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class QueryTimeResponse final : public ServerPacket
+    {
+    public:
+        uint32 time = 0;
+
+        explicit QueryTimeResponse() : ServerPacket(SMSG_QUERY_TIME_RESPONSE) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
 }} // namespace WorldPackets::Query
 
 #endif // MANGOS_PACKETS_QUERY_H
