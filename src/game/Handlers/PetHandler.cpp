@@ -550,7 +550,7 @@ void WorldSession::HandlePetCastSpellOpcode(WorldPackets::Pet::PetCastSpell cons
 }
 #endif
 
-void WorldSession::SendPetNameInvalid(uint32 error, std::string const& name)
+void WorldSession::SendPetNameInvalid(uint32 /*error*/, std::string const& /*name*/)
 {
     SendPacket(std::make_unique<WorldPackets::Pet::PetNameInvalid>());
 }
