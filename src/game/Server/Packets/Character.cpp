@@ -1,4 +1,5 @@
 #include "Character.h"
+#include "SharedDefines.h"
 
 void WorldPackets::Character::CharCreate::ReadFromWorldPacket(WorldPacket& recv_data)
 {
@@ -31,4 +32,45 @@ void WorldPackets::Character::CharRename::ReadFromWorldPacket(WorldPacket& recv_
 {
     recv_data >> guid;
     recv_data >> newname;
+}
+
+void WorldPackets::Character::CharCreateResult::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << uint8(code);
+}
+
+void WorldPackets::Character::CharDeleteResult::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << uint8(code);
+}
+
+void WorldPackets::Character::CharacterLoginFailed::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << uint8(code);
+}
+
+void WorldPackets::Character::LoginVerifyWorld::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << uint32(mapId);
+    buffer << float(x);
+    buffer << float(y);
+    buffer << float(z);
+    buffer << float(o);
+}
+
+void WorldPackets::Character::GuildMotdEvent::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << uint8(eventType);
+    buffer << uint8(count);
+    buffer << motd;
+}
+
+void WorldPackets::Character::CharRenameResult::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << uint8(code);
+    if (code == RESPONSE_SUCCESS)
+    {
+        buffer << guid;
+        buffer << newName;
+    }
 }

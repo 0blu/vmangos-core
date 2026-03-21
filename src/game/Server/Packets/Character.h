@@ -45,6 +45,68 @@ namespace WorldPackets { namespace Character
         explicit CharRename() : ClientPacket(CMSG_CHAR_RENAME) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class CharCreateResult final : public ServerPacket
+    {
+    public:
+        uint8 code = 0;
+
+        explicit CharCreateResult() : ServerPacket(SMSG_CHAR_CREATE) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class CharDeleteResult final : public ServerPacket
+    {
+    public:
+        uint8 code = 0;
+
+        explicit CharDeleteResult() : ServerPacket(SMSG_CHAR_DELETE) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class CharacterLoginFailed final : public ServerPacket
+    {
+    public:
+        uint8 code = 0;
+
+        explicit CharacterLoginFailed() : ServerPacket(SMSG_CHARACTER_LOGIN_FAILED) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class LoginVerifyWorld final : public ServerPacket
+    {
+    public:
+        uint32 mapId = 0;
+        float x = 0.0f;
+        float y = 0.0f;
+        float z = 0.0f;
+        float o = 0.0f;
+
+        explicit LoginVerifyWorld() : ServerPacket(SMSG_LOGIN_VERIFY_WORLD) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class GuildMotdEvent final : public ServerPacket
+    {
+    public:
+        uint8 eventType = 0;
+        uint8 count = 0;
+        std::string motd;
+
+        explicit GuildMotdEvent() : ServerPacket(SMSG_GUILD_EVENT) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class CharRenameResult final : public ServerPacket
+    {
+    public:
+        uint8 code = 0;
+        ObjectGuid guid;
+        std::string newName;
+
+        explicit CharRenameResult() : ServerPacket(SMSG_CHAR_RENAME) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
 }} // namespace WorldPackets::Character
 
 #endif // MANGOS_PACKETS_CHARACTER_H
