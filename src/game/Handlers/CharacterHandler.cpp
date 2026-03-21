@@ -43,6 +43,7 @@
 #include "PlayerBotMgr.h"
 #include "MapManager.h"
 #include "AccountMgr.h"
+#include "Packets/Character.h"
 
 class LoginQueryHolder : public SqlQueryHolder
 {
@@ -184,7 +185,12 @@ void WorldSession::HandleCharEnumOpcode(NullClientPacket const& /*packet*/)
 
 void WorldSession::HandleCharCreateOpcode(WorldPackets::Character::CharCreate const& packet)
 {
-    WorldPacket data(SMSG_CHAR_CREATE, 1);                  // returned with diff.values in all cases
+    auto sendCreateResult = [this](uint8 code)
+    {
+        auto response = std::make_unique<WorldPackets::Character::CharCreateResult>();
+        response->code = code;
+        SendPacket(std::move(response));
+    };
 
     if (GetSecurity() == SEC_PLAYER)
     {
@@ -205,8 +211,7 @@ void WorldSession::HandleCharCreateOpcode(WorldPackets::Character::CharCreate co
 
             if (disabled)
             {
-                data << (uint8)CHAR_CREATE_DISABLED;
-                SendPacket(&data);
+                sendCreateResult(CHAR_CREATE_DISABLED);
                 return;
             }
         }
@@ -217,8 +222,7 @@ void WorldSession::HandleCharCreateOpcode(WorldPackets::Character::CharCreate co
 
     if (!classEntry || !raceEntry)
     {
-        data << (uint8)CHAR_CREATE_FAILED;
-        SendPacket(&data);
+        sendCreateResult(CHAR_CREATE_FAILED);
         std::stringstream oss;
         oss << "Attempt to create character of invalid Class (" << int(packet.class_) << ") or Race (" << int(packet.race) << ")";
         ProcessAnticheatAction("PassiveAnticheat", oss.str().c_str(), CHEAT_ACTION_LOG);
@@ -227,8 +231,7 @@ void WorldSession::HandleCharCreateOpcode(WorldPackets::Character::CharCreate co
 
     if (raceEntry->HasFlag(CHRRACES_FLAGS_NOT_PLAYABLE))
     {
-        data << (uint8)CHAR_CREATE_DISABLED;
-        SendPacket(&data);
+        sendCreateResult(CHAR_CREATE_DISABLED);
         std::stringstream oss;
         oss << "Attempt to create character of non-playable Race (" << int(packet.race) << ")";
         ProcessAnticheatAction("PassiveAnticheat", oss.str().c_str(), CHEAT_ACTION_LOG);
@@ -237,8 +240,7 @@ void WorldSession::HandleCharCreateOpcode(WorldPackets::Character::CharCreate co
 
     if (!Player::ValidateAppearance(packet.race, packet.gender, packet.hairStyle, packet.hairColor, packet.face, packet.facialHair, packet.skin))
     {
-        data << (uint8)CHAR_CREATE_FAILED;
-        SendPacket(&data);
+        sendCreateResult(CHAR_CREATE_FAILED);
         ProcessAnticheatAction("PassiveAnticheat", "Attempt to create character with invalid appearance attributes", CHEAT_ACTION_LOG);
         return;
     }
@@ -248,8 +250,7 @@ void WorldSession::HandleCharCreateOpcode(WorldPackets::Character::CharCreate co
     // prevent character creating with invalid name
     if (!normalizePlayerName(safeName))
     {
-        data << (uint8)CHAR_NAME_NO_NAME;
-        SendPacket(&data);
+        sendCreateResult(CHAR_NAME_NO_NAME);
         ProcessAnticheatAction("PassiveAnticheat", "Attempt to create character with invalid name", CHEAT_ACTION_LOG);
         return;
     }
@@ -258,29 +259,25 @@ void WorldSession::HandleCharCreateOpcode(WorldPackets::Character::CharCreate co
     uint8 res = ObjectMgr::CheckPlayerName(safeName, true);
     if (res != CHAR_NAME_SUCCESS)
     {
-        data << uint8(res);
-        SendPacket(&data);
+        sendCreateResult(res);
         return;
     }
 
     if (GetSecurity() == SEC_PLAYER && sObjectMgr.IsReservedName(safeName))
     {
-        data << (uint8)CHAR_NAME_RESERVED;
-        SendPacket(&data);
+        sendCreateResult(CHAR_NAME_RESERVED);
         return;
     }
 
     if (sObjectMgr.GetPlayerGuidByName(safeName))
     {
-        data << (uint8)CHAR_CREATE_NAME_IN_USE;
-        SendPacket(&data);
+        sendCreateResult(CHAR_CREATE_NAME_IN_USE);
         return;
     }
 
     if (m_charactersCount >= sWorld.getConfig(CONFIG_UINT32_CHARACTERS_PER_REALM))
     {
-        data << (uint8)CHAR_CREATE_SERVER_LIMIT;
-        SendPacket(&data);
+        sendCreateResult(CHAR_CREATE_SERVER_LIMIT);
         return;
     }
 
@@ -304,8 +301,7 @@ void WorldSession::HandleCharCreateOpcode(WorldPackets::Character::CharCreate co
             {
                 if (acc_race == 0 || Player::TeamForRace(acc_race) != team_)
                 {
-                    data << (uint8)CHAR_CREATE_PVP_TEAMS_VIOLATION;
-                    SendPacket(&data);
+                    sendCreateResult(CHAR_CREATE_PVP_TEAMS_VIOLATION);
                     return;
                 }
             }
@@ -319,13 +315,11 @@ void WorldSession::HandleCharCreateOpcode(WorldPackets::Character::CharCreate co
 
         LoginDatabase.PExecute("REPLACE INTO `realmcharacters` (`numchars`, `acctid`, `realmid`) VALUES (%u, %u, %u)", m_charactersCount, GetAccountId(), realmID);
 
-        data << (uint8)CHAR_CREATE_SUCCESS;
-        SendPacket(&data);
+        sendCreateResult(CHAR_CREATE_SUCCESS);
     }
     else
     {
-        data << (uint8)CHAR_CREATE_ERROR;
-        SendPacket(&data);
+        sendCreateResult(CHAR_CREATE_ERROR);
     }
 }
 
@@ -343,9 +337,9 @@ void WorldSession::HandleCharDeleteOpcode(WorldPackets::Character::CharDelete co
     // is guild leader
     if (sGuildMgr.GetGuildByLeader(guid))
     {
-        WorldPacket data(SMSG_CHAR_DELETE, 1);
-        data << (uint8)CHAR_DELETE_FAILED;
-        SendPacket(&data);
+        auto response = std::make_unique<WorldPackets::Character::CharDeleteResult>();
+        response->code = CHAR_DELETE_FAILED;
+        SendPacket(std::move(response));
         return;
     }
 
@@ -370,10 +364,11 @@ void WorldSession::HandleCharDeleteOpcode(WorldPackets::Character::CharDelete co
 
     Player::DeleteFromDB(guid, GetAccountId());
 
-    WorldPacket data(SMSG_CHAR_DELETE, 1);
-    data << (uint8)CHAR_DELETE_SUCCESS;
-    SendPacket(&data);
-}
+    {
+        auto response = std::make_unique<WorldPackets::Character::CharDeleteResult>();
+        response->code = CHAR_DELETE_SUCCESS;
+        SendPacket(std::move(response));
+    }
 
 void WorldSession::HandlePlayerLoginOpcode(WorldPackets::Character::PlayerLogin const& packet)
 {
