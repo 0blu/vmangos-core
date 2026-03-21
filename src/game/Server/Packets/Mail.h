@@ -96,6 +96,46 @@ namespace WorldPackets { namespace Mail
         explicit MailCreateTextItem() : ClientPacket(CMSG_MAIL_CREATE_TEXT_ITEM) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class SendMailResult final : public ServerPacket
+    {
+    public:
+        uint32 mailId = 0;
+        uint32 mailAction = 0;
+        uint32 mailError = 0;
+        uint32 equipError = 0;
+        uint32 itemGuidLow = 0;
+        uint32 itemCount = 0;
+
+        explicit SendMailResult() : ServerPacket(SMSG_SEND_MAIL_RESULT) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class ReceivedMail final : public ServerPacket
+    {
+    public:
+        explicit ReceivedMail() : ServerPacket(SMSG_RECEIVED_MAIL) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class ItemTextQueryResponse final : public ServerPacket
+    {
+    public:
+        uint32 itemTextId = 0;
+        std::string text;
+
+        explicit ItemTextQueryResponse() : ServerPacket(SMSG_ITEM_TEXT_QUERY_RESPONSE) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class QueryNextMailTime final : public ServerPacket
+    {
+    public:
+        float timeValue = 0.0f;
+
+        explicit QueryNextMailTime() : ServerPacket(MSG_QUERY_NEXT_MAIL_TIME) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
 }} // namespace WorldPackets::Mail
 
 #endif // MANGOS_PACKETS_MAIL_H

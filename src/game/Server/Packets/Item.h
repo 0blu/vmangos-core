@@ -209,6 +209,37 @@ namespace WorldPackets { namespace Item
         explicit BuybackItem() : ClientPacket(CMSG_BUYBACK_ITEM) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class BuyBankSlotResult final : public ServerPacket
+    {
+    public:
+        uint32 result = 0;
+
+        explicit BuyBankSlotResult() : ServerPacket(SMSG_BUY_BANK_SLOT_RESULT) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class ItemEnchantTimeUpdate final : public ServerPacket
+    {
+    public:
+        ObjectGuid itemGuid;
+        uint32 slot = 0;
+        uint32 duration = 0;
+        ObjectGuid playerGuid;
+
+        explicit ItemEnchantTimeUpdate() : ServerPacket(SMSG_ITEM_ENCHANT_TIME_UPDATE) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class ItemNameQueryResponse final : public ServerPacket
+    {
+    public:
+        uint32 itemId = 0;
+        std::string name;
+
+        explicit ItemNameQueryResponse() : ServerPacket(SMSG_ITEM_NAME_QUERY_RESPONSE) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
 }} // namespace WorldPackets::Item
 
 #endif // MANGOS_PACKETS_ITEM_H

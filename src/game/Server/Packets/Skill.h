@@ -35,6 +35,13 @@ namespace WorldPackets { namespace Skill
         explicit TalentWipeConfirm() : ClientPacket(MSG_TALENT_WIPE_CONFIRM) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+
+    class TalentWipeConfirmResult final : public ServerPacket
+    {
+    public:
+        explicit TalentWipeConfirmResult() : ServerPacket(MSG_TALENT_WIPE_CONFIRM) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
 }} // namespace WorldPackets::Skill
 
 #endif // MANGOS_PACKETS_SKILL_H

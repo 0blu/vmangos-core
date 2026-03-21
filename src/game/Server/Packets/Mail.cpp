@@ -63,3 +63,28 @@ void WorldPackets::Mail::MailCreateTextItem::ReadFromWorldPacket(WorldPacket& re
     recv_data >> mailTemplateId;
 #endif
 }
+
+void WorldPackets::Mail::SendMailResult::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << mailId << mailAction << mailError;
+    if (mailError == MAIL_ERR_EQUIP_ERROR)
+        buffer << equipError;
+    else if (mailAction == MAIL_ITEM_TAKEN)
+        buffer << itemGuidLow << itemCount;
+}
+
+void WorldPackets::Mail::ReceivedMail::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << uint32(0);
+}
+
+void WorldPackets::Mail::ItemTextQueryResponse::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << itemTextId;
+    buffer << text;
+}
+
+void WorldPackets::Mail::QueryNextMailTime::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << timeValue;
+}

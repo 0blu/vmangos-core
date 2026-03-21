@@ -49,10 +49,7 @@ void WorldSession::HandleTalentWipeConfirmOpcode(WorldPackets::Skill::TalentWipe
 
     if (!(_player->ResetTalents()))
     {
-        WorldPacket data(MSG_TALENT_WIPE_CONFIRM, 8 + 4);   //you have not any talent
-        data << uint64(0);
-        data << uint32(0);
-        SendPacket(&data);
+        SendPacket(std::make_unique<WorldPackets::Skill::TalentWipeConfirmResult>());
         return;
     }
 

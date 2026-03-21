@@ -15,3 +15,9 @@ void WorldPackets::Skill::TalentWipeConfirm::ReadFromWorldPacket(WorldPacket& re
 {
     recv_data >> guid;
 }
+
+void WorldPackets::Skill::TalentWipeConfirmResult::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << uint64(0);
+    buffer << uint32(0);
+}

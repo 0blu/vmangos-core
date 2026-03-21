@@ -918,12 +918,16 @@ bool WorldSession::CheckBanker(ObjectGuid guid)
 
 void WorldSession::HandleBuyBankSlotOpcode(WorldPackets::Item::BuyBankSlot const& packet)
 {
-    WorldPacket data(SMSG_BUY_BANK_SLOT_RESULT, 4);
+    auto sendResult = [this](uint32 result)
+    {
+        auto response = std::make_unique<WorldPackets::Item::BuyBankSlotResult>();
+        response->result = result;
+        SendPacket(std::move(response));
+    };
 
     if (!CheckBanker(packet.guid))
     {
-        data << uint32(ERR_BANKSLOT_NOTBANKER);
-        SendPacket(&data);
+        sendResult(ERR_BANKSLOT_NOTBANKER);
         return;
     }
 
@@ -936,8 +940,7 @@ void WorldSession::HandleBuyBankSlotOpcode(WorldPackets::Item::BuyBankSlot const
 
     if (!slotEntry)
     {
-        data << uint32(ERR_BANKSLOT_FAILED_TOO_MANY);
-        SendPacket(&data);
+        sendResult(ERR_BANKSLOT_FAILED_TOO_MANY);
         return;
     }
 
@@ -945,8 +948,7 @@ void WorldSession::HandleBuyBankSlotOpcode(WorldPackets::Item::BuyBankSlot const
 
     if (_player->GetMoney() < price)
     {
-        data << uint32(ERR_BANKSLOT_INSUFFICIENT_FUNDS);
-        SendPacket(&data);
+        sendResult(ERR_BANKSLOT_INSUFFICIENT_FUNDS);
         return;
     }
 
@@ -1057,14 +1059,12 @@ void WorldSession::HandleSetAmmoOpcode(WorldPackets::Item::SetAmmo const& packet
 
 void WorldSession::SendItemEnchantTimeUpdate(ObjectGuid playerGuid, ObjectGuid itemGuid, uint32 slot, uint32 duration)
 {
-    WorldPacket data(SMSG_ITEM_ENCHANT_TIME_UPDATE, (8 + 4 + 4 + 8));
-    data << ObjectGuid(itemGuid);
-    data << uint32(slot);
-    data << uint32(duration);
-#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_10_2
-    data << ObjectGuid(playerGuid);
-#endif
-    SendPacket(&data);
+    auto packet = std::make_unique<WorldPackets::Item::ItemEnchantTimeUpdate>();
+    packet->itemGuid = itemGuid;
+    packet->slot = slot;
+    packet->duration = duration;
+    packet->playerGuid = playerGuid;
+    SendPacket(std::move(packet));
 }
 
 void WorldSession::HandleItemNameQueryOpcode(WorldPackets::Query::ItemNameQuery const& packet)
@@ -1085,13 +1085,10 @@ void WorldSession::HandleItemNameQueryOpcode(WorldPackets::Query::ItemNameQuery 
             }
         }
 
-        size_t const nameLen = strlen(name) + 1;
-
-        WorldPacket data(SMSG_ITEM_NAME_QUERY_RESPONSE, (4 + nameLen));
-        data << uint32(pProto->ItemId);
-        data.append(name, nameLen);
-        //data << uint32(pProto->InventoryType);    [-ZERO]
-        SendPacket(&data);
+        auto response = std::make_unique<WorldPackets::Item::ItemNameQueryResponse>();
+        response->itemId = pProto->ItemId;
+        response->name = name;
+        SendPacket(std::move(response));
         return;
     }
 }
