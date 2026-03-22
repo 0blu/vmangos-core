@@ -3,6 +3,7 @@
 
 #include "Packet.h"
 #include "ObjectGuid.h"
+#include "SharedDefines.h"
 
 namespace WorldPackets { namespace Character
 {
@@ -77,10 +78,7 @@ namespace WorldPackets { namespace Character
     {
     public:
         uint32 mapId = 0;
-        float x = 0.0f;
-        float y = 0.0f;
-        float z = 0.0f;
-        float o = 0.0f;
+        Position position;
 
         explicit LoginVerifyWorld() : ServerPacket(SMSG_LOGIN_VERIFY_WORLD) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;

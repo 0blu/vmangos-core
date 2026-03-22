@@ -51,11 +51,11 @@ void WorldPackets::Character::CharacterLoginFailed::AppendBodyTo(ByteBuffer& buf
 
 void WorldPackets::Character::LoginVerifyWorld::AppendBodyTo(ByteBuffer& buffer) const
 {
-    buffer << uint32(mapId);
-    buffer << float(x);
-    buffer << float(y);
-    buffer << float(z);
-    buffer << float(o);
+    buffer << mapId;
+    buffer << position.x;
+    buffer << position.y;
+    buffer << position.z;
+    buffer << position.o;
 }
 
 void WorldPackets::Character::GuildMotdEvent::AppendBodyTo(ByteBuffer& buffer) const

@@ -521,17 +521,11 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder *holder)
     if (pCurrChar->GetTransport())
     {
         Position const& transportPosition = pCurrChar->m_movementInfo.GetTransportPos();
-        loginVerify->x = transportPosition.x;
-        loginVerify->y = transportPosition.y;
-        loginVerify->z = transportPosition.z;
-        loginVerify->o = transportPosition.o;
+        loginVerify->position = transportPosition;
     }
     else
     {
-        loginVerify->x = pCurrChar->GetPositionX();
-        loginVerify->y = pCurrChar->GetPositionY();
-        loginVerify->z = pCurrChar->GetPositionZ();
-        loginVerify->o = pCurrChar->GetOrientation();
+        loginVerify->position = pCurrChar->GetPosition();
     }
     SendPacket(std::move(loginVerify));
 
