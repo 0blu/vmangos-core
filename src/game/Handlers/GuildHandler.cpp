@@ -745,9 +745,9 @@ void WorldSession::HandleSaveGuildEmblemOpcode(WorldPackets::Guild::SaveGuildEmb
     guild->Query(this);
 }
 
-void WorldSession::SendSaveGuildEmblem(uint32 msg)
+void WorldSession::SendSaveGuildEmblem(uint32 result)
 {
     auto response = std::make_unique<WorldPackets::Guild::SaveGuildEmblemResult>();
-    response->result = msg;
+    response->result = result;
     SendPacket(std::move(response));
 }

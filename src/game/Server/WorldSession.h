@@ -452,7 +452,7 @@ class WorldSession
         // Guild Team
         void SendGuildCommandResult(uint32 typecmd, std::string const& str, uint32 cmdresult);
         void SendPetitionShowList(ObjectGuid guid);
-        void SendSaveGuildEmblem(uint32 msg);
+        void SendSaveGuildEmblem(uint32 result);
 
         // Battleground
         void SendBattleGroundJoinError(uint8 err);

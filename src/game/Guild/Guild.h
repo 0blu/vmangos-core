@@ -184,7 +184,7 @@ inline char const* GuildEventLogTypeToString(uint8 type)
 }
 
 
-enum GuildEmblem
+enum GuildEmblemStatus
 {
     ERR_GUILDEMBLEM_SUCCESS               = 0,
     ERR_GUILDEMBLEM_INVALID_TABARD_COLORS = 1,

@@ -36,17 +36,17 @@ void WorldPackets::Character::CharRename::ReadFromWorldPacket(WorldPacket& recv_
 
 void WorldPackets::Character::CharCreateResult::AppendBodyTo(ByteBuffer& buffer) const
 {
-    buffer << uint8(code);
+    buffer << code;
 }
 
 void WorldPackets::Character::CharDeleteResult::AppendBodyTo(ByteBuffer& buffer) const
 {
-    buffer << uint8(code);
+    buffer << code;
 }
 
 void WorldPackets::Character::CharacterLoginFailed::AppendBodyTo(ByteBuffer& buffer) const
 {
-    buffer << uint8(code);
+    buffer << code;
 }
 
 void WorldPackets::Character::LoginVerifyWorld::AppendBodyTo(ByteBuffer& buffer) const
@@ -60,8 +60,8 @@ void WorldPackets::Character::LoginVerifyWorld::AppendBodyTo(ByteBuffer& buffer)
 
 void WorldPackets::Character::GuildMotdEvent::AppendBodyTo(ByteBuffer& buffer) const
 {
-    buffer << uint8(eventType);
-    buffer << uint8(count);
+    buffer << eventType;
+    buffer << count;
     buffer << motd;
 }
 
