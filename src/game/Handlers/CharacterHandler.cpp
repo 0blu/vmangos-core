@@ -430,7 +430,11 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder *holder)
         // Hacking attempt
         if (pCurrChar->GetSession()->GetAccountId() != GetAccountId())
         {
-            ProcessAnticheatAction("PassiveAnticheat", "Attempt to login to character on different account", CHEAT_ACTION_LOG);
+            if (pCurrChar->IsBot())
+                sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "User tried to log in with character '%s' but its already controlled by a bot", pCurrChar->GetName());
+            else
+                ProcessAnticheatAction("PassiveAnticheat", "Attempt to login to character on different account", CHEAT_ACTION_LOG);
+
             KickPlayer();
             delete holder;
             m_playerLoading = false;
