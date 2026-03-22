@@ -28,7 +28,6 @@
 #include "Chat.h"
 #include "World.h"
 #include "Opcodes.h"
-#include "Packets/GmTicket.h"
 
 void WorldSession::HandleGMTicketGetTicketOpcode(NullClientPacket const& /*packet*/)
 {

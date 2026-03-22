@@ -43,7 +43,6 @@
 #include "PlayerBotMgr.h"
 #include "MapManager.h"
 #include "AccountMgr.h"
-#include "Packets/Character.h"
 
 class LoginQueryHolder : public SqlQueryHolder
 {
@@ -369,6 +368,7 @@ void WorldSession::HandleCharDeleteOpcode(WorldPackets::Character::CharDelete co
         response->code = CHAR_DELETE_SUCCESS;
         SendPacket(std::move(response));
     }
+}
 
 void WorldSession::HandlePlayerLoginOpcode(WorldPackets::Character::PlayerLogin const& packet)
 {

@@ -40,7 +40,6 @@
 #include "CellImpl.h"
 #include "Anticheat.h"
 #include "AccountMgr.h"
-#include "Packets/Chat.h"
 
 bool WorldSession::SanitizeChatMessage(std::string& msg, uint32 lang, uint32 msgType)
 {

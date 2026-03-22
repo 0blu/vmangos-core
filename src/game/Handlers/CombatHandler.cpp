@@ -28,7 +28,6 @@
 #include "ObjectGuid.h"
 #include "Player.h"
 #include "Map.h"
-#include "Packets/Combat.h"
 
 void WorldSession::HandleAttackSwingOpcode(WorldPackets::Combat::AttackSwing const& packet)
 {
