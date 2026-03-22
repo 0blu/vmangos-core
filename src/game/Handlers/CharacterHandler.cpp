@@ -778,32 +778,33 @@ void WorldSession::HandleShowingCloakOpcode(NullClientPacket const& /*packet*/)
 
 void WorldSession::HandleCharRenameOpcode(WorldPackets::Character::CharRename const& packet)
 {
+    auto sendResult = [this](uint32 result)
+    {
+        auto response = std::make_unique<WorldPackets::Character::CharRenameResult>();
+        response->code = result;
+        SendPacket(std::move(response));
+    };
+
     std::string newname = packet.newname;
 
     // prevent character rename to invalid name
     if (!normalizePlayerName(newname))
     {
-        auto renameResult = std::make_unique<WorldPackets::Character::CharRenameResult>();
-        renameResult->code = CHAR_NAME_NO_NAME;
-        SendPacket(std::move(renameResult));
+        sendResult(CHAR_NAME_NO_NAME);
         return;
     }
 
     uint8 res = ObjectMgr::CheckPlayerName(newname, true);
     if (res != CHAR_NAME_SUCCESS)
     {
-        auto renameResult = std::make_unique<WorldPackets::Character::CharRenameResult>();
-        renameResult->code = res;
-        SendPacket(std::move(renameResult));
+        sendResult(res);
         return;
     }
 
     // check name limitations
     if (GetSecurity() == SEC_PLAYER && sObjectMgr.IsReservedName(newname))
     {
-        auto renameResult = std::make_unique<WorldPackets::Character::CharRenameResult>();
-        renameResult->code = CHAR_NAME_RESERVED;
-        SendPacket(std::move(renameResult));
+        sendResult(CHAR_NAME_RESERVED);
         return;
     }
 

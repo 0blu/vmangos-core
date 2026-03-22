@@ -67,7 +67,7 @@ void WorldPackets::Character::GuildMotdEvent::AppendBodyTo(ByteBuffer& buffer) c
 
 void WorldPackets::Character::CharRenameResult::AppendBodyTo(ByteBuffer& buffer) const
 {
-    buffer << uint8(code);
+    buffer << code;
     if (code == RESPONSE_SUCCESS)
     {
         buffer << guid;
