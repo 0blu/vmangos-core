@@ -92,6 +92,9 @@ void WorldSession::SendAttackStop(Unit const* enemy)
     auto packet = std::make_unique<WorldPackets::Combat::AttackStop>();
     packet->attackerGuid = GetPlayer()->GetObjectGuid();
     if (enemy)
+    {
         packet->victimGuid = enemy->GetObjectGuid();
+        packet->nowDead = enemy->IsDead();
+    }
     SendPacket(std::move(packet));
 }

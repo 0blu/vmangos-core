@@ -28,7 +28,7 @@ namespace WorldPackets { namespace Combat
     public:
         ObjectGuid attackerGuid;
         ObjectGuid victimGuid;
-        uint32 nowDead = 0;
+        bool nowDead = false;
 
         explicit AttackStop() : ServerPacket(SMSG_ATTACKSTOP) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;
