@@ -20,6 +20,8 @@ void WorldPackets::Query::QueryGameObject::ReadFromWorldPacket(WorldPacket& recv
 void WorldPackets::Query::QueryPageText::ReadFromWorldPacket(WorldPacket& recv_data)
 {
     recv_data >> pageID;
+    if (recv_data.rpos() < recv_data.wpos())
+        recv_data >> gameObject; // optional, when queried via game object
 }
 
 void WorldPackets::Query::Whois::ReadFromWorldPacket(WorldPacket& recv_data)
