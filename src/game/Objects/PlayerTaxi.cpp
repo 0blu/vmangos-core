@@ -15,53 +15,40 @@
  */
 
 #include "PlayerTaxi.h"
+
+#include <Errors.h>
+
 #include "ByteBuffer.h"
 #include "ObjectMgr.h"
 #include "Util.h"
 
-PlayerTaxi::PlayerTaxi()
+void PlayerTaxi::InitTaxiNodesForLevel(uint32 raceId, uint32 classId, uint32 level)
 {
-    // Taxi nodes
-    memset(m_taximask, 0, sizeof(m_taximask));
-}
-
-void PlayerTaxi::InitTaxiNodes(uint32 race, uint32 level)
-{
-    memset(m_taximask, 0, sizeof(m_taximask));
     // capital and taxi hub masks
-    ChrRacesEntry const* rEntry = sChrRacesStore.LookupEntry(race);
-    m_taximask[0] = rEntry->startingTaxiMask;
+    ChrRacesEntry const* rEntry = sChrRacesStore.LookupEntry(raceId);
+    // Hmm, we can only set the first 32 entries this way. TrinityCore uses switch/case for each race without DB.
+    std::string firstSerializedMaskPart = std::to_string(rEntry->startingTaxiMask);
+    MANGOS_ASSERT(ResetKnownNodesFromSerializedString(firstSerializedMaskPart + " 0 0 0 0 0 0 0"));
 }
 
-void PlayerTaxi::LoadTaxiMask(char const* data)
+bool PlayerTaxi::ResetKnownNodesFromSerializedString(std::string const& serializedString)
 {
-    if (!data)
-        return;
+    auto maybeMask = TaxiMask::FromSerializedString(serializedString);
+    if (!maybeMask.has_value())
+        return false;
 
-    Tokens tokens = StrSplit(data, " ");
-
-    int index;
-    Tokens::iterator iter;
-    for (iter = tokens.begin(), index = 0;
-            (index < TaxiMaskSize) && (iter != tokens.end()); ++iter, ++index)
-    {
-        // load and set bits only for existing taxi nodes
-        m_taximask[index] = sTaxiNodesMask[index] & uint32(atol((*iter).c_str()));
-    }
+    m_knownNodes = maybeMask.value();
+    return true;
 }
 
-void PlayerTaxi::AppendTaximaskTo(ByteBuffer& data, bool all)
+std::string PlayerTaxi::GetKnownAsSerializedString() const
 {
-    if (all)
-    {
-        for (uint32 i : sTaxiNodesMask)
-            data << uint32(i);              // all existing nodes
-    }
-    else
-    {
-        for (uint32 i : m_taximask)
-            data << uint32(i);                  // known nodes
-    }
+    return m_knownNodes.ToSerializedString();
+}
+
+TaxiMask PlayerTaxi::GetKnownTaxiNodes(bool isTaxiCheater) const
+{
+    return isTaxiCheater ? sTaxiAllValidTaxiNetworkNodes : m_knownNodes;
 }
 
 bool PlayerTaxi::LoadTaxiDestinationsFromString(std::string const& values, Team team)
@@ -134,11 +121,4 @@ uint32 PlayerTaxi::GetCurrentTaxiCost() const
     sObjectMgr.GetTaxiPath(m_TaxiDestinations[0], m_TaxiDestinations[1], path, cost);
 
     return uint32(cost * m_discount + 0.5f);
-}
-
-std::ostringstream& operator<< (std::ostringstream& ss, PlayerTaxi const& taxi)
-{
-    for (uint32 i : taxi.m_taximask)
-        ss << i << " ";
-    return ss;
 }

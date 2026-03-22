@@ -14,6 +14,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <Errors.h>
+
 #include "Common.h"
 #include "Database/DatabaseEnv.h"
 #include "Database/DatabaseImpl.h"
@@ -2284,9 +2286,9 @@ bool ChatHandler::HandleCharacterFillFlysCommand(char* args)
     if (Player* player = GetSelectedPlayer())
     {
         if (player->GetTeam() == ALLIANCE)
-            player->GetTaxi().LoadTaxiMask("3456411898 2148078928 49991 0 0 0 0 0 ");
+            MANGOS_ASSERT(player->GetTaxi().ResetKnownNodesFromSerializedString("3456411898 2148078928 49991 0 0 0 0 0 "));
         else
-            player->GetTaxi().LoadTaxiMask("561714688 282102432 52408 0 0 0 0 0 ");
+            MANGOS_ASSERT(player->GetTaxi().ResetKnownNodesFromSerializedString("561714688 282102432 52408 0 0 0 0 0 "));
         PSendSysMessage("Fly paths unlocked for %s.", player->GetName());
         return true;
     }
@@ -2945,19 +2947,27 @@ bool ChatHandler::HandleLearnAllMyTaxisCommand(char* /*args*/)
     for (auto const& itr : sObjectMgr.GetCreatureInfoMap())
     {
         if (CreatureInfo const* cInfo = itr.second.get())
+        {
             if (cInfo->npc_flags & UNIT_NPC_FLAG_FLIGHTMASTER)
             {
                 FindCreatureData worker(cInfo->entry, player);
                 sObjectMgr.DoCreatureData(worker);
                 if (CreatureDataPair const* dataPair = worker.GetResult())
+                {
                     if (CreatureData const* data = &dataPair->second)
-                        if (uint32 taxiNode = sObjectMgr.GetNearestTaxiNode(data->position.x, data->position.y, data->position.z, data->position.mapId, player->GetTeam()))
-                            if (player->GetTaxi().SetTaximaskNode(taxiNode))
+                    {
+                        if (uint32 taxiNode = sObjectMgr.GetNearestTaxiNode(data->position, player->GetTeam()))
+                        {
+                            if (player->GetTaxi().LearnTaxiNode(taxiNode))
                             {
-                                WorldPacket msg(SMSG_NEW_TAXI_PATH, 0);
-                                GetSession()->SendPacket(&msg);
+                                auto packet = std::make_unique<WorldPackets::Taxi::NewTaxiPath>();
+                                GetSession()->SendPacket(std::move(packet));
                             }
+                        }
+                    }
+                }
             }
+        }
     }
     SendSysMessage(LANG_COMMAND_LEARN_TAXIS);
     return true;

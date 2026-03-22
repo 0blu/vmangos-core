@@ -95,6 +95,7 @@ set (game_SRCS
     Database/CharacterDatabaseCleaner.cpp
     Database/DBCStores.cpp
     Database/SQLStorages.cpp
+    Database/TaxiMask.cpp
     Group/CreatureLinkingMgr.cpp
     Group/Group.cpp
     Group/GroupReference.cpp
@@ -345,6 +346,7 @@ set (game_SRCS
     Database/DBCStores.h
     Database/DBCStructure.h
     Database/SQLStorages.h
+    Database/TaxiMask.h
     Group/CreatureLinkingMgr.h
     Group/Group.h
     Group/GroupReference.h

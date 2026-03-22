@@ -100,7 +100,7 @@ DBCStorage <TalentEntry> sTalentStore(TalentEntryfmt);
 TalentSpellPosMap sTalentSpellPosMap;
 DBCStorage <TalentTabEntry> sTalentTabStore(TalentTabEntryfmt);
 
-TaxiMask sTaxiNodesMask;
+TaxiMask sTaxiAllValidTaxiNetworkNodes;
 // DBC used only for initialization sTaxiPathSetBySource at startup.
 TaxiPathSetBySource sTaxiPathSetBySource;
 DBCStorage <TaxiPathEntry> sTaxiPathStore(TaxiPathEntryfmt);
@@ -373,14 +373,14 @@ void LoadDBCStores(std::string const& dataPath)
                     if (sInfo->Effect[j] == 123 /*SPELL_EFFECT_SEND_TAXI*/)
                         spellPaths.insert(sInfo->EffectMiscValue[j]);
 
-        memset(sTaxiNodesMask, 0, sizeof(sTaxiNodesMask));
-        for (uint32 i = 1; i < sObjectMgr.GetMaxTaxiNodeId(); ++i)
+        sTaxiAllValidTaxiNetworkNodes.Clear();
+        for (uint32 entryId = 1; entryId < sObjectMgr.GetMaxTaxiNodeId(); entryId++)
         {
-            TaxiNodesEntry const* node = sObjectMgr.GetTaxiNodeEntry(i);
+            TaxiNodesEntry const* node = sObjectMgr.GetTaxiNodeEntry(entryId);
             if (!node)
                 continue;
 
-            TaxiPathSetBySource::const_iterator src_i = sTaxiPathSetBySource.find(i);
+            TaxiPathSetBySource::const_iterator src_i = sTaxiPathSetBySource.find(entryId);
             if (src_i != sTaxiPathSetBySource.end() && !src_i->second.empty())
             {
                 bool ok = false;
@@ -398,10 +398,7 @@ void LoadDBCStores(std::string const& dataPath)
                     continue;
             }
 
-            // valid taxi network node
-            uint8  field   = (uint8)((i - 1) / 32);
-            uint32 submask = 1 << ((i - 1) % 32);
-            sTaxiNodesMask[field] |= submask;
+            sTaxiAllValidTaxiNetworkNodes.SetEntry(entryId, true);
         }
     }
 
@@ -622,7 +619,7 @@ uint8 ValidateName(std::wstring const& name)
 
     for (std::wregex const& regex : NamesReservedValidators)
         if (std::regex_search(name, regex))
-            return CHAR_NAME_RESERVED;       
+            return CHAR_NAME_RESERVED;
 
     return CHAR_NAME_SUCCESS;
 }

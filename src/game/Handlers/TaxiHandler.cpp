@@ -45,23 +45,23 @@ void WorldSession::SendTaxiStatus(ObjectGuid guid)
         return;
     }
 
-    uint32 curloc = sObjectMgr.GetNearestTaxiNode(unit->GetPositionX(), unit->GetPositionY(), unit->GetPositionZ(), unit->GetMapId(), GetPlayer()->GetTeam());
+    uint32 nodeEntry = sObjectMgr.GetNearestTaxiNode(unit->GetWorldLocation(), GetPlayer()->GetTeam());
 
     // not found nearest
-    if (curloc == 0)
+    if (nodeEntry == 0)
         return;
 
     auto taxiStatus = std::make_unique<WorldPackets::Taxi::TaxiNodeStatus>();
-    taxiStatus->guid = guid;
-    taxiStatus->isKnown = GetPlayer()->m_taxi.IsTaximaskNodeKnown(curloc) ? 1 : 0;
+    taxiStatus->flightmasterGuid = guid;
+    taxiStatus->isKnown = GetPlayer()->m_taxi.IsKnownTaxiNode(nodeEntry);
     SendPacket(std::move(taxiStatus));
 }
 
 void WorldSession::HandleTaxiQueryAvailableNodes(WorldPackets::Taxi::TaxiQueryAvailableNodes const& packet)
 {
     // cheating checks
-    Creature* unit = GetPlayer()->GetNPCIfCanInteractWith(packet.guid, UNIT_NPC_FLAG_FLIGHTMASTER);
-    if (!unit)
+    Creature const* flightmaster = GetPlayer()->GetNPCIfCanInteractWith(packet.guid, UNIT_NPC_FLAG_FLIGHTMASTER);
+    if (!flightmaster)
     {
         sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "WORLD: HandleTaxiQueryAvailableNodes - %s not found or you can't interact with him.", packet.guid.GetString().c_str());
         return;
@@ -71,26 +71,22 @@ void WorldSession::HandleTaxiQueryAvailableNodes(WorldPackets::Taxi::TaxiQueryAv
     if (GetPlayer()->HasUnitState(UNIT_STATE_FEIGN_DEATH))
         GetPlayer()->RemoveSpellsCausingAura(SPELL_AURA_FEIGN_DEATH);
 
-    // unknown taxi node case
-    if (SendLearnNewTaxiNode(unit))
-        return;
-
-    // known taxi node case
-    SendTaxiMenu(unit);
+    if (SendLearnNewTaxiNode(flightmaster) == LearnTaxiNodeResult::KnownAlready)
+        SendTaxiMenu(flightmaster); // Only send TaxiMenu if known already
 }
 
-void WorldSession::SendTaxiMenu(Creature* unit)
+void WorldSession::SendTaxiMenu(Creature const* flightmaster)
 {
     // find current node
-    uint32 curloc = sObjectMgr.GetNearestTaxiNode(unit->GetPositionX(), unit->GetPositionY(), unit->GetPositionZ(), unit->GetMapId(), GetPlayer()->GetTeam());
+    uint32 taxiNode = sObjectMgr.GetNearestTaxiNode(flightmaster->GetWorldLocation(), GetPlayer()->GetTeam());
 
-    if (curloc == 0)
+    if (taxiNode == 0)
         return;
 
     auto showTaxi = std::make_unique<WorldPackets::Taxi::ShowTaxiNodes>();
-    showTaxi->unitGuid = unit->GetObjectGuid();
-    showTaxi->currentNode = curloc;
-    GetPlayer()->m_taxi.AppendTaximaskTo(showTaxi->taximaskBuffer, GetPlayer()->IsTaxiCheater());
+    showTaxi->flightmasterGuid = flightmaster->GetObjectGuid();
+    showTaxi->currentNode = taxiNode;
+    showTaxi->knownNodes = GetPlayer()->m_taxi.GetKnownTaxiNodes(GetPlayer()->IsTaxiCheater()).GetEntryList();
     SendPacket(std::move(showTaxi));
 }
 
@@ -113,28 +109,27 @@ void WorldSession::SendDoFlight(uint32 mountDisplayId, uint32 path, uint32 pathN
         GetPlayer()->GetMotionMaster()->MoveTaxiFlight(path, pathNode);
 }
 
-bool WorldSession::SendLearnNewTaxiNode(Creature* unit)
+LearnTaxiNodeResult WorldSession::SendLearnNewTaxiNode(Creature const* flightmaster)
 {
     // find current node
-    uint32 curloc = sObjectMgr.GetNearestTaxiNode(unit->GetPositionX(), unit->GetPositionY(), unit->GetPositionZ(), unit->GetMapId(), GetPlayer()->GetTeam());
+    uint32 nearestNodeEntry = sObjectMgr.GetNearestTaxiNode(flightmaster->GetWorldLocation(), GetPlayer()->GetTeam());
 
-    if (curloc == 0)
-        return true;                                        // `true` send to avoid WorldSession::SendTaxiMenu call with one more curlock seartch with same false result.
+    if (nearestNodeEntry == 0)
+        return LearnTaxiNodeResult::InvalidNode;
 
-    if (GetPlayer()->m_taxi.SetTaximaskNode(curloc))
-    {
-        auto newPath = std::make_unique<WorldPackets::Taxi::NewTaxiPath>();
-        SendPacket(std::move(newPath));
+    if (!GetPlayer()->m_taxi.LearnTaxiNode(nearestNodeEntry))
+        return LearnTaxiNodeResult::KnownAlready;
 
-        auto taxiStatus = std::make_unique<WorldPackets::Taxi::TaxiNodeStatus>();
-        taxiStatus->guid = unit->GetObjectGuid();
-        taxiStatus->isKnown = 1;
-        SendPacket(std::move(taxiStatus));
+    auto taxiStatus = std::make_unique<WorldPackets::Taxi::TaxiNodeStatus>();
+    taxiStatus->flightmasterGuid = flightmaster->GetObjectGuid();
+    taxiStatus->isKnown = true;
+    SendPacket(std::move(taxiStatus));
 
-        return true;
-    }
-    else
-        return false;
+    // Just the message "New flight path discovered!"
+    auto newPath = std::make_unique<WorldPackets::Taxi::NewTaxiPath>();
+    SendPacket(std::move(newPath));
+
+    return LearnTaxiNodeResult::LearnedItJustNow;
 }
 
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4

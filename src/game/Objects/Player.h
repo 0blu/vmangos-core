@@ -1903,7 +1903,7 @@ class Player final: public Unit
     public:
         PlayerTaxi& GetTaxi() { return m_taxi; }
         PlayerTaxi const& GetTaxi() const { return m_taxi; }
-        void InitTaxiNodes() { m_taxi.InitTaxiNodes(GetRace(), GetLevel()); }
+        void InitTaxiNodes() { m_taxi.InitTaxiNodesForLevel(GetRace(), GetClass(), GetLevel()); }
         bool ActivateTaxiPathTo(std::vector<uint32> const& nodes, Creature const* npc = nullptr, uint32 spellid = 0, bool nocheck = false);
         bool ActivateTaxiPathTo(uint32 taxi_path_id, uint32 spellid = 0, bool nocheck = false);
         void TaxiStepFinished(bool lastPointReached);

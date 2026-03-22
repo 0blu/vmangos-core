@@ -268,7 +268,7 @@ class SqlStatement
         void addDouble(double var) { arg(var); }
         void addString(char const* var) { arg(var); }
         void addString(std::string const& var) { arg(var.c_str()); }
-        void addString(std::ostringstream& ss) { arg(ss.str().c_str()); ss.str(std::string()); }
+        void addStringAndClear(std::ostringstream& ss) { arg(ss.str().c_str()); ss.str(std::string()); }
 
     protected:
         //don't allow anyone except Database class to create static SqlStatement objects

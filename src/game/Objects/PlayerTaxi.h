@@ -20,40 +20,35 @@
 #include "Common.h"
 #include "DBCStructure.h"
 #include "SharedDefines.h"
+#include "TaxiMask.h"
 
 #include <deque>
-#include <sstream>
-
-class ByteBuffer;
 
 class PlayerTaxi
 {
 public:
-    PlayerTaxi();
-    ~PlayerTaxi() {}
-    // Nodes
-    void InitTaxiNodes(uint32 race, uint32 level);
-    void LoadTaxiMask(char const* data);
+    void InitTaxiNodesForLevel(uint32 raceId, uint32 classId, uint32 level);
 
-    bool IsTaximaskNodeKnown(uint32 nodeidx) const
+    // return false on parse error
+    [[nodiscard]]
+    bool ResetKnownNodesFromSerializedString(std::string const& serializedString);
+    std::string GetKnownAsSerializedString() const;
+
+    bool IsKnownTaxiNode(uint32 nodeEntry) const
     {
-        uint8  field = uint8((nodeidx - 1) / 32);
-        uint32 submask = 1 << ((nodeidx - 1) % 32);
-        return (m_taximask[field] & submask) == submask;
+        return m_knownNodes.HasEntry(nodeEntry);
     }
-    bool SetTaximaskNode(uint32 nodeidx)
+    TaxiMask GetKnownTaxiNodes(bool isTaxiCheater) const;
+
+    // returns true if it was updated
+    bool LearnTaxiNode(uint32 nodeEntry)
     {
-        uint8  field = uint8((nodeidx - 1) / 32);
-        uint32 submask = 1 << ((nodeidx - 1) % 32);
-        if ((m_taximask[field] & submask) != submask)
-        {
-            m_taximask[field] |= submask;
-            return true;
-        }
-        else
+        if (m_knownNodes.HasEntry(nodeEntry))
             return false;
+
+        m_knownNodes.SetEntry(nodeEntry, true);
+        return true;
     }
-    void AppendTaximaskTo(ByteBuffer& data, bool all);
 
     // Destinations
     bool LoadTaxiDestinationsFromString(std::string const& values, Team team);
@@ -75,7 +70,8 @@ public:
     {
         m_TaxiDestinations.pop_front();
         return GetTaxiDestination();
-    };
+    }
+
     TaxiPathNodeList const& GetTaxiPath() const { return m_taxiPath; };
     void AddTaxiPathNode(TaxiPathNodeEntry const& entry)
     {
@@ -84,14 +80,11 @@ public:
     }
     bool empty() const { return m_TaxiDestinations.empty(); }
 
-    friend std::ostringstream& operator<< (std::ostringstream& ss, PlayerTaxi const& taxi);
 private:
-    float m_discount;
-    TaxiMask m_taximask;
+    float m_discount = 0.0f;
+    TaxiMask m_knownNodes;
     std::deque<uint32> m_TaxiDestinations;
     TaxiPathNodeList m_taxiPath;
 };
-
-std::ostringstream& operator<< (std::ostringstream& ss, PlayerTaxi const& taxi);
 
 #endif

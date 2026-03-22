@@ -157,6 +157,13 @@ enum AccountFlags
     ACCOUNT_FLAG_MUTED_FROM_PUBLIC_CHANNELS     = 0x1,
 };
 
+enum class LearnTaxiNodeResult
+{
+    InvalidNode,
+    KnownAlready,
+    LearnedItJustNow,
+};
+
 //class to deal with packet processing
 //allows to determine if next packet is safe to be processed
 class PacketFilter
@@ -445,9 +452,9 @@ class WorldSession
 
         // Taxi
         void SendTaxiStatus(ObjectGuid guid);
-        void SendTaxiMenu(Creature* unit);
+        void SendTaxiMenu(Creature const* flightmaster);
         void SendDoFlight(uint32 mountDisplayId, uint32 path, uint32 pathNode = 0);
-        bool SendLearnNewTaxiNode(Creature* unit);
+        LearnTaxiNodeResult SendLearnNewTaxiNode(Creature const* flightmaster);
 
         // Guild Team
         void SendGuildCommandResult(uint32 typecmd, std::string const& str, uint32 cmdresult);

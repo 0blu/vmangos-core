@@ -4,6 +4,7 @@
 #include "Packet.h"
 #include "ObjectGuid.h"
 #include "ByteBuffer.h"
+#include "TaxiMask.h"
 
 namespace WorldPackets { namespace Taxi
 {
@@ -52,8 +53,8 @@ namespace WorldPackets { namespace Taxi
     class TaxiNodeStatus final : public ServerPacket
     {
     public:
-        ObjectGuid guid;
-        uint8 isKnown = 0;
+        ObjectGuid flightmasterGuid;
+        bool isKnown = false;
 
         explicit TaxiNodeStatus() : ServerPacket(SMSG_TAXINODE_STATUS) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;
@@ -69,9 +70,9 @@ namespace WorldPackets { namespace Taxi
     class ShowTaxiNodes final : public ServerPacket
     {
     public:
-        ObjectGuid unitGuid;
+        ObjectGuid flightmasterGuid;
         uint32 currentNode = 0;
-        ByteBuffer taximaskBuffer;
+        std::vector<uint32> knownNodes;
 
         explicit ShowTaxiNodes() : ServerPacket(SMSG_SHOWTAXINODES) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;

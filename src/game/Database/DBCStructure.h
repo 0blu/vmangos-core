@@ -31,6 +31,7 @@
 #include <unordered_set>
 #include <vector>
 #include <array>
+#include <bitset>
 
 // Structures using to access raw DBC data and required packing to portability
 
@@ -838,6 +839,4 @@ struct TaxiPathNodePtr
 typedef Path<TaxiPathNodePtr,TaxiPathNodeEntry const> TaxiPathNodeList;
 typedef std::vector<TaxiPathNodeList> TaxiPathNodesByPath;
 
-#define TaxiMaskSize 8
-typedef uint32 TaxiMask[TaxiMaskSize];
 #endif

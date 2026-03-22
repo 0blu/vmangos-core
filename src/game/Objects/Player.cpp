@@ -12165,7 +12165,7 @@ void Player::PrepareGossipMenu(WorldObject* pSource, uint32 menuId)
                         hasMenuItem = false;
                     break;
                 case GOSSIP_OPTION_TAXIVENDOR:
-                    if (GetSession()->SendLearnNewTaxiNode(pCreature))
+                    if (GetSession()->SendLearnNewTaxiNode(pCreature) == LearnTaxiNodeResult::LearnedItJustNow)
                         pMenu->GetGossipMenu().SetDiscoveredNode();
                     break;
                 case GOSSIP_OPTION_BATTLEFIELD:
@@ -15021,7 +15021,10 @@ bool Player::LoadFromDB(ObjectGuid guid, SqlQueryHolder* holder)
     m_resetTalentsMultiplier = fields[26].GetUInt32();
     m_resetTalentsTime = time_t(fields[27].GetUInt64());
 
-    m_taxi.LoadTaxiMask(fields[21].GetString());
+    if (!m_taxi.ResetKnownNodesFromSerializedString(fields[21].GetString()))
+    {
+        sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "Player %s has invalid known_taxi_mask!", m_name.c_str());
+    }
 
     uint32 extraflags = fields[33].GetUInt32();
 
@@ -16351,13 +16354,9 @@ bool Player::SaveNewPlayer(WorldSession* session, uint32 guidlow, std::string co
     uberInsert.addFloat(info->orientation);
 
     PlayerTaxi taxi;
-    taxi.InitTaxiNodes(raceId, classId);
-    std::ostringstream ss;
-    ss << taxi; // string with TaxiMaskSize numbers
-    uberInsert.addString(ss);
-
-    ss << taxi.SaveTaxiDestinationsToString(); // string
-    uberInsert.addString(ss);
+    taxi.InitTaxiNodesForLevel(raceId, classId, startingLevel);
+    uberInsert.addString(taxi.GetKnownAsSerializedString());
+    uberInsert.addString(taxi.SaveTaxiDestinationsToString());
 
     uberInsert.addUInt32(0); // online
 
@@ -16386,9 +16385,10 @@ bool Player::SaveNewPlayer(WorldSession* session, uint32 guidlow, std::string co
     for (uint32 i = 0; i < MAX_POWERS; ++i)
         uberInsert.addUInt32(powers[i]);
 
+    std::ostringstream ss;
     for (uint32 i = 0; i < PLAYER_EXPLORED_ZONES_SIZE; ++i)
         ss << "0 ";
-    uberInsert.addString(ss); // explored zones
+    uberInsert.addStringAndClear(ss); // explored zones
 
     uint32 ammoId = 0;
     uint32 startingItems[INVENTORY_SLOT_BAG_START+1] = {};
@@ -16421,7 +16421,7 @@ bool Player::SaveNewPlayer(WorldSession* session, uint32 guidlow, std::string co
         ss << uint32(MAKE_PAIR32(0, 0)) << " ";
     }
 
-    uberInsert.addString(ss);
+    uberInsert.addStringAndClear(ss);
 
     uberInsert.addUInt32(ammoId);
     uberInsert.addUInt32(WORLD_DEFAULT_CHAR);
@@ -16553,12 +16553,8 @@ void Player::SaveToDB(bool online, bool force)
     uberInsert.addFloat(finiteAlways(m_movementInfo.GetTransportPos().z));
     uberInsert.addFloat(Geometry::NormalizeOrientation(finiteAlways(m_movementInfo.GetTransportPos().o)));
 
-    std::ostringstream ss;
-    ss << m_taxi;                                   // string with TaxiMaskSize numbers
-    uberInsert.addString(ss);
-
-    ss << m_taxi.SaveTaxiDestinationsToString();
-    uberInsert.addString(ss);
+    uberInsert.addString(m_taxi.GetKnownAsSerializedString());
+    uberInsert.addString(m_taxi.SaveTaxiDestinationsToString());
 
     if (!IsInWorld())
         online = false;
@@ -16598,9 +16594,10 @@ void Player::SaveToDB(bool online, bool force)
     for (uint32 i = 0; i < MAX_POWERS; ++i)
         uberInsert.addUInt32(GetPower(Powers(i)));
 
+    std::ostringstream ss;
     for (uint32 i = 0; i < PLAYER_EXPLORED_ZONES_SIZE; ++i)         //string
         ss << GetUInt32Value(PLAYER_EXPLORED_ZONES_1 + i) << " ";
-    uberInsert.addString(ss);
+    uberInsert.addStringAndClear(ss);
 
     for (uint32 i = 0; i < EQUIPMENT_SLOT_END; ++i)         //string: item id, ench (perm/temp)
     {
@@ -16616,7 +16613,7 @@ void Player::SaveToDB(bool online, bool force)
         ss << (m_items[i] ? m_items[i]->GetEntry() : 0) << " ";
         ss << uint32(MAKE_PAIR32(0, 0)) << " ";
     }
-    uberInsert.addString(ss);
+    uberInsert.addStringAndClear(ss);
 
     uberInsert.addUInt32(GetUInt32Value(PLAYER_AMMO_ID));
 
@@ -17978,7 +17975,7 @@ bool Player::ActivateTaxiPathTo(std::vector<uint32> const& nodes, Creature const
     // No hack here
     if (!IsTaxiCheater() && !nocheck)
         for (uint32 node : nodes)
-            if (!m_taxi.IsTaximaskNodeKnown(node))
+            if (!m_taxi.IsKnownTaxiNode(node))
             {
                 GetSession()->ProcessAnticheatAction("PassiveAnticheat", "Taxi: Attempt to use unknown node.", CHEAT_ACTION_LOG | CHEAT_ACTION_REPORT_GMS);
                 return false;
@@ -22017,10 +22014,10 @@ void Player::TaxiStepFinished(bool lastPointReached)
         // Add to taximask middle hubs in taxicheat mode (to prevent having player with disabled taxicheat and not having back flight path)
         if (IsTaxiCheater())
         {
-            if (m_taxi.SetTaximaskNode(sourcenode))
+            if (m_taxi.LearnTaxiNode(sourcenode))
             {
-                WorldPacket data(SMSG_NEW_TAXI_PATH, 0);
-                GetSession()->SendPacket(&data);
+                auto packet = std::make_unique<WorldPackets::Taxi::NewTaxiPath>();
+                GetSession()->SendPacket(std::move(packet));
             }
         }
 

@@ -25,8 +25,7 @@
 #include "Common.h"
 #include "Database/DBCStore.h"
 #include "DBCStructure.h"
-
-#include <list>
+#include "TaxiMask.h"
 
 bool IsAcceptableClientBuild(uint32 build);
 std::string AcceptableClientBuildsListStr();
@@ -97,7 +96,7 @@ extern DBCStorage <StableSlotPricesEntry>        sStableSlotPricesStore;
 extern DBCStorage <TalentEntry>                  sTalentStore;
 extern DBCStorage <TalentTabEntry>               sTalentTabStore;
 extern DBCStorage <TaxiPathEntry>                sTaxiPathStore;
-extern TaxiMask                                  sTaxiNodesMask;
+extern TaxiMask                                  sTaxiAllValidTaxiNetworkNodes;
 extern TaxiPathSetBySource                       sTaxiPathSetBySource;
 extern TaxiPathNodesByPath                       sTaxiPathNodesByPath;
 extern DBCStorage <TransportAnimationEntry> sTransportAnimationStore;

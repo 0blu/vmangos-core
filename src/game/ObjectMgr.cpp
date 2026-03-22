@@ -193,7 +193,7 @@ void ObjectMgr::LoadAllIdentifiers()
             m_ItemIdSet.insert(id);
         } while (result->NextRow());
     }
-    
+
     m_QuestIdSet.clear();
     result = WorldDatabase.Query("SELECT DISTINCT `entry` FROM `quest_template`");
 
@@ -584,7 +584,7 @@ void ObjectMgr::InitSavedVariable(uint32 index, uint32 value)
     for (it = m_SavedVariables.begin(); it != m_SavedVariables.end(); ++it)
         if (it->uiIndex == index)
             return;
-    
+
     // If we are there, it means that the variable does not exist.
     SavedVariable& variable = _InsertVariable(index, value, true);
     _SaveVariable(variable);
@@ -1929,7 +1929,7 @@ void ObjectMgr::LoadCreatureSpells()
     std::set<uint32> spellScriptSet;
 
     std::unique_ptr<QueryResult> result (WorldDatabase.Query("SELECT `id` FROM `creature_spells_scripts`"));
-    
+
     if (result)
     {
         do
@@ -2110,7 +2110,7 @@ void ObjectMgr::LoadCreatureClassLevelStats()
                     sLog.Out(LOG_DBERROR, LOG_LVL_ERROR, "Missing creature CLS data for `class` = %u used in creature_template!", unitClass);
 
                 m_CreatureCLSMap[unitClass].resize(std::max(requiredMaxLevel, currentMaxLevel));
-                
+
             } while (result->NextRow());
         }
 
@@ -3777,7 +3777,7 @@ void ObjectMgr::FillObtainedItemsList(std::set<uint32>& obtainedItems)
                 if (i)
                     obtainedItems.insert(i);
             }
-            
+
             for (int32 i = 0; i < MAX_SPELL_EFFECTS; i++)
             {
                 if (pSpellProto->Effect[i] == SPELL_EFFECT_CREATE_ITEM)
@@ -4064,7 +4064,7 @@ void ObjectMgr::LoadItemPrototypes()
             {
                 if (proto->Spells[j].SpellId)
                     CorrectItemEffects(proto->ItemId, const_cast<ItemPrototype*>(proto)->Spells[j]);
-                
+
                 if (proto->Spells[j].SpellTrigger >= MAX_ITEM_SPELLTRIGGER)
                 {
                     sLog.Out(LOG_DBERROR, LOG_LVL_MINIMAL, "Item (Entry: %u) has wrong item spell trigger value in spelltrigger_%d (%u)", i, j + 1, proto->Spells[j].SpellTrigger);
@@ -4567,7 +4567,7 @@ void ObjectMgr::LoadPlayerInfo()
 
             pInfo->displayId_m = rEntry->model_m;
             pInfo->displayId_f = rEntry->model_f;
-            
+
             ++count;
         }
         while (result->NextRow());
@@ -6729,7 +6729,7 @@ public:
             // deletemail = true;
             // delmails << m.messageID << ", ";
             CharacterDatabase.PExecute("DELETE FROM `mail` WHERE `id` = '%u'", m.messageID);
-            
+
         }
         while (result->NextRow());
         sObjectMgr.IncrementOldMailCounter(skippedCount);
@@ -6846,7 +6846,7 @@ void ObjectMgr::LoadAreaTriggers()
                 sLog.Out(LOG_DBERROR, LOG_LVL_ERROR, "AreaTrigger %u has non-existing condition %u assigned.", areaTrigger.id, areaTrigger.condition_id);
                 areaTrigger.condition_id = 0;
             }
-            
+
             if (!areaTrigger.script_id && !areaTrigger.script_name)
             {
                 sLog.Out(LOG_DBERROR, LOG_LVL_ERROR, "AreaTrigger %u has condition %u assigned but no script.", areaTrigger.id, areaTrigger.condition_id);
@@ -7062,7 +7062,7 @@ void ObjectMgr::LoadBattlegroundEntranceTriggers()
     sLog.Out(LOG_BASIC, LOG_LVL_MINIMAL, ">> Loaded %u battleground entrance area trigger definitions", count);
 }
 
-uint32 ObjectMgr::GetNearestTaxiNode(float x, float y, float z, uint32 mapid, Team team)
+uint32 ObjectMgr::GetNearestTaxiNode(WorldLocation const& location, Team team) const
 {
     bool found = false;
     float dist = 0.0f;
@@ -7071,17 +7071,14 @@ uint32 ObjectMgr::GetNearestTaxiNode(float x, float y, float z, uint32 mapid, Te
     for (uint32 i = 1; i < GetMaxTaxiNodeId(); ++i)
     {
         TaxiNodesEntry const* node = GetTaxiNodeEntry(i);
-        if (!node || node->map_id != mapid || !node->MountCreatureID[team == ALLIANCE ? 1 : 0])
+        if (!node || node->map_id != location.mapId || !node->MountCreatureID[team == ALLIANCE ? 1 : 0])
             continue;
-
-        uint8  field   = (uint8)((i - 1) / 32);
-        uint32 submask = 1 << ((i - 1) % 32);
 
         // skip not taxi network nodes
-        if ((sTaxiNodesMask[field] & submask) == 0)
+        if (!sTaxiAllValidTaxiNetworkNodes.HasEntry(i))
             continue;
 
-        float dist2 = (node->x - x) * (node->x - x) + (node->y - y) * (node->y - y) + (node->z - z) * (node->z - z);
+        float dist2 = (node->x - location.x) * (node->x - location.x) + (node->y - location.y) * (node->y - location.y) + (node->z - location.z) * (node->z - location.z);
         if (found)
         {
             if (dist2 < dist)
@@ -7425,10 +7422,10 @@ void ObjectMgr::LoadAreaTriggerTeleports()
     std::unique_ptr<QueryResult> result(WorldDatabase.PQuery(
     //           0     1                 2                      3
         "SELECT `id`, `required_level`, `required_condition`, `message`, "
-    //    4             5                    6                    7                    8 
+    //    4             5                    6                    7                    8
         "`target_map`, `target_position_x`, `target_position_y`, `target_position_z`, `target_orientation` "
         "FROM `areatrigger_teleport` t1 WHERE `patch`=(SELECT max(`patch`) FROM `areatrigger_teleport` t2 WHERE t1.`id`=t2.`id` && `patch` <= %u)", sWorld.GetWowPatch()));
-    
+
     if (!result)
     {
 
@@ -7500,7 +7497,7 @@ void ObjectMgr::LoadAreaTriggerTeleports()
  * Searches for the areatrigger which teleports players out of the given map (only direct to continent)
  */
 AreaTriggerTeleport const* ObjectMgr::GetGoBackTrigger(uint32 map_id) const
-{  
+{
     MapEntry const* mapEntry = sMapStorage.LookupEntry<MapEntry>(map_id);
     if (!mapEntry || !mapEntry->IsDungeon())
         return nullptr;
@@ -9617,7 +9614,7 @@ void ObjectMgr::LoadBroadcastTexts()
             if ((bct.femaleText[LOCALE_enUS].size() > 3) && (bct.femaleText[LOCALE_enUS].at(0) == '%') && (bct.femaleText[LOCALE_enUS].at(1) == 's'))
                 bct.femaleText[LOCALE_enUS] = bct.femaleText[LOCALE_enUS].substr(3, bct.femaleText[LOCALE_enUS].size() - 3);
         }
-#endif  
+#endif
 
         if (bct.soundId)
         {
@@ -9719,7 +9716,7 @@ void ObjectMgr::LoadBroadcastTextLocales()
                     if ((str.size() > 3) && (str.at(0) == '%') && (str.at(1) == 's'))
                         str = str.substr(3, str.size() - 3);
                 }
-#endif  
+#endif
                 int idx = GetOrNewIndexForLocale(LocaleConstant(i));
                 if (idx >= 0)
                 {
@@ -9744,7 +9741,7 @@ void ObjectMgr::LoadBroadcastTextLocales()
                     if ((str.size() > 3) && (str.at(0) == '%') && (str.at(1) == 's'))
                         str = str.substr(3, str.size() - 3);
                 }
-#endif  
+#endif
                 int idx = GetOrNewIndexForLocale(LocaleConstant(i));
                 if (idx >= 0)
                 {
@@ -10512,7 +10509,7 @@ void ObjectMgr::LoadVendors(char const* tableName, bool isTemplates)
 
     uint32 count = 0;
     BarGoLink bar(result->GetRowCount());
-    
+
     do
     {
         bar.step();
@@ -11570,7 +11567,7 @@ void ObjectMgr::RestoreDeletedItems()
         uint32 playerGuidLow = fields[1].GetUInt32();
         uint32 itemId = fields[2].GetUInt32();
         uint32 stackCount = fields[3].GetUInt32();
-        
+
         if (ItemPrototype const* itemProto = GetItemPrototype(itemId))
         {
             ObjectGuid const playerGuid = ObjectGuid(HIGHGUID_PLAYER, playerGuidLow);
@@ -11585,7 +11582,7 @@ void ObjectMgr::RestoreDeletedItems()
 
                 // text
                 std::string textFormat = GetMangosString(LANG_RESTORED_ITEM, DB_LOCALE_enUS);
-                
+
                 MailDraft(subject, textFormat)
                     .AddItem(restoredItem)
                     .SendMailTo(MailReceiver(playerGuid), MailSender(MAIL_NORMAL, playerGuid.GetCounter(), MAIL_STATIONERY_GM), MAIL_CHECK_MASK_COPIED, 0, 30 * DAY);
@@ -12049,7 +12046,7 @@ void ObjectMgr::LoadPlayerPremadeTemplates()
 
             uint32 entry = fields[0].GetUInt32();
             uint32 spell = fields[1].GetUInt32();
-            
+
             auto itr = m_playerPremadeSpecMap.find(entry);
             if (itr == m_playerPremadeSpecMap.end())
             {
@@ -12059,7 +12056,7 @@ void ObjectMgr::LoadPlayerPremadeTemplates()
 
             if (!sSpellMgr.GetSpellEntry(spell))
                 continue;
-            
+
             count++;
             itr->second.spells.push_back(spell);
         } while (result->NextRow());

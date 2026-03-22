@@ -493,15 +493,16 @@ class WorldObject : public Object
 
         void SetOrientation(float orientation);
 
-        void SetRawPosition(Position&& pos) { m_position = std::move(pos); }
         Position const& GetPosition() const { return m_position; }
         float GetPositionX() const { return m_position.x; }
         float GetPositionY() const { return m_position.y; }
         float GetPositionZ() const { return m_position.z; }
+        float GetOrientation() const { return m_position.o; }
         virtual void GetSafePosition(float &x, float &y, float &z, GenericTransport const* onTransport = nullptr) const { GetPosition(x, y, z, onTransport); }
         void GetPosition(float &x, float &y, float &z, GenericTransport const* onTransport = nullptr) const;
+        // TODO rename to "WritePositionTo" or remove
         void GetPosition(WorldLocation &loc) const { loc.mapId = m_mapId; GetPosition(loc.x, loc.y, loc.z); loc.o = GetOrientation(); }
-        float GetOrientation() const { return m_position.o; }
+        WorldLocation GetWorldLocation() const { WorldLocation loc; GetPosition(loc); return loc; };
         void GetNearPoint2D(float &x, float &y, float distance, float absAngle) const
         {
             GetNearPoint2DAroundPosition(GetPositionX(), GetPositionY(), x, y, distance, absAngle);
@@ -697,7 +698,7 @@ class WorldObject : public Object
 
         void SendObjectSpawnAnim() const;
         void SendObjectDeSpawnAnim() const;
-        
+
         bool IsControlledByPlayer() const;
         bool IsLikePlayer() const;
         virtual Player* GetAffectingPlayer() const { return nullptr; }

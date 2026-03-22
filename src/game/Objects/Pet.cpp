@@ -562,7 +562,7 @@ void Pet::SavePetToDB(PetSaveMode mode)
                << uint32(m_charmInfo->GetActionBarEntry(i)->GetAction()) << " ";
         };
         m_pTmpCache->actionBarData = ss.str();
-        savePet.addString(ss);
+        savePet.addStringAndClear(ss);
 
         ss.str("");
         // save spells the pet can teach to it's Master
@@ -574,7 +574,7 @@ void Pet::SavePetToDB(PetSaveMode mode)
                 ss << uint32(0) << " " << uint32(0) << " ";
         }
         m_pTmpCache->teachSpellData = ss.str();
-        savePet.addString(ss);
+        savePet.addStringAndClear(ss);
 
         savePet.addUInt64(uint64(time(nullptr)));
         savePet.addUInt32(uint32(m_resetTalentsCost));
