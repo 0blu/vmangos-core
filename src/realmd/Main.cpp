@@ -39,6 +39,7 @@
 #include <openssl/opensslv.h>
 #include <openssl/crypto.h>
 #include "ArgparserForServer.h"
+#include "Crypto/InitializeCrypto.h"
 #include "Crypto/Encoding/Base32.h"
 #include "ProxyProtocol/ProxyV2Reader.h"
 
@@ -127,7 +128,10 @@ extern int main(int argc, char** argv)
     }
 
     sLog.Out(LOG_BASIC, LOG_LVL_MINIMAL, "Core revision: %s [realm-daemon]", _FULLVERSION);
-    sLog.Out(LOG_BASIC, LOG_LVL_MINIMAL, "<Ctrl-C> to stop.\n");
+    if (!Crypto::InitializeCryptoAndPrintVersion())
+        return 1;
+
+    sLog.Out(LOG_BASIC, LOG_LVL_MINIMAL, "<Ctrl-C> to stop.");
     sLog.Out(LOG_BASIC, LOG_LVL_MINIMAL, "Using configuration file %s.", sConfig.GetFilename().c_str());
 
     // Check the version of the configuration file
