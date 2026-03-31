@@ -456,4 +456,8 @@ inline float InterpolateValueAtIndex(float startIndex, float startValue, float e
 
 std::vector<std::string> SplitStringByDelimiter(std::string const& str, char delimiter);
 
+/// Safely parses a non-negative decimal integer string into a uint64.
+/// Returns nullopt if the string is empty, contains non-digit characters, or overflows.
+nonstd::optional<uint64_t> TryParseUint64(std::string const& str);
+
 #endif

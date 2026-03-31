@@ -31,6 +31,7 @@
 #include "mersennetwister/MersenneTwister.h"
 
 #include <cstdarg>
+#include <limits>
 
 #if PLATFORM == PLATFORM_WINDOWS
 #include <Windows.h>
@@ -660,4 +661,24 @@ std::vector<std::string> SplitStringByDelimiter(std::string const& str, char del
         vec.emplace_back(stringPart);
 
     return vec;
+}
+
+nonstd::optional<uint64_t> TryParseUint64(std::string const& str)
+{
+    if (str.empty())
+        return nonstd::nullopt;
+
+    uint64_t result = 0;
+    for (char c : str)
+    {
+        if (c < '0' || c > '9')
+            return nonstd::nullopt;
+
+        uint64_t digit = static_cast<uint64_t>(c - '0');
+        if (result > (std::numeric_limits<uint64_t>::max() - digit) / 10)
+            return nonstd::nullopt; // overflow
+
+        result = result * 10 + digit;
+    }
+    return result;
 }
