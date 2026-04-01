@@ -135,6 +135,12 @@ set (shared_SRCS
     IO/Networking/IpAddress.cpp
     IO/Networking/DNS.h
     IO/Networking/DNS.cpp
+    IO/Networking/Http/HttpRequest.h
+    IO/Networking/Http/HttpRequest.cpp
+    IO/Networking/Http/HttpResponse.h
+    IO/Networking/Http/HttpResponse.cpp
+    IO/Networking/Http/HttpServer.h
+    IO/Networking/Http/HttpServer.cpp
     IO/Multithreading/CreateThread.h
     IO/Multithreading/CreateThread.cpp
     IO/Timer/impl/windows/AsyncSystemTimer.cpp
