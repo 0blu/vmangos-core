@@ -133,10 +133,10 @@ namespace WorldPackets { namespace Quest
     };
     // --- Server Packets ---
 
-    class QuestlogFull final : public ServerPacket
+    class QuestLogFull final : public ServerPacket
     {
     public:
-        explicit QuestlogFull() : ServerPacket(SMSG_QUESTLOG_FULL) {}
+        explicit QuestLogFull() : ServerPacket(SMSG_QUESTLOG_FULL) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
 

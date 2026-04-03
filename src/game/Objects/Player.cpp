@@ -13458,7 +13458,7 @@ bool Player::SatisfyQuestLog(bool msg) const
 
     if (msg)
     {
-        GetSession()->SendPacket(std::make_unique<WorldPackets::Quest::QuestlogFull>());
+        GetSession()->SendPacket(std::make_unique<WorldPackets::Quest::QuestLogFull>());
     }
     return false;
 }

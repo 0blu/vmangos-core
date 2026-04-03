@@ -260,8 +260,10 @@ void WorldPackets::Misc::StandStateUpdate::AppendBodyTo(ByteBuffer& buffer) cons
     buffer << uint8(standState);
 }
 
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_7_1
 void WorldPackets::Misc::PlayTimeWarning::AppendBodyTo(ByteBuffer& buffer) const
 {
     buffer << uint32(flag);
     buffer << int32(timeLeftInSeconds);
 }
+#endif

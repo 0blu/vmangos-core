@@ -385,6 +385,7 @@ namespace WorldPackets { namespace Misc
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
 
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_7_1
     class PlayTimeWarning final : public ServerPacket
     {
     public:
@@ -394,6 +395,7 @@ namespace WorldPackets { namespace Misc
         explicit PlayTimeWarning() : ServerPacket(SMSG_PLAY_TIME_WARNING) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
+#endif
 
 }} // namespace WorldPackets::Misc
 

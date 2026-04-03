@@ -75,6 +75,6 @@ void WorldPackets::Quest::QuestPushResult::ReadFromWorldPacket(WorldPacket& recv
 
 // --- Server Packets ---
 
-void WorldPackets::Quest::QuestlogFull::AppendBodyTo(ByteBuffer& /*buffer*/) const
+void WorldPackets::Quest::QuestLogFull::AppendBodyTo(ByteBuffer& /*buffer*/) const
 {
 }
