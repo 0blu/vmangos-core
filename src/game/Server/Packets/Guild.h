@@ -177,6 +177,8 @@ namespace WorldPackets { namespace Guild
     class GuildEventMotd final : public ServerPacket
     {
     public:
+        uint8 event = 0;
+        uint8 stringCount = 0;
         std::string motd;
 
         explicit GuildEventMotd() : ServerPacket(SMSG_GUILD_EVENT) {}

@@ -67,6 +67,17 @@ namespace WorldPackets { namespace Combat
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
 
+    class AttackStop final : public ServerPacket
+    {
+    public:
+        ObjectGuid attackerGuid;
+        ObjectGuid enemyGuid;
+        uint32 unk = 0;
+
+        explicit AttackStop() : ServerPacket(SMSG_ATTACKSTOP) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
 }} // namespace WorldPackets::Combat
 
 #endif // MANGOS_PACKETS_COMBAT_H

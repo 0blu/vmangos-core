@@ -320,7 +320,13 @@ void WorldSession::HandlePetitionSignOpcode(WorldPackets::Petition::PetitionSign
 
         // update for owner if online
         if (Player* owner = sObjectMgr.GetPlayer(petition->GetOwnerGuid()))
-            owner->GetSession()->SendPacket(&data);
+        {
+            auto ownerPacket = std::make_unique<WorldPackets::Petition::PetitionSignResults>();
+            ownerPacket->itemGuid = packet.itemGuid;
+            ownerPacket->playerGuid = _player->GetObjectGuid();
+            ownerPacket->result = PETITION_SIGN_OK;
+            owner->GetSession()->SendPacket(std::move(ownerPacket));
+        }
     }
 }
 

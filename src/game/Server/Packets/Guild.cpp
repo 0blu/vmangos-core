@@ -102,7 +102,7 @@ void WorldPackets::Guild::GuildCommandResult::AppendBodyTo(ByteBuffer& buffer) c
 
 void WorldPackets::Guild::GuildEventMotd::AppendBodyTo(ByteBuffer& buffer) const
 {
-    buffer << uint8(GE_MOTD);
-    buffer << uint8(1);
+    buffer << uint8(event);
+    buffer << uint8(stringCount);
     buffer << motd;
 }

@@ -35,3 +35,15 @@ void WorldPackets::Combat::CancelCombat::AppendBodyTo(ByteBuffer& /*buffer*/) co
 void WorldPackets::Combat::AttackSwingBadFacing::AppendBodyTo(ByteBuffer& /*buffer*/) const
 {
 }
+
+void WorldPackets::Combat::AttackStop::AppendBodyTo(ByteBuffer& buffer) const
+{
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
+    buffer << PackedGuid(attackerGuid);
+    buffer << PackedGuid(enemyGuid);
+#else
+    buffer << attackerGuid;
+    buffer << enemyGuid;
+#endif
+    buffer << uint32(unk);
+}
