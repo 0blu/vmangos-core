@@ -44,7 +44,6 @@
 #include "Conditions.h"
 #include "Anticheat.h"
 #include "MasterPlayer.h"
-#include "Packets/Misc.h"
 
 void WorldSession::HandleRepopRequestOpcode(NullClientPacket const& /*packet*/)
 {

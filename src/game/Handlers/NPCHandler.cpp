@@ -36,7 +36,6 @@
 #include "Spell.h"
 #include "Chat.h"
 #include "CharacterDatabaseCache.h"
-#include "Packets/Npc.h"
 
 enum StableResultCode
 {

@@ -82,10 +82,6 @@
 #include "GameEventMgr.h"
 #include "world/scourge_invasion.h"
 #include "world/world_event_wareffort.h"
-#include "Server/Packets/Combat.h"
-#include "Server/Packets/Duel.h"
-#include "Server/Packets/Loot.h"
-#include "Server/Packets/Quest.h"
 
 #include <climits>
 

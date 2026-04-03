@@ -42,7 +42,6 @@
 #include "Chat.h"
 #include "MasterPlayer.h"
 #include "Crypto/Hash/MD5.h"
-#include "Packets/Misc.h"
 
 // select opcodes appropriate for processing in Map::Update context for current session state
 static bool MapSessionFilterHelper(WorldSession* session, OpcodeHandler const& opHandle)
