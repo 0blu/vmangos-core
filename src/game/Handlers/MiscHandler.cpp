@@ -297,10 +297,10 @@ void WorldSession::HandleLogoutRequestOpcode(NullClientPacket const& /*packet*/)
 
     if (reason)
     {
-        WorldPacket data(SMSG_LOGOUT_RESPONSE, 1 + 4);
-        data << uint32(reason);
-        data << uint8(0);
-        SendPacket(&data);
+        auto packet = std::make_unique<WorldPackets::Misc::LogoutResponse>();
+        packet->reason = reason;
+        packet->instant = 0;
+        SendPacket(std::move(packet));
         LogoutRequest(0);
         return;
     }
@@ -310,10 +310,10 @@ void WorldSession::HandleLogoutRequestOpcode(NullClientPacket const& /*packet*/)
         GetPlayer()->IsTaxiFlying() ||
         GetSecurity() >= (AccountTypes)sWorld.getConfig(CONFIG_UINT32_INSTANT_LOGOUT))
     {
-        WorldPacket data(SMSG_LOGOUT_RESPONSE, 1 + 4);
-        data << uint32(0);
-        data << uint8(1);
-        SendPacket(&data);
+        auto packet = std::make_unique<WorldPackets::Misc::LogoutResponse>();
+        packet->reason = 0;
+        packet->instant = 1;
+        SendPacket(std::move(packet));
         LogoutPlayer(true);
         return;
     }
@@ -332,10 +332,10 @@ void WorldSession::HandleLogoutRequestOpcode(NullClientPacket const& /*packet*/)
 
     GetPlayer()->ApplyModByteFlag(PLAYER_FIELD_BYTES, PLAYER_FIELD_BYTES_OFFSET_FLAGS, PLAYER_FIELD_BYTE_LOGGING_OUT, true);
 
-    WorldPacket data(SMSG_LOGOUT_RESPONSE, 1 + 4);
-    data << uint32(0);
-    data << uint8(0);
-    SendPacket(&data);
+    auto logoutPacket = std::make_unique<WorldPackets::Misc::LogoutResponse>();
+    logoutPacket->reason = 0;
+    logoutPacket->instant = 0;
+    SendPacket(std::move(logoutPacket));
     LogoutRequest(time(nullptr));
 }
 
@@ -856,10 +856,10 @@ void WorldSession::HandleRequestAccountData(WorldPackets::Misc::RequestAccountDa
     uint32 size = adata->data.size();
     if (!size)
     {
-        WorldPacket data(SMSG_UPDATE_ACCOUNT_DATA, 4 + 4);
-        data << uint32(packet.type);                         // use the original type sent by client
-        data << uint32(0);                                   // decompressed length
-        SendPacket(&data);
+        auto accountDataPacket = std::make_unique<WorldPackets::Misc::UpdateAccountData>();
+        accountDataPacket->type = packet.type;                         // use the original type sent by client
+        accountDataPacket->decompressedLength = 0;                     // decompressed length
+        SendPacket(std::move(accountDataPacket));
     }
     else
     {
@@ -870,11 +870,11 @@ void WorldSession::HandleRequestAccountData(WorldPackets::Misc::RequestAccountDa
             return;
         }
 
-        WorldPacket data(SMSG_UPDATE_ACCOUNT_DATA, 4 + 4 + compressedData->size() + 1);
-        data << uint32(packet.type);                            // use the original type sent by client
-        data << uint32(size);                                   // decompressed length
-        data.append(*compressedData);                           // compressed data
-        SendPacket(&data);
+        auto accountDataPacket = std::make_unique<WorldPackets::Misc::UpdateAccountData>();
+        accountDataPacket->type = packet.type;                            // use the original type sent by client
+        accountDataPacket->decompressedLength = size;                     // decompressed length
+        accountDataPacket->compressedData = std::move(*compressedData);   // compressed data
+        SendPacket(std::move(accountDataPacket));
     }
 }
 
@@ -930,10 +930,10 @@ void WorldSession::HandleSetActionBarTogglesOpcode(WorldPackets::Misc::SetAction
 
 void WorldSession::HandlePlayedTime(NullClientPacket const& /*packet*/)
 {
-    WorldPacket data(SMSG_PLAYED_TIME, 4 + 4);
-    data << uint32(_player->GetTotalPlayedTime());
-    data << uint32(_player->GetLevelPlayedTime());
-    SendPacket(&data);
+    auto packet = std::make_unique<WorldPackets::Misc::PlayedTime>();
+    packet->totalPlayedTime = _player->GetTotalPlayedTime();
+    packet->levelPlayedTime = _player->GetLevelPlayedTime();
+    SendPacket(std::move(packet));
 }
 
 void WorldSession::HandleInspectOpcode(WorldPackets::Misc::Inspect const& packet)
@@ -950,9 +950,9 @@ void WorldSession::HandleInspectOpcode(WorldPackets::Misc::Inspect const& packet
     if (_player->IsValidAttackTarget(pTarget))
         return;
 
-    WorldPacket data(SMSG_INSPECT, 8);
-    data << ObjectGuid(packet.guid);
-    SendPacket(&data);
+    auto inspectPacket = std::make_unique<WorldPackets::Misc::InspectResponse>();
+    inspectPacket->guid = packet.guid;
+    SendPacket(std::move(inspectPacket));
 }
 
 void WorldSession::HandleInspectHonorStatsOpcode(WorldPackets::Misc::InspectHonorStats const& packet)
@@ -1145,9 +1145,9 @@ void WorldSession::HandleWhoisOpcode(WorldPackets::Query::Whois const& packet)
 
     std::string msg = packet.charName + "'s " + "account is " + acc + ", e-mail: " + email + ", last ip: " + lastIp;
 
-    WorldPacket data(SMSG_WHOIS, msg.size() + 1); // max CString length allowed: 256
-    data << msg;
-    _player->GetSession()->SendPacket(&data);
+    auto whoisPacket = std::make_unique<WorldPackets::Misc::WhoisResponse>();
+    whoisPacket->message = msg;
+    _player->GetSession()->SendPacket(std::move(whoisPacket));
 }
 
 void WorldSession::HandleFarSightOpcode(WorldPackets::Misc::FarSight const& packet)

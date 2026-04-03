@@ -35,6 +35,15 @@ namespace WorldPackets { namespace Chat
     };
 #endif
 
+    class ChatPlayerNotFound final : public ServerPacket
+    {
+    public:
+        std::string name;
+
+        explicit ChatPlayerNotFound() : ServerPacket(SMSG_CHAT_PLAYER_NOT_FOUND) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
 }} // namespace WorldPackets::Chat
 
 #endif // MANGOS_PACKETS_CHAT_H
