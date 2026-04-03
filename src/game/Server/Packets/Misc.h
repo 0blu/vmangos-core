@@ -435,14 +435,14 @@ namespace WorldPackets { namespace Misc
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
 
-    class UpdateAccountData final : public ServerPacket
+    class UpdateAccountDataResponse final : public ServerPacket
     {
     public:
         uint32 type = 0;
         uint32 decompressedLength = 0;
         std::vector<uint8> compressedData;
 
-        explicit UpdateAccountData() : ServerPacket(SMSG_UPDATE_ACCOUNT_DATA) {}
+        explicit UpdateAccountDataResponse() : ServerPacket(SMSG_UPDATE_ACCOUNT_DATA) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
 

@@ -290,7 +290,7 @@ void WorldPackets::Misc::WhoisResponse::AppendBodyTo(ByteBuffer& buffer) const
     buffer << message;
 }
 
-void WorldPackets::Misc::UpdateAccountData::AppendBodyTo(ByteBuffer& buffer) const
+void WorldPackets::Misc::UpdateAccountDataResponse::AppendBodyTo(ByteBuffer& buffer) const
 {
     buffer << uint32(type);
     buffer << uint32(decompressedLength);

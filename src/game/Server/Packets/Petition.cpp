@@ -65,3 +65,15 @@ void WorldPackets::Petition::PetitionBuy::ReadFromWorldPacket(WorldPacket& recv_
     recv_data.read_skip<uint32>();                          // index (unused)
     recv_data.read_skip<uint32>();                          // 0
 }
+
+void WorldPackets::Petition::PetitionSignResults::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << ObjectGuid(itemGuid);
+    buffer << ObjectGuid(playerGuid);
+    buffer << uint32(result);
+}
+
+void WorldPackets::Petition::TurnInPetitionResults::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << uint32(result);
+}

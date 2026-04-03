@@ -51,3 +51,8 @@ void WorldPackets::Battleground::BattlefieldJoin::ReadFromWorldPacket(WorldPacke
 {
     recv_data >> mapId;
 }
+
+void WorldPackets::Battleground::GroupJoinedBattleground::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << uint32(result);
+}

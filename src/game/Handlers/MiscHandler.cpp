@@ -856,7 +856,7 @@ void WorldSession::HandleRequestAccountData(WorldPackets::Misc::RequestAccountDa
     uint32 size = adata->data.size();
     if (!size)
     {
-        auto accountDataPacket = std::make_unique<WorldPackets::Misc::UpdateAccountData>();
+        auto accountDataPacket = std::make_unique<WorldPackets::Misc::UpdateAccountDataResponse>();
         accountDataPacket->type = packet.type;                         // use the original type sent by client
         accountDataPacket->decompressedLength = 0;                     // decompressed length
         SendPacket(std::move(accountDataPacket));
@@ -870,7 +870,7 @@ void WorldSession::HandleRequestAccountData(WorldPackets::Misc::RequestAccountDa
             return;
         }
 
-        auto accountDataPacket = std::make_unique<WorldPackets::Misc::UpdateAccountData>();
+        auto accountDataPacket = std::make_unique<WorldPackets::Misc::UpdateAccountDataResponse>();
         accountDataPacket->type = packet.type;                            // use the original type sent by client
         accountDataPacket->decompressedLength = size;                     // decompressed length
         accountDataPacket->compressedData = std::move(*compressedData);   // compressed data

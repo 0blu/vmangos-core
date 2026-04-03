@@ -91,6 +91,28 @@ namespace WorldPackets { namespace Petition
         explicit PetitionBuy() : ClientPacket(CMSG_PETITION_BUY) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+    // --- Server Packets ---
+
+    class PetitionSignResults final : public ServerPacket
+    {
+    public:
+        ObjectGuid itemGuid;
+        ObjectGuid playerGuid;
+        uint32 result = 0;
+
+        explicit PetitionSignResults() : ServerPacket(SMSG_PETITION_SIGN_RESULTS) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class TurnInPetitionResults final : public ServerPacket
+    {
+    public:
+        uint32 result = 0;
+
+        explicit TurnInPetitionResults() : ServerPacket(SMSG_TURN_IN_PETITION_RESULTS) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
 }} // namespace WorldPackets::Petition
 
 #endif // MANGOS_PACKETS_PETITION_H
