@@ -571,11 +571,9 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder *holder)
 
     if (Guild* guild = sGuildMgr.GetGuildById(pCurrChar->GetGuildId()))
     {
-        WorldPacket data(SMSG_GUILD_EVENT, (2 + guild->GetMOTD().size() + 1));
-        data << uint8(GE_MOTD);
-        data << uint8(1);
-        data << guild->GetMOTD();
-        SendPacket(&data);
+        auto guildMotdPacket = std::make_unique<WorldPackets::Guild::GuildEventMotd>();
+        guildMotdPacket->motd = guild->GetMOTD();
+        SendPacket(std::move(guildMotdPacket));
 
         guild->BroadcastEvent(GE_SIGNED_ON, pCurrChar->GetObjectGuid(), pCurrChar->GetName());
     }
