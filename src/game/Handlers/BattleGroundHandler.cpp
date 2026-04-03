@@ -175,7 +175,7 @@ void WorldSession::RequestBgJoinQueue(ObjectGuid battlemaster, uint32 instanceId
         if (!_player->CanJoinToBattleground())
         {
             auto bgPacket = std::make_unique<WorldPackets::Battleground::GroupJoinedBattleground>();
-            bgPacket->result = 0xFFFFFFFE;
+            bgPacket->result = 0xFFFFFFFE; // -2 = show error
             _player->GetSession()->SendPacket(std::move(bgPacket));
             return;
         }
