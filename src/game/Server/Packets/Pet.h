@@ -131,6 +131,17 @@ namespace WorldPackets { namespace Pet
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
 
+    class PetNameQueryResponse final : public ServerPacket
+    {
+    public:
+        uint32 petNumber = 0;
+        std::string name;
+        uint32 nameTimestamp = 0;
+
+        explicit PetNameQueryResponse() : ServerPacket(SMSG_PET_NAME_QUERY_RESPONSE) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
 }} // namespace WorldPackets::Pet
 
 #endif // MANGOS_PACKETS_PET_H

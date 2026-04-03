@@ -683,10 +683,10 @@ void WorldSession::HandleInitiateTradeOpcode(WorldPackets::Trade::InitiateTrade 
     _player->m_trade->SetScamPreventionDelay(200);
     pOther->m_trade->SetScamPreventionDelay(200);
 
-    WorldPacket data(SMSG_TRADE_STATUS, 12);
-    data << uint32(TRADE_STATUS_BEGIN_TRADE);
-    data << ObjectGuid(_player->GetObjectGuid());
-    pOther->GetSession()->SendPacket(&data);
+    auto tradePacket = std::make_unique<WorldPackets::Trade::TradeStatus>();
+    tradePacket->status = TRADE_STATUS_BEGIN_TRADE;
+    tradePacket->playerGuid = _player->GetObjectGuid();
+    pOther->GetSession()->SendPacket(std::move(tradePacket));
 }
 
 void WorldSession::HandleSetTradeGoldOpcode(WorldPackets::Trade::SetTradeGold const& packet)
