@@ -40,3 +40,23 @@ void WorldPackets::GmTicket::GMSurveySubmit::ReadFromWorldPacket(WorldPacket& re
     recv_data >> comment;
 }
 #endif
+
+void WorldPackets::GmTicket::GmTicketUpdateTextResponse::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << uint32(response);
+}
+
+void WorldPackets::GmTicket::GmTicketDeleteTicketResponse::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << uint32(response);
+}
+
+void WorldPackets::GmTicket::GmTicketCreateResponse::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << uint32(response);
+}
+
+void WorldPackets::GmTicket::GmTicketSystemStatus::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << uint32(status);
+}
