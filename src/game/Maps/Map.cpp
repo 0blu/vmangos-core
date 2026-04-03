@@ -3482,8 +3482,7 @@ void Map::CrashUnload()
 
 
             // Go back to character selection
-            WorldPacket data(SMSG_LOGOUT_COMPLETE, 0);
-            session->SendPacket(&data);
+            session->SendPacket(std::make_unique<WorldPackets::Misc::LogoutComplete>());
             session->LogoutPlayer(false);
         }
     }

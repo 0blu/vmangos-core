@@ -61,9 +61,7 @@ void WorldSession::SendMailResult(uint32 mailId, MailResponseType mailAction, Ma
 void WorldSession::SendNewMail()
 {
     // deliver undelivered mail
-    WorldPacket data(SMSG_RECEIVED_MAIL, 4);
-    data << (uint32)0;
-    SendPacket(&data);
+    SendPacket(std::make_unique<WorldPackets::Mail::ReceivedMail>());
 }
 
 bool WorldSession::CheckMailBox(ObjectGuid guid)

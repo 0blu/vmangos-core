@@ -244,3 +244,26 @@ void WorldPackets::Misc::WardenData::ReadFromWorldPacket(WorldPacket& recv_data)
         recv_data.read(data.data(), data.size());
 }
 #endif
+
+// --- Server Packets ---
+
+void WorldPackets::Misc::LogoutComplete::AppendBodyTo(ByteBuffer& /*buffer*/) const
+{
+}
+
+void WorldPackets::Misc::LogoutCancelAck::AppendBodyTo(ByteBuffer& /*buffer*/) const
+{
+}
+
+void WorldPackets::Misc::StandStateUpdate::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << uint8(standState);
+}
+
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_7_1
+void WorldPackets::Misc::PlayTimeWarning::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << uint32(flag);
+    buffer << int32(timeLeftInSeconds);
+}
+#endif

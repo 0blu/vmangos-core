@@ -148,6 +148,43 @@ namespace WorldPackets { namespace Npc
         explicit GossipSelectOption() : ClientPacket(CMSG_GOSSIP_SELECT_OPTION) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+    // --- Server Packets ---
+
+    class GossipComplete final : public ServerPacket
+    {
+    public:
+        explicit GossipComplete() : ServerPacket(SMSG_GOSSIP_COMPLETE) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class ShowBank final : public ServerPacket
+    {
+    public:
+        ObjectGuid bankerGuid;
+
+        explicit ShowBank() : ServerPacket(SMSG_SHOW_BANK) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class StableResult final : public ServerPacket
+    {
+    public:
+        uint8 result = 0;
+
+        explicit StableResult() : ServerPacket(SMSG_STABLE_RESULT) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class TrainerBuySucceeded final : public ServerPacket
+    {
+    public:
+        ObjectGuid trainerGuid;
+        uint32 spellId = 0;
+
+        explicit TrainerBuySucceeded() : ServerPacket(SMSG_TRAINER_BUY_SUCCEEDED) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
 }} // namespace WorldPackets::Npc
 
 #endif // MANGOS_PACKETS_NPC_H

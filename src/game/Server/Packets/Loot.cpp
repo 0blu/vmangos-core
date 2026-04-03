@@ -28,3 +28,14 @@ void WorldPackets::Loot::LootMasterGive::ReadFromWorldPacket(WorldPacket& recv_d
     recv_data >> slotId;
     recv_data >> playerGuid;
 }
+
+// --- Server Packets ---
+
+void WorldPackets::Loot::LootClearMoney::AppendBodyTo(ByteBuffer& /*buffer*/) const
+{
+}
+
+void WorldPackets::Loot::LootMoneyNotify::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << uint32(amount);
+}

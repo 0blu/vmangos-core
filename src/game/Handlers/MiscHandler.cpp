@@ -347,8 +347,7 @@ void WorldSession::HandleLogoutCancelOpcode(NullClientPacket const& /*packet*/)
 {
     LogoutRequest(0);
 
-    WorldPacket data(SMSG_LOGOUT_CANCEL_ACK, 0);
-    SendPacket(&data);
+    SendPacket(std::make_unique<WorldPackets::Misc::LogoutCancelAck>());
 
     // not remove flags if can't free move - its not set in Logout request code.
     if (GetPlayer()->CanFreeMove())
@@ -391,9 +390,9 @@ void WorldSession::HandleZoneUpdateOpcode(WorldPackets::Misc::ZoneUpdate const& 
     // Note: There might be a better place to perform this trigger
     if (m_clientOS == CLIENT_OS_MAC && GetPlayer()->m_movementInfo.HasMovementFlag(MOVEFLAG_ONTRANSPORT))
     {
-        WorldPacket data(SMSG_STANDSTATE_UPDATE, 1);
-        data << GetPlayer()->GetStandState();
-        GetPlayer()->GetSession()->SendPacket(&data);
+        auto packet = std::make_unique<WorldPackets::Misc::StandStateUpdate>();
+        packet->standState = GetPlayer()->GetStandState();
+        GetPlayer()->GetSession()->SendPacket(std::move(packet));
     }
 }
 

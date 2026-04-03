@@ -362,7 +362,7 @@ class WorldSession
     public:
         // Sends a packet to the client.
         void SendPacket(std::unique_ptr<ServerPacket> packet);
-        __declspec(deprecated("Use SendPacket with ServerPacket class"))
+        [[deprecated("Use SendPacket with ServerPacket class")]]
         void SendPacket(WorldPacket const* packet);
         void SendMovementPacket(WorldPacket const* packet);
         void SendNotification(char const* format, ...) ATTR_PRINTF(2, 3);

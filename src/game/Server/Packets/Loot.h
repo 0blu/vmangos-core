@@ -55,6 +55,24 @@ namespace WorldPackets { namespace Loot
         explicit LootMasterGive() : ClientPacket(CMSG_LOOT_MASTER_GIVE) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+    // --- Server Packets ---
+
+    class LootClearMoney final : public ServerPacket
+    {
+    public:
+        explicit LootClearMoney() : ServerPacket(SMSG_LOOT_CLEAR_MONEY) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class LootMoneyNotify final : public ServerPacket
+    {
+    public:
+        uint32 amount = 0;
+
+        explicit LootMoneyNotify() : ServerPacket(SMSG_LOOT_MONEY_NOTIFY) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
 }} // namespace WorldPackets::Loot
 
 #endif // MANGOS_PACKETS_LOOT_H

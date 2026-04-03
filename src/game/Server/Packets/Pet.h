@@ -122,6 +122,15 @@ namespace WorldPackets { namespace Pet
     };
 #endif
 
+    // --- Server Packets ---
+
+    class PetNameInvalid final : public ServerPacket
+    {
+    public:
+        explicit PetNameInvalid() : ServerPacket(SMSG_PET_NAME_INVALID) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
 }} // namespace WorldPackets::Pet
 
 #endif // MANGOS_PACKETS_PET_H
