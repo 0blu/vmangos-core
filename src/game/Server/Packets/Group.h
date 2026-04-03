@@ -149,7 +149,7 @@ namespace WorldPackets { namespace Group
     {
     public:
         uint32 operation = 0;
-        std::string member;
+        std::string member; // max len 48
         uint32 result = 0;
 
         explicit PartyCommandResult() : ServerPacket(SMSG_PARTY_COMMAND_RESULT) {}

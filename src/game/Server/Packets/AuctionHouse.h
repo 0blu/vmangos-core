@@ -96,7 +96,7 @@ namespace WorldPackets { namespace AuctionHouse
     public:
         uint32 auctionId = 0;
         uint32 itemTemplate = 0;
-        uint32 randomPropertyId = 0;
+        uint32 randomPropertyId = 0; // random property (value > 0) or suffix (value < 0)
 
         explicit AuctionRemovedNotification() : ServerPacket(SMSG_AUCTION_REMOVED_NOTIFICATION) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;

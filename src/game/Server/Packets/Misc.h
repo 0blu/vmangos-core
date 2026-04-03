@@ -429,7 +429,7 @@ namespace WorldPackets { namespace Misc
     class WhoisResponse final : public ServerPacket
     {
     public:
-        std::string message;
+        std::string message; // max CString length allowed: 256
 
         explicit WhoisResponse() : ServerPacket(SMSG_WHOIS) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;
