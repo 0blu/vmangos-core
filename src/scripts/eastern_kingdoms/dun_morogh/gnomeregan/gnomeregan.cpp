@@ -734,7 +734,7 @@ struct npc_kernobeeAI : public FollowerAI
         {
             if (m_nextStepTimer < uiDiff)
             {
-                if (m_creature->FindNearestCreature(NPC_ALARM_A_BOMB_2600, 10.0f)) //détecter la bombe a proximité.
+                if (m_creature->FindNearestCreature(NPC_ALARM_A_BOMB_2600, 10.0f)) // detect proximity bomb
                 {
                     m_creature->SetWalk(true);//speed influences speed of follower
                     SetFollowPaused(false);

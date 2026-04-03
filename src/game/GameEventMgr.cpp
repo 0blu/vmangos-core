@@ -77,7 +77,7 @@ void GameEventMgr::StartEvent(uint16 event_id, bool overwrite /*=false*/, bool r
         return;
     }
     ApplyNewEvent(event_id, resume);
-    
+
     //invoke enable on hardcoded events
     if (mGameEvent[event_id].hardcoded && !mGameEvent[event_id].disabled)
     {
@@ -130,7 +130,7 @@ void GameEventMgr::EnableEvent(uint16 event_id, bool enable)
     // change state
     mGameEvent[event_id].disabled = disabled;
     WorldDatabase.PExecute("UPDATE `game_event` SET `disabled` = '%u' WHERE `entry` = '%u'", disabled, event_id);
-   
+
     // we take no action if event needs to be started: GameEvent system will start it for us on its next iteration
     if (!IsActiveEvent(event_id))
         return;
@@ -1096,7 +1096,6 @@ int16 GameEventMgr::GetGameEventId<Pool>(uint32 guid_or_poolid)
 GameEventMgr::GameEventMgr()
 {
     m_IsGameEventsInit = false;
-    m_IsSilithusEventCompleted = false;
 }
 
 bool GameEventMgr::IsActiveHoliday(HolidayIds id)
@@ -1109,58 +1108,4 @@ bool GameEventMgr::IsActiveHoliday(HolidayIds id)
             return true;
 
     return false;
-}
-
-/*
- * Silithus PvP
- */
-bool GameEventMgr::GetSilithusPVPEventCompleted() const
-{
-    return m_IsSilithusEventCompleted;
-}
-
-void GameEventMgr::SetSilithusPVPEventCompleted(bool state)
-{
-    m_IsSilithusEventCompleted = state;
-}
-
-void GameEventMgr::UpdateSilithusPVP()
-{
-    SilithusPVPEventState event;
-    time_t rawtime;
-    time(&rawtime);
-
-    struct tm *timeinfo;
-    timeinfo = localtime(&rawtime);
-
-    /** Event start every 6hours for 2hours */
-    uint32 occurency = 6;
-    if (timeinfo->tm_hour % occurency == 0 && timeinfo->tm_min == 0)
-    {
-        SetSilithusPVPEventCompleted(false);
-        event = SILITHUS_PVP_EVENT_ON;
-    }
-    else if ((timeinfo->tm_hour % occurency == 0 || timeinfo->tm_hour % occurency == 1) && !GetSilithusPVPEventCompleted())
-        event = SILITHUS_PVP_EVENT_ON;
-    else
-    {
-        SetSilithusPVPEventCompleted(true);
-        event = SILITHUS_PVP_EVENT_OFF;
-    }
-
-    if (event == SILITHUS_PVP_EVENT_ON)
-    {
-        if (!IsActiveEvent(SILITHUS_PVP_EVENT_ON))
-        {
-            sLog.Out(LOG_BG, LOG_LVL_DETAIL, "[SilithusPVPEvent] started %u", SILITHUS_PVP_EVENT_ON);
-            StartEvent(SILITHUS_PVP_EVENT_ON);
-            sWorld.SendGlobalText("Les collecteurs de Silithystes sont repares! Depechez vous de revenir en Silithus et reprenez le travail soldat!", nullptr);
-        }
-    }
-    else if (IsActiveEvent(SILITHUS_PVP_EVENT_ON))
-    {
-        sLog.Out(LOG_BG, LOG_LVL_DETAIL, "[SilithusPVPEvent] stopped %u", SILITHUS_PVP_EVENT_ON);
-        StopEvent(SILITHUS_PVP_EVENT_ON);
-        sWorld.SendGlobalText("Le sable a enraille nos collecteurs de Silithystes, la collecte est interrompue en Silithus", nullptr);
-    }
 }
