@@ -45,6 +45,36 @@ namespace WorldPackets { namespace Character
         explicit CharRename() : ClientPacket(CMSG_CHAR_RENAME) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+    // --- Server Packets ---
+
+    class CharDeleteResponse final : public ServerPacket
+    {
+    public:
+        uint8 result = 0;
+
+        explicit CharDeleteResponse() : ServerPacket(SMSG_CHAR_DELETE) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class CharacterLoginFailed final : public ServerPacket
+    {
+    public:
+        uint8 result = 0;
+
+        explicit CharacterLoginFailed() : ServerPacket(SMSG_CHARACTER_LOGIN_FAILED) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class CharRenameResponse final : public ServerPacket
+    {
+    public:
+        uint8 result = 0;
+        ObjectGuid guid;
+        std::string newName;
+
+        explicit CharRenameResponse() : ServerPacket(SMSG_CHAR_RENAME) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
 }} // namespace WorldPackets::Character
 
 #endif // MANGOS_PACKETS_CHARACTER_H

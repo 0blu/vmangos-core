@@ -32,3 +32,23 @@ void WorldPackets::Character::CharRename::ReadFromWorldPacket(WorldPacket& recv_
     recv_data >> guid;
     recv_data >> newname;
 }
+
+void WorldPackets::Character::CharDeleteResponse::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << uint8(result);
+}
+
+void WorldPackets::Character::CharacterLoginFailed::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << uint8(result);
+}
+
+void WorldPackets::Character::CharRenameResponse::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << uint8(result);
+    if (result == RESPONSE_SUCCESS)
+    {
+        buffer << guid;
+        buffer << newName;
+    }
+}
