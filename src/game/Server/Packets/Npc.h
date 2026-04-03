@@ -160,7 +160,7 @@ namespace WorldPackets { namespace Npc
     class ShowBank final : public ServerPacket
     {
     public:
-        ObjectGuid guid;
+        ObjectGuid bankerGuid;
 
         explicit ShowBank() : ServerPacket(SMSG_SHOW_BANK) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;

@@ -82,9 +82,10 @@ void WorldSession::HandleBankerActivateOpcode(WorldPackets::Npc::BankerActivate 
 
 void WorldSession::SendShowBank(ObjectGuid guid)
 {
-    auto packet = std::make_unique<WorldPackets::Npc::ShowBank>();
-    packet->guid = guid;
     GetPlayer()->m_currentBankerGuid = guid;
+
+    auto packet = std::make_unique<WorldPackets::Npc::ShowBank>();
+    packet->bankerGuid = guid;
     SendPacket(std::move(packet));
 }
 

@@ -93,7 +93,7 @@ void WorldPackets::Npc::GossipComplete::AppendBodyTo(ByteBuffer& /*buffer*/) con
 
 void WorldPackets::Npc::ShowBank::AppendBodyTo(ByteBuffer& buffer) const
 {
-    buffer << ObjectGuid(guid);
+    buffer << ObjectGuid(bankerGuid);
 }
 
 void WorldPackets::Npc::StableResult::AppendBodyTo(ByteBuffer& buffer) const

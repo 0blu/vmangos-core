@@ -542,5 +542,8 @@ void WorldSession::HandlePetCastSpellOpcode(WorldPackets::Pet::PetCastSpell cons
 
 void WorldSession::SendPetNameInvalid(uint32 error, std::string const& name)
 {
+    (void)error; // not read by vanilla client
+    (void)name; // not read by vanilla client
+
     SendPacket(std::make_unique<WorldPackets::Pet::PetNameInvalid>());
 }
