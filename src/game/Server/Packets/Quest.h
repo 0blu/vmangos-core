@@ -131,6 +131,15 @@ namespace WorldPackets { namespace Quest
         explicit QuestPushResult() : ClientPacket(MSG_QUEST_PUSH_RESULT) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+    // --- Server Packets ---
+
+    class QuestlogFull final : public ServerPacket
+    {
+    public:
+        explicit QuestlogFull() : ServerPacket(SMSG_QUESTLOG_FULL) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
 }} // namespace WorldPackets::Quest
 
 #endif // MANGOS_PACKETS_QUEST_H

@@ -360,6 +360,41 @@ namespace WorldPackets { namespace Misc
     };
 #endif
 
+    // --- Server Packets ---
+
+    class LogoutComplete final : public ServerPacket
+    {
+    public:
+        explicit LogoutComplete() : ServerPacket(SMSG_LOGOUT_COMPLETE) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class LogoutCancelAck final : public ServerPacket
+    {
+    public:
+        explicit LogoutCancelAck() : ServerPacket(SMSG_LOGOUT_CANCEL_ACK) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class StandStateUpdate final : public ServerPacket
+    {
+    public:
+        uint8 standState = 0;
+
+        explicit StandStateUpdate() : ServerPacket(SMSG_STANDSTATE_UPDATE) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class PlayTimeWarning final : public ServerPacket
+    {
+    public:
+        uint32 flag = 0;
+        int32 timeLeftInSeconds = 0;
+
+        explicit PlayTimeWarning() : ServerPacket(SMSG_PLAY_TIME_WARNING) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
 }} // namespace WorldPackets::Misc
 
 #endif // MANGOS_PACKETS_MISC_H

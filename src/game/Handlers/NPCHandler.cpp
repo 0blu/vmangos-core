@@ -36,6 +36,7 @@
 #include "Spell.h"
 #include "Chat.h"
 #include "CharacterDatabaseCache.h"
+#include "Packets/Npc.h"
 
 enum StableResultCode
 {
@@ -82,10 +83,10 @@ void WorldSession::HandleBankerActivateOpcode(WorldPackets::Npc::BankerActivate 
 
 void WorldSession::SendShowBank(ObjectGuid guid)
 {
-    WorldPacket data(SMSG_SHOW_BANK, 8);
-    data << ObjectGuid(guid);
+    auto packet = std::make_unique<WorldPackets::Npc::ShowBank>();
+    packet->guid = guid;
     GetPlayer()->m_currentBankerGuid = guid;
-    SendPacket(&data);
+    SendPacket(std::move(packet));
 }
 
 void WorldSession::HandleTrainerListOpcode(WorldPackets::Npc::TrainerList const& packet)
@@ -243,10 +244,10 @@ void WorldSession::SendTrainerList(ObjectGuid guid)
 
 void WorldSession::SendTrainingSuccess(ObjectGuid guid, uint32 spellId)
 {
-    WorldPacket data(SMSG_TRAINER_BUY_SUCCEEDED, 12);
-    data << ObjectGuid(guid);
-    data << uint32(spellId);                                // should be same as in packet from client
-    SendPacket(&data);
+    auto packet = std::make_unique<WorldPackets::Npc::TrainerBuySucceeded>();
+    packet->trainerGuid = guid;
+    packet->spellId = spellId;
+    SendPacket(std::move(packet));
 }
 
 void WorldSession::SendTrainingFailure(ObjectGuid guid, uint32 serviceId, uint32 errorCode)
@@ -575,9 +576,9 @@ void WorldSession::SendStablePet(ObjectGuid guid)
 
 void WorldSession::SendStableResult(uint8 res)
 {
-    WorldPacket data(SMSG_STABLE_RESULT, 1);
-    data << uint8(res);
-    SendPacket(&data);
+    auto packet = std::make_unique<WorldPackets::Npc::StableResult>();
+    packet->result = res;
+    SendPacket(std::move(packet));
 }
 
 bool WorldSession::CheckStableMaster(ObjectGuid guid)

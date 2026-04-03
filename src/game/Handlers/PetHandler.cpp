@@ -31,6 +31,7 @@
 #include "Util.h"
 #include "Pet.h"
 #include "Group.h"
+#include "Packets/Pet.h"
 
 void WorldSession::HandlePetAction(WorldPackets::Pet::PetAction const& packet)
 {
@@ -542,6 +543,5 @@ void WorldSession::HandlePetCastSpellOpcode(WorldPackets::Pet::PetCastSpell cons
 
 void WorldSession::SendPetNameInvalid(uint32 error, std::string const& name)
 {
-    WorldPacket data(SMSG_PET_NAME_INVALID, 0);
-    SendPacket(&data);
+    SendPacket(std::make_unique<WorldPackets::Pet::PetNameInvalid>());
 }

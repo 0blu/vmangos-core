@@ -26,6 +26,7 @@
 #include "WorldPacket.h"
 #include "WorldSession.h"
 #include "Formulas.h"
+#include "Server/Packets/Npc.h"
 
 GossipMenu::GossipMenu(WorldSession* session) : m_session(session)
 {
@@ -230,8 +231,7 @@ void PlayerMenu::SendGossipMenu(uint32 textId, ObjectGuid objectGuid)
 
 void PlayerMenu::CloseGossip()
 {
-    WorldPacket data(SMSG_GOSSIP_COMPLETE, 0);
-    GetMenuSession()->SendPacket(&data);
+    GetMenuSession()->SendPacket(std::make_unique<WorldPackets::Npc::GossipComplete>());
 
     //sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "WORLD: Sent SMSG_GOSSIP_COMPLETE");
 }

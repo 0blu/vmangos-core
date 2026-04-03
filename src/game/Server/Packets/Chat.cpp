@@ -10,3 +10,13 @@ void WorldPackets::Chat::ChatMessage::ReadFromWorldPacket(WorldPacket& recv_data
 
     recv_data >> message;
 }
+
+// --- Server Packets ---
+
+void WorldPackets::Chat::ChatWrongFaction::AppendBodyTo(ByteBuffer& /*buffer*/) const
+{
+}
+
+void WorldPackets::Chat::ChatRestricted::AppendBodyTo(ByteBuffer& /*buffer*/) const
+{
+}

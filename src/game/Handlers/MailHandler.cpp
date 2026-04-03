@@ -41,6 +41,7 @@
 #include "AccountMgr.h"
 #include "TransactionLog.h"
 #include "Database/DatabaseImpl.h"
+#include "Packets/Mail.h"
 
 void WorldSession::SendMailResult(uint32 mailId, MailResponseType mailAction, MailResponseResult mailError, uint32 equipError, uint32 item_guid, uint32 item_count)
 {
@@ -61,9 +62,7 @@ void WorldSession::SendMailResult(uint32 mailId, MailResponseType mailAction, Ma
 void WorldSession::SendNewMail()
 {
     // deliver undelivered mail
-    WorldPacket data(SMSG_RECEIVED_MAIL, 4);
-    data << (uint32)0;
-    SendPacket(&data);
+    SendPacket(std::make_unique<WorldPackets::Mail::ReceivedMail>());
 }
 
 bool WorldSession::CheckMailBox(ObjectGuid guid)

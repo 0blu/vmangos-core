@@ -40,6 +40,7 @@
 #include "CellImpl.h"
 #include "Anticheat.h"
 #include "AccountMgr.h"
+#include "Packets/Chat.h"
 
 bool WorldSession::SanitizeChatMessage(std::string& msg, uint32 lang, uint32 msgType)
 {
@@ -774,14 +775,12 @@ void WorldSession::SendPlayerNotFoundNotice(std::string const& name)
 
 void WorldSession::SendWrongFactionNotice()
 {
-    WorldPacket data(SMSG_CHAT_WRONG_FACTION, 0);
-    SendPacket(&data);
+    SendPacket(std::make_unique<WorldPackets::Chat::ChatWrongFaction>());
 }
 
 void WorldSession::SendChatRestrictedNotice()
 {
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
-    WorldPacket data(SMSG_CHAT_RESTRICTED, 0);
-    SendPacket(&data);
+    SendPacket(std::make_unique<WorldPackets::Chat::ChatRestricted>());
 #endif
 }

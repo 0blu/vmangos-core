@@ -84,3 +84,25 @@ void WorldPackets::Npc::GossipSelectOption::ReadFromWorldPacket(WorldPacket& rec
         recv_data >> code;
     }
 }
+
+// --- Server Packets ---
+
+void WorldPackets::Npc::GossipComplete::AppendBodyTo(ByteBuffer& /*buffer*/) const
+{
+}
+
+void WorldPackets::Npc::ShowBank::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << ObjectGuid(guid);
+}
+
+void WorldPackets::Npc::StableResult::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << uint8(result);
+}
+
+void WorldPackets::Npc::TrainerBuySucceeded::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << ObjectGuid(trainerGuid);
+    buffer << uint32(spellId);
+}

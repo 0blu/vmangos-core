@@ -82,6 +82,10 @@
 #include "GameEventMgr.h"
 #include "world/scourge_invasion.h"
 #include "world/world_event_wareffort.h"
+#include "Server/Packets/Combat.h"
+#include "Server/Packets/Duel.h"
+#include "Server/Packets/Loot.h"
+#include "Server/Packets/Quest.h"
 
 #include <climits>
 
@@ -6853,8 +6857,7 @@ void Player::CheckDuelDistance(time_t currTime)
         {
             m_duel->outOfBound = currTime;
 
-            WorldPacket data(SMSG_DUEL_OUTOFBOUNDS, 0);
-            GetSession()->SendPacket(&data);
+            GetSession()->SendPacket(std::make_unique<WorldPackets::Duel::DuelOutOfBounds>());
         }
     }
     else
@@ -6864,8 +6867,7 @@ void Player::CheckDuelDistance(time_t currTime)
         {
             m_duel->outOfBound = 0;
 
-            WorldPacket data(SMSG_DUEL_INBOUNDS, 0);
-            GetSession()->SendPacket(&data);
+            GetSession()->SendPacket(std::make_unique<WorldPackets::Duel::DuelInBounds>());
         }
         else if (currTime >= (m_duel->outOfBound + 10))
         {
@@ -8156,15 +8158,14 @@ void Player::SendLoot(ObjectGuid guid, LootType lootType, Player const* pVictim)
 
 void Player::SendNotifyLootMoneyRemoved() const
 {
-    WorldPacket data(SMSG_LOOT_CLEAR_MONEY, 0);
-    GetSession()->SendPacket(&data);
+    GetSession()->SendPacket(std::make_unique<WorldPackets::Loot::LootClearMoney>());
 }
 
 void Player::SendLootMoneyNotify(uint32 amount) const
 {
-    WorldPacket data(SMSG_LOOT_MONEY_NOTIFY, 4);
-    data << uint32(amount);
-    GetSession()->SendPacket(&data);
+    auto packet = std::make_unique<WorldPackets::Loot::LootMoneyNotify>();
+    packet->amount = amount;
+    GetSession()->SendPacket(std::move(packet));
 }
 
 void Player::SendNotifyLootItemRemoved(uint8 lootSlot) const
@@ -13461,8 +13462,7 @@ bool Player::SatisfyQuestLog(bool msg) const
 
     if (msg)
     {
-        WorldPacket data(SMSG_QUESTLOG_FULL, 0);
-        GetSession()->SendPacket(&data);
+        GetSession()->SendPacket(std::make_unique<WorldPackets::Quest::QuestlogFull>());
     }
     return false;
 }
@@ -17139,38 +17139,32 @@ void Player::SavePositionInDB(ObjectGuid guid, uint32 mapId, float x, float y, f
 
 void Player::SendAttackSwingNotInRange() const
 {
-    WorldPacket data(SMSG_ATTACKSWING_NOTINRANGE, 0);
-    GetSession()->SendPacket(&data);
+    GetSession()->SendPacket(std::make_unique<WorldPackets::Combat::AttackSwingNotInRange>());
 }
 
 void Player::SendAttackSwingNotStanding() const
 {
-    WorldPacket data(SMSG_ATTACKSWING_NOTSTANDING, 0);
-    GetSession()->SendPacket(&data);
+    GetSession()->SendPacket(std::make_unique<WorldPackets::Combat::AttackSwingNotStanding>());
 }
 
 void Player::SendAttackSwingDeadTarget() const
 {
-    WorldPacket data(SMSG_ATTACKSWING_DEADTARGET, 0);
-    GetSession()->SendPacket(&data);
+    GetSession()->SendPacket(std::make_unique<WorldPackets::Combat::AttackSwingDeadTarget>());
 }
 
 void Player::SendAttackSwingCantAttack() const
 {
-    WorldPacket data(SMSG_ATTACKSWING_CANT_ATTACK, 0);
-    GetSession()->SendPacket(&data);
+    GetSession()->SendPacket(std::make_unique<WorldPackets::Combat::AttackSwingCantAttack>());
 }
 
 void Player::SendAttackSwingCancelAttack() const
 {
-    WorldPacket data(SMSG_CANCEL_COMBAT, 0);
-    GetSession()->SendPacket(&data);
+    GetSession()->SendPacket(std::make_unique<WorldPackets::Combat::CancelCombat>());
 }
 
 void Player::SendAttackSwingBadFacingAttack() const
 {
-    WorldPacket data(SMSG_ATTACKSWING_BADFACING, 0);
-    GetSession()->SendPacket(&data);
+    GetSession()->SendPacket(std::make_unique<WorldPackets::Combat::AttackSwingBadFacing>());
 }
 
 void Player::SendAutoRepeatCancel() const
