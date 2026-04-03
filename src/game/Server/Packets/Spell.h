@@ -67,14 +67,17 @@ namespace WorldPackets { namespace Spell
     };
     // --- Server Packets ---
 
-    class CastResult final : public ServerPacket
+    // Simplified SMSG_CAST_RESULT for a basic spell failure (status=2) with no extra data.
+    // For complex failures with additional payload (e.g. cooldown time, required area),
+    // use the full Spell::SendCastResult() path in Spell.cpp instead.
+    class CastResultSimpleFailure final : public ServerPacket
     {
     public:
-        uint32 spellId = 0;
-        uint8 status = 0;
-        uint8 reason = 0;
+        uint32 spellId;
+        uint8 reason;
 
-        explicit CastResult() : ServerPacket(SMSG_CAST_RESULT) {}
+        explicit CastResultSimpleFailure(uint32 spellId, uint8 reason)
+            : ServerPacket(SMSG_CAST_RESULT), spellId(spellId), reason(reason) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
 }} // namespace WorldPackets::Spell
