@@ -422,10 +422,10 @@ void WorldSession::CheckPlayedTimeLimit(time_t now)
 void WorldSession::SendPlayTimeWarning(PlayTimeFlag flag, int32 timeLeftInSeconds)
 {
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_7_1
-    WorldPacket data(SMSG_PLAY_TIME_WARNING, sizeof(uint32) + sizeof(int32));
-    data << uint32(flag);
-    data << int32(timeLeftInSeconds);
-    SendPacket(&data);
+    auto packet = std::make_unique<WorldPackets::Misc::PlayTimeWarning>();
+    packet->flag = static_cast<uint32>(flag);
+    packet->timeLeftInSeconds = timeLeftInSeconds;
+    SendPacket(std::move(packet));
 #endif
 }
 
@@ -840,8 +840,7 @@ void WorldSession::LogoutPlayer(bool Save)
         SetPlayer(nullptr);                                    // deleted in Remove/DeleteFromWorld call
 
         // Send the 'logout complete' packet to the client
-        WorldPacket data(SMSG_LOGOUT_COMPLETE, 0);
-        SendPacket(&data);
+        SendPacket(std::make_unique<WorldPackets::Misc::LogoutComplete>());
 
         sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "SESSION: Sent SMSG_LOGOUT_COMPLETE Message");
     }

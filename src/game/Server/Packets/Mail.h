@@ -96,6 +96,17 @@ namespace WorldPackets { namespace Mail
         explicit MailCreateTextItem() : ClientPacket(CMSG_MAIL_CREATE_TEXT_ITEM) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+    // --- Server Packets ---
+
+    class ReceivedMail final : public ServerPacket
+    {
+    public:
+        uint32 notifyDelay = 0;
+
+        explicit ReceivedMail() : ServerPacket(SMSG_RECEIVED_MAIL) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
 }} // namespace WorldPackets::Mail
 
 #endif // MANGOS_PACKETS_MAIL_H
