@@ -47,6 +47,15 @@ namespace WorldPackets { namespace Character
     };
     // --- Server Packets ---
 
+    class CharCreateResponse final : public ServerPacket
+    {
+    public:
+        uint8 result = 0;
+
+        explicit CharCreateResponse() : ServerPacket(SMSG_CHAR_CREATE) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
     class CharDeleteResponse final : public ServerPacket
     {
     public:

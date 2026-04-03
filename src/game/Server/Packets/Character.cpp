@@ -33,6 +33,11 @@ void WorldPackets::Character::CharRename::ReadFromWorldPacket(WorldPacket& recv_
     recv_data >> newname;
 }
 
+void WorldPackets::Character::CharCreateResponse::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << uint8(result);
+}
+
 void WorldPackets::Character::CharDeleteResponse::AppendBodyTo(ByteBuffer& buffer) const
 {
     buffer << uint8(result);
