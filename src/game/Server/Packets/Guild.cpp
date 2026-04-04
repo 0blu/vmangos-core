@@ -81,3 +81,33 @@ void WorldPackets::Guild::GuildRank::ReadFromWorldPacket(WorldPacket& recv_data)
     recv_data >> rights;
     recv_data >> rankName;
 }
+
+void WorldPackets::Guild::GuildInviteNotification::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << inviterName;
+    buffer << guildName;
+}
+
+void WorldPackets::Guild::GuildDeclineNotification::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << playerName;
+}
+
+void WorldPackets::Guild::GuildCommandResult::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << command;
+    buffer << str;
+    buffer << result;
+}
+
+void WorldPackets::Guild::GuildEvent::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << uint8(event);
+    buffer << uint8(params.size());
+    for (std::string const& param : params)
+        buffer << param;
+
+    // If GE_SIGNED_ON and GE_SIGNED_OFF
+    if (!affectedPlayerGuid.IsEmpty())
+        buffer << affectedPlayerGuid;
+}

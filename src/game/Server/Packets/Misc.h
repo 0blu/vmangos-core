@@ -397,6 +397,55 @@ namespace WorldPackets { namespace Misc
     };
 #endif
 
+    class LogoutResponse final : public ServerPacket
+    {
+    public:
+        uint32 reason = 0;
+        uint8 instant = 0;
+
+        explicit LogoutResponse() : ServerPacket(SMSG_LOGOUT_RESPONSE) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class PlayedTime final : public ServerPacket
+    {
+    public:
+        uint32 totalPlayedTime = 0;
+        uint32 levelPlayedTime = 0;
+
+        explicit PlayedTime() : ServerPacket(SMSG_PLAYED_TIME) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class InspectResponse final : public ServerPacket
+    {
+    public:
+        ObjectGuid guid;
+
+        explicit InspectResponse() : ServerPacket(SMSG_INSPECT) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class WhoisResponse final : public ServerPacket
+    {
+    public:
+        std::string message; // max CString length allowed: 256
+
+        explicit WhoisResponse() : ServerPacket(SMSG_WHOIS) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class UpdateAccountDataResponse final : public ServerPacket
+    {
+    public:
+        uint32 type = 0;
+        uint32 decompressedLength = 0;
+        std::vector<uint8> compressedData;
+
+        explicit UpdateAccountDataResponse() : ServerPacket(SMSG_UPDATE_ACCOUNT_DATA) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
 }} // namespace WorldPackets::Misc
 
 #endif // MANGOS_PACKETS_MISC_H

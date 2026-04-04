@@ -131,3 +131,14 @@ void WorldPackets::Item::BuybackItem::ReadFromWorldPacket(WorldPacket& recv_data
     recv_data >> slot;
 #endif
 }
+
+void WorldPackets::Item::BuyBankSlotResult::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << result;
+}
+
+void WorldPackets::Item::ItemNameQueryResponse::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << itemId;
+    buffer << name;
+}

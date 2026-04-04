@@ -143,6 +143,37 @@ namespace WorldPackets { namespace Group
     };
 #endif
 
+    // --- Server Packets ---
+
+    class PartyCommandResult final : public ServerPacket
+    {
+    public:
+        uint32 operation = 0;
+        std::string member; // max len 48
+        uint32 result = 0;
+
+        explicit PartyCommandResult() : ServerPacket(SMSG_PARTY_COMMAND_RESULT) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class GroupInviteNotification final : public ServerPacket
+    {
+    public:
+        std::string inviterName;
+
+        explicit GroupInviteNotification() : ServerPacket(SMSG_GROUP_INVITE) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class GroupDeclineNotification final : public ServerPacket
+    {
+    public:
+        std::string playerName;
+
+        explicit GroupDeclineNotification() : ServerPacket(SMSG_GROUP_DECLINE) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
 }} // namespace WorldPackets::Group
 
 #endif // MANGOS_PACKETS_GROUP_H

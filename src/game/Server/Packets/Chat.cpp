@@ -22,3 +22,8 @@ void WorldPackets::Chat::ChatRestricted::AppendBodyTo(ByteBuffer& /*buffer*/) co
 {
 }
 #endif
+
+void WorldPackets::Chat::ChatPlayerNotFound::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << name;
+}

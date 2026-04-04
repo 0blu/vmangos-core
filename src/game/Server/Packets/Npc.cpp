@@ -106,3 +106,10 @@ void WorldPackets::Npc::TrainerBuySucceeded::AppendBodyTo(ByteBuffer& buffer) co
     buffer << ObjectGuid(trainerGuid);
     buffer << uint32(spellId);
 }
+
+void WorldPackets::Npc::TrainerBuyFailed::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << trainerGuid;
+    buffer << serviceId;
+    buffer << errorCode;
+}

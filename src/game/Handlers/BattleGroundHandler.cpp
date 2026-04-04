@@ -174,9 +174,9 @@ void WorldSession::RequestBgJoinQueue(ObjectGuid battlemaster, uint32 instanceId
         // check Deserter debuff
         if (!_player->CanJoinToBattleground())
         {
-            WorldPacket data(SMSG_GROUP_JOINED_BATTLEGROUND, 4);
-            data << uint32(0xFFFFFFFE);
-            _player->GetSession()->SendPacket(&data);
+            auto bgPacket = std::make_unique<WorldPackets::Battleground::GroupJoinedBattleground>();
+            bgPacket->result = 0xFFFFFFFE; // -2 = show error
+            _player->GetSession()->SendPacket(std::move(bgPacket));
             return;
         }
         // check if already in queue

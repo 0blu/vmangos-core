@@ -252,11 +252,11 @@ void WorldSession::SendTrainingSuccess(ObjectGuid guid, uint32 spellId)
 
 void WorldSession::SendTrainingFailure(ObjectGuid guid, uint32 serviceId, uint32 errorCode)
 {
-    WorldPacket data(SMSG_TRAINER_BUY_FAILED, 16);
-    data << ObjectGuid(guid);
-    data << uint32(serviceId);
-    data << uint32(errorCode);
-    SendPacket(&data);
+    auto packet = std::make_unique<WorldPackets::Npc::TrainerBuyFailed>();
+    packet->trainerGuid = guid;
+    packet->serviceId = serviceId;
+    packet->errorCode = errorCode;
+    SendPacket(std::move(packet));
 }
 
 void WorldSession::HandleTrainerBuySpellOpcode(WorldPackets::Npc::TrainerBuySpell const& packet)

@@ -142,16 +142,13 @@ void WorldSession::SendAuctionOwnerNotification(AuctionEntry* auction, bool sold
 // shows ERR_AUCTION_REMOVED_S
 void WorldSession::SendAuctionRemovedNotification(AuctionEntry* auction)
 {
-    WorldPacket data(SMSG_AUCTION_REMOVED_NOTIFICATION, (3 * 4));
-    data << uint32(auction->Id);
-    data << uint32(auction->itemTemplate);
-
     Item *item = sAuctionMgr.GetAItem(auction->itemGuidLow);
-    uint32 randomId = item ? item->GetItemRandomPropertyId() : 0;
 
-    data << uint32(randomId);                               // random property (value > 0) or suffix (value < 0)
-
-    SendPacket(&data);
+    auto packet = std::make_unique<WorldPackets::AuctionHouse::AuctionRemovedNotification>();
+    packet->auctionId = auction->Id;
+    packet->itemTemplate = auction->itemTemplate;
+    packet->randomPropertyId = item ? item->GetItemRandomPropertyId() : 0;
+    SendPacket(std::move(packet));
 }
 
 // this function sends mail to old bidder

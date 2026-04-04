@@ -134,10 +134,10 @@ void WorldSession::HandleGuildInviteOpcode(WorldPackets::Guild::GuildInvite cons
     // Put record into guildlog
     guild->LogGuildEvent(GUILD_EVENT_LOG_INVITE_PLAYER, GetPlayer()->GetObjectGuid(), player->GetObjectGuid());
 
-    WorldPacket data(SMSG_GUILD_INVITE, (8 + 10));          // guess size
-    data << GetPlayer()->GetName();
-    data << guild->GetName();
-    player->GetSession()->SendPacket(&data);
+    auto invitePacket = std::make_unique<WorldPackets::Guild::GuildInviteNotification>();
+    invitePacket->inviterName = GetPlayer()->GetName();
+    invitePacket->guildName = guild->GetName();
+    player->GetSession()->SendPacket(std::move(invitePacket));
 }
 
 void WorldSession::HandleGuildRemoveOpcode(WorldPackets::Guild::GuildRemove const& packet)
@@ -194,7 +194,7 @@ void WorldSession::HandleGuildRemoveOpcode(WorldPackets::Guild::GuildRemove cons
     // Put record into guild log
     guild->LogGuildEvent(GUILD_EVENT_LOG_UNINVITE_PLAYER, player->GetObjectGuid(), memberGuid);
 
-    guild->BroadcastEvent(GE_REMOVED, packet.playerName.c_str(), player->GetName());
+    guild->BroadcastEvent(GE_REMOVED, std::vector<std::string> { packet.playerName, player->GetName() });
 }
 
 void WorldSession::HandleGuildAcceptOpcode(NullClientPacket const& /*packet*/)
@@ -215,7 +215,7 @@ void WorldSession::HandleGuildAcceptOpcode(NullClientPacket const& /*packet*/)
     // Put record into guild log
     guild->LogGuildEvent(GUILD_EVENT_LOG_JOIN_GUILD, GetPlayer()->GetObjectGuid());
 
-    guild->BroadcastEvent(GE_JOINED, player->GetObjectGuid(), player->GetName());
+    guild->BroadcastEvent(GE_JOINED, std::vector<std::string> { player->GetName() }, player->GetObjectGuid());
 }
 
 void WorldSession::HandleGuildDeclineOpcode(NullClientPacket const& /*packet*/)
@@ -229,9 +229,9 @@ void WorldSession::HandleGuildDeclineOpcode(NullClientPacket const& /*packet*/)
         {
             if (Player const* pInviter = ObjectAccessor::FindPlayer(inviterGuid))
             {
-                WorldPacket data(SMSG_GUILD_DECLINE);
-                data << _player->GetName();
-                pInviter->GetSession()->SendPacket(&data);
+                auto declinePacket = std::make_unique<WorldPackets::Guild::GuildDeclineNotification>();
+                declinePacket->playerName = _player->GetName();
+                pInviter->GetSession()->SendPacket(std::move(declinePacket));
             }
         }
     }
@@ -309,7 +309,7 @@ void WorldSession::HandleGuildPromoteOpcode(WorldPackets::Guild::GuildPromote co
     // Put record into guild log
     guild->LogGuildEvent(GUILD_EVENT_LOG_PROMOTE_PLAYER, GetPlayer()->GetObjectGuid(), slot->guid, newRankId);
 
-    guild->BroadcastEvent(GE_PROMOTION, _player->GetName(), packet.playerName.c_str(), guild->GetRankName(newRankId).c_str());
+    guild->BroadcastEvent(GE_PROMOTION, std::vector<std::string> { _player->GetName(), packet.playerName, guild->GetRankName(newRankId) });
 }
 
 void WorldSession::HandleGuildDemoteOpcode(WorldPackets::Guild::GuildDemote const& packet)
@@ -365,7 +365,7 @@ void WorldSession::HandleGuildDemoteOpcode(WorldPackets::Guild::GuildDemote cons
     // Put record into guild log
     guild->LogGuildEvent(GUILD_EVENT_LOG_DEMOTE_PLAYER, GetPlayer()->GetObjectGuid(), slot->guid, newRankId);
 
-    guild->BroadcastEvent(GE_DEMOTION, _player->GetName(), packet.playerName.c_str(), guild->GetRankName(slot->RankId).c_str());
+    guild->BroadcastEvent(GE_DEMOTION, std::vector<std::string> { _player->GetName(), packet.playerName, guild->GetRankName(slot->RankId) });
 }
 
 void WorldSession::HandleGuildLeaveOpcode(NullClientPacket const& /*packet*/)
@@ -402,7 +402,7 @@ void WorldSession::HandleGuildLeaveOpcode(NullClientPacket const& /*packet*/)
     // Put record into guild log
     guild->LogGuildEvent(GUILD_EVENT_LOG_LEAVE_GUILD, _player->GetObjectGuid());
 
-    guild->BroadcastEvent(GE_LEFT, _player->GetObjectGuid(), _player->GetName());
+    guild->BroadcastEvent(GE_LEFT, std::vector<std::string> { _player->GetName() }, _player->GetObjectGuid());
 }
 
 void WorldSession::HandleGuildDisbandOpcode(NullClientPacket const& /*packet*/)
@@ -462,7 +462,7 @@ void WorldSession::HandleGuildLeaderOpcode(WorldPackets::Guild::GuildLeader cons
     guild->SetLeader(slot->guid);
     oldSlot->ChangeRank(GR_OFFICER);
 
-    guild->BroadcastEvent(GE_LEADER_CHANGED, oldLeader->GetName(), packet.playerName.c_str());
+    guild->BroadcastEvent(GE_LEADER_CHANGED, std::vector<std::string> { oldLeader->GetName(), packet.playerName });
 }
 
 void WorldSession::HandleGuildMOTDOpcode(WorldPackets::Guild::GuildMOTD const& packet)
@@ -486,7 +486,7 @@ void WorldSession::HandleGuildMOTDOpcode(WorldPackets::Guild::GuildMOTD const& p
     }
 
     guild->SetMOTD(packet.motd);
-    guild->BroadcastEvent(GE_MOTD, packet.motd.c_str());
+    guild->BroadcastEvent(GE_MOTD, std::vector<std::string> { packet.motd });
 }
 
 void WorldSession::HandleGuildSetPublicNoteOpcode(WorldPackets::Guild::GuildSetPublicNote const& packet)
@@ -648,11 +648,11 @@ void WorldSession::HandleGuildDelRankOpcode(NullClientPacket const& /*packet*/)
 
 void WorldSession::SendGuildCommandResult(uint32 typecmd, std::string const& str, uint32 cmdresult)
 {
-    WorldPacket data(SMSG_GUILD_COMMAND_RESULT, (8 + str.size() + 1));
-    data << typecmd;
-    data << str;
-    data << cmdresult;
-    SendPacket(&data);
+    auto packet = std::make_unique<WorldPackets::Guild::GuildCommandResult>();
+    packet->command = typecmd;
+    packet->str = str;
+    packet->result = cmdresult;
+    SendPacket(std::move(packet));
 }
 
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4

@@ -193,12 +193,11 @@ void WorldSession::SendPetNameQuery(ObjectGuid petGuid, uint32 petNumber)
 
     std::string name = pet->GetName();
 
-    WorldPacket data(SMSG_PET_NAME_QUERY_RESPONSE, (4 + 4 + name.size() + 1));
-    data << uint32(petNumber);
-    data << name;
-    data << uint32(pet->GetUInt32Value(UNIT_FIELD_PET_NAME_TIMESTAMP));
-
-    _player->GetSession()->SendPacket(&data);
+    auto packet = std::make_unique<WorldPackets::Pet::PetNameQueryResponse>();
+    packet->petNumber = petNumber;
+    packet->name = name;
+    packet->nameTimestamp = pet->GetUInt32Value(UNIT_FIELD_PET_NAME_TIMESTAMP);
+    _player->GetSession()->SendPacket(std::move(packet));
 }
 
 void WorldSession::HandlePetSetAction(WorldPackets::Pet::PetSetAction const& packet)

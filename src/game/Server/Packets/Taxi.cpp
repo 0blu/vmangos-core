@@ -32,3 +32,9 @@ void WorldPackets::Taxi::ActivateTaxiExpress::ReadFromWorldPacket(WorldPacket& r
     }
 }
 #endif
+
+void WorldPackets::Taxi::TaxiNodeStatus::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << guid;
+    buffer << uint8(known);
+}

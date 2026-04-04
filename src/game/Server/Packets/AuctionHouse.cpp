@@ -62,3 +62,10 @@ void WorldPackets::AuctionHouse::AuctionListItems::ReadFromWorldPacket(WorldPack
     recv_data >> usable;
 }
 
+void WorldPackets::AuctionHouse::AuctionRemovedNotification::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << auctionId;
+    buffer << itemTemplate;
+    buffer << randomPropertyId;
+}
+

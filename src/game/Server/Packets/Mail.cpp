@@ -70,3 +70,25 @@ void WorldPackets::Mail::ReceivedMail::AppendBodyTo(ByteBuffer& buffer) const
 {
     buffer << uint32(notifyDelay);
 }
+
+void WorldPackets::Mail::SendMailResult::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << mailId;
+    buffer << mailAction;
+    buffer << mailError;
+    if (mailError == MAIL_ERR_EQUIP_ERROR)
+    {
+        buffer << equipError;
+    }
+    else if (mailAction == MAIL_ITEM_TAKEN)
+    {
+        buffer << itemGuid;  // item guid low?
+        buffer << itemCount; // item count?
+    }
+}
+
+void WorldPackets::Mail::ItemTextQueryResponse::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << itemTextId;
+    buffer << text;
+}

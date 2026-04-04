@@ -88,3 +88,20 @@ void WorldPackets::Group::RaidReadyCheck::ReadFromWorldPacket(WorldPacket& recv_
     }
 }
 #endif
+
+void WorldPackets::Group::PartyCommandResult::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << operation;
+    buffer << member;
+    buffer << result;
+}
+
+void WorldPackets::Group::GroupInviteNotification::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << inviterName;
+}
+
+void WorldPackets::Group::GroupDeclineNotification::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << playerName;
+}
