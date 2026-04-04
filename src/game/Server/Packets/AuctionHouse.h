@@ -101,6 +101,60 @@ namespace WorldPackets { namespace AuctionHouse
         explicit AuctionRemovedNotification() : ServerPacket(SMSG_AUCTION_REMOVED_NOTIFICATION) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
+
+    class AuctionHelloResponse final : public ServerPacket
+    {
+    public:
+        ObjectGuid auctioneerGuid;
+        uint32 houseId = 0;
+
+        explicit AuctionHelloResponse() : ServerPacket(MSG_AUCTION_HELLO) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class AuctionCommandResult final : public ServerPacket
+    {
+    public:
+        uint32 auctionId = 0;
+        uint32 action = 0;
+        uint32 errorCode = 0;
+        uint32 outBid = 0;
+        uint32 inventoryError = 0;
+        ObjectGuid higherBidderGuid;
+        uint32 bid = 0;
+
+        explicit AuctionCommandResult() : ServerPacket(SMSG_AUCTION_COMMAND_RESULT) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class AuctionBidderNotification final : public ServerPacket
+    {
+    public:
+        uint32 houseId = 0;
+        uint32 auctionId = 0;
+        ObjectGuid bidderGuid;
+        uint32 bidOrZero = 0;   // if 0, client shows ERR_AUCTION_WON_S, else ERR_AUCTION_OUTBID_S
+        uint32 outBid = 0;
+        uint32 itemTemplate = 0;
+        uint32 randomPropertyId = 0;
+
+        explicit AuctionBidderNotification() : ServerPacket(SMSG_AUCTION_BIDDER_NOTIFICATION) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class AuctionOwnerNotification final : public ServerPacket
+    {
+    public:
+        uint32 auctionId = 0;
+        uint32 bid = 0;
+        uint32 outBid = 0;
+        ObjectGuid bidderGuid;
+        uint32 itemTemplate = 0;
+        uint32 randomPropertyId = 0;
+
+        explicit AuctionOwnerNotification() : ServerPacket(SMSG_AUCTION_OWNER_NOTIFICATION) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
 }} // namespace WorldPackets::AuctionHouse
 
 #endif // MANGOS_PACKETS_AUCTIONHOUSE_H

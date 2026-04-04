@@ -205,6 +205,30 @@ namespace WorldPackets { namespace Npc
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
 
+    struct NpcTextOption
+    {
+        float probability = 0.0f;
+        std::string maleText;
+        std::string femaleText;
+        uint32 languageId = 0;
+        uint32 emoteDelay1 = 0;
+        uint32 emoteId1 = 0;
+        uint32 emoteDelay2 = 0;
+        uint32 emoteId2 = 0;
+        uint32 emoteDelay3 = 0;
+        uint32 emoteId3 = 0;
+    };
+
+    class NpcTextUpdate final : public ServerPacket
+    {
+    public:
+        uint32 textID = 0;
+        NpcTextOption options[8];
+
+        explicit NpcTextUpdate() : ServerPacket(SMSG_NPC_TEXT_UPDATE) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
 }} // namespace WorldPackets::Npc
 
 #endif // MANGOS_PACKETS_NPC_H
