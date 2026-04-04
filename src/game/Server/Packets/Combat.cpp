@@ -45,5 +45,5 @@ void WorldPackets::Combat::AttackStop::AppendBodyTo(ByteBuffer& buffer) const
     buffer << attackerGuid;
     buffer << enemyGuid;
 #endif
-    buffer << uint32(unk);
+    buffer << unk;
 }

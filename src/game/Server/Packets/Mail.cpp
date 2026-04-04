@@ -73,22 +73,22 @@ void WorldPackets::Mail::ReceivedMail::AppendBodyTo(ByteBuffer& buffer) const
 
 void WorldPackets::Mail::SendMailResult::AppendBodyTo(ByteBuffer& buffer) const
 {
-    buffer << uint32(mailId);
-    buffer << uint32(mailAction);
-    buffer << uint32(mailError);
+    buffer << mailId;
+    buffer << mailAction;
+    buffer << mailError;
     if (mailError == MAIL_ERR_EQUIP_ERROR)
     {
-        buffer << uint32(equipError);
+        buffer << equipError;
     }
     else if (mailAction == MAIL_ITEM_TAKEN)
     {
-        buffer << uint32(itemGuid);  // item guid low?
-        buffer << uint32(itemCount); // item count?
+        buffer << itemGuid;  // item guid low?
+        buffer << itemCount; // item count?
     }
 }
 
 void WorldPackets::Mail::ItemTextQueryResponse::AppendBodyTo(ByteBuffer& buffer) const
 {
-    buffer << uint32(itemTextId);
+    buffer << itemTextId;
     buffer << text;
 }

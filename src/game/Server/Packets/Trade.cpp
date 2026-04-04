@@ -30,6 +30,6 @@ void WorldPackets::Trade::AcceptTrade::ReadFromWorldPacket(WorldPacket& recv_dat
 
 void WorldPackets::Trade::TradeStatus::AppendBodyTo(ByteBuffer& buffer) const
 {
-    buffer << uint32(status);
-    buffer << ObjectGuid(playerGuid);
+    buffer << status;
+    buffer << playerGuid;
 }

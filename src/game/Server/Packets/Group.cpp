@@ -91,9 +91,9 @@ void WorldPackets::Group::RaidReadyCheck::ReadFromWorldPacket(WorldPacket& recv_
 
 void WorldPackets::Group::PartyCommandResult::AppendBodyTo(ByteBuffer& buffer) const
 {
-    buffer << uint32(operation);
+    buffer << operation;
     buffer << member;
-    buffer << uint32(result);
+    buffer << result;
 }
 
 void WorldPackets::Group::GroupInviteNotification::AppendBodyTo(ByteBuffer& buffer) const

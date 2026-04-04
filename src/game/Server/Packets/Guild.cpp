@@ -95,9 +95,9 @@ void WorldPackets::Guild::GuildDeclineNotification::AppendBodyTo(ByteBuffer& buf
 
 void WorldPackets::Guild::GuildCommandResult::AppendBodyTo(ByteBuffer& buffer) const
 {
-    buffer << uint32(command);
+    buffer << command;
     buffer << str;
-    buffer << uint32(result);
+    buffer << result;
 }
 
 void WorldPackets::Guild::GuildEvent::AppendBodyTo(ByteBuffer& buffer) const

@@ -68,12 +68,12 @@ void WorldPackets::Petition::PetitionBuy::ReadFromWorldPacket(WorldPacket& recv_
 
 void WorldPackets::Petition::PetitionSignResults::AppendBodyTo(ByteBuffer& buffer) const
 {
-    buffer << ObjectGuid(itemGuid);
-    buffer << ObjectGuid(playerGuid);
-    buffer << uint32(result);
+    buffer << itemGuid;
+    buffer << playerGuid;
+    buffer << result;
 }
 
 void WorldPackets::Petition::TurnInPetitionResults::AppendBodyTo(ByteBuffer& buffer) const
 {
-    buffer << uint32(result);
+    buffer << result;
 }

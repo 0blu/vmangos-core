@@ -78,7 +78,7 @@ void WorldPackets::Pet::PetNameInvalid::AppendBodyTo(ByteBuffer& /*buffer*/) con
 
 void WorldPackets::Pet::PetNameQueryResponse::AppendBodyTo(ByteBuffer& buffer) const
 {
-    buffer << uint32(petNumber);
+    buffer << petNumber;
     buffer << name;
-    buffer << uint32(nameTimestamp);
+    buffer << nameTimestamp;
 }
