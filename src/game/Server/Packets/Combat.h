@@ -70,9 +70,9 @@ namespace WorldPackets { namespace Combat
     class AttackStop final : public ServerPacket
     {
     public:
-        ObjectGuid attackerGuid; // must be packed guid (build > 1.8.4)
-        ObjectGuid enemyGuid;   // must be packed guid (build > 1.8.4)
-        uint32 unk = 0;         // unk, can be 1 also
+        ObjectGuid attackerGuid;
+        ObjectGuid victimGuid;
+        bool isDead = false;
 
         explicit AttackStop() : ServerPacket(SMSG_ATTACKSTOP) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;

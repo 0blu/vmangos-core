@@ -38,12 +38,7 @@ void WorldPackets::Combat::AttackSwingBadFacing::AppendBodyTo(ByteBuffer& /*buff
 
 void WorldPackets::Combat::AttackStop::AppendBodyTo(ByteBuffer& buffer) const
 {
-#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
-    buffer << PackedGuid(attackerGuid);
-    buffer << PackedGuid(enemyGuid);
-#else
-    buffer << attackerGuid;
-    buffer << enemyGuid;
-#endif
-    buffer << unk;
+    buffer << attackerGuid.WriteAsPackedClientBuildAware();
+    buffer << victimGuid.WriteAsPackedClientBuildAware();
+    buffer << static_cast<uint32>(isDead); // is 32bit on client
 }
