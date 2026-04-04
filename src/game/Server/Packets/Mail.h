@@ -107,6 +107,30 @@ namespace WorldPackets { namespace Mail
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
 
+    class SendMailResult final : public ServerPacket
+    {
+    public:
+        uint32 mailId = 0;
+        uint32 mailAction = 0;
+        uint32 mailError = 0;
+        uint32 equipError = 0;
+        uint32 itemGuid = 0;  // item guid low?
+        uint32 itemCount = 0; // item count?
+
+        explicit SendMailResult() : ServerPacket(SMSG_SEND_MAIL_RESULT) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class ItemTextQueryResponse final : public ServerPacket
+    {
+    public:
+        uint32 itemTextId = 0;
+        std::string text;
+
+        explicit ItemTextQueryResponse() : ServerPacket(SMSG_ITEM_TEXT_QUERY_RESPONSE) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
 }} // namespace WorldPackets::Mail
 
 #endif // MANGOS_PACKETS_MAIL_H

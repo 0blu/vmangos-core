@@ -267,3 +267,32 @@ void WorldPackets::Misc::PlayTimeWarning::AppendBodyTo(ByteBuffer& buffer) const
     buffer << int32(timeLeftInSeconds);
 }
 #endif
+
+void WorldPackets::Misc::LogoutResponse::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << reason;
+    buffer << uint8(instant);
+}
+
+void WorldPackets::Misc::PlayedTime::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << totalPlayedTime;
+    buffer << levelPlayedTime;
+}
+
+void WorldPackets::Misc::InspectResponse::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << guid;
+}
+
+void WorldPackets::Misc::WhoisResponse::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << message;
+}
+
+void WorldPackets::Misc::UpdateAccountDataResponse::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << type;
+    buffer << decompressedLength;
+    buffer.append(compressedData.data(), compressedData.size());
+}

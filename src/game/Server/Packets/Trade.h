@@ -50,6 +50,17 @@ namespace WorldPackets { namespace Trade
         explicit AcceptTrade() : ClientPacket(CMSG_ACCEPT_TRADE) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
+    // --- Server Packets ---
+
+    class TradeStatus final : public ServerPacket
+    {
+    public:
+        uint32 status = 0;
+        ObjectGuid playerGuid;
+
+        explicit TradeStatus() : ServerPacket(SMSG_TRADE_STATUS) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
 }} // namespace WorldPackets::Trade
 
 #endif // MANGOS_PACKETS_TRADE_H

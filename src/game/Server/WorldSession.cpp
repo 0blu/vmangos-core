@@ -774,7 +774,7 @@ void WorldSession::LogoutPlayer(bool Save)
                 slot->UpdateLogoutTime();
             }
 
-            guild->BroadcastEvent(GE_SIGNED_OFF, _player->GetObjectGuid(), _player->GetName());
+            guild->BroadcastEvent(GE_SIGNED_OFF, std::vector<std::string> { _player->GetName() }, _player->GetObjectGuid());
         }
 
         // Remove pet

@@ -898,12 +898,11 @@ bool WorldSession::CheckBanker(ObjectGuid guid)
 
 void WorldSession::HandleBuyBankSlotOpcode(WorldPackets::Item::BuyBankSlot const& packet)
 {
-    WorldPacket data(SMSG_BUY_BANK_SLOT_RESULT, 4);
-
     if (!CheckBanker(packet.guid))
     {
-        data << uint32(ERR_BANKSLOT_NOTBANKER);
-        SendPacket(&data);
+        auto bankPacket = std::make_unique<WorldPackets::Item::BuyBankSlotResult>();
+        bankPacket->result = ERR_BANKSLOT_NOTBANKER;
+        SendPacket(std::move(bankPacket));
         return;
     }
 
@@ -916,8 +915,9 @@ void WorldSession::HandleBuyBankSlotOpcode(WorldPackets::Item::BuyBankSlot const
 
     if (!slotEntry)
     {
-        data << uint32(ERR_BANKSLOT_FAILED_TOO_MANY);
-        SendPacket(&data);
+        auto bankPacket = std::make_unique<WorldPackets::Item::BuyBankSlotResult>();
+        bankPacket->result = ERR_BANKSLOT_FAILED_TOO_MANY;
+        SendPacket(std::move(bankPacket));
         return;
     }
 
@@ -925,8 +925,9 @@ void WorldSession::HandleBuyBankSlotOpcode(WorldPackets::Item::BuyBankSlot const
 
     if (_player->GetMoney() < price)
     {
-        data << uint32(ERR_BANKSLOT_INSUFFICIENT_FUNDS);
-        SendPacket(&data);
+        auto bankPacket = std::make_unique<WorldPackets::Item::BuyBankSlotResult>();
+        bankPacket->result = ERR_BANKSLOT_INSUFFICIENT_FUNDS;
+        SendPacket(std::move(bankPacket));
         return;
     }
 
@@ -1060,13 +1061,11 @@ void WorldSession::HandleItemNameQueryOpcode(WorldPackets::Query::ItemNameQuery 
             }
         }
 
-        size_t const nameLen = strlen(name) + 1;
-
-        WorldPacket data(SMSG_ITEM_NAME_QUERY_RESPONSE, (4 + nameLen));
-        data << uint32(pProto->ItemId);
-        data.append(name, nameLen);
+        auto namePacket = std::make_unique<WorldPackets::Item::ItemNameQueryResponse>();
+        namePacket->itemId = pProto->ItemId;
+        namePacket->name = name;
         //data << uint32(pProto->InventoryType);    [-ZERO]
-        SendPacket(&data);
+        SendPacket(std::move(namePacket));
         return;
     }
 }

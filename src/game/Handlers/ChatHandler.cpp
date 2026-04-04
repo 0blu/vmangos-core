@@ -767,9 +767,9 @@ void WorldSession::HandleChatIgnoredOpcode(WorldPackets::Misc::ChatIgnored const
 
 void WorldSession::SendPlayerNotFoundNotice(std::string const& name)
 {
-    WorldPacket data(SMSG_CHAT_PLAYER_NOT_FOUND, name.size() + 1);
-    data << name;
-    SendPacket(&data);
+    auto packet = std::make_unique<WorldPackets::Chat::ChatPlayerNotFound>();
+    packet->name = name;
+    SendPacket(std::move(packet));
 }
 
 void WorldSession::SendWrongFactionNotice()

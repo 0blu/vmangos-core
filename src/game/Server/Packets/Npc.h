@@ -185,6 +185,17 @@ namespace WorldPackets { namespace Npc
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
 
+    class TrainerBuyFailed final : public ServerPacket
+    {
+    public:
+        ObjectGuid trainerGuid;
+        uint32 serviceId = 0;
+        uint32 errorCode = 0;
+
+        explicit TrainerBuyFailed() : ServerPacket(SMSG_TRAINER_BUY_FAILED) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
 }} // namespace WorldPackets::Npc
 
 #endif // MANGOS_PACKETS_NPC_H

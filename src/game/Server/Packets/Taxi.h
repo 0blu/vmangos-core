@@ -48,6 +48,17 @@ namespace WorldPackets { namespace Taxi
     };
 #endif
 
+    // --- Server Packets ---
+
+    class TaxiNodeStatus final : public ServerPacket
+    {
+    public:
+        ObjectGuid guid;
+        uint8 known = 0;
+
+        explicit TaxiNodeStatus() : ServerPacket(SMSG_TAXINODE_STATUS) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
 }} // namespace WorldPackets::Taxi
 
 #endif // MANGOS_PACKETS_TAXI_H

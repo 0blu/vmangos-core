@@ -35,3 +35,10 @@ void WorldPackets::Combat::CancelCombat::AppendBodyTo(ByteBuffer& /*buffer*/) co
 void WorldPackets::Combat::AttackSwingBadFacing::AppendBodyTo(ByteBuffer& /*buffer*/) const
 {
 }
+
+void WorldPackets::Combat::AttackStop::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << attackerGuid.WriteAsPackedClientBuildAware();
+    buffer << victimGuid.WriteAsPackedClientBuildAware();
+    buffer << static_cast<uint32>(isDead); // is 32bit on client
+}
