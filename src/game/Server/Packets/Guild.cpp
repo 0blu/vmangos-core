@@ -100,9 +100,14 @@ void WorldPackets::Guild::GuildCommandResult::AppendBodyTo(ByteBuffer& buffer) c
     buffer << uint32(result);
 }
 
-void WorldPackets::Guild::GuildEventMotd::AppendBodyTo(ByteBuffer& buffer) const
+void WorldPackets::Guild::GuildEvent::AppendBodyTo(ByteBuffer& buffer) const
 {
     buffer << uint8(event);
-    buffer << uint8(stringCount);
-    buffer << motd;
+    buffer << uint8(params.size());
+    for (std::string const& param : params)
+        buffer << param;
+
+    // If GE_SIGNED_ON and GE_SIGNED_OFF
+    if (!affectedPlayerGuid.IsEmpty())
+        buffer << affectedPlayerGuid;
 }

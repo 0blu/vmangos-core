@@ -565,13 +565,12 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder *holder)
 
     if (Guild* guild = sGuildMgr.GetGuildById(pCurrChar->GetGuildId()))
     {
-        auto guildMotdPacket = std::make_unique<WorldPackets::Guild::GuildEventMotd>();
+        auto guildMotdPacket = std::make_unique<WorldPackets::Guild::GuildEvent>();
         guildMotdPacket->event = GE_MOTD;
-        guildMotdPacket->stringCount = 1;
-        guildMotdPacket->motd = guild->GetMOTD();
+        guildMotdPacket->params = { guild->GetMOTD() };
         SendPacket(std::move(guildMotdPacket));
 
-        guild->BroadcastEvent(GE_SIGNED_ON, pCurrChar->GetObjectGuid(), pCurrChar->GetName());
+        guild->BroadcastEvent(GE_SIGNED_ON, std::vector<std::string> { pCurrChar->GetName() }, pCurrChar->GetObjectGuid());
     }
 
     if (char const* warning = sAccountMgr.GetWarningText(GetAccountId()))

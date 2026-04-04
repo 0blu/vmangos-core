@@ -568,8 +568,8 @@ bool Guild::DelMember(ObjectGuid guid, bool isDisbanding)
         // when leader non-exist (at guild load with deleted leader only) not send broadcasts
         if (oldLeader)
         {
-            BroadcastEvent(GE_LEADER_CHANGED, oldLeader->Name.c_str(), best->Name.c_str());
-            BroadcastEvent(GE_LEFT, guid, oldLeader->Name.c_str());
+            BroadcastEvent(GE_LEADER_CHANGED, std::vector<std::string> { oldLeader->Name.c_str(), best->Name });
+            BroadcastEvent(GE_LEFT, std::vector<std::string> { oldLeader->Name });
         }
     }
 
@@ -647,6 +647,19 @@ void Guild::BroadcastPacket(WorldPacket* packet)
         Player* player = ObjectAccessor::FindPlayer(ObjectGuid(HIGHGUID_PLAYER, member.first));
         if (player)
             player->GetSession()->SendPacket(packet);
+    }
+}
+
+void Guild::BroadcastPacket(std::unique_ptr<ServerPacket> packet)
+{
+    // TODO Use broadcaster which does the binary conversion automatically
+    WorldPacket binaryPacket = WorldPacket(packet->GetOpcode());
+    packet->AppendBodyTo(binaryPacket);
+    for (const auto& member : members)
+    {
+        Player* player = ObjectAccessor::FindPlayer(ObjectGuid(HIGHGUID_PLAYER, member.first));
+        if (player)
+            player->GetSession()->SendPacket(&binaryPacket);
     }
 }
 
@@ -741,7 +754,7 @@ void Guild::SetRankRights(uint32 rankId, uint32 rights)
  */
 void Guild::Disband()
 {
-    BroadcastEvent(GE_DISBANDED);
+    BroadcastEvent(GE_DISBANDED, std::vector<std::string> { });
 
     while (!members.empty())
     {
@@ -811,7 +824,7 @@ void Guild::Roster(WorldSession* session /*= nullptr*/)
         if (spaceLeft <= 0)
             break;
         count++;
-        
+
         if (Player* pl = ObjectAccessor::FindPlayer(ObjectGuid(HIGHGUID_PLAYER, itr.first)))
         {
             data << pl->GetObjectGuid();
@@ -983,30 +996,11 @@ ObjectGuid Guild::GetGuildInviter(ObjectGuid playerGuid) const
     return ObjectGuid();
 }
 
-void Guild::BroadcastEvent(GuildEvents event, ObjectGuid guid, char const* str1 /*=nullptr*/, char const* str2 /*=nullptr*/, char const* str3 /*=nullptr*/)
+void Guild::BroadcastEvent(GuildEvents event, std::vector<std::string> const& params, ObjectGuid guid)
 {
-    uint8 strCount = !str1 ? 0 : (!str2 ? 1 : (!str3 ? 2 : 3));
-
-    WorldPacket data(SMSG_GUILD_EVENT, 1 + 1 + 1 * strCount + (guid.IsEmpty() ? 0 : 8));
-    data << uint8(event);
-    data << uint8(strCount);
-
-    if (str3)
-    {
-        data << str1;
-        data << str2;
-        data << str3;
-    }
-    else if (str2)
-    {
-        data << str1;
-        data << str2;
-    }
-    else if (str1)
-        data << str1;
-
-    if (!guid.IsEmpty())
-        data << guid;
-
-    BroadcastPacket(&data);
+    auto packet = std::make_unique<WorldPackets::Guild::GuildEvent>();
+    packet->event = event;
+    packet->params = params;
+    packet->affectedPlayerGuid = guid;
+    BroadcastPacket(std::move(packet));
 }

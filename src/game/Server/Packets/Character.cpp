@@ -1,4 +1,5 @@
 #include "Character.h"
+#include "SharedDefines.h"
 
 void WorldPackets::Character::CharCreate::ReadFromWorldPacket(WorldPacket& recv_data)
 {

@@ -174,14 +174,14 @@ namespace WorldPackets { namespace Guild
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
 
-    class GuildEventMotd final : public ServerPacket
+    class GuildEvent final : public ServerPacket
     {
     public:
         uint8 event = 0;
-        uint8 stringCount = 0;
-        std::string motd;
+        std::vector<std::string> params;
+        ObjectGuid affectedPlayerGuid;
 
-        explicit GuildEventMotd() : ServerPacket(SMSG_GUILD_EVENT) {}
+        explicit GuildEvent() : ServerPacket(SMSG_GUILD_EVENT) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
 }} // namespace WorldPackets::Guild
