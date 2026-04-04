@@ -215,7 +215,7 @@ void WorldSession::HandleGuildAcceptOpcode(NullClientPacket const& /*packet*/)
     // Put record into guild log
     guild->LogGuildEvent(GUILD_EVENT_LOG_JOIN_GUILD, GetPlayer()->GetObjectGuid());
 
-    guild->BroadcastEvent(GE_JOINED, std::vector<std::string> { player->GetObjectGuid(), player->GetName() });
+    guild->BroadcastEvent(GE_JOINED, std::vector<std::string> { player->GetName() }, player->GetObjectGuid());
 }
 
 void WorldSession::HandleGuildDeclineOpcode(NullClientPacket const& /*packet*/)

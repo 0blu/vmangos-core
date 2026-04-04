@@ -569,7 +569,7 @@ bool Guild::DelMember(ObjectGuid guid, bool isDisbanding)
         if (oldLeader)
         {
             BroadcastEvent(GE_LEADER_CHANGED, std::vector<std::string> { oldLeader->Name.c_str(), best->Name });
-            BroadcastEvent(GE_LEFT, std::vector<std::string> { oldLeader->Name });
+            BroadcastEvent(GE_LEFT, std::vector<std::string> { oldLeader->Name }, guid);
         }
     }
 

@@ -146,7 +146,7 @@ class ObjectGuid
         PackedGuid WriteAsPackedClientBuildAware() const;
 #else
         ObjectGuid& ReadAsPackedClientBuildAware() { return *this; }
-        uint64 WriteAsPackedClientBuildAware() { return GetRawValue(); }
+        uint64 WriteAsPackedClientBuildAware() const { return GetRawValue(); }
 #endif
 
         void Set(uint64 const& guid);
