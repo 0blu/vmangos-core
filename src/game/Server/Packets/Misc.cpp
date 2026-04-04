@@ -294,6 +294,5 @@ void WorldPackets::Misc::UpdateAccountDataResponse::AppendBodyTo(ByteBuffer& buf
 {
     buffer << type;
     buffer << decompressedLength;
-    if (!compressedData.empty())
-        buffer.append(compressedData.data(), compressedData.size());
+    buffer.append(compressedData.data(), compressedData.size());
 }
