@@ -182,7 +182,6 @@ enum eConfigUInt32Values
     CONFIG_UINT32_INTERVAL_GRIDCLEAN,
     CONFIG_UINT32_INTERVAL_MAPUPDATE,
     CONFIG_UINT32_INTERVAL_CHANGEWEATHER,
-    CONFIG_UINT32_PORT_WORLD,
     CONFIG_UINT32_GAME_TYPE,
     CONFIG_UINT32_REALM_ZONE,
     CONFIG_UINT32_STRICT_PLAYER_NAMES,
@@ -832,6 +831,7 @@ class World
         std::string const& GetWardenModuleDirectory() const { return m_wardenModuleDirectory; }
 
         void ProcessCliCommands();
+        /// Will delete commandHolder once it is processed
         void QueueCliCommand(CliCommandHolder* commandHolder) { cliCmdQueue.add(commandHolder); }
 
         void UpdateResultQueue();

@@ -28,6 +28,8 @@ set(EXECUTABLE_SRCS
   remote/RemoteAccess/RASocket.cpp
   remote/soap/MaNGOSsoap.h
   remote/soap/MaNGOSsoap.cpp
+  remote/rest/RestApi.h
+  remote/rest/RestApi.cpp
 )
 
 if(WIN32)

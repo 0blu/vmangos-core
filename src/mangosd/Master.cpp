@@ -39,6 +39,7 @@
 #include "CliRunnable.h"
 #include "remote/RemoteAccess/RASocket.h"
 #include "remote/soap/MaNGOSsoap.h"
+#include "remote/rest/RestApi.h"
 #include "Util.h"
 #include "MassMailMgr.h"
 #include "DBCStores.h"
@@ -99,11 +100,8 @@ void freezeDetector(uint32 _delaytime)
     //sLog.Out(LOG_BASIC, LOG_LVL_MINIMAL, "Anti-freeze thread exiting without problems.");
 }
 
-std::unique_ptr<IO::Networking::AsyncSocketAcceptor> SetupRemoteAccessServer(IO::IoContext* ioCtx)
+std::unique_ptr<IO::Networking::AsyncSocketAcceptor> SetupRemoteAccessServer(IO::IoContext* ioCtx, std::string const& raBindIp, uint16 raBindPort)
 {
-    std::string raBindIp = sConfig.GetStringDefault("Ra.IP", "0.0.0.0");
-    uint16 raBindPort = sConfig.GetIntDefault("Ra.Port", 3443);
-
     std::unique_ptr<IO::Networking::AsyncSocketAcceptor> raServer = IO::Networking::AsyncSocketAcceptor::CreateAndBindServer(ioCtx, raBindIp, raBindPort);
     if (!raServer)
     {
@@ -164,7 +162,7 @@ int Master::Run()
         realmName = (*result)[0].GetCppString();
     }
 
-    sLog.Out(LOG_BASIC, LOG_LVL_MINIMAL, "World server is running realm ID: %d Name: \"%s\"", realmID, realmName.c_str());
+    sLog.Out(LOG_BASIC, LOG_LVL_MINIMAL, "Starting world server for realm ID: %d Name: \"%s\"", realmID, realmName.c_str());
     sLog.Out(LOG_BASIC, LOG_LVL_MINIMAL, "");
 
     std::unique_ptr<IO::IoContext> ioCtxUniquePtr = IO::IoContext::CreateIoContext();
@@ -225,10 +223,6 @@ int Master::Run()
         cliThread = IO::Multithreading::CreateThreadPtr("CLI", CliRunnable());
     }
 
-    std::unique_ptr<IO::Networking::AsyncSocketAcceptor> remoteAccessServer = nullptr;
-    if (sConfig.GetBoolDefault("Ra.Enable", false))
-        remoteAccessServer = SetupRemoteAccessServer(ioCtx);
-
     // Handle affinity for multiple processors and process priority on Windows
 #ifdef WIN32
     {
@@ -275,14 +269,37 @@ int Master::Run()
     (void)sAsyncSystemTimer; // <-- Pre-Initialize SystemTimer
     IO::Multithreading::RenameCurrentThread("mangosd-main");
 
+    // Start remote access telnet service
+    std::unique_ptr<IO::Networking::AsyncSocketAcceptor> remoteAccessServer = nullptr;
+    if (sConfig.GetBoolDefault("Ra.Enable", false))
+    {
+        std::string raBindIp = sConfig.GetStringDefault("Ra.IP", "127.0.0.1");
+        uint16 raBindPort = sConfig.GetIntDefault("Ra.Port", 3443);
+        remoteAccessServer = SetupRemoteAccessServer(ioCtx, raBindIp, raBindPort);
+        if (remoteAccessServer)
+            sLog.Out(LOG_BASIC, LOG_LVL_MINIMAL, "[RemoteAccess] Raw/Telnet available at tcp://%s:%d", raBindIp.c_str(), raBindPort);
+    }
+
     // Start soap serving thread
     std::unique_ptr<std::thread> soap_thread = nullptr;
-
     if (sConfig.GetBoolDefault("SOAP.Enabled", false))
     {
         std::string soapBindIp = sConfig.GetStringDefault("SOAP.IP", "127.0.0.1");
         uint16 soapBindPort = sConfig.GetIntDefault("SOAP.Port", 7878);
         soap_thread = StartSoapThread(soapBindIp, soapBindPort);
+        if (soap_thread)
+            sLog.Out(LOG_BASIC, LOG_LVL_MINIMAL, "[RemoteAccess] SOAP available at http://%s:%d/", soapBindIp.c_str(), soapBindPort);
+    }
+
+    // Start REST API HTTP server
+    std::unique_ptr<IO::Networking::Http::HttpServer> restApiServer = nullptr;
+    if (sConfig.GetBoolDefault("RestApi.Enable", false))
+    {
+        std::string restBindIp = sConfig.GetStringDefault("RestApi.IP", "127.0.0.1");
+        uint16 restBindPort = sConfig.GetIntDefault("RestApi.Port", 7880);
+        restApiServer = StartRestApi(ioCtx, restBindIp, restBindPort);
+        if (restApiServer)
+            sLog.Out(LOG_BASIC, LOG_LVL_MINIMAL, "[RemoteAccess] HTTP API available at http://%s:%d/", restBindIp.c_str(), restBindPort);
     }
 
     // Start up freeze catcher thread
@@ -294,7 +311,7 @@ int Master::Run()
 
     // Launch the world listener socket
     std::string bindIp = sConfig.GetStringDefault("BindIP", "0.0.0.0");
-    uint16 bindPort = sWorld.getConfig(CONFIG_UINT32_PORT_WORLD);
+    uint16 bindPort = sConfig.GetIntDefault("WorldServerPort", 8085);
     int socketOutByteBufferSize = sConfig.GetIntDefault("Network.SystemSendBuffer", -1);
     bool doExplicitTcpNoDelay = sConfig.GetBoolDefault("Network.TcpNoDelay", true);
     std::vector<std::string> trustedProxyIps = SplitStringByDelimiter(sConfig.GetStringDefault("Network.TrustedProxyServers", ""), ',');
@@ -308,7 +325,12 @@ int Master::Run()
         trustedProxyIps,
     };
 
-    if (!sWorldSocketMgr.StartWorldNetworking(ioCtx, socketOptions))
+    if (sWorldSocketMgr.StartWorldNetworking(ioCtx, socketOptions))
+    {
+        sLog.Out(LOG_BASIC, LOG_LVL_MINIMAL, "World server is running realm ID: %d Name: \"%s\"", realmID, realmName.c_str());
+        sLog.Out(LOG_BASIC, LOG_LVL_MINIMAL, "World server listening on tcp://%s:%u", bindIp.c_str(), bindPort);
+    }
+    else
     {
         Log::WaitBeforeContinueIfNeed();
         World::StopNow(ERROR_EXIT_CODE);
@@ -321,9 +343,6 @@ int Master::Run()
     if (freeze_thread)
         freeze_thread->join();
 
-    if (soap_thread)
-        soap_thread->join();
-
     // Set server offline in realmlist
     LoginDatabase.DirectPExecute("UPDATE realmlist SET realmflags = realmflags | %u WHERE id = '%u'", REALM_FLAG_OFFLINE, realmID);
 
@@ -334,6 +353,20 @@ int Master::Run()
         sLog.Out(LOG_BASIC, LOG_LVL_MINIMAL, "Stop remote access...");
         remoteAccessServer->ClosePortAndStopAcceptingNewConnections();
         remoteAccessServer.reset();
+    }
+
+    if (soap_thread)
+    {
+        sLog.Out(LOG_BASIC, LOG_LVL_MINIMAL, "Stop soap service...");
+        soap_thread->join();
+        soap_thread.reset();
+    }
+
+    if (restApiServer)
+    {
+        sLog.Out(LOG_BASIC, LOG_LVL_MINIMAL, "Stop REST API...");
+        restApiServer->Shutdown();
+        restApiServer.reset();
     }
 
     sLog.Out(LOG_BASIC, LOG_LVL_MINIMAL, "Stop system timers...");

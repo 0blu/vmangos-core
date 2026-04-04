@@ -73,8 +73,6 @@ std::unique_ptr<std::thread> StartSoapThread(std::string const& bindHost, uint16
         return nullptr;
     }
 
-    sLog.Out(LOG_BASIC, LOG_LVL_MINIMAL, "MaNGOSsoap: Bound to http://%s:%d/", bindHost.c_str(), bindPort);
-
     return IO::Multithreading::CreateThreadPtr("SOAP", [soap]()
     { SoapThreadBody(soap); });
 }

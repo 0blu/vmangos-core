@@ -3,7 +3,7 @@
 #####################################
 
 [MangosdConf]
-ConfVersion=2025040601
+ConfVersion=2027040301
 
 ###################################################################################################################
 # CONNECTIONS AND DIRECTORIES
@@ -2884,6 +2884,35 @@ SOAP.IP = 127.0.0.1
 SOAP.Port = 7878
 
 ###################################################################################################################
+# REST API
+#
+#    RestApi.Enable
+#        Enable built-in REST API HTTP server
+#        Default: 0 - off
+#                 1 - on
+#
+#    RestApi.IP
+#        Bind address for the REST API server
+#        Use 0.0.0.0 to listen on all interfaces
+#        Default: 127.0.0.1
+#
+#    RestApi.Port
+#        Port for the REST API server
+#        Default: 8080
+#
+#    Endpoints:
+#        GET  /api/v1/server/status   - Server status (public, no auth)
+#        POST /api/v1/server/command  - Execute command (requires HTTP Basic auth,
+#                                       account with SEC_ADMINISTRATOR level)
+#                                       Body: {"command": "server info"}
+#
+###################################################################################################################
+
+RestApi.Enable = 0
+RestApi.IP = 127.0.0.1
+RestApi.Port = 8080
+
+###################################################################################################################
 # CHARACTER DELETION
 #
 #    CharDelete.Method
@@ -3047,4 +3076,3 @@ DynamicRespawn.AffectRespawnTimeBelow   = 0
 DynamicRespawn.AffectLevelBelow         = 0
 DynamicRespawn.PlayersThreshold         = 0
 DynamicRespawn.PlayersMaxLevelDiff      = 0
-
