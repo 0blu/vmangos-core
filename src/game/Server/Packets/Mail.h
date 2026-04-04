@@ -131,6 +131,15 @@ namespace WorldPackets { namespace Mail
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
 
+    class QueryNextMailTimeResponse final : public ServerPacket
+    {
+    public:
+        float nextMailTime = 0.0f;
+
+        explicit QueryNextMailTimeResponse() : ServerPacket(MSG_QUERY_NEXT_MAIL_TIME) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
 }} // namespace WorldPackets::Mail
 
 #endif // MANGOS_PACKETS_MAIL_H

@@ -84,6 +84,19 @@ namespace WorldPackets { namespace Character
         explicit CharRenameResponse() : ServerPacket(SMSG_CHAR_RENAME) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
+
+    class LoginVerifyWorld final : public ServerPacket
+    {
+    public:
+        uint32 mapId = 0;
+        float x = 0.0f;
+        float y = 0.0f;
+        float z = 0.0f;
+        float o = 0.0f;
+
+        explicit LoginVerifyWorld() : ServerPacket(SMSG_LOGIN_VERIFY_WORLD) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
 }} // namespace WorldPackets::Character
 
 #endif // MANGOS_PACKETS_CHARACTER_H

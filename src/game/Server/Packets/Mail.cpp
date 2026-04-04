@@ -92,3 +92,8 @@ void WorldPackets::Mail::ItemTextQueryResponse::AppendBodyTo(ByteBuffer& buffer)
     buffer << itemTextId;
     buffer << text;
 }
+
+void WorldPackets::Mail::QueryNextMailTimeResponse::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << nextMailTime;
+}

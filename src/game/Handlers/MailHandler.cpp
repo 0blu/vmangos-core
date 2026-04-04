@@ -900,12 +900,9 @@ void WorldSession::HandleQueryNextMailTime(NullClientPacket const& /*packet*/)
 {
     MasterPlayer* player = GetMasterPlayer();
     ASSERT(player);
-    WorldPacket data(MSG_QUERY_NEXT_MAIL_TIME, 8);
-    if (player->HasUnreadMail())
-        data << float(0);
-    else
-        data << float(-86400.0f);
-    SendPacket(&data);
+    auto nextMailTime = std::make_unique<WorldPackets::Mail::QueryNextMailTimeResponse>();
+    nextMailTime->nextMailTime = player->HasUnreadMail() ? 0.0f : -86400.0f;
+    SendPacket(std::move(nextMailTime));
 }
 
 /*! @} */

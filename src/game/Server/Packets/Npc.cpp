@@ -113,3 +113,8 @@ void WorldPackets::Npc::TrainerBuyFailed::AppendBodyTo(ByteBuffer& buffer) const
     buffer << serviceId;
     buffer << errorCode;
 }
+
+void WorldPackets::Npc::TabardVendorActivateResponse::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << guid;
+}

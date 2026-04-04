@@ -111,3 +111,18 @@ void WorldPackets::Guild::GuildEvent::AppendBodyTo(ByteBuffer& buffer) const
     if (!affectedPlayerGuid.IsEmpty())
         buffer << affectedPlayerGuid;
 }
+
+void WorldPackets::Guild::GuildInfo::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << guildName;
+    buffer << createdDay;
+    buffer << createdMonth;
+    buffer << createdYear;
+    buffer << memberCount;
+    buffer << accountCount;
+}
+
+void WorldPackets::Guild::SaveGuildEmblemResult::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << error;
+}

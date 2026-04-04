@@ -248,14 +248,14 @@ void WorldSession::HandleGuildInfoOpcode(NullClientPacket const& /*packet*/)
         return;
     }
 
-    WorldPacket data(SMSG_GUILD_INFO, (5 * 4 + guild->GetName().size() + 1));
-    data << guild->GetName();
-    data << uint32(guild->GetCreatedDay());
-    data << uint32(guild->GetCreatedMonth());
-    data << uint32(guild->GetCreatedYear());
-    data << uint32(guild->GetMemberSize());                 // amount of chars
-    data << uint32(guild->GetAccountsNumber());             // amount of accounts
-    SendPacket(&data);
+    auto guildInfoPacket = std::make_unique<WorldPackets::Guild::GuildInfo>();
+    guildInfoPacket->guildName = guild->GetName();
+    guildInfoPacket->createdDay = guild->GetCreatedDay();
+    guildInfoPacket->createdMonth = guild->GetCreatedMonth();
+    guildInfoPacket->createdYear = guild->GetCreatedYear();
+    guildInfoPacket->memberCount = guild->GetMemberSize();
+    guildInfoPacket->accountCount = guild->GetAccountsNumber();
+    SendPacket(std::move(guildInfoPacket));
 }
 
 void WorldSession::HandleGuildRosterOpcode(NullClientPacket const& /*packet*/)
@@ -729,7 +729,7 @@ void WorldSession::HandleSaveGuildEmblemOpcode(WorldPackets::Guild::SaveGuildEmb
 
 void WorldSession::SendSaveGuildEmblem(uint32 msg)
 {
-    WorldPacket data(MSG_SAVE_GUILD_EMBLEM, 4);
-    data << uint32(msg);                                    // not part of guild
-    SendPacket(&data);
+    auto emblemResult = std::make_unique<WorldPackets::Guild::SaveGuildEmblemResult>();
+    emblemResult->error = msg;
+    SendPacket(std::move(emblemResult));
 }

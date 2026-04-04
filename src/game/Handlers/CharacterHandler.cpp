@@ -512,24 +512,24 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder *holder)
 
     sObjectAccessor.AddObject(m_masterPlayer);
 
-    WorldPacket data(SMSG_LOGIN_VERIFY_WORLD, 20);
-    data << pCurrChar->GetMapId();
+    auto loginVerifyWorld = std::make_unique<WorldPackets::Character::LoginVerifyWorld>();
+    loginVerifyWorld->mapId = pCurrChar->GetMapId();
     if (pCurrChar->GetTransport())
     {
         Position const& transportPosition = pCurrChar->m_movementInfo.GetTransportPos();
-        data << transportPosition.x;
-        data << transportPosition.y;
-        data << transportPosition.z;
-        data << transportPosition.o;
+        loginVerifyWorld->x = transportPosition.x;
+        loginVerifyWorld->y = transportPosition.y;
+        loginVerifyWorld->z = transportPosition.z;
+        loginVerifyWorld->o = transportPosition.o;
     }
     else
     {
-        data << pCurrChar->GetPositionX();
-        data << pCurrChar->GetPositionY();
-        data << pCurrChar->GetPositionZ();
-        data << pCurrChar->GetOrientation();
+        loginVerifyWorld->x = pCurrChar->GetPositionX();
+        loginVerifyWorld->y = pCurrChar->GetPositionY();
+        loginVerifyWorld->z = pCurrChar->GetPositionZ();
+        loginVerifyWorld->o = pCurrChar->GetOrientation();
     }
-    SendPacket(&data);
+    SendPacket(std::move(loginVerifyWorld));
 
     // load player specific part before send times
     LoadAccountData(holder->TakeResult(PLAYER_LOGIN_QUERY_LOADACCOUNTDATA), NewAccountData::PER_CHARACTER_CACHE_MASK);

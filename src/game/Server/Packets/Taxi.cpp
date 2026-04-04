@@ -38,3 +38,7 @@ void WorldPackets::Taxi::TaxiNodeStatus::AppendBodyTo(ByteBuffer& buffer) const
     buffer << guid;
     buffer << uint8(known);
 }
+
+void WorldPackets::Taxi::NewTaxiPath::AppendBodyTo(ByteBuffer& /*buffer*/) const
+{
+}
