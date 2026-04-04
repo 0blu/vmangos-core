@@ -116,8 +116,8 @@ void WorldPackets::Query::GameObjectQueryResponse::AppendBodyTo(ByteBuffer& buff
     buffer << uint8(0) << uint8(0) << uint8(0);             // name2, name3, name4
 #if SUPPORTED_CLIENT_BUILD >= CLIENT_BUILD_1_12_1
     buffer << icon;
-    buffer.append(reinterpret_cast<uint8 const*>(rawData), 24 * sizeof(int32));
+    buffer.append(rawData, 24);
 #else
-    buffer.append(reinterpret_cast<uint8 const*>(rawData), 16 * sizeof(int32));
+    buffer.append(rawData, 16);
 #endif
 }

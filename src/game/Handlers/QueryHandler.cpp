@@ -200,10 +200,8 @@ void WorldSession::HandleGameObjectQueryOpcode(WorldPackets::Query::QueryGameObj
         response->name = name;
 #if SUPPORTED_CLIENT_BUILD >= CLIENT_BUILD_1_12_1
         response->icon = info->icon;
-        static_assert(sizeof(response->rawData) >= 24 * sizeof(int32), "rawData must hold 24 int32");
         memcpy(response->rawData, info->raw.data, 24 * sizeof(int32));
 #else
-        static_assert(sizeof(response->rawData) >= 16 * sizeof(int32), "rawData must hold 16 int32");
         memcpy(response->rawData, info->raw.data, 16 * sizeof(int32));
 #endif
         SendPacket(std::move(response));

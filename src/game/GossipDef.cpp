@@ -299,23 +299,15 @@ void PlayerMenu::SendTalking(uint32 textID)
 {
     NpcText const* pGossip = sObjectMgr.GetNpcText(textID);
 
-    WorldPacket data(SMSG_NPC_TEXT_UPDATE, 512);            // guess size
-    data << textID;                                         // can be < 0
+    auto npcTextUpdate = std::make_unique<WorldPackets::Npc::NpcTextUpdate>();
+    npcTextUpdate->textID = textID;
 
     if (!pGossip)
     {
         for (uint32 i = 0; i < 8; ++i)
         {
-            data << float(0);
-            data << "Greetings $N";
-            data << "Greetings $N";
-            data << uint32(0);
-            data << uint32(0);
-            data << uint32(0);
-            data << uint32(0);
-            data << uint32(0);
-            data << uint32(0);
-            data << uint32(0);
+            npcTextUpdate->options[i].maleText = "Greetings $N";
+            npcTextUpdate->options[i].femaleText = "Greetings $N";
         }
     }
     else
@@ -329,67 +321,46 @@ void PlayerMenu::SendTalking(uint32 textID)
                 std::string const& maleText = bct->GetText(loc_idx, GENDER_MALE, true);
                 std::string const& femaleText = bct->GetText(loc_idx, GENDER_FEMALE, true);
 
-                data << pGossip->Options[i].Probability;
+                npcTextUpdate->options[i].probability = pGossip->Options[i].Probability;
 
                 if (maleText.empty())
-                    data << femaleText;
+                    npcTextUpdate->options[i].maleText = femaleText;
                 else
-                    data << maleText;
+                    npcTextUpdate->options[i].maleText = maleText;
 
                 if (femaleText.empty())
-                    data << maleText;
+                    npcTextUpdate->options[i].femaleText = maleText;
                 else
-                    data << femaleText;
+                    npcTextUpdate->options[i].femaleText = femaleText;
 
-                data << bct->languageId;
-
-                data << bct->emoteDelay1;
-                data << bct->emoteId1;
-                data << bct->emoteDelay2;
-                data << bct->emoteId2;
-                data << bct->emoteDelay3;
-                data << bct->emoteId3;
+                npcTextUpdate->options[i].languageId = bct->languageId;
+                npcTextUpdate->options[i].emoteDelay1 = bct->emoteDelay1;
+                npcTextUpdate->options[i].emoteId1 = bct->emoteId1;
+                npcTextUpdate->options[i].emoteDelay2 = bct->emoteDelay2;
+                npcTextUpdate->options[i].emoteId2 = bct->emoteId2;
+                npcTextUpdate->options[i].emoteDelay3 = bct->emoteDelay3;
+                npcTextUpdate->options[i].emoteId3 = bct->emoteId3;
             }
             else
             {
-                data << float(0);
-                data << "Greetings $N";
-                data << "Greetings $N";
-                data << uint32(0);
-                data << uint32(0);
-                data << uint32(0);
-                data << uint32(0);
-                data << uint32(0);
-                data << uint32(0);
-                data << uint32(0);
+                npcTextUpdate->options[i].maleText = "Greetings $N";
+                npcTextUpdate->options[i].femaleText = "Greetings $N";
             }
         }
     }
-    GetMenuSession()->SendPacket(&data);
+    GetMenuSession()->SendPacket(std::move(npcTextUpdate));
 }
 
 void PlayerMenu::SendTalking(char const* title, char const* text)
 {
-    size_t const titleLen = strlen(title) + 1;
-    size_t const textLen = strlen(text) + 1;
-
-    WorldPacket data(SMSG_NPC_TEXT_UPDATE, sizeof(uint32) + 8 * (8 * sizeof(uint32) + titleLen + textLen));
-    data << uint32(0);
+    auto npcTextUpdate = std::make_unique<WorldPackets::Npc::NpcTextUpdate>();
+    npcTextUpdate->textID = 0;
     for (uint32 i = 0; i < 8; ++i)
     {
-        data << float(0);
-        data.append(title, titleLen);
-        data.append(text, textLen);
-        data << uint32(0);
-        data << uint32(0);
-        data << uint32(0);
-        data << uint32(0);
-        data << uint32(0);
-        data << uint32(0);
-        data << uint32(0);
+        npcTextUpdate->options[i].maleText = title;
+        npcTextUpdate->options[i].femaleText = text;
     }
-
-    GetMenuSession()->SendPacket(&data);
+    GetMenuSession()->SendPacket(std::move(npcTextUpdate));
 }
 
 /*********************************************************/
