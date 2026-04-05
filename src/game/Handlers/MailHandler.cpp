@@ -901,7 +901,7 @@ void WorldSession::HandleQueryNextMailTime(NullClientPacket const& /*packet*/)
     MasterPlayer* player = GetMasterPlayer();
     ASSERT(player);
     auto nextMailTime = std::make_unique<WorldPackets::Mail::QueryNextMailTimeResponse>();
-    nextMailTime->nextMailTime = player->HasUnreadMail() ? 0.0f : -86400.0f;
+    nextMailTime->nextMailTime = player->HasUnreadMail() ? 0.0f : -float(DAY);
     SendPacket(std::move(nextMailTime));
 }
 
