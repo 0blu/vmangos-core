@@ -255,7 +255,9 @@ namespace WorldPackets { namespace Item
         ObjectGuid itemGuid;
         uint32 slot = 0;
         uint32 duration = 0;
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_10_2
         ObjectGuid playerGuid;
+#endif
 
         explicit ItemEnchantTimeUpdate() : ServerPacket(SMSG_ITEM_ENCHANT_TIME_UPDATE) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;
