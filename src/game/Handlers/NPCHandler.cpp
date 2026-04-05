@@ -64,7 +64,7 @@ void WorldSession::HandleTabardVendorActivateOpcode(WorldPackets::Npc::TabardVen
 void WorldSession::SendTabardVendorActivate(ObjectGuid guid)
 {
     auto tabardVendor = std::make_unique<WorldPackets::Npc::TabardVendorActivateResponse>();
-    tabardVendor->guid = guid;
+    tabardVendor->tabardVendorNpcGuid = guid;
     SendPacket(std::move(tabardVendor));
 }
 

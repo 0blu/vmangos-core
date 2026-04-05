@@ -199,7 +199,7 @@ namespace WorldPackets { namespace Npc
     class TabardVendorActivateResponse final : public ServerPacket
     {
     public:
-        ObjectGuid guid;
+        ObjectGuid tabardVendorNpcGuid;
 
         explicit TabardVendorActivateResponse() : ServerPacket(MSG_TABARDVENDOR_ACTIVATE) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;

@@ -116,7 +116,7 @@ void WorldPackets::Npc::TrainerBuyFailed::AppendBodyTo(ByteBuffer& buffer) const
 
 void WorldPackets::Npc::TabardVendorActivateResponse::AppendBodyTo(ByteBuffer& buffer) const
 {
-    buffer << guid;
+    buffer << tabardVendorNpcGuid;
 }
 
 void WorldPackets::Npc::NpcTextUpdate::AppendBodyTo(ByteBuffer& buffer) const
