@@ -61,9 +61,9 @@ void WorldPackets::Character::CharRenameResponse::AppendBodyTo(ByteBuffer& buffe
 
 void WorldPackets::Character::LoginVerifyWorld::AppendBodyTo(ByteBuffer& buffer) const
 {
-    buffer << mapId;
-    buffer << x;
-    buffer << y;
-    buffer << z;
-    buffer << o;
+    buffer << location.mapId;
+    buffer << location.x;
+    buffer << location.y;
+    buffer << location.z;
+    buffer << location.o;
 }

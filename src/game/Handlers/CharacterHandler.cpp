@@ -513,21 +513,13 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder *holder)
     sObjectAccessor.AddObject(m_masterPlayer);
 
     auto loginVerifyWorld = std::make_unique<WorldPackets::Character::LoginVerifyWorld>();
-    loginVerifyWorld->mapId = pCurrChar->GetMapId();
     if (pCurrChar->GetTransport())
     {
-        Position const& transportPosition = pCurrChar->m_movementInfo.GetTransportPos();
-        loginVerifyWorld->x = transportPosition.x;
-        loginVerifyWorld->y = transportPosition.y;
-        loginVerifyWorld->z = transportPosition.z;
-        loginVerifyWorld->o = transportPosition.o;
+        loginVerifyWorld->location = pCurrChar->m_movementInfo.GetTransportPos().WithMapId(pCurrChar->GetMapId());
     }
     else
     {
-        loginVerifyWorld->x = pCurrChar->GetPositionX();
-        loginVerifyWorld->y = pCurrChar->GetPositionY();
-        loginVerifyWorld->z = pCurrChar->GetPositionZ();
-        loginVerifyWorld->o = pCurrChar->GetOrientation();
+        loginVerifyWorld->location = WorldLocation(pCurrChar->GetMapId(), pCurrChar->GetPositionX(), pCurrChar->GetPositionY(), pCurrChar->GetPositionZ(), pCurrChar->GetOrientation());
     }
     SendPacket(std::move(loginVerifyWorld));
 
