@@ -95,7 +95,7 @@ namespace WorldPackets { namespace Query
         float x = 0.0f;
         float y = 0.0f;
         float z = 0.0f;
-        uint32 corpseMapId = 0;
+        uint32 corpseMapId = 0; // <-- might be a dungeon MapId
 
         explicit CorpseQueryResponse() : ServerPacket(MSG_CORPSE_QUERY) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;
