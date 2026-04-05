@@ -31,24 +31,24 @@ include_directories(
     ../../objdir/dep/ACE_wrappers
     ../../dep/recastnavigation/Detour/Include
     ../../dep/recastnavigation/Recast/Include
-    ../../dep/src/zlib
+    ../../dep/windows/zlib/src
 )
 
 if(WIN32)
   add_library(zlib
-      ../../dep/src/zlib/adler32.c
-      ../../dep/src/zlib/compress.c
-      ../../dep/src/zlib/crc32.c
-      ../../dep/src/zlib/deflate.c
-      ../../dep/src/zlib/example.c
-      ../../dep/src/zlib/gzio.c
-      ../../dep/src/zlib/infback.c
-      ../../dep/src/zlib/inffast.c
-      ../../dep/src/zlib/inflate.c
-      ../../dep/src/zlib/inftrees.c
-      ../../dep/src/zlib/trees.c
-      ../../dep/src/zlib/uncompr.c
-      ../../dep/src/zlib/zutil.c
+      ../../dep/windows/zlib/src/adler32.c
+      ../../dep/windows/zlib/src/compress.c
+      ../../dep/windows/zlib/src/crc32.c
+      ../../dep/windows/zlib/src/deflate.c
+      ../../dep/windows/zlib/src/example.c
+      ../../dep/windows/zlib/src/gzio.c
+      ../../dep/windows/zlib/src/infback.c
+      ../../dep/windows/zlib/src/inffast.c
+      ../../dep/windows/zlib/src/inflate.c
+      ../../dep/windows/zlib/src/inftrees.c
+      ../../dep/windows/zlib/src/trees.c
+      ../../dep/windows/zlib/src/uncompr.c
+      ../../dep/windows/zlib/src/zutil.c
   )
 endif(WIN32)
 

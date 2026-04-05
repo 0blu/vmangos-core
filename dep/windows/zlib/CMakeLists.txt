@@ -16,41 +16,41 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 set(ZLIB_PUBLIC_HDRS
-    ${CMAKE_SOURCE_DIR}/dep/windows/include/zlib/zconf.h
-    ${CMAKE_SOURCE_DIR}/dep/windows/include/zlib/zlib.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/zlib/zconf.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/zlib/zlib.h
 )
 set(ZLIB_PRIVATE_HDRS
-    crc32.h
-    deflate.h
-    gzguts.h
-    inffast.h
-    inffixed.h
-    inflate.h
-    inftrees.h
-    trees.h
-    zutil.h
+    src/crc32.h
+    src/deflate.h
+    src/gzguts.h
+    src/inffast.h
+    src/inffixed.h
+    src/inflate.h
+    src/inftrees.h
+    src/trees.h
+    src/zutil.h
 )
 set(ZLIB_SRCS
-    adler32.c
-    compress.c
-    crc32.c
-    deflate.c
-    gzclose.c
-    gzlib.c
-    gzread.c
-    gzwrite.c
-    inflate.c
-    infback.c
-    inftrees.c
-    inffast.c
-    trees.c
-    uncompr.c
-    zutil.c
+    src/adler32.c
+    src/compress.c
+    src/crc32.c
+    src/deflate.c
+    src/gzclose.c
+    src/gzlib.c
+    src/gzread.c
+    src/gzwrite.c
+    src/inflate.c
+    src/infback.c
+    src/inftrees.c
+    src/inffast.c
+    src/trees.c
+    src/uncompr.c
+    src/zutil.c
 )
 
 include_directories(
-  ${CMAKE_CURRENT_SOURCE_DIR}
-  ${CMAKE_SOURCE_DIR}/dep/windows/include/zlib
+  ${CMAKE_CURRENT_SOURCE_DIR}/src
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/zlib
 )
 
 add_library(zlib STATIC

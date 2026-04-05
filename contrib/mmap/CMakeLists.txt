@@ -36,7 +36,7 @@ include_directories(
     ../../dep/recastnavigation/
     ../../dep/recastnavigation/Detour/Include
     ../../dep/recastnavigation/Recast/Include
-    ../../dep/src/zlib
+    ../../dep/windows/zlib/src
 )
 
 set(SOURCES
@@ -52,7 +52,7 @@ add_executable(${EXECUTABLE_NAME} ${SOURCES})
 SET_TARGET_PROPERTIES (${EXECUTABLE_NAME} PROPERTIES FOLDER Extractors)
 
 target_link_libraries(${EXECUTABLE_NAME}
-                        vmap 
+                        vmap
                         Detour
                         Recast
                         shared
