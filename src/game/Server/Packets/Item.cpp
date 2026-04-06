@@ -165,3 +165,25 @@ void WorldPackets::Item::ItemEnchantTimeUpdate::AppendBodyTo(ByteBuffer& buffer)
     buffer << playerGuid;
 #endif
 }
+
+void WorldPackets::Item::ListInventoryResponse::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << vendorGuid;
+    if (items.empty())
+    {
+        buffer << uint8(0);
+        buffer << uint8(errorCode);
+        return;
+    }
+    buffer << uint8(items.size());
+    for (auto const& item : items)
+    {
+        buffer << uint32(item.slot);
+        buffer << uint32(item.itemId);
+        buffer << uint32(item.displayInfoId);
+        buffer << uint32(item.currentCount);
+        buffer << uint32(item.price);
+        buffer << uint32(item.maxDurability);
+        buffer << uint32(item.buyCount);
+    }
+}

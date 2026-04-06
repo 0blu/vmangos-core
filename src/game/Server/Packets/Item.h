@@ -3,6 +3,7 @@
 
 #include "Packet.h"
 #include "ObjectGuid.h"
+#include <vector>
 
 namespace WorldPackets { namespace Item
 {
@@ -262,6 +263,29 @@ namespace WorldPackets { namespace Item
         explicit ItemEnchantTimeUpdate() : ServerPacket(SMSG_ITEM_ENCHANT_TIME_UPDATE) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
+
+    struct VendorItemEntry
+    {
+        uint32 slot = 0;
+        uint32 itemId = 0;
+        uint32 displayInfoId = 0;
+        uint32 currentCount = 0;
+        uint32 price = 0;
+        uint32 maxDurability = 0;
+        uint32 buyCount = 0;
+    };
+
+    class ListInventoryResponse final : public ServerPacket
+    {
+    public:
+        ObjectGuid vendorGuid;
+        std::vector<VendorItemEntry> items;
+        uint8 errorCode = 0; // non-zero if vendor has no items
+
+        explicit ListInventoryResponse() : ServerPacket(SMSG_LIST_INVENTORY) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
 }} // namespace WorldPackets::Item
 
 #endif // MANGOS_PACKETS_ITEM_H

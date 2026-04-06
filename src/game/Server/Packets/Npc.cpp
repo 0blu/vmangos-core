@@ -136,3 +136,25 @@ void WorldPackets::Npc::NpcTextUpdate::AppendBodyTo(ByteBuffer& buffer) const
         buffer << options[i].emoteId3;
     }
 }
+
+void WorldPackets::Npc::TrainerListResponse::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << trainerGuid;
+    buffer << uint32(trainerType);
+    buffer << uint32(spells.size());
+    for (auto const& spell : spells)
+    {
+        buffer << uint32(spell.spellId);
+        buffer << uint8(spell.state);
+        buffer << uint32(spell.cost);
+        buffer << uint32(spell.canLearnPrimaryProf);
+        buffer << uint32(spell.isPrimaryProfFirstRank);
+        buffer << uint8(spell.spellLevel);
+        buffer << uint32(spell.reqSkill);
+        buffer << uint32(spell.reqSkillValue);
+        buffer << uint32(spell.spellReq1);
+        buffer << uint32(spell.spellReq2);
+        buffer << uint32(0);
+    }
+    buffer << title;
+}

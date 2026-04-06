@@ -723,27 +723,21 @@ void WorldSession::SendListInventory(ObjectGuid vendorguid, uint8 menu_type)
 
     if (!vItems && !tItems)
     {
-        WorldPacket data(SMSG_LIST_INVENTORY, (8 + 1 + 1));
-        data << ObjectGuid(vendorguid);
-        data << uint8(0);                                   // count==0, next will be error code
-        data << uint8(0);                                   // "Vendor has no inventory"
-        SendPacket(&data);
+        auto inventoryPacket = std::make_unique<WorldPackets::Item::ListInventoryResponse>();
+        inventoryPacket->vendorGuid = vendorguid;
+        SendPacket(std::move(inventoryPacket));
         return;
     }
 
     uint8 customitems = vItems ? vItems->GetItemCount() : 0;
     uint8 numitems = customitems + (tItems ? tItems->GetItemCount() : 0);
 
-    uint8 count = 0;
-
-    WorldPacket data(SMSG_LIST_INVENTORY, (8 + 1 + numitems * 7 * 4));
-    data << ObjectGuid(vendorguid);
-
-    size_t count_pos = data.wpos();
-    data << uint8(count);
+    auto inventoryPacket = std::make_unique<WorldPackets::Item::ListInventoryResponse>();
+    inventoryPacket->vendorGuid = vendorguid;
 
     float discountMod = _player->GetReputationPriceDiscount(pCreature);
 
+    uint8 count = 0;
     for (int i = 0; i < numitems; ++i)
     {
         VendorItem const* crItem = i < customitems ? vItems->GetItem(i) : tItems->GetItem(i - customitems);
@@ -787,13 +781,15 @@ void WorldSession::SendListInventory(ObjectGuid vendorguid, uint8 menu_type)
                 // reputation discount
                 uint32 price = uint32(pProto->BuyPrice * discountMod + 0.5f);
 
-                data << uint32(count);
-                data << uint32(crItem->item);
-                data << uint32(pProto->DisplayInfoID);
-                data << uint32(crItem->maxcount <= 0 ? 0xFFFFFFFF : pCreature->GetVendorItemCurrentCount(crItem));
-                data << uint32(price);
-                data << uint32(pProto->MaxDurability);
-                data << uint32(pProto->BuyCount);
+                WorldPackets::Item::VendorItemEntry entry;
+                entry.slot = count;
+                entry.itemId = crItem->item;
+                entry.displayInfoId = pProto->DisplayInfoID;
+                entry.currentCount = crItem->maxcount <= 0 ? 0xFFFFFFFF : pCreature->GetVendorItemCurrentCount(crItem);
+                entry.price = price;
+                entry.maxDurability = pProto->MaxDurability;
+                entry.buyCount = pProto->BuyCount;
+                inventoryPacket->items.push_back(entry);
 
                 if (count >= MAX_VENDOR_ITEMS)
                     break;
@@ -803,13 +799,12 @@ void WorldSession::SendListInventory(ObjectGuid vendorguid, uint8 menu_type)
 
     if (count == 0)
     {
-        data << uint8(0);                                   // "Vendor has no inventory"
-        SendPacket(&data);
+        inventoryPacket->items.clear();
+        SendPacket(std::move(inventoryPacket));
         return;
     }
 
-    data.put<uint8>(count_pos, count);
-    SendPacket(&data);
+    SendPacket(std::move(inventoryPacket));
 }
 
 void WorldSession::HandleAutoStoreBagItemOpcode(WorldPackets::Item::AutoStoreBagItem const& packet)
