@@ -229,6 +229,39 @@ namespace WorldPackets { namespace Item
         explicit ItemNameQueryResponse() : ServerPacket(SMSG_ITEM_NAME_QUERY_RESPONSE) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
+
+    class ReadItemOk final : public ServerPacket
+    {
+    public:
+        ObjectGuid itemGuid;
+
+        explicit ReadItemOk() : ServerPacket(SMSG_READ_ITEM_OK) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class ReadItemFailed final : public ServerPacket
+    {
+    public:
+        ObjectGuid itemGuid;
+        uint8 reason = 0;
+
+        explicit ReadItemFailed() : ServerPacket(SMSG_READ_ITEM_FAILED) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class ItemEnchantTimeUpdate final : public ServerPacket
+    {
+    public:
+        ObjectGuid itemGuid;
+        uint32 slot = 0;
+        uint32 duration = 0;
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_10_2
+        ObjectGuid playerGuid;
+#endif
+
+        explicit ItemEnchantTimeUpdate() : ServerPacket(SMSG_ITEM_ENCHANT_TIME_UPDATE) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
 }} // namespace WorldPackets::Item
 
 #endif // MANGOS_PACKETS_ITEM_H

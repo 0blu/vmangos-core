@@ -3617,9 +3617,9 @@ void Map::RemoveCorpses(bool unload)
                 if (looterGuid)
                 {
                     // Notify the client that the corpse is gone
-                    WorldPacket cdata(MSG_CORPSE_QUERY, 1);
-                    cdata << uint8(0);
-                    owner->GetSession()->SendPacket(&cdata);
+                    auto corpseResponse = std::make_unique<WorldPackets::Query::CorpseQueryResponse>();
+                    corpseResponse->found = false;
+                    owner->GetSession()->SendPacket(std::move(corpseResponse));
                 }
             }
 

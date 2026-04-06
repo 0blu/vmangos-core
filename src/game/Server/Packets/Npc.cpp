@@ -113,3 +113,26 @@ void WorldPackets::Npc::TrainerBuyFailed::AppendBodyTo(ByteBuffer& buffer) const
     buffer << serviceId;
     buffer << errorCode;
 }
+
+void WorldPackets::Npc::TabardVendorActivateResponse::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << tabardVendorNpcGuid;
+}
+
+void WorldPackets::Npc::NpcTextUpdate::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << textID;
+    for (int i = 0; i < 8; ++i)
+    {
+        buffer << options[i].probability;
+        buffer << options[i].maleText;
+        buffer << options[i].femaleText;
+        buffer << options[i].languageId;
+        buffer << options[i].emoteDelay1;
+        buffer << options[i].emoteId1;
+        buffer << options[i].emoteDelay2;
+        buffer << options[i].emoteId2;
+        buffer << options[i].emoteDelay3;
+        buffer << options[i].emoteId3;
+    }
+}

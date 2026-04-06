@@ -3,6 +3,7 @@
 
 #include "Packet.h"
 #include "ObjectGuid.h"
+#include "SharedDefines.h"
 
 namespace WorldPackets { namespace Character
 {
@@ -82,6 +83,15 @@ namespace WorldPackets { namespace Character
         std::string newName;
 
         explicit CharRenameResponse() : ServerPacket(SMSG_CHAR_RENAME) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class LoginVerifyWorld final : public ServerPacket
+    {
+    public:
+        WorldLocation location;
+
+        explicit LoginVerifyWorld() : ServerPacket(SMSG_LOGIN_VERIFY_WORLD) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
 }} // namespace WorldPackets::Character

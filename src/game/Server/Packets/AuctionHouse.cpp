@@ -69,3 +69,54 @@ void WorldPackets::AuctionHouse::AuctionRemovedNotification::AppendBodyTo(ByteBu
     buffer << randomPropertyId;
 }
 
+void WorldPackets::AuctionHouse::AuctionHelloResponse::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << auctioneerGuid;
+    buffer << houseId;
+}
+
+void WorldPackets::AuctionHouse::AuctionCommandResult::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << auctionId;
+    buffer << action;
+    buffer << errorCode;
+
+    switch (errorCode)
+    {
+        case 0: // AUCTION_OK
+            if (action == 1) // AUCTION_BID_PLACED
+                buffer << outBid;
+            break;
+        case 6: // AUCTION_ERR_INVENTORY
+            buffer << inventoryError;
+            break;
+        case 10: // AUCTION_ERR_HIGHER_BID
+            buffer << higherBidderGuid;
+            buffer << bid;
+            buffer << outBid;
+            break;
+        default:
+            break;
+    }
+}
+
+void WorldPackets::AuctionHouse::AuctionBidderNotification::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << houseId;
+    buffer << auctionId;
+    buffer << bidderGuid;
+    buffer << bidOrZero;
+    buffer << outBid;
+    buffer << itemTemplate;
+    buffer << randomPropertyId;
+}
+
+void WorldPackets::AuctionHouse::AuctionOwnerNotification::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << auctionId;
+    buffer << bid;
+    buffer << outBid;
+    buffer << bidderGuid;
+    buffer << itemTemplate;
+    buffer << randomPropertyId;
+}

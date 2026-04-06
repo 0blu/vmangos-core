@@ -124,13 +124,12 @@ bool WorldSession::SendLearnNewTaxiNode(Creature* unit)
 
     if (GetPlayer()->m_taxi.SetTaximaskNode(curloc))
     {
-        WorldPacket msg(SMSG_NEW_TAXI_PATH, 0);
-        SendPacket(&msg);
+        SendPacket(std::make_unique<WorldPackets::Taxi::NewTaxiPath>());
 
-        WorldPacket update(SMSG_TAXINODE_STATUS, 9);
-        update << ObjectGuid(unit->GetObjectGuid());
-        update << uint8(1);
-        SendPacket(&update);
+        auto taxiStatus = std::make_unique<WorldPackets::Taxi::TaxiNodeStatus>();
+        taxiStatus->guid = unit->GetObjectGuid();
+        taxiStatus->known = 1;
+        SendPacket(std::move(taxiStatus));
 
         return true;
     }

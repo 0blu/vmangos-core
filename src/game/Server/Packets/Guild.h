@@ -184,6 +184,29 @@ namespace WorldPackets { namespace Guild
         explicit GuildEvent() : ServerPacket(SMSG_GUILD_EVENT) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
+
+    class GuildInfo final : public ServerPacket
+    {
+    public:
+        std::string guildName;
+        uint32 createdDay = 0;
+        uint32 createdMonth = 0;
+        uint32 createdYear = 0;
+        uint32 memberCount = 0;
+        uint32 accountCount = 0;
+
+        explicit GuildInfo() : ServerPacket(SMSG_GUILD_INFO) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class SaveGuildEmblemResult final : public ServerPacket
+    {
+    public:
+        uint32 error = 0;
+
+        explicit SaveGuildEmblemResult() : ServerPacket(MSG_SAVE_GUILD_EMBLEM) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
 }} // namespace WorldPackets::Guild
 
 #endif // MANGOS_PACKETS_GUILD_H

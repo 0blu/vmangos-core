@@ -63,9 +63,9 @@ void WorldSession::HandleTabardVendorActivateOpcode(WorldPackets::Npc::TabardVen
 
 void WorldSession::SendTabardVendorActivate(ObjectGuid guid)
 {
-    WorldPacket data(MSG_TABARDVENDOR_ACTIVATE, 8);
-    data << ObjectGuid(guid);
-    SendPacket(&data);
+    auto tabardVendor = std::make_unique<WorldPackets::Npc::TabardVendorActivateResponse>();
+    tabardVendor->tabardVendorNpcGuid = guid;
+    SendPacket(std::move(tabardVendor));
 }
 
 void WorldSession::HandleBankerActivateOpcode(WorldPackets::Npc::BankerActivate const& packet)
