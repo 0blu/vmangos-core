@@ -3,6 +3,7 @@
 
 #include "Packet.h"
 #include "ObjectGuid.h"
+#include <string>
 #include <vector>
 
 namespace WorldPackets { namespace Item
@@ -283,6 +284,101 @@ namespace WorldPackets { namespace Item
         uint8 errorCode = 0; // non-zero if vendor has no items
 
         explicit ListInventoryResponse() : ServerPacket(SMSG_LIST_INVENTORY) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    struct ItemStatEntry
+    {
+        uint32 type = 0;
+        int32 value = 0;
+    };
+
+    struct ItemDamageEntry
+    {
+        float damageMin = 0.0f;
+        float damageMax = 0.0f;
+        uint32 damageType = 0;
+    };
+
+    struct ItemSpellEntry
+    {
+        uint32 spellId = 0;
+        uint32 spellTrigger = 0;
+        int32 spellCharges = 0;
+        uint32 spellCooldown = 0;
+        uint32 spellCategory = 0;
+        uint32 spellCategoryCooldown = 0;
+    };
+
+    class ItemQuerySingleResponse final : public ServerPacket
+    {
+    public:
+        bool found = false;
+        uint32 itemId = 0;
+        uint32 itemClass = 0;
+        uint32 subClass = 0;
+        std::string name;
+        uint32 displayInfoId = 0;
+        uint32 quality = 0;
+        uint32 flags = 0;
+        uint32 buyPrice = 0;
+        uint32 sellPrice = 0;
+        uint32 inventoryType = 0;
+        uint32 allowableClass = 0;
+        uint32 allowableRace = 0;
+        uint32 itemLevel = 0;
+        uint32 requiredLevel = 0;
+        uint32 requiredSkill = 0;
+        uint32 requiredSkillRank = 0;
+        uint32 requiredSpell = 0;
+        uint32 requiredHonorRank = 0;
+        uint32 requiredCityRank = 0;
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_6_1
+        uint32 requiredReputationFaction = 0;
+        uint32 requiredReputationRank = 0;
+#endif
+        int32 maxCount = 0;
+        int32 stackable = 0;
+        uint32 containerSlots = 0;
+        ItemStatEntry itemStats[10];
+        ItemDamageEntry damages[5];
+        uint32 armor = 0;
+        uint32 holyRes = 0;
+        uint32 fireRes = 0;
+        uint32 natureRes = 0;
+        uint32 frostRes = 0;
+        uint32 shadowRes = 0;
+        uint32 arcaneRes = 0;
+        uint32 delay = 0;
+        uint32 ammoType = 0;
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
+        float rangedModRange = 0.0f;
+#endif
+        ItemSpellEntry spells[5];
+        uint32 bonding = 0;
+        std::string description;
+        uint32 pageText = 0;
+        uint32 languageId = 0;
+        uint32 pageMaterial = 0;
+        uint32 startQuest = 0;
+        uint32 lockId = 0;
+        int32 material = 0;
+        uint32 sheath = 0;
+        int32 randomProperty = 0;
+        uint32 block = 0;
+        uint32 itemSet = 0;
+        uint32 maxDurability = 0;
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_6_1
+        uint32 area = 0;
+#endif
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_10_2
+        uint32 map = 0;
+#endif
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
+        uint32 bagFamily = 0;
+#endif
+
+        explicit ItemQuerySingleResponse() : ServerPacket(SMSG_ITEM_QUERY_SINGLE_RESPONSE) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
 
