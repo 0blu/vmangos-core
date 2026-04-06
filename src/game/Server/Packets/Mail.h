@@ -4,6 +4,8 @@
 #include "Packet.h"
 #include "SharedDefines.h"
 #include "ObjectGuid.h"
+#include <string>
+#include <vector>
 
 namespace WorldPackets { namespace Mail
 {
@@ -137,6 +139,49 @@ namespace WorldPackets { namespace Mail
         float nextMailTime = 0.0f;
 
         explicit QueryNextMailTimeResponse() : ServerPacket(MSG_QUERY_NEXT_MAIL_TIME) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    struct MailItemInfo
+    {
+        uint32 entry = 0;
+        uint32 enchantmentId = 0;
+        uint32 randomPropertyId = 0;
+        uint32 suffixFactor = 0;
+        uint8 stackCount = 0;
+        uint32 spellCharges = 0;
+        uint32 maxDurability = 0;
+        uint32 durability = 0;
+        bool hasItem = false;
+    };
+
+    struct MailListEntry
+    {
+        uint32 messageId = 0;
+        uint8 messageType = 0;
+        bool hasPlayerSender = false;
+        ObjectGuid senderPlayerGuid;
+        uint32 senderEntry = 0; // creature/gameobject entry, auction id
+        bool hasSenderEntry = false;
+        std::string subject;
+        uint32 itemTextId = 0;
+        uint32 stationery = 0;
+        MailItemInfo itemInfo;
+        uint32 money = 0;
+        uint32 COD = 0;
+        uint32 checked = 0;
+        float expireTime = 0.0f;
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
+        uint32 mailTemplateId = 0;
+#endif
+    };
+
+    class MailListResult final : public ServerPacket
+    {
+    public:
+        std::vector<MailListEntry> mails;
+
+        explicit MailListResult() : ServerPacket(SMSG_MAIL_LIST_RESULT) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
 

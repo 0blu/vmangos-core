@@ -296,3 +296,21 @@ void WorldPackets::Misc::UpdateAccountDataResponse::AppendBodyTo(ByteBuffer& buf
     buffer << decompressedLength;
     buffer.append(compressedData.data(), compressedData.size());
 }
+
+void WorldPackets::Misc::WhoResponse::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << uint32(listedCount);
+    buffer << uint32(onlineCount);
+    for (auto const& entry : entries)
+    {
+        buffer << entry.playerName;
+        buffer << entry.guildName;
+        buffer << uint32(entry.level);
+        buffer << uint32(entry.classId);
+        buffer << uint32(entry.raceId);
+        buffer << uint32(entry.zoneId);
+#if SUPPORTED_CLIENT_BUILD <= CLIENT_BUILD_1_8_4
+        buffer << uint32(entry.whoListPartyStatus);
+#endif
+    }
+}
