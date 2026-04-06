@@ -212,7 +212,7 @@ public:
             whoPacket->entries.push_back(std::move(entry));
 
             // 50 is maximum player count sent to client
-            if (whoPacket->entries.size() == 49)
+            if (whoPacket->entries.size() >= 49)
                 break;
         }
 
