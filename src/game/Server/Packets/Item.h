@@ -304,7 +304,7 @@ namespace WorldPackets { namespace Item
     {
         uint32 spellId = 0;
         uint32 spellTrigger = 0;
-        int32 spellCharges = 0;
+        int32 spellCharges = 0;  // negative means item should be consumed once charges are consumed
         uint32 spellCooldown = 0;
         uint32 spellCategory = 0;
         uint32 spellCategoryCooldown = 0;
@@ -316,8 +316,8 @@ namespace WorldPackets { namespace Item
         bool found = false;
         uint32 itemId = 0;
         uint32 itemClass = 0;
-        uint32 subClass = 0;
-        std::string name;
+        uint32 subClass = 0;                   // client known only 0 subclass for consumables (and 1-2 obsolete subclasses)
+        std::string name;                      // max length 256
         uint32 displayInfoId = 0;
         uint32 quality = 0;
         uint32 flags = 0;
@@ -335,13 +335,14 @@ namespace WorldPackets { namespace Item
         uint32 requiredCityRank = 0;
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_6_1
         uint32 requiredReputationFaction = 0;
-        uint32 requiredReputationRank = 0;
+        uint32 requiredReputationRank = 0;     // send value only if reputation faction id set (needed for some items)
 #endif
         int32 maxCount = 0;
         int32 stackable = 0;
         uint32 containerSlots = 0;
         ItemStatEntry itemStats[10];
         ItemDamageEntry damages[5];
+        // resistances (7)
         uint32 armor = 0;
         uint32 holyRes = 0;
         uint32 fireRes = 0;
@@ -354,7 +355,7 @@ namespace WorldPackets { namespace Item
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
         float rangedModRange = 0.0f;
 #endif
-        ItemSpellEntry spells[5];
+        ItemSpellEntry spells[5];              // cooldowns use DBC data if item_template values not set
         uint32 bonding = 0;
         std::string description;
         uint32 pageText = 0;

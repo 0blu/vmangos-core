@@ -68,7 +68,7 @@ namespace WorldPackets { namespace Trade
         uint32 itemId = 0;
         uint32 displayInfoId = 0;
         uint32 stackCount = 0;
-        uint32 isWrapped = 0;
+        uint32 isWrapped = 0;          // wrapped: hide stats but show giftcreator name
         ObjectGuid giftCreator;
         uint32 enchantmentId = 0;
         ObjectGuid creator;
@@ -83,10 +83,10 @@ namespace WorldPackets { namespace Trade
     class TradeStatusExtended final : public ServerPacket
     {
     public:
-        uint8 traderState = 0;
+        uint8 traderState = 0;         // send trader or own trade windows state (last need for proper show spell apply to non-trade slot)
         uint32 slotCount = 0;
-        uint32 money = 0;
-        uint32 spell = 0;
+        uint32 money = 0;              // trader gold
+        uint32 spell = 0;              // spell casted on lowest slot item
         std::vector<TradeSlotItem> items;
 
         explicit TradeStatusExtended() : ServerPacket(SMSG_TRADE_STATUS_EXTENDED) {}

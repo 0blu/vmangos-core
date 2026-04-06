@@ -211,8 +211,8 @@ namespace WorldPackets { namespace Npc
         uint32 spellId = 0;
         uint8 state = 0;
         uint32 cost = 0;
-        uint32 canLearnPrimaryProf = 0;
-        uint32 isPrimaryProfFirstRank = 0;
+        uint32 canLearnPrimaryProf = 0;        // primary prof. learn confirmation dialog
+        uint32 isPrimaryProfFirstRank = 0;     // must be equal prev. field to have learn button in enabled state
         uint8 spellLevel = 0;
         uint32 reqSkill = 0;
         uint32 reqSkillValue = 0;

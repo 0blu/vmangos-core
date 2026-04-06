@@ -153,18 +153,18 @@ namespace WorldPackets { namespace Quest
     {
     public:
         uint32 questId = 0;
-        uint32 questMethod = 0;
-        uint32 questLevel = 0;
-        int32 zoneOrSort = 0;
+        uint32 questMethod = 0;               // Accepted values: 0, 1 or 2. 0==IsAutoComplete() (skip objectives/details)
+        uint32 questLevel = 0;                 // may be 0, static data, in other cases must be used dynamic level: Player::GetQuestLevelForPlayer
+        int32 zoneOrSort = 0;                  // zone or sort to display in quest log
         uint32 type = 0;
-        uint32 repObjectiveFaction = 0;
-        uint32 repObjectiveValue = 0;
-        uint32 nextQuestInChain = 0;
-        uint32 rewOrReqMoney = 0;
+        uint32 repObjectiveFaction = 0;        // shown in quest log as part of quest objective
+        uint32 repObjectiveValue = 0;          // shown in quest log as part of quest objective
+        uint32 nextQuestInChain = 0;           // client will request this quest from NPC, if not 0
+        uint32 rewOrReqMoney = 0;              // set to 0 when QUEST_FLAGS_HIDDEN_REWARDS
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
-        uint32 rewMoneyMaxLevel = 0;
+        uint32 rewMoneyMaxLevel = 0;           // used in XP calculation at client
 #endif
-        uint32 rewSpell = 0;
+        uint32 rewSpell = 0;                   // reward spell, this spell will display (icon) (casted if RewSpellCast==0)
         uint32 srcItemId = 0;
         uint32 questFlags = 0;
         uint32 rewItemId[4] = {};
