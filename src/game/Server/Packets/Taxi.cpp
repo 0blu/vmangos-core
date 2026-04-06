@@ -42,3 +42,12 @@ void WorldPackets::Taxi::TaxiNodeStatus::AppendBodyTo(ByteBuffer& buffer) const
 void WorldPackets::Taxi::NewTaxiPath::AppendBodyTo(ByteBuffer& /*buffer*/) const
 {
 }
+
+void WorldPackets::Taxi::ShowTaxiNodes::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << uint32(1);
+    buffer << unitGuid;
+    buffer << uint32(currentLocation);
+    for (int i = 0; i < 8; ++i)
+        buffer << uint32(taxiMask[i]);
+}

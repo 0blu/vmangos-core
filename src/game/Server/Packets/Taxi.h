@@ -66,6 +66,17 @@ namespace WorldPackets { namespace Taxi
         explicit NewTaxiPath() : ServerPacket(SMSG_NEW_TAXI_PATH) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
+
+    class ShowTaxiNodes final : public ServerPacket
+    {
+    public:
+        ObjectGuid unitGuid;
+        uint32 currentLocation = 0;
+        uint32 taxiMask[8] = {};
+
+        explicit ShowTaxiNodes() : ServerPacket(SMSG_SHOWTAXINODES) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
 }} // namespace WorldPackets::Taxi
 
 #endif // MANGOS_PACKETS_TAXI_H

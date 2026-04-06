@@ -84,46 +84,35 @@ void WorldSession::SendUpdateTrade(bool trader_state /*= true*/)
 {
     TradeData* view_trade = trader_state ? _player->GetTradeData()->GetTraderData() : _player->GetTradeData();
 
-    WorldPacket data(SMSG_TRADE_STATUS_EXTENDED, (100));    // guess size
-    data << uint8(trader_state ? 1 : 0);                    // send trader or own trade windows state (last need for proper show spell apply to non-trade slot)
-    data << uint32(TRADE_SLOT_COUNT);                       // trade slots count/number?, = next field in most cases
-    data << uint32(TRADE_SLOT_COUNT);                       // trade slots count/number?, = prev field in most cases
-    data << uint32(view_trade->GetMoney());                 // trader gold
-    data << uint32(view_trade->GetSpell());                 // spell casted on lowest slot item
+    auto tradePacket = std::make_unique<WorldPackets::Trade::TradeStatusExtended>();
+    tradePacket->traderState = trader_state ? 1 : 0;
+    tradePacket->slotCount = TRADE_SLOT_COUNT;
+    tradePacket->money = view_trade->GetMoney();
+    tradePacket->spell = view_trade->GetSpell();
+    tradePacket->items.resize(TRADE_SLOT_COUNT);
 
     for (uint8 i = 0; i < TRADE_SLOT_COUNT; ++i)
     {
-        data << uint8(i);                                   // trade slot number, if not specified, then end of packet
-
         if (Item* item = view_trade->GetItem(TradeSlots(i)))
         {
-            data << uint32(item->GetProto()->ItemId);       // entry
-            data << uint32(item->GetProto()->DisplayInfoID);// display id
-            data << uint32(item->GetCount());               // stack count
-
-            // wrapped: hide stats but show giftcreator name
-            data << uint32(item->HasFlag(ITEM_FIELD_FLAGS, ITEM_DYNFLAG_WRAPPED) ? 1 : 0);
-            data << item->GetGuidValue(ITEM_FIELD_GIFTCREATOR);
-
-            data << uint32(item->GetEnchantmentId(PERM_ENCHANTMENT_SLOT));
-            data << item->GetGuidValue(ITEM_FIELD_CREATOR);
-            data << uint32(item->GetSpellCharges());        // charges
-            data << uint32(item->GetItemSuffixFactor());    // SuffixFactor
-            data << uint32(item->GetItemRandomPropertyId());// random properties id
-            data << uint32(item->GetProto()->LockID);       // lock id
-            // max durability
-            data << uint32(item->GetUInt32Value(ITEM_FIELD_MAXDURABILITY));
-            // durability
-            data << uint32(item->GetUInt32Value(ITEM_FIELD_DURABILITY));
-        }
-        else
-        {
-            for (uint8 j = 0; j < 15; ++j)
-                data << uint32(0);
+            auto& slotItem = tradePacket->items[i];
+            slotItem.itemId = item->GetProto()->ItemId;
+            slotItem.displayInfoId = item->GetProto()->DisplayInfoID;
+            slotItem.stackCount = item->GetCount();
+            slotItem.isWrapped = item->HasFlag(ITEM_FIELD_FLAGS, ITEM_DYNFLAG_WRAPPED) ? 1 : 0;
+            slotItem.giftCreator = item->GetGuidValue(ITEM_FIELD_GIFTCREATOR);
+            slotItem.enchantmentId = item->GetEnchantmentId(PERM_ENCHANTMENT_SLOT);
+            slotItem.creator = item->GetGuidValue(ITEM_FIELD_CREATOR);
+            slotItem.spellCharges = item->GetSpellCharges();
+            slotItem.suffixFactor = item->GetItemSuffixFactor();
+            slotItem.randomPropertyId = item->GetItemRandomPropertyId();
+            slotItem.lockId = item->GetProto()->LockID;
+            slotItem.maxDurability = item->GetUInt32Value(ITEM_FIELD_MAXDURABILITY);
+            slotItem.durability = item->GetUInt32Value(ITEM_FIELD_DURABILITY);
         }
     }
 
-    SendPacket(&data);
+    SendPacket(std::move(tradePacket));
 }
 
 //==============================================================

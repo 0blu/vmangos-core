@@ -87,12 +87,13 @@ void WorldSession::SendTaxiMenu(Creature* unit)
     if (curloc == 0)
         return;
 
-    WorldPacket data(SMSG_SHOWTAXINODES, (4 + 8 + 4 + 8 * 4));
-    data << uint32(1);
-    data << unit->GetObjectGuid();
-    data << uint32(curloc);
-    GetPlayer()->m_taxi.AppendTaximaskTo(data, GetPlayer()->IsTaxiCheater());
-    SendPacket(&data);
+    auto showTaxiPacket = std::make_unique<WorldPackets::Taxi::ShowTaxiNodes>();
+    showTaxiPacket->unitGuid = unit->GetObjectGuid();
+    showTaxiPacket->currentLocation = curloc;
+    TaxiMask const& mask = GetPlayer()->IsTaxiCheater() ? sTaxiNodesMask : GetPlayer()->m_taxi.GetTaxiMask();
+    for (int i = 0; i < TaxiMaskSize; ++i)
+        showTaxiPacket->taxiMask[i] = mask[i];
+    SendPacket(std::move(showTaxiPacket));
 }
 
 void WorldSession::SendDoFlight(uint32 mountDisplayId, uint32 path, uint32 pathNode)

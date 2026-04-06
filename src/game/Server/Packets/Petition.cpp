@@ -120,3 +120,16 @@ void WorldPackets::Petition::PetitionShowList::AppendBodyTo(ByteBuffer& buffer) 
     buffer << charterCost;
     buffer << unknown;
 }
+
+void WorldPackets::Petition::PetitionShowSignaturesResponse::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << itemGuid;
+    buffer << ownerGuid;
+    buffer << uint32(petitionGuid);
+    buffer << uint8(signatures.size());
+    for (auto const& sig : signatures)
+    {
+        buffer << sig.signerGuid;
+        buffer << uint32(0);
+    }
+}

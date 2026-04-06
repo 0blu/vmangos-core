@@ -3,6 +3,7 @@
 
 #include "Packet.h"
 #include "ObjectGuid.h"
+#include <vector>
 
 namespace WorldPackets { namespace Trade
 {
@@ -59,6 +60,36 @@ namespace WorldPackets { namespace Trade
         ObjectGuid playerGuid;
 
         explicit TradeStatus() : ServerPacket(SMSG_TRADE_STATUS) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    struct TradeSlotItem
+    {
+        uint32 itemId = 0;
+        uint32 displayInfoId = 0;
+        uint32 stackCount = 0;
+        uint32 isWrapped = 0;
+        ObjectGuid giftCreator;
+        uint32 enchantmentId = 0;
+        ObjectGuid creator;
+        uint32 spellCharges = 0;
+        uint32 suffixFactor = 0;
+        uint32 randomPropertyId = 0;
+        uint32 lockId = 0;
+        uint32 maxDurability = 0;
+        uint32 durability = 0;
+    };
+
+    class TradeStatusExtended final : public ServerPacket
+    {
+    public:
+        uint8 traderState = 0;
+        uint32 slotCount = 0;
+        uint32 money = 0;
+        uint32 spell = 0;
+        std::vector<TradeSlotItem> items;
+
+        explicit TradeStatusExtended() : ServerPacket(SMSG_TRADE_STATUS_EXTENDED) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
 }} // namespace WorldPackets::Trade

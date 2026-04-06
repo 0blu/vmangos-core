@@ -4,6 +4,7 @@
 #include "Packet.h"
 #include "ObjectGuid.h"
 #include <string>
+#include <vector>
 
 namespace WorldPackets { namespace Petition
 {
@@ -158,6 +159,23 @@ namespace WorldPackets { namespace Petition
         uint32 unknown = 0;
 
         explicit PetitionShowList() : ServerPacket(SMSG_PETITION_SHOWLIST) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class PetitionShowSignaturesResponse final : public ServerPacket
+    {
+    public:
+        struct SignatureEntry
+        {
+            ObjectGuid signerGuid;
+        };
+
+        ObjectGuid itemGuid;
+        ObjectGuid ownerGuid;
+        uint32 petitionGuid = 0;
+        std::vector<SignatureEntry> signatures;
+
+        explicit PetitionShowSignaturesResponse() : ServerPacket(SMSG_PETITION_SHOW_SIGNATURES) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
 
