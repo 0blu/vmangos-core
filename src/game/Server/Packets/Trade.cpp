@@ -37,7 +37,7 @@ void WorldPackets::Trade::TradeStatus::AppendBodyTo(ByteBuffer& buffer) const
 void WorldPackets::Trade::TradeStatusExtended::AppendBodyTo(ByteBuffer& buffer) const
 {
     buffer << uint8(traderState);
-    buffer << uint32(slotCount);
+    buffer << uint32(tradeSlotCount);
     buffer << uint32(slotCount);
     buffer << uint32(money);
     buffer << uint32(spell);

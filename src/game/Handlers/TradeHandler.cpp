@@ -86,6 +86,7 @@ void WorldSession::SendUpdateTrade(bool trader_state /*= true*/)
 
     auto tradePacket = std::make_unique<WorldPackets::Trade::TradeStatusExtended>();
     tradePacket->traderState = trader_state ? 1 : 0;
+    tradePacket->tradeSlotCount = TRADE_SLOT_COUNT;
     tradePacket->slotCount = TRADE_SLOT_COUNT;
     tradePacket->money = view_trade->GetMoney();
     tradePacket->spell = view_trade->GetSpell();

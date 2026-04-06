@@ -84,7 +84,8 @@ namespace WorldPackets { namespace Trade
     {
     public:
         uint8 traderState = 0;         // send trader or own trade windows state (last need for proper show spell apply to non-trade slot)
-        uint32 slotCount = 0;
+        uint32 tradeSlotCount = 0;     // trade slots count/number?, = next field in most cases
+        uint32 slotCount = 0;          // trade slots count/number?, = prev field in most cases
         uint32 money = 0;              // trader gold
         uint32 spell = 0;              // spell casted on lowest slot item
         std::vector<TradeSlotItem> items;
