@@ -36,11 +36,11 @@ void WorldPackets::Trade::TradeStatus::AppendBodyTo(ByteBuffer& buffer) const
 
 void WorldPackets::Trade::TradeStatusExtended::AppendBodyTo(ByteBuffer& buffer) const
 {
-    buffer << uint8(traderState);
-    buffer << uint32(tradeSlotCount);
-    buffer << uint32(slotCount);
-    buffer << uint32(money);
-    buffer << uint32(spell);
+    buffer << traderState;
+    buffer << tradeSlotCount;
+    buffer << slotCount;
+    buffer << money;
+    buffer << spell;
 
     for (uint32 i = 0; i < slotCount; ++i)
     {
@@ -49,19 +49,19 @@ void WorldPackets::Trade::TradeStatusExtended::AppendBodyTo(ByteBuffer& buffer) 
         if (i < items.size() && items[i].itemId != 0)
         {
             auto const& item = items[i];
-            buffer << uint32(item.itemId);
-            buffer << uint32(item.displayInfoId);
-            buffer << uint32(item.stackCount);
-            buffer << uint32(item.isWrapped);
+            buffer << item.itemId;
+            buffer << item.displayInfoId;
+            buffer << item.stackCount;
+            buffer << item.isWrapped;
             buffer << item.giftCreator;
-            buffer << uint32(item.enchantmentId);
+            buffer << item.enchantmentId;
             buffer << item.creator;
-            buffer << uint32(item.spellCharges);
-            buffer << uint32(item.suffixFactor);
-            buffer << uint32(item.randomPropertyId);
-            buffer << uint32(item.lockId);
-            buffer << uint32(item.maxDurability);
-            buffer << uint32(item.durability);
+            buffer << item.spellCharges;
+            buffer << item.suffixFactor;
+            buffer << item.randomPropertyId;
+            buffer << item.lockId;
+            buffer << item.maxDurability;
+            buffer << item.durability;
         }
         else
         {

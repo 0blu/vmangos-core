@@ -125,7 +125,7 @@ void WorldPackets::Petition::PetitionShowSignaturesResponse::AppendBodyTo(ByteBu
 {
     buffer << itemGuid;
     buffer << ownerGuid;
-    buffer << uint32(petitionGuid);
+    buffer << petitionGuid;
     buffer << uint8(signatures.size());
     for (auto const& sig : signatures)
     {

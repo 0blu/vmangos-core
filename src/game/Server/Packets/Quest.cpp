@@ -81,39 +81,39 @@ void WorldPackets::Quest::QuestLogFull::AppendBodyTo(ByteBuffer& /*buffer*/) con
 
 void WorldPackets::Quest::QuestQueryResponse::AppendBodyTo(ByteBuffer& buffer) const
 {
-    buffer << uint32(questId);
-    buffer << uint32(questMethod);
-    buffer << uint32(questLevel);
-    buffer << int32(zoneOrSort);
-    buffer << uint32(type);
-    buffer << uint32(repObjectiveFaction);
-    buffer << uint32(repObjectiveValue);
+    buffer << questId;
+    buffer << questMethod;
+    buffer << questLevel;
+    buffer << zoneOrSort;
+    buffer << type;
+    buffer << repObjectiveFaction;
+    buffer << repObjectiveValue;
     buffer << uint32(0); // RequiredOpositeRepFaction
     buffer << uint32(0); // RequiredOpositeRepValue
-    buffer << uint32(nextQuestInChain);
-    buffer << uint32(rewOrReqMoney);
+    buffer << nextQuestInChain;
+    buffer << rewOrReqMoney;
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
-    buffer << uint32(rewMoneyMaxLevel);
+    buffer << rewMoneyMaxLevel;
 #endif
-    buffer << uint32(rewSpell);
-    buffer << uint32(srcItemId);
-    buffer << uint32(questFlags);
+    buffer << rewSpell;
+    buffer << srcItemId;
+    buffer << questFlags;
 
     for (int i = 0; i < 4; ++i)
     {
-        buffer << uint32(rewItemId[i]);
-        buffer << uint32(rewItemCount[i]);
+        buffer << rewItemId[i];
+        buffer << rewItemCount[i];
     }
     for (int i = 0; i < 6; ++i)
     {
-        buffer << uint32(rewChoiceItemId[i]);
-        buffer << uint32(rewChoiceItemCount[i]);
+        buffer << rewChoiceItemId[i];
+        buffer << rewChoiceItemCount[i];
     }
 
-    buffer << uint32(pointMapId);
-    buffer << float(pointX);
-    buffer << float(pointY);
-    buffer << uint32(pointOpt);
+    buffer << pointMapId;
+    buffer << pointX;
+    buffer << pointY;
+    buffer << pointOpt;
 
     buffer.append(title.c_str(), title.length() + 1);
     buffer.append(objectives.c_str(), objectives.length() + 1);
@@ -122,10 +122,10 @@ void WorldPackets::Quest::QuestQueryResponse::AppendBodyTo(ByteBuffer& buffer) c
 
     for (int i = 0; i < 4; ++i)
     {
-        buffer << uint32(questObjectives[i].creatureOrGOId);
-        buffer << uint32(questObjectives[i].creatureOrGOCount);
-        buffer << uint32(questObjectives[i].itemId);
-        buffer << uint32(questObjectives[i].itemCount);
+        buffer << questObjectives[i].creatureOrGOId;
+        buffer << questObjectives[i].creatureOrGOCount;
+        buffer << questObjectives[i].itemId;
+        buffer << questObjectives[i].itemCount;
     }
 
     for (int i = 0; i < 4; ++i)

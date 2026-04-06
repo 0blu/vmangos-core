@@ -68,7 +68,7 @@ void WorldPackets::Mail::MailCreateTextItem::ReadFromWorldPacket(WorldPacket& re
 
 void WorldPackets::Mail::ReceivedMail::AppendBodyTo(ByteBuffer& buffer) const
 {
-    buffer << uint32(notifyDelay);
+    buffer << notifyDelay;
 }
 
 void WorldPackets::Mail::SendMailResult::AppendBodyTo(ByteBuffer& buffer) const
@@ -103,42 +103,42 @@ void WorldPackets::Mail::MailListResult::AppendBodyTo(ByteBuffer& buffer) const
     buffer << uint8(mails.size());
     for (auto const& mail : mails)
     {
-        buffer << uint32(mail.messageId);
-        buffer << uint8(mail.messageType);
+        buffer << mail.messageId;
+        buffer << mail.messageType;
 
         if (mail.hasPlayerSender)
             buffer << mail.senderPlayerGuid;
         else if (mail.hasSenderEntry)
-            buffer << uint32(mail.senderEntry);
+            buffer << mail.senderEntry;
 
         buffer << mail.subject;
-        buffer << uint32(mail.itemTextId);
+        buffer << mail.itemTextId;
         buffer << uint32(0); // package (Package.dbc)
-        buffer << uint32(mail.stationery);
+        buffer << mail.stationery;
 
         if (mail.itemInfo.hasItem)
         {
-            buffer << uint32(mail.itemInfo.entry);
-            buffer << uint32(mail.itemInfo.enchantmentId);
-            buffer << uint32(mail.itemInfo.randomPropertyId);
-            buffer << uint32(mail.itemInfo.suffixFactor);
-            buffer << uint8(mail.itemInfo.stackCount);
-            buffer << uint32(mail.itemInfo.spellCharges);
-            buffer << uint32(mail.itemInfo.maxDurability);
-            buffer << uint32(mail.itemInfo.durability);
+            buffer << mail.itemInfo.entry;
+            buffer << mail.itemInfo.enchantmentId;
+            buffer << mail.itemInfo.randomPropertyId;
+            buffer << mail.itemInfo.suffixFactor;
+            buffer << mail.itemInfo.stackCount;
+            buffer << mail.itemInfo.spellCharges;
+            buffer << mail.itemInfo.maxDurability;
+            buffer << mail.itemInfo.durability;
         }
         else
         {
             buffer << uint32(0) << uint32(0) << uint32(0) << uint32(0) << uint8(0) << uint32(0) << uint32(0) << uint32(0);
         }
 
-        buffer << uint32(mail.money);
-        buffer << uint32(mail.COD);
-        buffer << uint32(mail.checked);
-        buffer << float(mail.expireTime);
+        buffer << mail.money;
+        buffer << mail.COD;
+        buffer << mail.checked;
+        buffer << mail.expireTime;
 
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
-        buffer << uint32(mail.mailTemplateId);
+        buffer << mail.mailTemplateId;
 #endif
     }
 }
