@@ -785,13 +785,6 @@ void WorldSession::SendListInventory(ObjectGuid vendorguid, uint8 menu_type)
         }
     }
 
-    if (count == 0)
-    {
-        inventoryPacket->items.clear();
-        SendPacket(std::move(inventoryPacket));
-        return;
-    }
-
     SendPacket(std::move(inventoryPacket));
 }
 
