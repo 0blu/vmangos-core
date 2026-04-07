@@ -271,7 +271,7 @@ void WorldSession::HandleItemQuerySingleOpcode(WorldPackets::Item::QueryItem con
     if (!pProto || (!pProto->Discovered && GetSecurity() <= SEC_PLAYER))
     {
         auto itemResponse = std::make_unique<WorldPackets::Item::ItemQuerySingleResponse>();
-        itemResponse->itemId = packet.itemEntry;
+        itemResponse->itemEntry = packet.itemEntry;
         SendPacket(std::move(itemResponse));
         return;
     }
@@ -294,7 +294,7 @@ void WorldSession::HandleItemQuerySingleOpcode(WorldPackets::Item::QueryItem con
 
     auto itemResponse = std::make_unique<WorldPackets::Item::ItemQuerySingleResponse>();
     itemResponse->found = true;
-    itemResponse->itemId = pProto->ItemId;
+    itemResponse->itemEntry = pProto->ItemId;
     itemResponse->itemClass = pProto->Class;
     // client known only 0 subclass (and 1-2 obsolute subclasses)
     itemResponse->subClass = (pProto->Class == ITEM_CLASS_CONSUMABLE ? 0 : pProto->SubClass);

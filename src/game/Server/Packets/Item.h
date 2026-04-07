@@ -314,7 +314,7 @@ namespace WorldPackets { namespace Item
     {
     public:
         bool found = false;
-        uint32 itemId = 0;
+        uint32 itemEntry = 0;
         uint32 itemClass = 0;
         uint32 subClass = 0;                   // client known only 0 subclass for consumables (and 1-2 obsolete subclasses)
         std::string name;                      // max length 256

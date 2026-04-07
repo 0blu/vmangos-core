@@ -192,11 +192,11 @@ void WorldPackets::Item::ItemQuerySingleResponse::AppendBodyTo(ByteBuffer& buffe
 {
     if (!found)
     {
-        buffer << uint32(itemId | 0x80000000);
+        buffer << uint32(itemEntry | 0x80000000);
         return;
     }
 
-    buffer << itemId;
+    buffer << itemEntry;
     buffer << itemClass;
     buffer << subClass;
     buffer << name;
