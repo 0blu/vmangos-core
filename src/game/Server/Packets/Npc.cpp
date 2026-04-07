@@ -98,13 +98,13 @@ void WorldPackets::Npc::ShowBank::AppendBodyTo(ByteBuffer& buffer) const
 
 void WorldPackets::Npc::StableResult::AppendBodyTo(ByteBuffer& buffer) const
 {
-    buffer << uint8(result);
+    buffer << result;
 }
 
 void WorldPackets::Npc::TrainerBuySucceeded::AppendBodyTo(ByteBuffer& buffer) const
 {
     buffer << ObjectGuid(trainerGuid);
-    buffer << uint32(spellId);
+    buffer << spellId;
 }
 
 void WorldPackets::Npc::TrainerBuyFailed::AppendBodyTo(ByteBuffer& buffer) const
@@ -135,4 +135,26 @@ void WorldPackets::Npc::NpcTextUpdate::AppendBodyTo(ByteBuffer& buffer) const
         buffer << options[i].emoteDelay3;
         buffer << options[i].emoteId3;
     }
+}
+
+void WorldPackets::Npc::TrainerListResponse::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << trainerGuid;
+    buffer << trainerType;
+    buffer << uint32(spells.size());
+    for (auto const& spell : spells)
+    {
+        buffer << spell.spellId;
+        buffer << spell.state;
+        buffer << spell.cost;
+        buffer << spell.canLearnPrimaryProf;
+        buffer << spell.isPrimaryProfFirstRank;
+        buffer << spell.spellLevel;
+        buffer << spell.reqSkill;
+        buffer << spell.reqSkillValue;
+        buffer << spell.spellReq1;
+        buffer << spell.spellReq2;
+        buffer << uint32(0);
+    }
+    buffer << title;
 }

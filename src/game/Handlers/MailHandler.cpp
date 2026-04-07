@@ -722,101 +722,72 @@ void WorldSession::HandleGetMailList(WorldPackets::Mail::GetMailList const& pack
     MasterPlayer* pl = GetMasterPlayer();
     ASSERT(pl);
 
-    constexpr uint32 averageSizePerMail =
-        sizeof(uint32) /*Message Id*/ +
-        sizeof(uint8) /*Message Type*/ +
-        sizeof(uint64) /*Sender Guid*/ +
-        32 /*Subject (max 64)*/ +
-        sizeof(uint32) /*Item Text Id*/ +
-        sizeof(uint32) /*Unknown*/ +
-        sizeof(uint32) /*Stationery*/ +
-        sizeof(uint32) /*Item Entry*/ +
-        sizeof(uint32) /*Item Enchantment Id*/ +
-        sizeof(uint32) /*Item Random Property Id*/ +
-        sizeof(uint32) /*Item Suffix Factor*/ +
-        sizeof(uint8) /*Item Count*/ +
-        sizeof(uint32) /*Item Spell Charges*/ +
-        sizeof(uint32) /*Item Max Durability*/ +
-        sizeof(uint32) /*Item Durability*/ +
-        sizeof(uint32) /*Money*/ +
-        sizeof(uint32) /*Cod*/ +
-        sizeof(uint32) /*Checked*/ +
-        sizeof(float) /*Expire Time*/
-#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
-        + sizeof(uint32) /*Mail Template Id*/
-#endif
-        ;
-
-    WorldPacket data(SMSG_MAIL_LIST_RESULT, 1 + std::min(pl->GetMailSize(), 253u) * averageSizePerMail);
-    data << uint8(0);                                       // mail's count
+    auto mailListPacket = std::make_unique<WorldPackets::Mail::MailListResult>();
     time_t cur_time = time(nullptr);
 
-    uint32 mailsCount = 0;                                  // real send to client mails amount
     for (PlayerMails::iterator itr = pl->GetMailBegin(); itr != pl->GetMailEnd(); ++itr)
     {
         // packet send mail count as uint8, prevent overflow
-        if (mailsCount >= 254)
+        if (mailListPacket->mails.size() >= 254)
             break;
 
         // skip deleted or not delivered (deliver delay not expired) mails
         if ((*itr)->state == MAIL_STATE_DELETED || cur_time < (*itr)->deliver_time || cur_time > (*itr)->expire_time)
             continue;
 
-        data << uint32((*itr)->messageID);                  // Message ID
-        data << uint8((*itr)->messageType);                 // Message Type
+        WorldPackets::Mail::MailListEntry entry;
+        entry.messageId = (*itr)->messageID;
+        entry.messageType = (*itr)->messageType;
 
         switch ((*itr)->messageType)
         {
-            case MAIL_NORMAL:                               // sender guid
-                data << ObjectGuid(HIGHGUID_PLAYER, (*itr)->sender);
+            case MAIL_NORMAL:
+                entry.hasPlayerSender = true;
+                entry.senderPlayerGuid = ObjectGuid(HIGHGUID_PLAYER, (*itr)->sender);
                 break;
             case MAIL_CREATURE:
             case MAIL_GAMEOBJECT:
             case MAIL_AUCTION:
-                data << (uint32)(*itr)->sender;             // creature/gameobject entry, auction id
+                entry.hasSenderEntry = true;
+                entry.senderEntry = (*itr)->sender;
                 break;
-            case MAIL_ITEM:                                 // item entry (?) sender = "Unknown", NYI
+            case MAIL_ITEM:
                 break;
         }
 
-        data << (*itr)->subject;                            // Subject string - once 00, when mail type = 3
-        data << uint32((*itr)->itemTextId);                 // sure about this
-        data << uint32(0);                                  // package (Package.dbc)
-        data << uint32((*itr)->stationery);                 // stationery (Stationery.dbc)
+        entry.subject = (*itr)->subject;
+        entry.itemTextId = (*itr)->itemTextId;
+        entry.stationery = (*itr)->stationery;
 
         // 1.12.1 can have only single item
         Item *item = !(*itr)->items.empty() ? pl->GetMItem((*itr)->items[0].itemGuid) : nullptr;
 
         if (item)
         {
-            data << uint32(item->GetEntry());
-            data << uint32(item->GetEnchantmentId((EnchantmentSlot)PERM_ENCHANTMENT_SLOT)); // permanent enchantment
-            data << uint32(item->GetItemRandomPropertyId());                                // can be negative
-            data << uint32(item->GetItemSuffixFactor());                                    // unk
-            data << uint8(item->GetCount());                                                // stack count
-            data << uint32(item->GetSpellCharges());                                        // charges
-            data << uint32(item->GetUInt32Value(ITEM_FIELD_MAXDURABILITY));                 // durability max
-            data << uint32(item->GetUInt32Value(ITEM_FIELD_DURABILITY));                    // durability current
-        }
-        else
-        {
-            data << uint32(0) << uint32(0) << uint32(0) << uint32(0) << uint8(0) << uint32(0) << uint32(0) << uint32(0);
+            entry.itemInfo.hasItem = true;
+            entry.itemInfo.entry = item->GetEntry();
+            entry.itemInfo.enchantmentId = item->GetEnchantmentId((EnchantmentSlot)PERM_ENCHANTMENT_SLOT);
+            entry.itemInfo.randomPropertyId = item->GetItemRandomPropertyId();
+            entry.itemInfo.suffixFactor = item->GetItemSuffixFactor();
+            entry.itemInfo.stackCount = item->GetCount();
+            entry.itemInfo.spellCharges = item->GetSpellCharges();
+            entry.itemInfo.maxDurability = item->GetUInt32Value(ITEM_FIELD_MAXDURABILITY);
+            entry.itemInfo.durability = item->GetUInt32Value(ITEM_FIELD_DURABILITY);
         }
 
-        data << uint32((*itr)->money);                      // copper
-        data << uint32((*itr)->COD);                        // Cash on delivery
-        data << uint32((*itr)->checked);                    // flags
-        data << float(float((*itr)->expire_time - time(nullptr)) / float(DAY));// Time
+        entry.money = (*itr)->money;
+        entry.COD = (*itr)->COD;
+        entry.checked = (*itr)->checked;
+        entry.expireTime = float(float((*itr)->expire_time - time(nullptr)) / float(DAY));
 
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
-        data << uint32((*itr)->mailTemplateId);             // mail template (MailTemplate.dbc)
+        entry.mailTemplateId = (*itr)->mailTemplateId;
 #endif
 
-        mailsCount += 1;
+        mailListPacket->mails.push_back(std::move(entry));
     }
 
-    data.put<uint8>(0, mailsCount);                         // set real send mails to client
-    SendPacket(&data);
+    SendPacket(std::move(mailListPacket));
 
     // recalculate m_nextMailDelivereTime and unReadMails
     pl->UpdateNextMailTimeAndUnreads();

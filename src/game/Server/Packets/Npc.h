@@ -4,6 +4,7 @@
 #include "Packet.h"
 #include "ObjectGuid.h"
 #include <string>
+#include <vector>
 
 namespace WorldPackets { namespace Npc
 {
@@ -202,6 +203,32 @@ namespace WorldPackets { namespace Npc
         ObjectGuid tabardVendorNpcGuid;
 
         explicit TabardVendorActivateResponse() : ServerPacket(MSG_TABARDVENDOR_ACTIVATE) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    struct TrainerSpellEntry
+    {
+        uint32 spellId = 0;
+        uint8 state = 0;
+        uint32 cost = 0;
+        uint32 canLearnPrimaryProf = 0;        // primary prof. learn confirmation dialog
+        uint32 isPrimaryProfFirstRank = 0;     // must be equal prev. field to have learn button in enabled state
+        uint8 spellLevel = 0;
+        uint32 reqSkill = 0;
+        uint32 reqSkillValue = 0;
+        uint32 spellReq1 = 0;
+        uint32 spellReq2 = 0;
+    };
+
+    class TrainerListResponse final : public ServerPacket
+    {
+    public:
+        ObjectGuid trainerGuid;
+        uint32 trainerType = 0;
+        std::vector<TrainerSpellEntry> spells;
+        std::string title;
+
+        explicit TrainerListResponse() : ServerPacket(SMSG_TRAINER_LIST) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
 

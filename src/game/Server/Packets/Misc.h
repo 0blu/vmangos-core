@@ -446,6 +446,30 @@ namespace WorldPackets { namespace Misc
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
 
+    struct WhoEntry
+    {
+        std::string playerName;
+        std::string guildName;
+        uint32 level = 0;
+        uint32 classId = 0;
+        uint32 raceId = 0;
+        uint32 zoneId = 0;
+#if SUPPORTED_CLIENT_BUILD <= CLIENT_BUILD_1_8_4
+        uint32 whoListPartyStatus = 0;
+#endif
+    };
+
+    class WhoResponse final : public ServerPacket
+    {
+    public:
+        uint32 listedCount = 0;
+        uint32 onlineCount = 0;
+        std::vector<WhoEntry> entries;
+
+        explicit WhoResponse() : ServerPacket(SMSG_WHO) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
 }} // namespace WorldPackets::Misc
 
 #endif // MANGOS_PACKETS_MISC_H

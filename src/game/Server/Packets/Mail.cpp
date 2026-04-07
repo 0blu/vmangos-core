@@ -68,7 +68,7 @@ void WorldPackets::Mail::MailCreateTextItem::ReadFromWorldPacket(WorldPacket& re
 
 void WorldPackets::Mail::ReceivedMail::AppendBodyTo(ByteBuffer& buffer) const
 {
-    buffer << uint32(notifyDelay);
+    buffer << notifyDelay;
 }
 
 void WorldPackets::Mail::SendMailResult::AppendBodyTo(ByteBuffer& buffer) const
@@ -96,4 +96,49 @@ void WorldPackets::Mail::ItemTextQueryResponse::AppendBodyTo(ByteBuffer& buffer)
 void WorldPackets::Mail::QueryNextMailTimeResponse::AppendBodyTo(ByteBuffer& buffer) const
 {
     buffer << nextMailTime;
+}
+
+void WorldPackets::Mail::MailListResult::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << uint8(mails.size());
+    for (auto const& mail : mails)
+    {
+        buffer << mail.messageId;
+        buffer << mail.messageType;
+
+        if (mail.hasPlayerSender)
+            buffer << mail.senderPlayerGuid;
+        else if (mail.hasSenderEntry)
+            buffer << mail.senderEntry;
+
+        buffer << mail.subject;
+        buffer << mail.itemTextId;
+        buffer << uint32(0); // package (Package.dbc)
+        buffer << mail.stationery;
+
+        if (mail.itemInfo.hasItem)
+        {
+            buffer << mail.itemInfo.entry;
+            buffer << mail.itemInfo.enchantmentId;
+            buffer << mail.itemInfo.randomPropertyId;
+            buffer << mail.itemInfo.suffixFactor;
+            buffer << mail.itemInfo.stackCount;
+            buffer << mail.itemInfo.spellCharges;
+            buffer << mail.itemInfo.maxDurability;
+            buffer << mail.itemInfo.durability;
+        }
+        else
+        {
+            buffer << uint32(0) << uint32(0) << uint32(0) << uint32(0) << uint8(0) << uint32(0) << uint32(0) << uint32(0);
+        }
+
+        buffer << mail.money;
+        buffer << mail.COD;
+        buffer << mail.checked;
+        buffer << mail.expireTime;
+
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
+        buffer << mail.mailTemplateId;
+#endif
+    }
 }

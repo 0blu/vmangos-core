@@ -84,7 +84,6 @@ public:
         if (!sess->GetPlayer() || !sess->GetPlayer()->IsInWorld())
             return;
 
-        uint32 clientCount = 0;
         Team const team = sess->GetPlayer()->GetTeam();
         AccountTypes const security = sess->GetSecurity();
         bool const allowTwoSideWhoList = sWorld.getConfig(CONFIG_BOOL_ALLOW_TWO_SIDE_WHO_LIST);
@@ -93,9 +92,7 @@ public:
         uint32 const zone = sess->GetPlayer()->GetCachedZoneId();
         bool const notInBattleground = !((zone == 2597) || (zone == 3277) || (zone == 3358));
 
-        WorldPacket data(SMSG_WHO, 50);                         // guess size
-        data << uint32(clientCount);                            // clientCount place holder, listed count
-        data << uint32(clientCount);                            // clientCount place holder, online count
+        auto whoPacket = std::make_unique<WorldPackets::Misc::WhoResponse>();
 
         // TODO: Guard Player map
         HashMapHolder<Player>::MapType& m = sObjectAccessor.GetPlayers();
@@ -202,26 +199,28 @@ public:
             if (!sShow)
                 continue;
 
-            data << pname;                                      // player name
-            data << gname;                                      // guild name
-            data << uint32(lvl);                                // player level
-            data << uint32(classId);                            // player class
-            data << uint32(raceId);                             // player race
-            data << uint32(pzoneId);                            // player zone id
-
+            WorldPackets::Misc::WhoEntry entry;
+            entry.playerName = pname;                       // player name
+            entry.guildName = gname;                        // guild name
+            entry.level = lvl;                              // player level
+            entry.classId = classId;                        // player class
+            entry.raceId = raceId;                          // player race
+            entry.zoneId = pzoneId;                         // player zone id
 #if SUPPORTED_CLIENT_BUILD <= CLIENT_BUILD_1_8_4
-            data << uint32(pPlayer->GetWhoListPartyStatus());   // not actually displayed anywhere
+            entry.whoListPartyStatus = pPlayer->GetWhoListPartyStatus(); // not actually displayed anywhere
 #endif
+            whoPacket->entries.push_back(std::move(entry));
+
             // 50 is maximum player count sent to client
-            if ((++clientCount) == 49)
+            if (whoPacket->entries.size() >= 49)
                 break;
         }
 
         uint32 count = m.size();
-        data.put(0, clientCount);                               // insert right count, listed count
-        data.put(4, count > 49 ? count : clientCount);          // insert right count, online count
+        whoPacket->listedCount = static_cast<uint32>(whoPacket->entries.size());
+        whoPacket->onlineCount = count > 49 ? count : whoPacket->listedCount;
 
-        sess->SendPacket(&data);
+        sess->SendPacket(std::move(whoPacket));
     }
 };
 

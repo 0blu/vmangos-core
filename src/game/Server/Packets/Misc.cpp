@@ -257,13 +257,13 @@ void WorldPackets::Misc::LogoutCancelAck::AppendBodyTo(ByteBuffer& /*buffer*/) c
 
 void WorldPackets::Misc::StandStateUpdate::AppendBodyTo(ByteBuffer& buffer) const
 {
-    buffer << uint8(standState);
+    buffer << standState;
 }
 
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_7_1
 void WorldPackets::Misc::PlayTimeWarning::AppendBodyTo(ByteBuffer& buffer) const
 {
-    buffer << uint32(flag);
+    buffer << flag;
     buffer << int32(timeLeftInSeconds);
 }
 #endif
@@ -271,7 +271,7 @@ void WorldPackets::Misc::PlayTimeWarning::AppendBodyTo(ByteBuffer& buffer) const
 void WorldPackets::Misc::LogoutResponse::AppendBodyTo(ByteBuffer& buffer) const
 {
     buffer << reason;
-    buffer << uint8(instant);
+    buffer << instant;
 }
 
 void WorldPackets::Misc::PlayedTime::AppendBodyTo(ByteBuffer& buffer) const
@@ -295,4 +295,22 @@ void WorldPackets::Misc::UpdateAccountDataResponse::AppendBodyTo(ByteBuffer& buf
     buffer << type;
     buffer << decompressedLength;
     buffer.append(compressedData.data(), compressedData.size());
+}
+
+void WorldPackets::Misc::WhoResponse::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << listedCount;
+    buffer << onlineCount;
+    for (auto const& entry : entries)
+    {
+        buffer << entry.playerName;
+        buffer << entry.guildName;
+        buffer << entry.level;
+        buffer << entry.classId;
+        buffer << entry.raceId;
+        buffer << entry.zoneId;
+#if SUPPORTED_CLIENT_BUILD <= CLIENT_BUILD_1_8_4
+        buffer << entry.whoListPartyStatus;
+#endif
+    }
 }
