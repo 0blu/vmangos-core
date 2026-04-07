@@ -470,6 +470,45 @@ namespace WorldPackets { namespace Misc
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
 
+    class LookingForGroup final : public ServerPacket
+    {
+    public:
+        uint32 unk = 0;
+
+        explicit LookingForGroup() : ServerPacket(MSG_LOOKING_FOR_GROUP) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class InspectHonorStatsResponse final : public ServerPacket
+    {
+    public:
+        ObjectGuid playerGuid;
+        uint8 highestRank = 0;          // Highest Rank
+        uint32 sessionKills = 0;        // Today Honorable and Dishonorable Kills
+        uint16 yesterdayHK = 0;         // Yesterday Honorable Kills
+        uint16 unknownOld1 = 0;         // Unknown (deprecated, yesterday dishonourable?)
+        uint16 lastWeekHK = 0;          // Last Week Honorable Kills
+        uint16 unknownOld2 = 0;         // Unknown (deprecated, last week dishonourable?)
+#if SUPPORTED_CLIENT_BUILD >= CLIENT_BUILD_1_6_1
+        uint16 thisWeekHK = 0;          // This Week Honorable kills
+        uint16 unknownOld3 = 0;         // Unknown (deprecated, this week dishonourable?)
+#endif
+        uint32 lifetimeHK = 0;          // Lifetime Honorable Kills
+        uint32 lifetimeDHK = 0;         // Lifetime Dishonorable Kills
+        uint32 yesterdayHonor = 0;      // Yesterday Honor
+        uint32 lastWeekHonor = 0;       // Last Week Honor
+#if SUPPORTED_CLIENT_BUILD >= CLIENT_BUILD_1_6_1
+        uint32 thisWeekHonor = 0;       // This Week Honor
+#endif
+        uint32 lastWeekRank = 0;        // Last Week Standing
+#if SUPPORTED_CLIENT_BUILD >= CLIENT_BUILD_1_6_1
+        uint8 rankBar = 0;              // Rank progress bar
+#endif
+
+        explicit InspectHonorStatsResponse() : ServerPacket(MSG_INSPECT_HONOR_STATS) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
 }} // namespace WorldPackets::Misc
 
 #endif // MANGOS_PACKETS_MISC_H

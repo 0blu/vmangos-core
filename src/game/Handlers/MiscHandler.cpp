@@ -275,9 +275,8 @@ void WorldSession::HandleWhoOpcode(WorldPackets::Misc::Who const& packet)
 
 void WorldSession::HandleLFGOpcode(NullClientPacket const& /*packet*/)
 {
-    WorldPacket data(MSG_LOOKING_FOR_GROUP, 4);
-    data << uint32(0);
-    SendPacket(&data);
+    auto lfgPacket = std::make_unique<WorldPackets::Misc::LookingForGroup>();
+    SendPacket(std::move(lfgPacket));
 }
 
 void WorldSession::HandleLogoutRequestOpcode(NullClientPacket const& /*packet*/)
@@ -966,87 +965,68 @@ void WorldSession::HandleInspectHonorStatsOpcode(WorldPackets::Misc::InspectHono
     if (_player->IsValidAttackTarget(pTarget))
         return;
 
-    WorldPacket data(MSG_INSPECT_HONOR_STATS, (
-        8
-        + 1
-        + 4
-        + 4
-        + 4
-// World of Warcraft Client Patch 1.6.0 (2005-07-12)
-// - There is a new "This Week" section of the Honor tab, which will display PvP accomplishments of the current week.
-#if SUPPORTED_CLIENT_BUILD >= CLIENT_BUILD_1_6_1
-        + 4
-#endif
-        + 4
-        + 4
-        + 4
-        + 4
-#if SUPPORTED_CLIENT_BUILD >= CLIENT_BUILD_1_6_1
-        + 4
-#endif
-        + 4
-// World of Warcraft Client Patch 1.6.0 (2005-07-12)
-// - There is now a progress bar on the Honor tab of your character window that displays how close you are to your next rank.
-#if SUPPORTED_CLIENT_BUILD >= CLIENT_BUILD_1_6_1
-        + 1
-#endif
-    ));
+    auto honorStats = std::make_unique<WorldPackets::Misc::InspectHonorStatsResponse>();
 
     // player guid
-    data << packet.guid;
+    honorStats->playerGuid = packet.guid;
+
+// World of Warcraft Client Patch 1.6.0 (2005-07-12)
+// - There is a new "This Week" section of the Honor tab, which will display PvP accomplishments of the current week.
+// World of Warcraft Client Patch 1.6.0 (2005-07-12)
+// - There is now a progress bar on the Honor tab of your character window that displays how close you are to your next rank.
 
     // Highest Rank
-    data << (uint8)pTarget->GetHonorMgr().GetHighestRank().rank;
+    honorStats->highestRank = pTarget->GetHonorMgr().GetHighestRank().rank;
 
     // Today Honorable and Dishonorable Kills
-    data << pTarget->GetUInt32Value(PLAYER_FIELD_SESSION_KILLS);
+    honorStats->sessionKills = pTarget->GetUInt32Value(PLAYER_FIELD_SESSION_KILLS);
 
     // Yesterday Honorable Kills
-    data << pTarget->GetUInt16Value(PLAYER_FIELD_YESTERDAY_KILLS, 0);
+    honorStats->yesterdayHK = pTarget->GetUInt16Value(PLAYER_FIELD_YESTERDAY_KILLS, 0);
 
     // Unknown (deprecated, yesterday dishonourable?)
-    data << (uint16)0;
+    honorStats->unknownOld1 = 0;
 
     // Last Week Honorable Kills
-    data << pTarget->GetUInt16Value(PLAYER_FIELD_LAST_WEEK_KILLS, 0);
+    honorStats->lastWeekHK = pTarget->GetUInt16Value(PLAYER_FIELD_LAST_WEEK_KILLS, 0);
 
     // Unknown (deprecated, last week dishonourable?)
-    data << (uint16)0;
+    honorStats->unknownOld2 = 0;
 
 #if SUPPORTED_CLIENT_BUILD >= CLIENT_BUILD_1_6_1
     // This Week Honorable kills
-    data << pTarget->GetUInt16Value(PLAYER_FIELD_THIS_WEEK_KILLS, 0);
+    honorStats->thisWeekHK = pTarget->GetUInt16Value(PLAYER_FIELD_THIS_WEEK_KILLS, 0);
 
     // Unknown (deprecated, this week dishonourable?)
-    data << (uint16)0;
+    honorStats->unknownOld3 = 0;
 #endif
 
     // Lifetime Honorable Kills
-    data << pTarget->GetUInt32Value(PLAYER_FIELD_LIFETIME_HONORBALE_KILLS);
+    honorStats->lifetimeHK = pTarget->GetUInt32Value(PLAYER_FIELD_LIFETIME_HONORBALE_KILLS);
 
     // Lifetime Dishonorable Kills
-    data << pTarget->GetUInt32Value(PLAYER_FIELD_LIFETIME_DISHONORBALE_KILLS);
+    honorStats->lifetimeDHK = pTarget->GetUInt32Value(PLAYER_FIELD_LIFETIME_DISHONORBALE_KILLS);
 
     // Yesterday Honor
-    data << pTarget->GetUInt32Value(PLAYER_FIELD_YESTERDAY_CONTRIBUTION);
+    honorStats->yesterdayHonor = pTarget->GetUInt32Value(PLAYER_FIELD_YESTERDAY_CONTRIBUTION);
 
     // Last Week Honor
-    data << pTarget->GetUInt32Value(PLAYER_FIELD_LAST_WEEK_CONTRIBUTION);
+    honorStats->lastWeekHonor = pTarget->GetUInt32Value(PLAYER_FIELD_LAST_WEEK_CONTRIBUTION);
 
 #if SUPPORTED_CLIENT_BUILD >= CLIENT_BUILD_1_6_1
     // This Week Honor
-    data << pTarget->GetUInt32Value(PLAYER_FIELD_THIS_WEEK_CONTRIBUTION);
+    honorStats->thisWeekHonor = pTarget->GetUInt32Value(PLAYER_FIELD_THIS_WEEK_CONTRIBUTION);
 #endif
 
     // Last Week Standing
-    data << pTarget->GetUInt32Value(PLAYER_FIELD_LAST_WEEK_RANK);
+    honorStats->lastWeekRank = pTarget->GetUInt32Value(PLAYER_FIELD_LAST_WEEK_RANK);
 
 #if SUPPORTED_CLIENT_BUILD >= CLIENT_BUILD_1_6_1
     // Rank progress bar
-    data << (uint8)pTarget->GetByteValue(PLAYER_FIELD_BYTES2, PLAYER_FIELD_BYTES_2_OFFSET_HONOR_RANK_BAR);
+    honorStats->rankBar = pTarget->GetByteValue(PLAYER_FIELD_BYTES2, PLAYER_FIELD_BYTES_2_OFFSET_HONOR_RANK_BAR);
 #endif
 
-    SendPacket(&data);
+    SendPacket(std::move(honorStats));
 }
 
 void WorldSession::HandleTeleportToUnitOpcode(WorldPackets::Misc::TeleportToUnit const& packet)

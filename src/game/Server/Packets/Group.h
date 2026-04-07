@@ -174,6 +174,33 @@ namespace WorldPackets { namespace Group
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
 
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_10_2
+    class RaidReadyCheckResponse final : public ServerPacket
+    {
+    public:
+        ObjectGuid senderGuid;  // guid of the player who answered
+        uint8 state = 0;        // ready state
+
+        explicit RaidReadyCheckResponse() : ServerPacket(MSG_RAID_READY_CHECK) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+#endif
+
+    class PartyMemberStatsFull final : public ServerPacket
+    {
+    public:
+        ByteBuffer data;  // pre-built member stats body
+
+        explicit PartyMemberStatsFull() : ServerPacket(
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_5_1
+            SMSG_PARTY_MEMBER_STATS_FULL
+#else
+            SMSG_PARTY_MEMBER_STATS
+#endif
+        ) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
 }} // namespace WorldPackets::Group
 
 #endif // MANGOS_PACKETS_GROUP_H

@@ -578,16 +578,16 @@ void WorldSession::HandleRaidReadyCheckOpcode(WorldPackets::Group::RaidReadyChec
         // Forward to the raid leader
         if (Player* gleader = sObjectMgr.GetPlayer(group->GetLeaderGuid()))
         {
-            WorldPacket data(MSG_RAID_READY_CHECK, 9);
-            data << GetPlayer()->GetObjectGuid();
-            data << uint8(packet.state.value());
-            gleader->GetSession()->SendPacket(&data);
+            auto response = std::make_unique<WorldPackets::Group::RaidReadyCheckResponse>();
+            response->senderGuid = GetPlayer()->GetObjectGuid();
+            response->state = packet.state.value();
+            gleader->GetSession()->SendPacket(std::move(response));
         }
     }
 }
 #endif
 
-void WorldSession::BuildPartyMemberStatsPacket(Player* player, WorldPacket* data, uint32 mask, bool sendAllAuras)
+void WorldSession::BuildPartyMemberStatsPacket(Player* player, ByteBuffer* data, uint32 mask, bool sendAllAuras)
 {
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
     *data << player->GetPackGUID();
@@ -771,29 +771,21 @@ void WorldSession::HandleRequestPartyMemberStatsOpcode(WorldPackets::Group::Requ
 
     if (!player || !player->IsInSameRaidWith(_player))
     {
-#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_5_1
-        WorldPacket data(SMSG_PARTY_MEMBER_STATS_FULL, 3 + 4 + 1);
-#else
-        WorldPacket data(SMSG_PARTY_MEMBER_STATS, 8 + 4 + 1);
-#endif
+        auto statsPacket = std::make_unique<WorldPackets::Group::PartyMemberStatsFull>();
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
-        data << packet.guid.WriteAsPacked();
+        statsPacket->data << packet.guid.WriteAsPacked();
 #else
-        data << packet.guid;
+        statsPacket->data << packet.guid;
 #endif
-        data << uint32(GROUP_UPDATE_FLAG_STATUS);
-        data << uint8(MEMBER_STATUS_OFFLINE);
-        SendPacket(&data);
+        statsPacket->data << uint32(GROUP_UPDATE_FLAG_STATUS);
+        statsPacket->data << uint8(MEMBER_STATUS_OFFLINE);
+        SendPacket(std::move(statsPacket));
         return;
     }
 
-#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_5_1
-    WorldPacket data(SMSG_PARTY_MEMBER_STATS_FULL, 4 + 2 + 2 + 2 + 1 + 2 * 6 + 8 + 1 + 8);
-#else
-    WorldPacket data(SMSG_PARTY_MEMBER_STATS, 4 + 2 + 2 + 2 + 1 + 2 * 6 + 8 + 1 + 8);
-#endif
-    BuildPartyMemberStatsPacket(player, &data, GROUP_UPDATE_FULL, true);
-    SendPacket(&data);
+    auto statsPacket = std::make_unique<WorldPackets::Group::PartyMemberStatsFull>();
+    BuildPartyMemberStatsPacket(player, &statsPacket->data, GROUP_UPDATE_FULL, true);
+    SendPacket(std::move(statsPacket));
 }
 
 void WorldSession::HandleRequestRaidInfoOpcode(NullClientPacket const& /*packet*/)

@@ -134,6 +134,16 @@ namespace WorldPackets { namespace Quest
     };
     // --- Server Packets ---
 
+    class QuestPushResultResponse final : public ServerPacket
+    {
+    public:
+        ObjectGuid senderGuid;  // guid of the player who sent the quest share
+        uint8 msg = 0;          // enum QuestShareMessages
+
+        explicit QuestPushResultResponse() : ServerPacket(MSG_QUEST_PUSH_RESULT) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
     class QuestLogFull final : public ServerPacket
     {
     public:

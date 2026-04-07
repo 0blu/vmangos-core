@@ -1626,7 +1626,7 @@ void Player::AutoReSummonPet()
 }
 
 
-bool Player::BuildEnumData(const std::unique_ptr<QueryResult>& result, WorldPacket* pData)
+bool Player::BuildEnumData(const std::unique_ptr<QueryResult>& result, ByteBuffer* pData)
 {
     //                0                1                2                3                 4                  5                6                7                      8                      9                       10
     //    "SELECT characters.guid, characters.name, characters.race, characters.class, characters.gender, characters.skin, characters.face, characters.hair_style, characters.hair_color, characters.facial_hair, characters.level, "

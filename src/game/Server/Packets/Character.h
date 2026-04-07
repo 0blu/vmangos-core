@@ -94,6 +94,16 @@ namespace WorldPackets { namespace Character
         explicit LoginVerifyWorld() : ServerPacket(SMSG_LOGIN_VERIFY_WORLD) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
+
+    class CharEnum final : public ServerPacket
+    {
+    public:
+        uint8 numChars = 0;       // number of characters
+        ByteBuffer charData;      // pre-built character data
+
+        explicit CharEnum() : ServerPacket(SMSG_CHAR_ENUM) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
 }} // namespace WorldPackets::Character
 
 #endif // MANGOS_PACKETS_CHARACTER_H

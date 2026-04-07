@@ -488,39 +488,35 @@ void WorldSession::HandleListStabledPetsOpcode(WorldPackets::Npc::ListStabledPet
 
 void WorldSession::SendStablePet(ObjectGuid guid)
 {
-    WorldPacket data(MSG_LIST_STABLED_PETS, 200);           // guess size
-    data << guid;
+    auto stablePetPacket = std::make_unique<WorldPackets::Npc::ListStabledPetsResponse>();
+    stablePetPacket->npcGuid = guid;
+    stablePetPacket->numSlots = GetPlayer()->m_stableSlots;
 
     Pet* pet = _player->GetPet();
-
-    size_t wpos = data.wpos();
-    data << uint8(0);                                       // place holder for slot show number
-
-    data << uint8(GetPlayer()->m_stableSlots);
-
-    uint8 num = 0;                                          // counter for place holder
 
     // not let move dead pet in slot
     if (pet && pet->IsAlive() && pet->GetPetType() == HUNTER_PET)
     {
-        data << uint32(pet->GetCharmInfo()->GetPetNumber());
-        data << uint32(pet->GetEntry());
-        data << uint32(pet->GetLevel());
-        data << pet->GetName();                             // petname
-        data << uint32(pet->GetLoyaltyLevel());             // loyalty
-        data << uint8(0x01);                                // client slot 1 == current pet (0)
-        ++num;
+        WorldPackets::Npc::StabledPetEntry entry;
+        entry.petNumber = pet->GetCharmInfo()->GetPetNumber();
+        entry.entry = pet->GetEntry();
+        entry.level = pet->GetLevel();
+        entry.name = pet->GetName();                        // petname
+        entry.loyalty = pet->GetLoyaltyLevel();             // loyalty
+        entry.slot = 0x01;                                  // client slot 1 == current pet (0)
+        stablePetPacket->pets.push_back(entry);
     }
     // Pet may be despawned if owner went far away from pet for example.
     else if (CharacterPetCache const* currentPetData = sCharacterDatabaseCache.GetCharacterPetByOwner(_player->GetGUIDLow()))
     {
-        data << uint32(currentPetData->id);
-        data << uint32(currentPetData->entry);
-        data << uint32(currentPetData->level);
-        data << currentPetData->name;                           // petname
-        data << uint32(currentPetData->loyalty);                // loyalty
-        data << uint8(0x01);                                    // client slot 1 == current pet (0)
-        ++num;
+        WorldPackets::Npc::StabledPetEntry entry;
+        entry.petNumber = currentPetData->id;
+        entry.entry = currentPetData->entry;
+        entry.level = currentPetData->level;
+        entry.name = currentPetData->name;                  // petname
+        entry.loyalty = currentPetData->loyalty;            // loyalty
+        entry.slot = 0x01;                                  // client slot 1 == current pet (0)
+        stablePetPacket->pets.push_back(entry);
     }
     CharPetMap const& pets = sCharacterDatabaseCache.GetCharPetsMap();
     CharPetMap::const_iterator myPets = pets.find(GetPlayer()->GetGUIDLow());
@@ -528,17 +524,17 @@ void WorldSession::SendStablePet(ObjectGuid guid)
         for (const auto it : myPets->second)
             if (it->slot >= PET_SAVE_FIRST_STABLE_SLOT && it->slot <= PET_SAVE_LAST_STABLE_SLOT)
             {
-                data << uint32(it->id);                 // pet number
-                data << uint32(it->entry);              // creature entry
-                data << uint32(it->level);              // level
-                data << it->name;                       // name
-                data << uint32(it->loyalty);            // loyalty
-                data << uint8(it->slot + 1);            // slot
-                ++num;
+                WorldPackets::Npc::StabledPetEntry entry;
+                entry.petNumber = it->id;                   // pet number
+                entry.entry = it->entry;                    // creature entry
+                entry.level = it->level;                    // level
+                entry.name = it->name;                      // name
+                entry.loyalty = it->loyalty;                // loyalty
+                entry.slot = it->slot + 1;                  // slot
+                stablePetPacket->pets.push_back(entry);
             }
 
-    data.put<uint8>(wpos, num);                             // set real data to placeholder
-    SendPacket(&data);
+    SendPacket(std::move(stablePetPacket));
 }
 
 void WorldSession::SendStableResult(uint8 res)

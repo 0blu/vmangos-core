@@ -275,10 +275,7 @@ void WorldSession::HandleBattleGroundPlayerPositionsOpcode(NullClientPacket cons
     if (!bg)                                                // can't be received if player not in battleground
         return;
 
-    WorldPacket data(MSG_BATTLEGROUND_PLAYER_POSITIONS);
-    size_t countPos = data.wpos();
-    uint32 count = 0;
-    data << uint32(0);
+    auto positions = std::make_unique<WorldPackets::Battleground::BattlegroundPlayerPositions>();
     if (_player->GetGroup() != bg->GetBgRaid(_player->GetTeam()))
     {
         for (auto const& itr : bg->GetPlayers())
@@ -287,15 +284,15 @@ void WorldSession::HandleBattleGroundPlayerPositionsOpcode(NullClientPacket cons
             {
                 if (Player const* pPlayer = sObjectMgr.GetPlayer(itr.first))
                 {
-                    data << ObjectGuid(pPlayer->GetObjectGuid());
-                    data << float(pPlayer->GetPositionX());
-                    data << float(pPlayer->GetPositionY());
-                    count++;
+                    WorldPackets::Battleground::BgPlayerPosition entry;
+                    entry.guid = pPlayer->GetObjectGuid();
+                    entry.x = pPlayer->GetPositionX();
+                    entry.y = pPlayer->GetPositionY();
+                    positions->players.push_back(entry);
                 }
             }
         }
     }
-    data.put<uint32>(countPos, count);
 
     switch (bg->GetTypeID())
     {
@@ -307,25 +304,25 @@ void WorldSession::HandleBattleGroundPlayerPositionsOpcode(NullClientPacket cons
             else
                 pFlagCarrier = sObjectMgr.GetPlayer(((BattleGroundWS*)bg)->GetAllianceFlagPickerGuid());
 
-            data << uint8(pFlagCarrier ? 1 : 0);
+            positions->numFlagCarriers = pFlagCarrier ? 1 : 0;
 
             if (pFlagCarrier)
             {
-                data << ObjectGuid(pFlagCarrier->GetObjectGuid());
-                data << float(pFlagCarrier->GetPositionX());
-                data << float(pFlagCarrier->GetPositionY());
+                positions->flagCarrierGuid = pFlagCarrier->GetObjectGuid();
+                positions->flagCarrierX = pFlagCarrier->GetPositionX();
+                positions->flagCarrierY = pFlagCarrier->GetPositionY();
             }
             break;
         }
         default:
         {
             // other battlegrounds don't have flag carriers
-            data << uint8(0);
+            positions->numFlagCarriers = 0;
             break;
         }
     }
 
-    SendPacket(&data);
+    SendPacket(std::move(positions));
 }
 
 void WorldSession::HandlePVPLogDataOpcode(NullClientPacket const& /*packet*/)

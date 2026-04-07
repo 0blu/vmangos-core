@@ -314,3 +314,34 @@ void WorldPackets::Misc::WhoResponse::AppendBodyTo(ByteBuffer& buffer) const
 #endif
     }
 }
+
+void WorldPackets::Misc::LookingForGroup::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << unk;
+}
+
+void WorldPackets::Misc::InspectHonorStatsResponse::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << playerGuid;
+    buffer << highestRank;
+    buffer << sessionKills;
+    buffer << yesterdayHK;
+    buffer << unknownOld1;
+    buffer << lastWeekHK;
+    buffer << unknownOld2;
+#if SUPPORTED_CLIENT_BUILD >= CLIENT_BUILD_1_6_1
+    buffer << thisWeekHK;
+    buffer << unknownOld3;
+#endif
+    buffer << lifetimeHK;
+    buffer << lifetimeDHK;
+    buffer << yesterdayHonor;
+    buffer << lastWeekHonor;
+#if SUPPORTED_CLIENT_BUILD >= CLIENT_BUILD_1_6_1
+    buffer << thisWeekHonor;
+#endif
+    buffer << lastWeekRank;
+#if SUPPORTED_CLIENT_BUILD >= CLIENT_BUILD_1_6_1
+    buffer << rankBar;
+#endif
+}

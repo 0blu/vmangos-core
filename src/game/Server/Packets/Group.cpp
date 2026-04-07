@@ -105,3 +105,16 @@ void WorldPackets::Group::GroupDeclineNotification::AppendBodyTo(ByteBuffer& buf
 {
     buffer << playerName;
 }
+
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_10_2
+void WorldPackets::Group::RaidReadyCheckResponse::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << senderGuid;
+    buffer << state;
+}
+#endif
+
+void WorldPackets::Group::PartyMemberStatsFull::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer.append(data.contents(), data.size());
+}

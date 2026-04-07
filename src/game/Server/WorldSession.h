@@ -465,7 +465,7 @@ class WorldSession
 
         // Group
         void BuildPartyMemberStatsChangedPacket(Player* player, WorldPacket* data);
-        void BuildPartyMemberStatsPacket(Player* player, WorldPacket* data, uint32 updateMask, bool sendAllAuras);
+        void BuildPartyMemberStatsPacket(Player* player, ByteBuffer* data, uint32 updateMask, bool sendAllAuras);
 
     public:                                                 // opcodes handlers
         template<typename TClientPacket>

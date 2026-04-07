@@ -67,3 +67,9 @@ void WorldPackets::Character::LoginVerifyWorld::AppendBodyTo(ByteBuffer& buffer)
     buffer << location.z;
     buffer << location.o;
 }
+
+void WorldPackets::Character::CharEnum::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << numChars;
+    buffer.append(charData.contents(), charData.size());
+}
