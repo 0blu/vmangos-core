@@ -90,7 +90,7 @@ void WorldSession::SendTaxiMenu(Creature* unit)
     auto showTaxiPacket = std::make_unique<WorldPackets::Taxi::ShowTaxiNodes>();
     showTaxiPacket->unitGuid = unit->GetObjectGuid();
     showTaxiPacket->currentLocation = curloc;
-    TaxiMask const& mask = GetPlayer()->IsTaxiCheater() ? sTaxiNodesMask : GetPlayer()->m_taxi.GetTaxiMask();
+    const uint32* mask = GetPlayer()->IsTaxiCheater() ? sTaxiNodesMask : GetPlayer()->m_taxi.GetTaxiMask();
     for (int i = 0; i < TaxiMaskSize; ++i)
         showTaxiPacket->taxiMask[i] = mask[i];
     SendPacket(std::move(showTaxiPacket));
