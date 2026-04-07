@@ -65,10 +65,19 @@ void WorldPackets::Trade::TradeStatusExtended::AppendBodyTo(ByteBuffer& buffer) 
         }
         else
         {
-            // Zero-fill empty trade slot: TradeSlotItem has 11 uint32 fields + 2 ObjectGuid (each 8 bytes = 2 x uint32) = 15
-            constexpr uint8 emptySlotFieldCount = 15;
-            for (uint8 j = 0; j < emptySlotFieldCount; ++j)
-                buffer << uint32(0);
+            buffer << uint32(0);       // itemId
+            buffer << uint32(0);       // displayInfoId
+            buffer << uint32(0);       // stackCount
+            buffer << uint32(0);       // isWrapped
+            buffer << ObjectGuid();    // giftCreator
+            buffer << uint32(0);       // enchantmentId
+            buffer << ObjectGuid();    // creator
+            buffer << uint32(0);       // spellCharges
+            buffer << uint32(0);       // suffixFactor
+            buffer << uint32(0);       // randomPropertyId
+            buffer << uint32(0);       // lockId
+            buffer << uint32(0);       // maxDurability
+            buffer << uint32(0);       // durability
         }
     }
 }
