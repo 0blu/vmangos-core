@@ -65,7 +65,7 @@ void WorldPackets::Trade::TradeStatusExtended::AppendBodyTo(ByteBuffer& buffer) 
         }
         else
         {
-            // 11 uint32 fields + 2 ObjectGuid (each 8 bytes = 2 x uint32) = 15
+            // Zero-fill empty trade slot: TradeSlotItem has 11 uint32 fields + 2 ObjectGuid (each 8 bytes = 2 x uint32) = 15
             constexpr uint8 emptySlotFieldCount = 15;
             for (uint8 j = 0; j < emptySlotFieldCount; ++j)
                 buffer << uint32(0);
