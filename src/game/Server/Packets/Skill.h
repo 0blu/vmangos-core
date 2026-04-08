@@ -30,7 +30,7 @@ namespace WorldPackets { namespace Skill
     class TalentWipeConfirm final : public ClientPacket
     {
     public:
-        ObjectGuid guid;
+        ObjectGuid trainerGuid;
 
         explicit TalentWipeConfirm() : ClientPacket(MSG_TALENT_WIPE_CONFIRM) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
@@ -40,8 +40,8 @@ namespace WorldPackets { namespace Skill
     class TalentWipeConfirmResponse final : public ServerPacket
     {
     public:
-        uint64 guid = 0;  // guid of talent master (0 if player has no talents to reset)
-        uint32 cost = 0;  // cost to reset talents (0 if player has no talents to reset)
+        ObjectGuid trainerGuid = 0; // guid of talent master (0 if player has no talents to reset)
+        uint32 cost = 0; // cost in copper to reset talents
 
         explicit TalentWipeConfirmResponse() : ServerPacket(MSG_TALENT_WIPE_CONFIRM) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;

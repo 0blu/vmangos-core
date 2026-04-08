@@ -200,12 +200,12 @@ public:
                 continue;
 
             WorldPackets::Misc::WhoEntry entry;
-            entry.playerName = pname;                       // player name
-            entry.guildName = gname;                        // guild name
-            entry.level = lvl;                              // player level
-            entry.classId = classId;                        // player class
-            entry.raceId = raceId;                          // player race
-            entry.zoneId = pzoneId;                         // player zone id
+            entry.playerName = pname;
+            entry.guildName = gname;
+            entry.level = lvl;
+            entry.classId = classId;
+            entry.raceId = raceId;
+            entry.zoneId = pzoneId;
 #if SUPPORTED_CLIENT_BUILD <= CLIENT_BUILD_1_8_4
             entry.whoListPartyStatus = pPlayer->GetWhoListPartyStatus(); // not actually displayed anywhere
 #endif
