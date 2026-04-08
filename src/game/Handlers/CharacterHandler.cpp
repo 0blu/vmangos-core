@@ -138,7 +138,7 @@ public:
 
 void WorldSession::HandleCharEnum(std::unique_ptr<QueryResult> result)
 {
-    auto charEnum = std::make_unique<WorldPackets::Character::CharEnum>();
+    auto packet = std::make_unique<WorldPackets::Character::CharEnum>();
 
     if (result)
     {
@@ -150,15 +150,15 @@ void WorldSession::HandleCharEnum(std::unique_ptr<QueryResult> result)
                 m_characterMaxLevel = level;
 
             sLog.Out(LOG_BASIC, LOG_LVL_DETAIL, "Build enum data for char guid %u from account %u.", guidlow, GetAccountId());
-            if (Player::BuildEnumData(result, &charEnum->charData))
-                ++charEnum->numChars;
+            if (auto enumData = Player::BuildEnumData(result))
+                packet->characters.push_back(std::move(*enumData));
         }
         while (result->NextRow());
     }
 
-    m_charactersCount = charEnum->numChars;
+    m_charactersCount = static_cast<uint8>(packet->characters.size());
 
-    SendPacket(std::move(charEnum));
+    SendPacket(std::move(packet));
 }
 
 void WorldSession::HandleCharEnumOpcode(NullClientPacket const& /*packet*/)

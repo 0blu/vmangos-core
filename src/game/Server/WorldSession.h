@@ -883,7 +883,7 @@ class WorldSession
         bool m_playerRecentlyLogout;
         bool m_playerSave;
         uint32 m_exhaustionState;
-        uint32 m_charactersCount;
+        uint32 m_charactersCount;                           // init with max, to prevent character creation before amount is recalculated in ChatEnum handler
         uint32 m_characterMaxLevel;
         BigNumber m_sessionKey;
         AccountData m_accountData[NewAccountData::NUM_ACCOUNT_DATA_TYPES];
