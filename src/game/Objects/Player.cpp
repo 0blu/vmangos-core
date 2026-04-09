@@ -1626,7 +1626,7 @@ void Player::AutoReSummonPet()
 }
 
 
-bool Player::BuildEnumData(const std::unique_ptr<QueryResult>& result, WorldPacket* pData)
+nonstd::optional<WorldPackets::Character::CharEnumData> Player::BuildEnumData(const std::unique_ptr<QueryResult>& result)
 {
     //                0                1                2                3                 4                  5                6                7                      8                      9                       10
     //    "SELECT characters.guid, characters.name, characters.race, characters.class, characters.gender, characters.skin, characters.face, characters.hair_style, characters.hair_color, characters.facial_hair, characters.level, "
@@ -1645,87 +1645,63 @@ bool Player::BuildEnumData(const std::unique_ptr<QueryResult>& result, WorldPack
     if (!info)
     {
         sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "Player %u has incorrect race/class pair. Don't build enum.", guid);
-        return false;
+        return nonstd::nullopt;
     }
 
-    *pData << ObjectGuid(HIGHGUID_PLAYER, guid);
-    *pData << fields[1].GetString();                       // name
-    *pData << uint8(pRace);                                // race
-    *pData << uint8(pClass);                               // class
-    *pData << uint8(fields[4].GetUInt8());                 // gender
-
-    uint8 skin = fields[5].GetUInt8();
-    uint8 face = fields[6].GetUInt8();
-    uint8 hairStyle = fields[7].GetUInt8();
-    uint8 hairColor = fields[8].GetUInt8();
-    *pData << uint8(skin);                                 // skin
-    *pData << uint8(face);                                 // face
-    *pData << uint8(hairStyle);                            // hair style
-    *pData << uint8(hairColor);                            // hair color
-
-    uint8 facialHair = fields[9].GetUInt8();
-    *pData << uint8(facialHair);                           // facial hair
-
-    *pData << uint8(fields[10].GetUInt8());                // level
-    *pData << uint32(fields[11].GetUInt32());              // zone
-    *pData << uint32(fields[12].GetUInt32());              // map
-
-    *pData << fields[13].GetFloat();                       // x
-    *pData << fields[14].GetFloat();                       // y
-    *pData << fields[15].GetFloat();                       // z
-
-    *pData << uint32(fields[16].GetUInt32());              // guild id
-
-    uint32 charFlags = fields[17].GetUInt32();
-    *pData << uint32(charFlags);                           // character flags
+    WorldPackets::Character::CharEnumData data;
+    data.guid = ObjectGuid(HIGHGUID_PLAYER, guid);
+    data.name = fields[1].GetCppString();
+    data.race = pRace;
+    data.class_ = pClass;
+    data.gender = fields[4].GetUInt8();
+    data.skin = fields[5].GetUInt8();
+    data.face = fields[6].GetUInt8();
+    data.hairStyle = fields[7].GetUInt8();
+    data.hairColor = fields[8].GetUInt8();
+    data.facialHair = fields[9].GetUInt8();
+    data.level = fields[10].GetUInt8();
+    data.zone = fields[11].GetUInt32();
+    data.map = fields[12].GetUInt32();
+    data.x = fields[13].GetFloat();
+    data.y = fields[14].GetFloat();
+    data.z = fields[15].GetFloat();
+    data.guildId = fields[16].GetUInt32();
+    data.charFlags = fields[17].GetUInt32();
 
     // First login
     uint32 totalPlayedTime = fields[18].GetUInt32();
-    *pData << uint8(totalPlayedTime != 0 ? 0 : 1);
+    data.firstLogin = (totalPlayedTime != 0 ? 0 : 1);
 
     // Pets info
     {
-        uint32 petDisplayId = 0;
-        uint32 petLevel = 0;
-        uint32 petFamily = 0;
-
         // show pet at selection character in character list only for non-ghost character
-        if (result && !(charFlags & CHARACTER_FLAG_GHOST) && (pClass == CLASS_WARLOCK || pClass == CLASS_HUNTER))
+        if (result && !(data.charFlags & CHARACTER_FLAG_GHOST) && (pClass == CLASS_WARLOCK || pClass == CLASS_HUNTER))
         {
             uint32 entry = fields[19].GetUInt32();
             CreatureInfo const* cInfo = sObjectMgr.GetCreatureTemplate(entry);
             if (cInfo)
             {
-                petDisplayId = fields[20].GetUInt32();
-                petLevel = fields[21].GetUInt32();
-                petFamily = cInfo->pet_family;
+                data.petDisplayId = fields[20].GetUInt32();
+                data.petLevel = fields[21].GetUInt32();
+                data.petFamily = cInfo->pet_family;
             }
         }
-
-        *pData << uint32(petDisplayId);
-        *pData << uint32(petLevel);
-        *pData << uint32(petFamily);
     }
 
-
-    Tokens data = StrSplit(fields[22].GetCppString(), " ");
-    for (uint8 slot = 0; slot < INVENTORY_SLOT_BAG_START + 1; slot++)
+    Tokens tokens = StrSplit(fields[22].GetCppString(), " ");
+    for (uint8 slot = 0; slot < WorldPackets::Character::CHAR_ENUM_EQUIPMENT_SLOTS; slot++)
     {
-        uint32 visualbase = slot * 2;                       // entry, perm ench., temp ench.
-        uint32 itemId = GetUInt32ValueFromArray(data, visualbase);
+        uint32 visualbase = slot * 2;
+        uint32 itemId = GetUInt32ValueFromArray(tokens, visualbase);
         ItemPrototype const* proto = sObjectMgr.GetItemPrototype(itemId);
-        if (!proto)
+        if (proto)
         {
-            *pData << uint32(0);
-            *pData << uint8(0);
-            continue;
+            data.equipment[slot].displayInfoId = proto->DisplayInfoID;
+            data.equipment[slot].inventoryType = proto->InventoryType;
         }
-
-        *pData << uint32(proto->DisplayInfoID);
-        *pData << uint8(proto->InventoryType);
     }
 
-    return true;
+    return data;
 }
 
 bool Player::ToggleAFK()
@@ -8414,12 +8390,12 @@ void Player::SetBindPoint(ObjectGuid guid) const
 #endif
 }
 
-void Player::SendTalentWipeConfirm(ObjectGuid guid) const
+void Player::SendTalentWipeConfirm(ObjectGuid trainerGuid) const
 {
-    WorldPacket data(MSG_TALENT_WIPE_CONFIRM, (8 + 4));
-    data << ObjectGuid(guid);
-    data << uint32(GetResetTalentsCost());
-    GetSession()->SendPacket(&data);
+    auto packet = std::make_unique<WorldPackets::Skill::TalentWipeConfirmResponse>();
+    packet->trainerGuid = trainerGuid;
+    packet->cost = GetResetTalentsCost();
+    GetSession()->SendPacket(std::move(packet));
 }
 
 void Player::SendPetSkillWipeConfirm() const

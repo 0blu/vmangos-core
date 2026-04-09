@@ -56,3 +56,21 @@ void WorldPackets::Battleground::GroupJoinedBattleground::AppendBodyTo(ByteBuffe
 {
     buffer << result;
 }
+
+void WorldPackets::Battleground::BattlegroundPlayerPositions::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << uint32(players.size());
+    for (auto const& player : players)
+    {
+        buffer << player.guid;
+        buffer << player.x;
+        buffer << player.y;
+    }
+    buffer << numFlagCarriers;
+    if (numFlagCarriers > 0)
+    {
+        buffer << flagCarrierGuid;
+        buffer << flagCarrierX;
+        buffer << flagCarrierY;
+    }
+}

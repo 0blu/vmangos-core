@@ -102,6 +102,26 @@ namespace WorldPackets { namespace Battleground
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
 
+    struct BgPlayerPosition
+    {
+        ObjectGuid guid;
+        float x = 0.0f;
+        float y = 0.0f;
+    };
+
+    class BattlegroundPlayerPositions final : public ServerPacket
+    {
+    public:
+        std::vector<BgPlayerPosition> players;      // team player positions
+        uint8 numFlagCarriers = 0;                  // other battlegrounds don't have flag carriers
+        ObjectGuid flagCarrierGuid;                 // only valid if numFlagCarriers > 0
+        float flagCarrierX = 0.0f;                  // only valid if numFlagCarriers > 0
+        float flagCarrierY = 0.0f;                  // only valid if numFlagCarriers > 0
+
+        explicit BattlegroundPlayerPositions() : ServerPacket(MSG_BATTLEGROUND_PLAYER_POSITIONS) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
 }} // namespace WorldPackets::Battleground
 
 #endif // MANGOS_PACKETS_BATTLEGROUND_H

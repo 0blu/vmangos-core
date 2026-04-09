@@ -67,3 +67,38 @@ void WorldPackets::Character::LoginVerifyWorld::AppendBodyTo(ByteBuffer& buffer)
     buffer << location.z;
     buffer << location.o;
 }
+
+void WorldPackets::Character::CharEnum::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << uint8(characters.size());
+    for (auto const& c : characters)
+    {
+        buffer << c.guid;
+        buffer << c.name;
+        buffer << c.race;
+        buffer << c.class_;
+        buffer << c.gender;
+        buffer << c.skin;
+        buffer << c.face;
+        buffer << c.hairStyle;
+        buffer << c.hairColor;
+        buffer << c.facialHair;
+        buffer << c.level;
+        buffer << c.zone;
+        buffer << c.map;
+        buffer << c.x;
+        buffer << c.y;
+        buffer << c.z;
+        buffer << c.guildId;
+        buffer << c.charFlags;
+        buffer << c.firstLogin;
+        buffer << c.petDisplayId;
+        buffer << c.petLevel;
+        buffer << c.petFamily;
+        for (auto const& slot : c.equipment)
+        {
+            buffer << slot.displayInfoId;
+            buffer << slot.inventoryType;
+        }
+    }
+}

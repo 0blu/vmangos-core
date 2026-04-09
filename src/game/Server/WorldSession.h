@@ -464,8 +464,8 @@ class WorldSession
         void SendMeetingstoneSetqueue(uint32 areaid, uint8 status);
 
         // Group
-        void BuildPartyMemberStatsChangedPacket(Player* player, WorldPacket* data);
-        void BuildPartyMemberStatsPacket(Player* player, WorldPacket* data, uint32 updateMask, bool sendAllAuras);
+        WorldPackets::Group::PartyMemberStats BuildPartyMemberStatsChangedPacket(Player* player);
+        WorldPackets::Group::PartyMemberStatsData BuildPartyMemberStatsPacket(Player* player, uint32 updateMask, bool sendAllAuras);
 
     public:                                                 // opcodes handlers
         template<typename TClientPacket>
@@ -483,10 +483,6 @@ class WorldSession
             auto const& packetInCorrectForm = dynamic_cast<TClientPacket const&>(packet);
             (this->*THandler)(packetInCorrectForm);
         }
-
-        void Handle_NULL(WorldPacket& recvPacket);          // not used
-        void Handle_EarlyProccess(WorldPacket& recvPacket);// just mark packets processed in WorldSocket::OnRead
-        void Handle_ServerSide(WorldPacket& recvPacket);    // sever side only, can't be accepted from client
 
         void HandleCharEnumOpcode(NullClientPacket const& packet);
         void HandleCharCreateOpcode(WorldPackets::Character::CharCreate const& packet);
@@ -529,7 +525,6 @@ class WorldSession
         void HandleLootReleaseOpcode(WorldPackets::Loot::LootRelease const& packet);
         void HandleLootMasterGiveOpcode(WorldPackets::Loot::LootMasterGive const& packet);
         void HandleWhoOpcode(WorldPackets::Misc::Who const& packet);
-        void HandleLFGOpcode(NullClientPacket const& packet);
         void HandleLogoutRequestOpcode(NullClientPacket const& packet);
         void HandlePlayerLogoutOpcode(NullClientPacket const& packet);
         void HandleLogoutCancelOpcode(NullClientPacket const& packet);
@@ -883,7 +878,7 @@ class WorldSession
         bool m_playerRecentlyLogout;
         bool m_playerSave;
         uint32 m_exhaustionState;
-        uint32 m_charactersCount;
+        uint32 m_charactersCount;                           // init with max, to prevent character creation before amount is recalculated in CharEnum handler
         uint32 m_characterMaxLevel;
         BigNumber m_sessionKey;
         AccountData m_accountData[NewAccountData::NUM_ACCOUNT_DATA_TYPES];

@@ -256,6 +256,27 @@ namespace WorldPackets { namespace Npc
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
 
+    struct StabledPetEntry
+    {
+        uint32 petNumber = 0;   // pet number
+        uint32 entry = 0;       // creature entry
+        uint32 level = 0;       // level
+        std::string name;       // name
+        uint32 loyalty = 0;     // loyalty
+        uint8 slot = 0;         // slot
+    };
+
+    class ListStabledPetsResponse final : public ServerPacket
+    {
+    public:
+        ObjectGuid npcGuid;
+        uint8 numSlots = 0;                     // number of stable slots
+        std::vector<StabledPetEntry> pets;
+
+        explicit ListStabledPetsResponse() : ServerPacket(MSG_LIST_STABLED_PETS) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
 }} // namespace WorldPackets::Npc
 
 #endif // MANGOS_PACKETS_NPC_H

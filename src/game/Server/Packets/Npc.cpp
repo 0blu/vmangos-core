@@ -158,3 +158,19 @@ void WorldPackets::Npc::TrainerListResponse::AppendBodyTo(ByteBuffer& buffer) co
     }
     buffer << title;
 }
+
+void WorldPackets::Npc::ListStabledPetsResponse::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << npcGuid;
+    buffer << uint8(pets.size());               // place holder for slot show number
+    buffer << numSlots;
+    for (auto const& pet : pets)
+    {
+        buffer << pet.petNumber;
+        buffer << pet.entry;
+        buffer << pet.level;
+        buffer << pet.name;
+        buffer << pet.loyalty;
+        buffer << pet.slot;
+    }
+}
