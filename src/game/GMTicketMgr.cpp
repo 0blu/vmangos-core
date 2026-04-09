@@ -117,9 +117,10 @@ void GmTicket::DeleteFromDB()
     stmt.Execute();
 }
 
-void GmTicket::WritePacket(WorldPacket& data) const
+void GmTicket::WriteToPacket(WorldPackets::GmTicket::GmTicketGetTicketResponse& packet) const
 {
-    data << uint32(GMTICKET_STATUS_HASTEXT);
+    packet.hasTicket = true;
+    packet.status = GMTICKET_STATUS_HASTEXT;
     std::stringstream displayedMessage;
     displayedMessage << m_message;
     if (IsCompleted())
@@ -132,28 +133,28 @@ void GmTicket::WritePacket(WorldPacket& data) const
             displayedMessage << m_response;
         }
     }
-    data << displayedMessage.str();
-    data << uint8(m_ticketType);
-    data << GetAge(m_lastModifiedTime);
+    packet.displayedMessage = displayedMessage.str();
+    packet.ticketType = uint8(m_ticketType);
+    packet.lastModifiedAge = GetAge(m_lastModifiedTime);
     if (GmTicket* ticket = sTicketMgr->GetOldestOpenTicket())
-        data << GetAge(ticket->GetLastModifiedTime());
+        packet.oldestOpenTicketAge = GetAge(ticket->GetLastModifiedTime());
     else
-        data << float(0);
+        packet.oldestOpenTicketAge = 0.0f;
 
     // I am not sure how blizzlike this is, and we don't really have a way to find out
-    data << GetAge(sTicketMgr->GetLastChange());         // Estimated wait time ?
+    packet.estimatedWaitTime = GetAge(sTicketMgr->GetLastChange()); // Estimated wait time ?
 
     GMTicketEscalationStatus escStatus = std::min(m_escalatedStatus, TICKET_IN_ESCALATION_QUEUE);
     GMTicketOpenedByGMStatus openedStatus = m_viewed ? GMTICKET_OPENEDBYGM_STATUS_OPENED : GMTICKET_OPENEDBYGM_STATUS_NOT_OPENED;
-    data << uint8(escStatus);                              // escalated data
-    data << uint8(openedStatus); // whether or not it has been viewed
+    packet.escalationStatus = uint8(escStatus);              // escalated data
+    packet.openedByGmStatus = uint8(openedStatus); // whether or not it has been viewed
 }
 
 void GmTicket::SendResponse(WorldSession* session) const
 {
-    WorldPacket data(SMSG_GMTICKET_GETTICKET, (4 + 4 + 1 + 4 + 4 + 4 + 1 + 1));
-    WritePacket(data);
-    session->SendPacket(&data);
+    auto packet = std::make_unique<WorldPackets::GmTicket::GmTicketGetTicketResponse>();
+    WriteToPacket(*packet);
+    session->SendPacket(std::move(packet));
     ChatHandler(session).SendSysMessage(LANG_YOUR_TICKET_RESPONDED);
 }
 
@@ -445,14 +446,12 @@ void TicketMgr::ShowEscalatedList(ChatHandler& handler) const
 
 void TicketMgr::SendTicket(WorldSession* session, GmTicket const* ticket) const
 {
-    WorldPacket data(SMSG_GMTICKET_GETTICKET, (ticket ? (4 + 4 + 1 + 4 + 4 + 4 + 1 + 1) : 4));
-
+    auto packet = std::make_unique<WorldPackets::GmTicket::GmTicketGetTicketResponse>();
     if (ticket)
-        ticket->WritePacket(data);
+        ticket->WriteToPacket(*packet);
     else
-        data << uint32(GMTICKET_STATUS_DEFAULT);
-
-    session->SendPacket(&data);
+        packet->status = GMTICKET_STATUS_DEFAULT;
+    session->SendPacket(std::move(packet));
 }
 
 void TicketMgr::ReloadTicketCallback(std::unique_ptr<QueryResult> result)

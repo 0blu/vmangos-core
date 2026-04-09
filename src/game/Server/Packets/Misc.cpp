@@ -381,3 +381,41 @@ void WorldPackets::Misc::MeetingstoneSetQueue::AppendBodyTo(ByteBuffer& buffer) 
     buffer << areaId;
     buffer << status;
 }
+
+void WorldPackets::Misc::FriendList::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << uint8(friends.size());
+    for (auto const& entry : friends)
+    {
+        buffer << entry.playerGuid;
+        buffer << entry.status;
+        if (entry.status)
+        {
+            buffer << entry.areaId;
+            buffer << entry.level;
+            buffer << entry.classId;
+        }
+    }
+}
+
+void WorldPackets::Misc::IgnoreList::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << uint8(ignoredPlayers.size());
+    for (auto const& guid : ignoredPlayers)
+        buffer << guid;
+}
+
+void WorldPackets::Misc::FriendStatus::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << result;
+    buffer << friendGuid;
+    if (includeOnlineInfo)
+    {
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
+        buffer << friendStatus;
+#endif
+        buffer << friendAreaId;
+        buffer << friendLevel;
+        buffer << friendClassId;
+    }
+}

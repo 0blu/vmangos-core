@@ -560,6 +560,50 @@ namespace WorldPackets { namespace Misc
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
 
+    struct FriendEntry
+    {
+        ObjectGuid playerGuid;
+        uint8 status = 0;           // online/offline/afk/dnd
+        uint32 areaId = 0;          // only when online
+        uint32 level = 0;           // only when online
+        uint32 classId = 0;         // only when online
+    };
+
+    class FriendList final : public ServerPacket
+    {
+    public:
+        std::vector<FriendEntry> friends;
+
+        explicit FriendList() : ServerPacket(SMSG_FRIEND_LIST) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class IgnoreList final : public ServerPacket
+    {
+    public:
+        std::vector<ObjectGuid> ignoredPlayers;
+
+        explicit IgnoreList() : ServerPacket(SMSG_IGNORE_LIST) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class FriendStatus final : public ServerPacket
+    {
+    public:
+        uint8 result = 0;                    // FriendsResult enum
+        ObjectGuid friendGuid;
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
+        uint8 friendStatus = 0;             // only for FRIEND_ADDED_ONLINE/FRIEND_ONLINE
+#endif
+        uint32 friendAreaId = 0;            // only for FRIEND_ADDED_ONLINE/FRIEND_ONLINE
+        uint32 friendLevel = 0;             // only for FRIEND_ADDED_ONLINE/FRIEND_ONLINE
+        uint32 friendClassId = 0;           // only for FRIEND_ADDED_ONLINE/FRIEND_ONLINE
+        bool includeOnlineInfo = false;     // controls whether the online fields are written
+
+        explicit FriendStatus() : ServerPacket(SMSG_FRIEND_STATUS) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
 }} // namespace WorldPackets::Misc
 
 #endif // MANGOS_PACKETS_MISC_H

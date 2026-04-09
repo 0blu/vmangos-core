@@ -111,30 +111,29 @@ void PlayerSocial::SendFriendList()
     MasterPlayer* plr = GetMasterPlayer();
     ASSERT(plr);
 
-    uint32 size = GetNumberOfSocialsWithFlag(SOCIAL_FLAG_FRIEND);
-
-    WorldPacket data(SMSG_FRIEND_LIST, (1 + size * 25)); // just can guess size
-    data << uint8(size);                                   // friends count
+    auto packet = std::make_unique<WorldPackets::Misc::FriendList>();
 
     for (auto& itr : m_playerSocialMap)
     {
-        if (itr.second.Flags & SOCIAL_FLAG_FRIEND)         // if IsFriend()
+        if (itr.second.Flags & SOCIAL_FLAG_FRIEND)
         {
             FriendInfo& friendInfo = itr.second;
             sSocialMgr.GetFriendInfo(plr, itr.first, friendInfo);
 
-            data << ObjectGuid(HIGHGUID_PLAYER, itr.first);// player guid
-            data << uint8(friendInfo.Status);              // online/offline/etc?
-            if (friendInfo.Status)                         // if online
+            WorldPackets::Misc::FriendEntry entry;
+            entry.playerGuid = ObjectGuid(HIGHGUID_PLAYER, itr.first);
+            entry.status = uint8(friendInfo.Status);
+            if (friendInfo.Status)
             {
-                data << uint32(friendInfo.Area);           // player area
-                data << uint32(friendInfo.Level);          // player level
-                data << uint32(friendInfo.Class);          // player class
+                entry.areaId = friendInfo.Area;
+                entry.level = friendInfo.Level;
+                entry.classId = friendInfo.Class;
             }
+            packet->friends.push_back(entry);
         }
     }
 
-    plr->GetSession()->SendPacket(&data);
+    plr->GetSession()->SendPacket(std::move(packet));
 }
 
 void PlayerSocial::SendIgnoreList()
@@ -142,17 +141,13 @@ void PlayerSocial::SendIgnoreList()
     MasterPlayer* plr = GetMasterPlayer();
     ASSERT(plr);
 
-    uint32 size = GetNumberOfSocialsWithFlag(SOCIAL_FLAG_IGNORED);
-
-    WorldPacket data(SMSG_IGNORE_LIST, (1 + size * 8));     // just can guess size
-    data << uint8(size);                                    // friends count
+    auto packet = std::make_unique<WorldPackets::Misc::IgnoreList>();
 
     for (const auto& itr : m_playerSocialMap)
         if (itr.second.Flags & SOCIAL_FLAG_IGNORED)
-            data << ObjectGuid(HIGHGUID_PLAYER, itr.first);// player guid
+            packet->ignoredPlayers.push_back(ObjectGuid(HIGHGUID_PLAYER, itr.first));
 
-
-    plr->GetSession()->SendPacket(&data);
+    plr->GetSession()->SendPacket(std::move(packet));
 }
 
 bool PlayerSocial::HasFriend(ObjectGuid friend_guid) const
@@ -246,32 +241,51 @@ void SocialMgr::MakeFriendStatusPacket(FriendsResult result, uint32 guid, WorldP
 void SocialMgr::SendFriendStatus(MasterPlayer* player, FriendsResult result, ObjectGuid friend_guid, bool broadcast)
 {
     uint32 friend_lowguid = friend_guid.GetCounter();
-
     FriendInfo fi;
-
-    WorldPacket data;
-    MakeFriendStatusPacket(result, friend_lowguid, &data);
     GetFriendInfo(player, friend_lowguid, fi);
 
-    switch (result)
-    {
-        case FRIEND_ADDED_ONLINE:
-        case FRIEND_ONLINE:
-#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
-            data << uint8(fi.Status);
-#endif
-            data << uint32(fi.Area);
-            data << uint32(fi.Level);
-            data << uint32(fi.Class);
-            break;
-        default:
-            break;
-    }
-
     if (broadcast)
+    {
+        WorldPacket data;
+        MakeFriendStatusPacket(result, friend_lowguid, &data);
+        switch (result)
+        {
+            case FRIEND_ADDED_ONLINE:
+            case FRIEND_ONLINE:
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
+                data << uint8(fi.Status);
+#endif
+                data << uint32(fi.Area);
+                data << uint32(fi.Level);
+                data << uint32(fi.Class);
+                break;
+            default:
+                break;
+        }
         BroadcastToFriendListers(player, &data);
+    }
     else
-        player->GetSession()->SendPacket(&data);
+    {
+        auto packet = std::make_unique<WorldPackets::Misc::FriendStatus>();
+        packet->result = static_cast<uint8>(result);
+        packet->friendGuid = ObjectGuid(HIGHGUID_PLAYER, friend_lowguid);
+        switch (result)
+        {
+            case FRIEND_ADDED_ONLINE:
+            case FRIEND_ONLINE:
+                packet->includeOnlineInfo = true;
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
+                packet->friendStatus = uint8(fi.Status);
+#endif
+                packet->friendAreaId = fi.Area;
+                packet->friendLevel = fi.Level;
+                packet->friendClassId = fi.Class;
+                break;
+            default:
+                break;
+        }
+        player->GetSession()->SendPacket(std::move(packet));
+    }
 }
 
 void SocialMgr::BroadcastToFriendListers(MasterPlayer const* player, WorldPacket const* packet)
