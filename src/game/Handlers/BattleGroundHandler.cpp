@@ -175,7 +175,7 @@ void WorldSession::RequestBgJoinQueue(ObjectGuid battlemaster, uint32 instanceId
         if (!_player->CanJoinToBattleground())
         {
             auto bgPacket = std::make_unique<WorldPackets::Battleground::GroupJoinedBattleground>();
-            bgPacket->result = 0xFFFFFFFE; // -2 = show error
+            bgPacket->result = BG_GROUPJOIN_DESERTERS;
             _player->GetSession()->SendPacket(std::move(bgPacket));
             return;
         }
@@ -219,7 +219,7 @@ void WorldSession::RequestBgJoinQueue(ObjectGuid battlemaster, uint32 instanceId
         if (err == BG_JOIN_ERR_GROUP_DESERTER)
         {
             auto bgJoined = std::make_unique<WorldPackets::Battleground::GroupJoinedBattleground>();
-            bgJoined->result = static_cast<uint32>(BG_GROUPJOIN_DESERTERS);
+            bgJoined->result = BG_GROUPJOIN_DESERTERS;
             _player->GetSession()->SendPacket(std::move(bgJoined));
             SendBattleGroundJoinError(err);
             return;
@@ -245,7 +245,7 @@ void WorldSession::RequestBgJoinQueue(ObjectGuid battlemaster, uint32 instanceId
             if (std::find(excludedMembers.begin(), excludedMembers.end(), member->GetGUIDLow()) != excludedMembers.end())
             {
                 auto bgJoined = std::make_unique<WorldPackets::Battleground::GroupJoinedBattleground>();
-                bgJoined->result = static_cast<uint32>(BG_GROUPJOIN_FAILED);
+                bgJoined->result = BG_GROUPJOIN_FAILED;
                 member->GetSession()->SendPacket(std::move(bgJoined));
                 SendBattleGroundJoinError(err);
                 continue;
@@ -420,7 +420,7 @@ void WorldSession::HandleBattleFieldPortOpcode(WorldPackets::Battleground::Battl
         {
             //send bg command result to show nice message
             auto bgJoined = std::make_unique<WorldPackets::Battleground::GroupJoinedBattleground>();
-            bgJoined->result = 0xFFFFFFFE;
+            bgJoined->result = BG_GROUPJOIN_DESERTERS;
             _player->GetSession()->SendPacket(std::move(bgJoined));
             action = 0;
             sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "Battleground: player %s (%u) has a deserter debuff, do not port him to battleground!", _player->GetName(), _player->GetGUIDLow());
