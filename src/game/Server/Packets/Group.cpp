@@ -107,6 +107,43 @@ void WorldPackets::Group::GroupDeclineNotification::AppendBodyTo(ByteBuffer& buf
     buffer << playerName;
 }
 
+void WorldPackets::Group::GroupUninviteNotification::AppendBodyTo(ByteBuffer& /*buffer*/) const
+{
+}
+
+void WorldPackets::Group::GroupDestroyed::AppendBodyTo(ByteBuffer& /*buffer*/) const
+{
+}
+
+void WorldPackets::Group::GroupListEmpty::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << uint64(0) << uint64(0) << uint64(0);
+}
+
+void WorldPackets::Group::GroupListFull::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << groupType;
+    buffer << ownGroupAndFlags;
+    buffer << uint32(members.size());
+    for (auto const& member : members)
+    {
+        buffer << member.name;
+        buffer << member.guid;
+        buffer << member.onlineStatus;
+        buffer << member.groupAndFlags;
+    }
+    buffer << leaderGuid;
+    if (!members.empty())
+    {
+        buffer << lootMethod;
+        buffer << masterLooterGuid;
+        buffer << lootThreshold;
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_10_2
+        buffer << dungeonDifficulty;
+#endif
+    }
+}
+
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_10_2
 void WorldPackets::Group::RaidReadyCheckResponse::AppendBodyTo(ByteBuffer& buffer) const
 {

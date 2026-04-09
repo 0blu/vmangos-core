@@ -220,6 +220,54 @@ namespace WorldPackets { namespace Group
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
 
+    class GroupUninviteNotification final : public ServerPacket
+    {
+    public:
+        explicit GroupUninviteNotification() : ServerPacket(SMSG_GROUP_UNINVITE) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class GroupDestroyed final : public ServerPacket
+    {
+    public:
+        explicit GroupDestroyed() : ServerPacket(SMSG_GROUP_DESTROYED) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class GroupListEmpty final : public ServerPacket
+    {
+    public:
+        explicit GroupListEmpty() : ServerPacket(SMSG_GROUP_LIST) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    struct GroupMemberEntry
+    {
+        std::string name;
+        ObjectGuid guid;
+        uint8 onlineStatus = 0;
+        uint8 groupAndFlags = 0; // (groupId | (assistant ? 0x80 : 0))
+    };
+
+    class GroupListFull final : public ServerPacket
+    {
+    public:
+        uint8 groupType = 0;
+        uint8 ownGroupAndFlags = 0; // own (groupId | (assistant ? 0x80 : 0))
+        std::vector<GroupMemberEntry> members;
+        ObjectGuid leaderGuid;
+        // Loot settings - only present when members is not empty
+        uint8 lootMethod = 0;
+        ObjectGuid masterLooterGuid;
+        uint8 lootThreshold = 0;
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_10_2
+        uint8 dungeonDifficulty = 0;
+#endif
+
+        explicit GroupListFull() : ServerPacket(SMSG_GROUP_LIST) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_10_2
     class RaidReadyCheckResponse final : public ServerPacket
     {

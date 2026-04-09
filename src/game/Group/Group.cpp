@@ -458,8 +458,7 @@ uint32 Group::RemoveMember(ObjectGuid guid, uint8 removeMethod)
 
             if (removeMethod == GROUP_KICK)
             {
-                data.Initialize(SMSG_GROUP_UNINVITE, 0);
-                player->GetSession()->SendPacket(&data);
+                player->GetSession()->SendPacket(std::make_unique<WorldPackets::Group::GroupUninviteNotification>());
 
                 if (IsInLFG())
                 {
@@ -496,9 +495,7 @@ uint32 Group::RemoveMember(ObjectGuid guid, uint8 removeMethod)
                 group->SendUpdate();
             else
             {
-                data.Initialize(SMSG_GROUP_LIST, 24);
-                data << uint64(0) << uint64(0) << uint64(0);
-                player->GetSession()->SendPacket(&data);
+                player->GetSession()->SendPacket(std::make_unique<WorldPackets::Group::GroupListEmpty>());
             }
 
             _homebindIfInstance(player);
@@ -580,8 +577,7 @@ void Group::Disband(bool hideDestroy, ObjectGuid initiator)
         WorldPacket data;
         if (!hideDestroy)
         {
-            data.Initialize(SMSG_GROUP_DESTROYED, 0);
-            player->GetSession()->SendPacket(&data);
+            player->GetSession()->SendPacket(std::make_unique<WorldPackets::Group::GroupDestroyed>());
         }
 
         //we already removed player from group and in player->GetGroup() is his original group, send update
@@ -589,9 +585,7 @@ void Group::Disband(bool hideDestroy, ObjectGuid initiator)
             group->SendUpdate();
         else
         {
-            data.Initialize(SMSG_GROUP_LIST, 24);
-            data << uint64(0) << uint64(0) << uint64(0);
-            player->GetSession()->SendPacket(&data);
+            player->GetSession()->SendPacket(std::make_unique<WorldPackets::Group::GroupListEmpty>());
 
             if (IsInLFG())
                 player->GetSession()->SendMeetingstoneSetqueue(0, MEETINGSTONE_STATUS_NONE);
@@ -756,13 +750,13 @@ bool Group::FillPremadeLFG(ObjectGuid const& plrGuid, Classes playerClass, LfgRo
 
 void Group::SendLootStartRoll(uint32 CountDown, Roll const& r)
 {
-    WorldPacket data(SMSG_LOOT_START_ROLL, (8 + 4 + 4 + 4 + 4 + 4));
-    data << r.lootedTargetGUID;                             // creature guid what we're looting
-    data << uint32(r.itemSlot);                             // item slot in loot
-    data << uint32(r.itemid);                               // the itemEntryId for the item that shall be rolled for
-    data << uint32(0);                                      // randomSuffix - not used ?
-    data << uint32(r.itemRandomPropId);                     // item random property ID
-    data << uint32(CountDown);                              // the countdown time to choose "need" or "greed"
+    auto packet = std::make_unique<WorldPackets::Loot::LootStartRoll>();
+    packet->lootedTargetGuid = r.lootedTargetGUID;
+    packet->itemSlot = r.itemSlot;
+    packet->itemEntryId = r.itemid;
+    packet->randomSuffix = 0;
+    packet->itemRandomPropId = r.itemRandomPropId;
+    packet->countdownTime = CountDown;
 
     for (const auto& itr : r.playerVote)
     {
@@ -773,21 +767,21 @@ void Group::SendLootStartRoll(uint32 CountDown, Roll const& r)
         if (itr.second == ROLL_NOT_VALID)
             continue;
 
-        p->GetSession()->SendPacket(&data);
+        p->GetSession()->SendPacket(std::make_unique<WorldPackets::Loot::LootStartRoll>(*packet));
     }
 }
 
 void Group::SendLootRoll(ObjectGuid const& targetGuid, uint8 rollNumber, uint8 rollType, Roll const& r)
 {
-    WorldPacket data(SMSG_LOOT_ROLL, (8 + 4 + 8 + 4 + 4 + 4 + 1 + 1));
-    data << r.lootedTargetGUID;                             // creature guid that we're looting
-    data << uint32(r.itemSlot);
-    data << targetGuid;                                     // player guid
-    data << uint32(r.itemid);                               // the itemEntryId for the item that shall be rolled for
-    data << uint32(0);                                      // randomSuffix - not used?
-    data << uint32(r.itemRandomPropId);                     // Item random property ID
-    data << uint8(rollNumber);                              // 0: "Need for: [item name]" > 127: "you passed on: [item name]"      Roll number
-    data << uint8(rollType);                                // 0: "Need for: [item name]" 0: "You have selected need for [item name] 1: need roll 2: greed roll
+    auto packet = std::make_unique<WorldPackets::Loot::LootRollResponse>();
+    packet->lootedTargetGuid = r.lootedTargetGUID;
+    packet->itemSlot = r.itemSlot;
+    packet->rollerGuid = targetGuid;
+    packet->itemEntryId = r.itemid;
+    packet->randomSuffix = 0;
+    packet->itemRandomPropId = r.itemRandomPropId;
+    packet->rollNumber = rollNumber;
+    packet->rollType = rollType;
 
     for (const auto& itr : r.playerVote)
     {
@@ -796,21 +790,21 @@ void Group::SendLootRoll(ObjectGuid const& targetGuid, uint8 rollNumber, uint8 r
             continue;
 
         if (itr.second != ROLL_NOT_VALID)
-            p->GetSession()->SendPacket(&data);
+            p->GetSession()->SendPacket(std::make_unique<WorldPackets::Loot::LootRollResponse>(*packet));
     }
 }
 
 void Group::SendLootRollWon(ObjectGuid const& targetGuid, uint8 rollNumber, RollVote rollType, Roll const& r)
 {
-    WorldPacket data(SMSG_LOOT_ROLL_WON, (8 + 4 + 4 + 4 + 4 + 8 + 1 + 1));
-    data << r.lootedTargetGUID;                             // creature guid what we're looting
-    data << uint32(r.itemSlot);                             // item slot in loot
-    data << uint32(r.itemid);                               // the itemEntryId for the item that shall be rolled for
-    data << uint32(0);                                      // randomSuffix - not used ?
-    data << uint32(r.itemRandomPropId);                     // Item random property
-    data << targetGuid;                                     // guid of the player who won.
-    data << uint8(rollNumber);                              // rollnumber related to SMSG_LOOT_ROLL
-    data << uint8(rollType);                                // Rolltype related to SMSG_LOOT_ROLL
+    auto packet = std::make_unique<WorldPackets::Loot::LootRollWon>();
+    packet->lootedTargetGuid = r.lootedTargetGUID;
+    packet->itemSlot = r.itemSlot;
+    packet->itemEntryId = r.itemid;
+    packet->randomSuffix = 0;
+    packet->itemRandomPropId = r.itemRandomPropId;
+    packet->winnerGuid = targetGuid;
+    packet->rollNumber = rollNumber;
+    packet->rollType = uint8(rollType);
 
     for (const auto& itr : r.playerVote)
     {
@@ -819,18 +813,18 @@ void Group::SendLootRollWon(ObjectGuid const& targetGuid, uint8 rollNumber, Roll
             continue;
 
         if (itr.second != ROLL_NOT_VALID)
-            p->GetSession()->SendPacket(&data);
+            p->GetSession()->SendPacket(std::make_unique<WorldPackets::Loot::LootRollWon>(*packet));
     }
 }
 
 void Group::SendLootAllPassed(Roll const& r)
 {
-    WorldPacket data(SMSG_LOOT_ALL_PASSED, (8 + 4 + 4 + 4 + 4));
-    data << r.lootedTargetGUID;                             // creature guid what we're looting
-    data << uint32(r.itemSlot);                             // item slot in loot
-    data << uint32(r.itemid);                               // The itemEntryId for the item that shall be rolled for
-    data << uint32(r.itemRandomPropId);                     // Item random property ID
-    data << uint32(0);                                      // Item random suffix ID - not used ?
+    auto packet = std::make_unique<WorldPackets::Loot::LootAllPassed>();
+    packet->lootedTargetGuid = r.lootedTargetGUID;
+    packet->itemSlot = r.itemSlot;
+    packet->itemEntryId = r.itemid;
+    packet->itemRandomPropId = r.itemRandomPropId;
+    packet->randomSuffixId = 0;
 
     for (const auto& itr : r.playerVote)
     {
@@ -839,7 +833,7 @@ void Group::SendLootAllPassed(Roll const& r)
             continue;
 
         if (itr.second != ROLL_NOT_VALID)
-            p->GetSession()->SendPacket(&data);
+            p->GetSession()->SendPacket(std::make_unique<WorldPackets::Loot::LootAllPassed>(*packet));
     }
 }
 
@@ -900,10 +894,7 @@ void Group::MasterLoot(Creature* creature, Loot* loot, Player* player)
             i.is_underthreshold = 1;
     }
 
-    uint32 playerCount = 0;
-
-    WorldPacket data(SMSG_LOOT_MASTER_LIST, 330);
-    data << uint8(0);
+    auto packet = std::make_unique<WorldPackets::Loot::LootMasterList>();
 
     for (GroupReference* itr = GetFirstMember(); itr != nullptr; itr = itr->next())
     {
@@ -912,14 +903,10 @@ void Group::MasterLoot(Creature* creature, Loot* loot, Player* player)
             continue;
 
         if (looter->IsWithinLootXPDist(creature) && loot->IsAllowedLooter(looter->GetObjectGuid(), false))
-        {
-            data << looter->GetObjectGuid();
-            ++playerCount;
-        }
+            packet->eligibleLooters.push_back(looter->GetObjectGuid());
     }
 
-    data.put<uint8>(0, playerCount);
-    player->GetSession()->SendPacket(&data);
+    player->GetSession()->SendPacket(std::move(packet));
 }
 
 bool Group::CountRollVote(Player* player, ObjectGuid const& lootedTarget, uint32 itemSlot, RollVote vote)
@@ -1057,15 +1044,15 @@ void Group::SendLootStartRollsForPlayer(Player* pPlayer)
             if (!countDown)
                 continue;
 
-            WorldPacket data(SMSG_LOOT_START_ROLL, (8 + 4 + 4 + 4 + 4 + 4));
-            data << roll->lootedTargetGUID;                   // creature guid what we're looting
-            data << uint32(roll->itemSlot);                   // item slot in loot
-            data << uint32(roll->itemid);                     // the itemEntryId for the item that shall be rolled for
-            data << uint32(0);                                // randomSuffix - not used ?
-            data << uint32(roll->itemRandomPropId);           // item random property ID
-            data << uint32(countDown);                        // the countdown time to choose "need" or "greed"
+            auto packet = std::make_unique<WorldPackets::Loot::LootStartRoll>();
+            packet->lootedTargetGuid = roll->lootedTargetGUID;
+            packet->itemSlot = roll->itemSlot;
+            packet->itemEntryId = roll->itemid;
+            packet->randomSuffix = 0;
+            packet->itemRandomPropId = roll->itemRandomPropId;
+            packet->countdownTime = countDown;
 
-            pPlayer->GetSession()->SendPacket(&data);
+            pPlayer->GetSession()->SendPacket(std::move(packet));
         }
     }
 }

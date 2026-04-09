@@ -5,6 +5,8 @@
 #include "ObjectGuid.h"
 #include "SharedDefines.h"
 
+#include <vector>
+
 namespace WorldPackets { namespace Loot
 {
     class AutoStoreLootItem final : public ClientPacket
@@ -70,6 +72,74 @@ namespace WorldPackets { namespace Loot
         uint32 amount = 0;
 
         explicit LootMoneyNotify() : ServerPacket(SMSG_LOOT_MONEY_NOTIFY) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class LootStartRoll final : public ServerPacket
+    {
+    public:
+        ObjectGuid lootedTargetGuid;         // creature guid being looted
+        uint32 itemSlot = 0;                 // item slot in loot
+        uint32 itemEntryId = 0;              // the itemEntryId for the item that shall be rolled for
+        uint32 randomSuffix = 0;             // randomSuffix - not used
+        uint32 itemRandomPropId = 0;         // item random property ID
+        uint32 countdownTime = 0;            // the countdown time to choose "need" or "greed"
+
+        explicit LootStartRoll() : ServerPacket(SMSG_LOOT_START_ROLL) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class LootRollResponse final : public ServerPacket
+    {
+    public:
+        ObjectGuid lootedTargetGuid;         // creature guid being looted
+        uint32 itemSlot = 0;
+        ObjectGuid rollerGuid;               // the player who rolled
+        uint32 itemEntryId = 0;              // the itemEntryId for the item that shall be rolled for
+        uint32 randomSuffix = 0;             // randomSuffix - not used
+        uint32 itemRandomPropId = 0;         // Item random property ID
+        uint8 rollNumber = 0;                // 0: "Need for..." > 127: "you passed on..."
+        uint8 rollType = 0;                  // 0: need, 1: need roll, 2: greed roll
+
+        explicit LootRollResponse() : ServerPacket(SMSG_LOOT_ROLL) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class LootRollWon final : public ServerPacket
+    {
+    public:
+        ObjectGuid lootedTargetGuid;         // creature guid being looted
+        uint32 itemSlot = 0;                 // item slot in loot
+        uint32 itemEntryId = 0;              // the itemEntryId for the item that shall be rolled for
+        uint32 randomSuffix = 0;             // randomSuffix - not used
+        uint32 itemRandomPropId = 0;         // Item random property
+        ObjectGuid winnerGuid;               // guid of the player who won
+        uint8 rollNumber = 0;                // rollnumber related to SMSG_LOOT_ROLL
+        uint8 rollType = 0;                  // Rolltype related to SMSG_LOOT_ROLL
+
+        explicit LootRollWon() : ServerPacket(SMSG_LOOT_ROLL_WON) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class LootAllPassed final : public ServerPacket
+    {
+    public:
+        ObjectGuid lootedTargetGuid;         // creature guid being looted
+        uint32 itemSlot = 0;                 // item slot in loot
+        uint32 itemEntryId = 0;              // The itemEntryId for the item that shall be rolled for
+        uint32 itemRandomPropId = 0;         // Item random property ID
+        uint32 randomSuffixId = 0;           // Item random suffix ID - not used
+
+        explicit LootAllPassed() : ServerPacket(SMSG_LOOT_ALL_PASSED) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class LootMasterList final : public ServerPacket
+    {
+    public:
+        std::vector<ObjectGuid> eligibleLooters;
+
+        explicit LootMasterList() : ServerPacket(SMSG_LOOT_MASTER_LIST) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
 

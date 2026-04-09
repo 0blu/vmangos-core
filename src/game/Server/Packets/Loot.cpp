@@ -39,3 +39,53 @@ void WorldPackets::Loot::LootMoneyNotify::AppendBodyTo(ByteBuffer& buffer) const
 {
     buffer << uint32(amount);
 }
+
+void WorldPackets::Loot::LootStartRoll::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << lootedTargetGuid;
+    buffer << itemSlot;
+    buffer << itemEntryId;
+    buffer << randomSuffix;
+    buffer << itemRandomPropId;
+    buffer << countdownTime;
+}
+
+void WorldPackets::Loot::LootRollResponse::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << lootedTargetGuid;
+    buffer << itemSlot;
+    buffer << rollerGuid;
+    buffer << itemEntryId;
+    buffer << randomSuffix;
+    buffer << itemRandomPropId;
+    buffer << rollNumber;
+    buffer << rollType;
+}
+
+void WorldPackets::Loot::LootRollWon::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << lootedTargetGuid;
+    buffer << itemSlot;
+    buffer << itemEntryId;
+    buffer << randomSuffix;
+    buffer << itemRandomPropId;
+    buffer << winnerGuid;
+    buffer << rollNumber;
+    buffer << rollType;
+}
+
+void WorldPackets::Loot::LootAllPassed::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << lootedTargetGuid;
+    buffer << itemSlot;
+    buffer << itemEntryId;
+    buffer << itemRandomPropId;
+    buffer << randomSuffixId;
+}
+
+void WorldPackets::Loot::LootMasterList::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << uint8(eligibleLooters.size());
+    for (auto const& guid : eligibleLooters)
+        buffer << guid;
+}
