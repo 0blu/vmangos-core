@@ -340,3 +340,44 @@ void WorldPackets::Misc::InspectHonorStatsResponse::AppendBodyTo(ByteBuffer& buf
     buffer << rankBar;
 #endif
 }
+
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_7_1
+void WorldPackets::Misc::WeatherUpdate::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << weatherType;
+    buffer << grade;
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
+    buffer << soundId;
+#endif
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
+    buffer << instantChange;
+#endif
+}
+#endif
+
+void WorldPackets::Misc::AuthResponse::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << result;
+    buffer << billingTimeRemaining;
+    buffer << billingPlanFlags;
+    buffer << billingTimeRested;
+    if (queuePosition)
+        buffer << *queuePosition;
+}
+
+void WorldPackets::Misc::ServerMessage::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << messageType;
+    buffer << text;
+}
+
+void WorldPackets::Misc::MeetingstoneJoinFailed::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << reason;
+}
+
+void WorldPackets::Misc::MeetingstoneSetQueue::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << areaId;
+    buffer << status;
+}

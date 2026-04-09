@@ -500,6 +500,66 @@ namespace WorldPackets { namespace Misc
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
 
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_7_1
+    class WeatherUpdate final : public ServerPacket
+    {
+    public:
+        uint32 weatherType = 0;
+        float grade = 0.0f;
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
+        uint32 soundId = 0;             // 1.12 soundid
+#endif
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
+        uint8 instantChange = 0;        // 1 = instant change, 0 = smooth change
+#endif
+
+        explicit WeatherUpdate() : ServerPacket(SMSG_WEATHER) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+#endif
+
+    class AuthResponse final : public ServerPacket
+    {
+    public:
+        uint8 result = 0;
+        uint32 billingTimeRemaining = 0;
+        uint8 billingPlanFlags = 0;
+        uint32 billingTimeRested = 0;
+        nonstd::optional<uint32> queuePosition;
+
+        explicit AuthResponse() : ServerPacket(SMSG_AUTH_RESPONSE) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class ServerMessage final : public ServerPacket
+    {
+    public:
+        uint32 messageType = 0;
+        std::string text;
+
+        explicit ServerMessage() : ServerPacket(SMSG_SERVER_MESSAGE) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class MeetingstoneJoinFailed final : public ServerPacket
+    {
+    public:
+        uint8 reason = 0;
+
+        explicit MeetingstoneJoinFailed() : ServerPacket(SMSG_MEETINGSTONE_JOINFAILED) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class MeetingstoneSetQueue final : public ServerPacket
+    {
+    public:
+        uint32 areaId = 0;
+        uint8 status = 0;
+
+        explicit MeetingstoneSetQueue() : ServerPacket(SMSG_MEETINGSTONE_SETQUEUE) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
 }} // namespace WorldPackets::Misc
 
 #endif // MANGOS_PACKETS_MISC_H
