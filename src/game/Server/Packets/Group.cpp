@@ -162,12 +162,15 @@ void WorldPackets::Group::WritePartyMemberStats(ByteBuffer& buffer, WorldPackets
     {
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_6_1
         buffer << data.auras.negativeAuraMask;
+        for (uint8 i = 0; i < PARTY_MAX_NEGATIVE_AURAS; ++i)
+            if (data.auras.negativeAuraMask & (1 << i))
+                buffer << data.auras.negativeAuras[i];
 #else
         buffer << uint8(data.auras.negativeAuraMask);
-#endif
-        for (uint8 i = 0; i < PARTY_MAX_NEGATIVE_AURAS; ++i)
-            if (data.auras.negativeAuraMask & (uint16(1) << i))
+        for (uint8 i = 0; i < 8; ++i)
+            if (data.auras.negativeAuraMask & (1 << i))
                 buffer << data.auras.negativeAuras[i];
+#endif
     }
 
     if (data.mask & GROUP_UPDATE_FLAG_PET_GUID)
@@ -211,12 +214,15 @@ void WorldPackets::Group::WritePartyMemberStats(ByteBuffer& buffer, WorldPackets
     {
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_6_1
         buffer << data.petAuras.negativeAuraMask;
+        for (uint8 i = 0; i < PARTY_MAX_NEGATIVE_AURAS; ++i)
+            if (data.petAuras.negativeAuraMask & (1 << i))
+                buffer << data.petAuras.negativeAuras[i];
 #else
         buffer << uint8(data.petAuras.negativeAuraMask);
-#endif
-        for (uint8 i = 0; i < PARTY_MAX_NEGATIVE_AURAS; ++i)
-            if (data.petAuras.negativeAuraMask & (uint16(1) << i))
+        for (uint8 i = 0; i < 8; ++i)
+            if (data.petAuras.negativeAuraMask & (1 << i))
                 buffer << data.petAuras.negativeAuras[i];
+#endif
     }
 }
 
