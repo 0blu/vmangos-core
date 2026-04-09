@@ -57,7 +57,14 @@ namespace WorldPackets { namespace Trade
     {
     public:
         uint32 status = 0;
+        // BEGIN_TRADE: guid of the player initiating trade
         ObjectGuid playerGuid;
+        // CLOSE_WINDOW extra fields
+        uint32 closeResult = 0;
+        uint8 closeUnk = 0;
+        uint32 closeItemLimitCategory = 0;
+        // ONLY_CONJURED extra field
+        uint8 slot = 0;
 
         explicit TradeStatus() : ServerPacket(SMSG_TRADE_STATUS) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;
