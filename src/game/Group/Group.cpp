@@ -79,7 +79,7 @@ void Roll::targetObjectBuildLink()
 //============== Group ==============================
 //===================================================
 
-Group::Group() : m_Id(0), m_leaderLastOnline(0), m_groupType(GROUPTYPE_NORMAL), 
+Group::Group() : m_Id(0), m_leaderLastOnline(0), m_groupType(GROUPTYPE_NORMAL),
                  m_bgGroup(nullptr), m_lootMethod(FREE_FOR_ALL), m_lootThreshold(ITEM_QUALITY_UNCOMMON),
                  m_subGroupsCounts(nullptr), m_groupTeam(TEAM_NONE), m_LFGAreaId(0)
 {
@@ -1347,7 +1347,7 @@ void Group::SendUpdate()
                 markedTargets = std::make_unique<WorldPacket>(MSG_RAID_TARGET_UPDATE, (1 + TARGET_ICON_COUNT * 9));
                 *markedTargets << uint8(1); // 1 - full icon list, 0 - delta update
             }
-                
+
             *markedTargets << uint8(i);
             *markedTargets << m_targetIcons[i];
         }
@@ -1412,8 +1412,12 @@ void Group::UpdatePlayerOutOfRange(Player* pPlayer)
     if (pPlayer->GetGroupUpdateFlag() == GROUP_UPDATE_FLAG_NONE)
         return;
 
+    auto statsPacket = pPlayer->GetSession()->BuildPartyMemberStatsChangedPacket(pPlayer);
+
+    // TODO Use broadcaster which does the binary conversion automatically
     WorldPacket data;
-    pPlayer->GetSession()->BuildPartyMemberStatsChangedPacket(pPlayer, &data);
+    data.SetOpcode(statsPacket.GetOpcode());
+    statsPacket.AppendBodyTo(data);
 
     for (GroupReference* itr = GetFirstMember(); itr != nullptr; itr = itr->next())
         if (Player* player = itr->getSource())

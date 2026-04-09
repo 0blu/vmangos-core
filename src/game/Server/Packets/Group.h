@@ -5,6 +5,9 @@
 #include "ObjectGuid.h"
 #include "nonstd/optional.hpp"
 
+#include <string>
+#include <vector>
+
 namespace WorldPackets { namespace Group
 {
     class GroupInvite final : public ClientPacket
@@ -145,6 +148,49 @@ namespace WorldPackets { namespace Group
 
     // --- Server Packets ---
 
+    static constexpr uint8 PARTY_MAX_POSITIVE_AURAS = 32;  // MAX_POSITIVE_AURAS
+    static constexpr uint8 PARTY_MAX_NEGATIVE_AURAS = 16;  // MAX_AURAS - MAX_POSITIVE_AURAS
+
+    struct PartyMemberAuraData
+    {
+        uint32 positiveAuraMask = 0;
+        uint16 positiveAuras[PARTY_MAX_POSITIVE_AURAS] = {};
+        uint16 negativeAuraMask = 0;
+        uint16 negativeAuras[PARTY_MAX_NEGATIVE_AURAS] = {};
+    };
+
+    struct PartyMemberStatsData
+    {
+        ObjectGuid guid;
+        uint32 mask = 0;
+
+        // Player fields
+        uint8  status = 0;
+        uint16 curHP = 0;
+        uint16 maxHP = 0;
+        uint8  powerType = 0;
+        uint16 curPower = 0;
+        uint16 maxPower = 0;
+        uint16 level = 0;
+        uint16 zone = 0;
+        int16  posX = 0;
+        int16  posY = 0;
+        PartyMemberAuraData auras;
+
+        // Pet fields
+        ObjectGuid petGuid;
+        std::string petName;
+        uint16 petModelId = 0;
+        uint16 petCurHP = 0;
+        uint16 petMaxHP = 0;
+        uint8  petPowerType = 0;
+        uint16 petCurPower = 0;
+        uint16 petMaxPower = 0;
+        PartyMemberAuraData petAuras;
+    };
+
+    void WritePartyMemberStats(ByteBuffer& buffer, PartyMemberStatsData const& data);
+
     class PartyCommandResult final : public ServerPacket
     {
     public:
@@ -189,7 +235,7 @@ namespace WorldPackets { namespace Group
     class PartyMemberStatsFull final : public ServerPacket
     {
     public:
-        ByteBuffer data;  // pre-built member stats body
+        PartyMemberStatsData data;
 
         explicit PartyMemberStatsFull() : ServerPacket(
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_5_1
@@ -198,6 +244,15 @@ namespace WorldPackets { namespace Group
             SMSG_PARTY_MEMBER_STATS
 #endif
         ) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class PartyMemberStats final : public ServerPacket
+    {
+    public:
+        PartyMemberStatsData data;
+
+        explicit PartyMemberStats() : ServerPacket(SMSG_PARTY_MEMBER_STATS) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
 

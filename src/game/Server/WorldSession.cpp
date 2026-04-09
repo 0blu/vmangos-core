@@ -935,27 +935,6 @@ char const*  WorldSession::GetMangosString(int32 entry) const
     return sObjectMgr.GetMangosString(entry, GetSessionDbLocaleIndex());
 }
 
-void WorldSession::Handle_NULL(WorldPacket& recvPacket)
-{
-    sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "SESSION: received unimplemented opcode %s (0x%.4X)",
-                  LookupOpcodeName(recvPacket.GetOpcode()),
-                  recvPacket.GetOpcode());
-}
-
-void WorldSession::Handle_EarlyProccess(WorldPacket& recvPacket)
-{
-    sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "SESSION: received opcode %s (0x%.4X) that must be processed in WorldSocket::OnRead",
-                  LookupOpcodeName(recvPacket.GetOpcode()),
-                  recvPacket.GetOpcode());
-}
-
-void WorldSession::Handle_ServerSide(WorldPacket& recvPacket)
-{
-    sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "SESSION: received server-side opcode %s (0x%.4X)",
-                  LookupOpcodeName(recvPacket.GetOpcode()),
-                  recvPacket.GetOpcode());
-}
-
 void WorldSession::SendAuthWaitQue(uint32 position)
 {
     if (position == 0)

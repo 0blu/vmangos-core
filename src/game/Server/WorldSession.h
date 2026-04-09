@@ -464,8 +464,8 @@ class WorldSession
         void SendMeetingstoneSetqueue(uint32 areaid, uint8 status);
 
         // Group
-        void BuildPartyMemberStatsChangedPacket(Player* player, WorldPacket* data);
-        void BuildPartyMemberStatsPacket(Player* player, ByteBuffer* data, uint32 updateMask, bool sendAllAuras);
+        WorldPackets::Group::PartyMemberStats BuildPartyMemberStatsChangedPacket(Player* player);
+        WorldPackets::Group::PartyMemberStatsData BuildPartyMemberStatsPacket(Player* player, uint32 updateMask, bool sendAllAuras);
 
     public:                                                 // opcodes handlers
         template<typename TClientPacket>
@@ -483,10 +483,6 @@ class WorldSession
             auto const& packetInCorrectForm = dynamic_cast<TClientPacket const&>(packet);
             (this->*THandler)(packetInCorrectForm);
         }
-
-        void Handle_NULL(WorldPacket& recvPacket);          // not used
-        void Handle_EarlyProccess(WorldPacket& recvPacket);// just mark packets processed in WorldSocket::OnRead
-        void Handle_ServerSide(WorldPacket& recvPacket);    // sever side only, can't be accepted from client
 
         void HandleCharEnumOpcode(NullClientPacket const& packet);
         void HandleCharCreateOpcode(WorldPackets::Character::CharCreate const& packet);
