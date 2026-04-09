@@ -470,15 +470,6 @@ namespace WorldPackets { namespace Misc
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
 
-    class LookingForGroup final : public ServerPacket
-    {
-    public:
-        uint32 unk = 0;
-
-        explicit LookingForGroup() : ServerPacket(MSG_LOOKING_FOR_GROUP) {}
-        void AppendBodyTo(ByteBuffer& buffer) const override;
-    };
-
     class InspectHonorStatsResponse final : public ServerPacket
     {
     public:

@@ -599,7 +599,7 @@ Handlers BuildOpcodeList()
     INVALID_PACKET(SMSG_ENVIRONMENTALDAMAGELOG,       UnhandleReason::SendByServer);
     INVALID_PACKET(CMSG_RWHOIS,                       UnhandleReason::Unhandled);
     INVALID_PACKET(SMSG_RWHOIS,                       UnhandleReason::SendByServer);
-    DEFINE_HANDLER(MSG_LOOKING_FOR_GROUP,             STATUS_LOGGEDIN,  PACKET_PROCESS_WORLD,         &WorldSession::HandleLFGOpcode);
+    INVALID_PACKET(MSG_LOOKING_FOR_GROUP,             UnhandleReason::Unhandled);
     INVALID_PACKET(CMSG_SET_LOOKING_FOR_GROUP,        UnhandleReason::Unhandled);
     INVALID_PACKET(CMSG_UNLEARN_SPELL,                UnhandleReason::Unhandled);
     DEFINE_HANDLER(CMSG_UNLEARN_SKILL,                STATUS_LOGGEDIN,  PACKET_PROCESS_MAP,           &WorldSession::HandleUnlearnSkillOpcode);

@@ -315,11 +315,6 @@ void WorldPackets::Misc::WhoResponse::AppendBodyTo(ByteBuffer& buffer) const
     }
 }
 
-void WorldPackets::Misc::LookingForGroup::AppendBodyTo(ByteBuffer& buffer) const
-{
-    buffer << unk;
-}
-
 void WorldPackets::Misc::InspectHonorStatsResponse::AppendBodyTo(ByteBuffer& buffer) const
 {
     buffer << playerGuid;

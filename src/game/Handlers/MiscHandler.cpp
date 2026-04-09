@@ -273,12 +273,6 @@ void WorldSession::HandleWhoOpcode(WorldPackets::Misc::Who const& packet)
     sWorld.AddAsyncTask(std::move(task));
 }
 
-void WorldSession::HandleLFGOpcode(NullClientPacket const& /*packet*/)
-{
-    auto lfgPacket = std::make_unique<WorldPackets::Misc::LookingForGroup>();
-    SendPacket(std::move(lfgPacket));
-}
-
 void WorldSession::HandleLogoutRequestOpcode(NullClientPacket const& /*packet*/)
 {
     if (ObjectGuid lootGuid = GetPlayer()->GetLootGuid())
