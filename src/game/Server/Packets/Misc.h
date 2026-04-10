@@ -507,7 +507,7 @@ namespace WorldPackets { namespace Misc
         uint32 weatherType = 0;
         float grade = 0.0f;
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
-        uint32 soundId = 0;             // 1.12 soundid
+        uint32 soundId = 0;
 #endif
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
         bool instantChange = false;     // true = instant change, false = smooth change
