@@ -510,7 +510,7 @@ namespace WorldPackets { namespace Misc
         uint32 soundId = 0;             // 1.12 soundid
 #endif
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
-        uint8 instantChange = 0;        // 1 = instant change, 0 = smooth change
+        bool instantChange = false;     // true = instant change, false = smooth change
 #endif
 
         explicit WeatherUpdate() : ServerPacket(SMSG_WEATHER) {}

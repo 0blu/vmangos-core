@@ -137,7 +137,7 @@ public:
     void SaveToDB() const;
     void DeleteFromDB();
 
-    void WriteToPacket(WorldPackets::GmTicket::GmTicketGetTicketResponse& packet) const;
+    WorldPackets::GmTicket::GmTicketGetTicketResponse BuildTicketResponsePacket() const;
     void SendResponse(WorldSession* session) const;
 
     void TeleportTo(Player* player) const;

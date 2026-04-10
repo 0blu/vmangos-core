@@ -117,8 +117,9 @@ void GmTicket::DeleteFromDB()
     stmt.Execute();
 }
 
-void GmTicket::WriteToPacket(WorldPackets::GmTicket::GmTicketGetTicketResponse& packet) const
+WorldPackets::GmTicket::GmTicketGetTicketResponse GmTicket::BuildTicketResponsePacket() const
 {
+    WorldPackets::GmTicket::GmTicketGetTicketResponse packet;
     packet.hasTicket = true;
     packet.status = GMTICKET_STATUS_HASTEXT;
     std::stringstream displayedMessage;
@@ -148,13 +149,12 @@ void GmTicket::WriteToPacket(WorldPackets::GmTicket::GmTicketGetTicketResponse& 
     GMTicketOpenedByGMStatus openedStatus = m_viewed ? GMTICKET_OPENEDBYGM_STATUS_OPENED : GMTICKET_OPENEDBYGM_STATUS_NOT_OPENED;
     packet.escalationStatus = uint8(escStatus);              // escalated data
     packet.openedByGmStatus = uint8(openedStatus); // whether or not it has been viewed
+    return packet;
 }
 
 void GmTicket::SendResponse(WorldSession* session) const
 {
-    auto packet = std::make_unique<WorldPackets::GmTicket::GmTicketGetTicketResponse>();
-    WriteToPacket(*packet);
-    session->SendPacket(std::move(packet));
+    session->SendPacket(std::make_unique<WorldPackets::GmTicket::GmTicketGetTicketResponse>(BuildTicketResponsePacket()));
     ChatHandler(session).SendSysMessage(LANG_YOUR_TICKET_RESPONDED);
 }
 
@@ -446,12 +446,16 @@ void TicketMgr::ShowEscalatedList(ChatHandler& handler) const
 
 void TicketMgr::SendTicket(WorldSession* session, GmTicket const* ticket) const
 {
-    auto packet = std::make_unique<WorldPackets::GmTicket::GmTicketGetTicketResponse>();
     if (ticket)
-        ticket->WriteToPacket(*packet);
+    {
+        session->SendPacket(std::make_unique<WorldPackets::GmTicket::GmTicketGetTicketResponse>(ticket->BuildTicketResponsePacket()));
+    }
     else
-        packet->status = GMTICKET_STATUS_DEFAULT;
-    session->SendPacket(std::move(packet));
+    {
+        auto response = std::make_unique<WorldPackets::GmTicket::GmTicketGetTicketResponse>();
+        response->status = GMTICKET_STATUS_DEFAULT;
+        session->SendPacket(std::move(response));
+    }
 }
 
 void TicketMgr::ReloadTicketCallback(std::unique_ptr<QueryResult> result)

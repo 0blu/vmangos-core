@@ -244,48 +244,34 @@ void SocialMgr::SendFriendStatus(MasterPlayer* player, FriendsResult result, Obj
     FriendInfo fi;
     GetFriendInfo(player, friend_lowguid, fi);
 
+    auto packet = std::make_unique<WorldPackets::Misc::FriendStatus>();
+    packet->result = static_cast<uint8>(result);
+    packet->friendGuid = ObjectGuid(HIGHGUID_PLAYER, friend_lowguid);
+    switch (result)
+    {
+        case FRIEND_ADDED_ONLINE:
+        case FRIEND_ONLINE:
+            packet->includeOnlineInfo = true;
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
+            packet->friendStatus = uint8(fi.Status);
+#endif
+            packet->friendAreaId = fi.Area;
+            packet->friendLevel = fi.Level;
+            packet->friendClassId = fi.Class;
+            break;
+        default:
+            break;
+    }
+
     if (broadcast)
     {
         WorldPacket data;
-        MakeFriendStatusPacket(result, friend_lowguid, &data);
-        switch (result)
-        {
-            case FRIEND_ADDED_ONLINE:
-            case FRIEND_ONLINE:
-#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
-                data << uint8(fi.Status);
-#endif
-                data << uint32(fi.Area);
-                data << uint32(fi.Level);
-                data << uint32(fi.Class);
-                break;
-            default:
-                break;
-        }
+        data.SetOpcode(packet->GetOpcode());
+        packet->AppendBodyTo(data);
         BroadcastToFriendListers(player, &data);
     }
     else
-    {
-        auto packet = std::make_unique<WorldPackets::Misc::FriendStatus>();
-        packet->result = static_cast<uint8>(result);
-        packet->friendGuid = ObjectGuid(HIGHGUID_PLAYER, friend_lowguid);
-        switch (result)
-        {
-            case FRIEND_ADDED_ONLINE:
-            case FRIEND_ONLINE:
-                packet->includeOnlineInfo = true;
-#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
-                packet->friendStatus = uint8(fi.Status);
-#endif
-                packet->friendAreaId = fi.Area;
-                packet->friendLevel = fi.Level;
-                packet->friendClassId = fi.Class;
-                break;
-            default:
-                break;
-        }
         player->GetSession()->SendPacket(std::move(packet));
-    }
 }
 
 void SocialMgr::BroadcastToFriendListers(MasterPlayer const* player, WorldPacket const* packet)

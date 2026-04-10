@@ -221,7 +221,7 @@ void Weather::SendWeatherUpdateToPlayer(Player* player)
     packet->soundId = GetSound();
 #endif
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
-    packet->instantChange = 0;
+    packet->instantChange = false;
 #endif
     player->GetSession()->SendPacket(std::move(packet));
 #endif
