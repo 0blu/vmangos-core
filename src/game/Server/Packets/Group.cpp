@@ -150,6 +150,23 @@ void WorldPackets::Group::RaidReadyCheckResponse::AppendBodyTo(ByteBuffer& buffe
     buffer << senderGuid;
     buffer << state;
 }
+
+void WorldPackets::Group::RaidTargetUpdateDelta::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << uint8(0); // 0 = delta update
+    buffer << iconId;
+    buffer << targetGuid;
+}
+
+void WorldPackets::Group::RaidTargetUpdateFull::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << uint8(1); // 1 = full icon list
+    for (auto const& entry : icons)
+    {
+        buffer << entry.iconId;
+        buffer << entry.guid;
+    }
+}
 #endif
 
 void WorldPackets::Group::WritePartyMemberStats(ByteBuffer& buffer, WorldPackets::Group::PartyMemberStatsData const& data)

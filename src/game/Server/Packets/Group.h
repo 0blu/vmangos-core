@@ -278,6 +278,33 @@ namespace WorldPackets { namespace Group
         explicit RaidReadyCheckResponse() : ServerPacket(MSG_RAID_READY_CHECK) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
+
+    struct RaidTargetIconEntry
+    {
+        uint8 iconId = 0;
+        ObjectGuid guid;
+    };
+
+    // Delta update: a single icon was changed (mode byte = 0)
+    class RaidTargetUpdateDelta final : public ServerPacket
+    {
+    public:
+        uint8 iconId = 0;
+        ObjectGuid targetGuid;
+
+        explicit RaidTargetUpdateDelta() : ServerPacket(MSG_RAID_TARGET_UPDATE) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    // Full icon list sent to one session (mode byte = 1)
+    class RaidTargetUpdateFull final : public ServerPacket
+    {
+    public:
+        std::vector<RaidTargetIconEntry> icons;
+
+        explicit RaidTargetUpdateFull() : ServerPacket(MSG_RAID_TARGET_UPDATE) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
 #endif
 
     class PartyMemberStatsFull final : public ServerPacket

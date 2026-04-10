@@ -1257,10 +1257,12 @@ void Group::SetTargetIcon(uint8 id, ObjectGuid targetGuid)
     m_targetIcons[id] = targetGuid;
 
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_10_2
-    WorldPacket data(MSG_RAID_TARGET_UPDATE, (1 + 1 + 8));
-    data << uint8(0); // 1 - full icon list, 0 - delta update
-    data << uint8(id);
-    data << targetGuid;
+    WorldPackets::Group::RaidTargetUpdateDelta deltaPacket;
+    deltaPacket.iconId = id;
+    deltaPacket.targetGuid = targetGuid;
+    WorldPacket data;
+    data.SetOpcode(deltaPacket.GetOpcode());
+    deltaPacket.AppendBodyTo(data);
     BroadcastPacket(&data, true);
 #endif
 }
@@ -1321,19 +1323,19 @@ void Group::SendTargetIconList(WorldSession* session)
     if (!session)
         return;
 
-    WorldPacket data(MSG_RAID_TARGET_UPDATE, (1 + TARGET_ICON_COUNT * 9));
-    data << uint8(1); // 1 - full icon list, 0 - delta update
-
+    auto packet = std::make_unique<WorldPackets::Group::RaidTargetUpdateFull>();
     for (int i = 0; i < TARGET_ICON_COUNT; ++i)
     {
         if (!m_targetIcons[i])
             continue;
 
-        data << uint8(i);
-        data << m_targetIcons[i];
+        WorldPackets::Group::RaidTargetIconEntry entry;
+        entry.iconId = static_cast<uint8>(i);
+        entry.guid = m_targetIcons[i];
+        packet->icons.push_back(entry);
     }
 
-    session->SendPacket(&data);
+    session->SendPacket(std::move(packet));
 #endif
 }
 
@@ -1341,22 +1343,26 @@ void Group::SendUpdate()
 {
     // sending full group list update clears marked targets when not in a raid, so we need to resend them
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_10_2
-    std::unique_ptr<WorldPacket> markedTargets;
+    WorldPacket markedTargetsData;
+    bool hasMarkedTargets = false;
     if (!isRaidGroup())
     {
+        WorldPackets::Group::RaidTargetUpdateFull markedTargets;
         for (int i = 0; i < TARGET_ICON_COUNT; ++i)
         {
             if (!m_targetIcons[i])
                 continue;
 
-            if (!markedTargets)
-            {
-                markedTargets = std::make_unique<WorldPacket>(MSG_RAID_TARGET_UPDATE, (1 + TARGET_ICON_COUNT * 9));
-                *markedTargets << uint8(1); // 1 - full icon list, 0 - delta update
-            }
-
-            *markedTargets << uint8(i);
-            *markedTargets << m_targetIcons[i];
+            WorldPackets::Group::RaidTargetIconEntry entry;
+            entry.iconId = static_cast<uint8>(i);
+            entry.guid = m_targetIcons[i];
+            markedTargets.icons.push_back(entry);
+        }
+        if (!markedTargets.icons.empty())
+        {
+            markedTargetsData.SetOpcode(markedTargets.GetOpcode());
+            markedTargets.AppendBodyTo(markedTargetsData);
+            hasMarkedTargets = true;
         }
     }
 #endif
@@ -1395,8 +1401,8 @@ void Group::SendUpdate()
         player->GetSession()->SendPacket(std::move(groupList));
 
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_10_2
-        if (markedTargets)
-            player->GetSession()->SendPacket(markedTargets.get());
+        if (hasMarkedTargets)
+            player->GetSession()->SendPacket(&markedTargetsData);
 #endif
     }
 }
