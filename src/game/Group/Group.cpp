@@ -1347,42 +1347,32 @@ void Group::SendUpdate()
         if (!player || player->GetGroup() != this)
             continue;
 
-        // guess size
-        WorldPacket data(SMSG_GROUP_LIST, (1 + 1 + 1 + 4 + GetMembersCount() * 20) + 8 + 1 + 8 + 1);
-        data << (uint8)m_groupType;                         // group type
-        data << (uint8)(citr->group | (citr->assistant ? 0x80 : 0)); // own flags (groupid | (assistant?0x80:0))
+        auto groupList = std::make_unique<WorldPackets::Group::GroupListFull>();
+        groupList->groupType = m_groupType;
+        groupList->ownGroupAndFlags = static_cast<uint8>(citr->group | (citr->assistant ? 0x80 : 0));
+        groupList->leaderGuid = m_leaderGuid;
 
-        uint32 count = 0;
-        size_t countPos = data.wpos();
-        data << uint32(0);
         for (const auto& itr : m_memberSlots)
         {
             if (citr->guid == itr.guid)
                 continue;
 
-            data << itr.name;
-            data << itr.guid;
-            data << uint8(GetGroupMemberStatus(sObjectMgr.GetPlayer(itr.guid)));
-            data << (uint8)(itr.group | (itr.assistant ? 0x80 : 0));
-            count++;
+            WorldPackets::Group::GroupMemberEntry entry;
+            entry.name = itr.name;
+            entry.guid = itr.guid;
+            entry.onlineStatus = GetGroupMemberStatus(sObjectMgr.GetPlayer(itr.guid));
+            entry.groupAndFlags = static_cast<uint8>(itr.group | (itr.assistant ? 0x80 : 0));
+            groupList->members.push_back(std::move(entry));
         }
-        data.put<uint32>(countPos, count);
 
-        data << m_leaderGuid;                               // leader guid
-        if (count)
+        if (!groupList->members.empty())
         {
-            data << uint8(m_lootMethod);                    // loot method
+            groupList->lootMethod = m_lootMethod;
             if (GetLootMethod() == MASTER_LOOT)
-                data << m_looterGuid;                       // looter guid
-            else
-                data << uint64(0);
-            data << uint8(m_lootThreshold);                 // loot threshold
-
-#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_10_2
-            data << uint8(0);                               // dungeon difficulty
-#endif
+                groupList->masterLooterGuid = m_looterGuid;
+            groupList->lootThreshold = m_lootThreshold;
         }
-        player->GetSession()->SendPacket(&data);
+        player->GetSession()->SendPacket(std::move(groupList));
 
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_10_2
         if (markedTargets)
