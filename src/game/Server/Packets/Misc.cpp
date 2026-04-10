@@ -409,13 +409,13 @@ void WorldPackets::Misc::FriendStatus::AppendBodyTo(ByteBuffer& buffer) const
 {
     buffer << result;
     buffer << friendGuid;
-    if (includeOnlineInfo)
+    if (onlineInfo)
     {
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
-        buffer << friendStatus;
+        buffer << onlineInfo->status;
 #endif
-        buffer << friendAreaId;
-        buffer << friendLevel;
-        buffer << friendClassId;
+        buffer << onlineInfo->areaId;
+        buffer << onlineInfo->level;
+        buffer << onlineInfo->classId;
     }
 }

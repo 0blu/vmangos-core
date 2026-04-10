@@ -244,14 +244,17 @@ void SocialMgr::SendFriendStatus(MasterPlayer* player, FriendsResult result, Obj
     {
         case FRIEND_ADDED_ONLINE:
         case FRIEND_ONLINE:
-            packet->includeOnlineInfo = true;
+        {
+            WorldPackets::Misc::FriendOnlineInfo info;
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
-            packet->friendStatus = uint8(fi.Status);
+            info.status = uint8(fi.Status);
 #endif
-            packet->friendAreaId = fi.Area;
-            packet->friendLevel = fi.Level;
-            packet->friendClassId = fi.Class;
+            info.areaId = fi.Area;
+            info.level = fi.Level;
+            info.classId = fi.Class;
+            packet->onlineInfo = info;
             break;
+        }
         default:
             break;
     }
