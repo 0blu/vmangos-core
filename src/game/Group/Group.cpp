@@ -1343,7 +1343,7 @@ void Group::SendUpdate()
 {
     // sending full group list update clears marked targets when not in a raid, so we need to resend them
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_10_2
-    WorldPacket markedTargetsData;
+    WorldPacket markedTargetsData; // TODO Use broadcaster which does the binary conversion automatically
     bool hasMarkedTargets = false;
     if (!isRaidGroup())
     {
