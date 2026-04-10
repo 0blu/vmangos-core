@@ -120,8 +120,9 @@ void GmTicket::DeleteFromDB()
 WorldPackets::GmTicket::GmTicketGetTicketResponse GmTicket::BuildTicketResponsePacket() const
 {
     WorldPackets::GmTicket::GmTicketGetTicketResponse packet;
-    packet.hasTicket = true;
     packet.status = GMTICKET_STATUS_HASTEXT;
+
+    WorldPackets::GmTicket::GmTicketInfo info;
     std::stringstream displayedMessage;
     displayedMessage << m_message;
     if (IsCompleted())
@@ -134,21 +135,22 @@ WorldPackets::GmTicket::GmTicketGetTicketResponse GmTicket::BuildTicketResponseP
             displayedMessage << m_response;
         }
     }
-    packet.displayedMessage = displayedMessage.str();
-    packet.ticketType = uint8(m_ticketType);
-    packet.lastModifiedAge = GetAge(m_lastModifiedTime);
+    info.displayedMessage = displayedMessage.str();
+    info.ticketType = uint8(m_ticketType);
+    info.lastModifiedAge = GetAge(m_lastModifiedTime);
     if (GmTicket* ticket = sTicketMgr->GetOldestOpenTicket())
-        packet.oldestOpenTicketAge = GetAge(ticket->GetLastModifiedTime());
+        info.oldestOpenTicketAge = GetAge(ticket->GetLastModifiedTime());
     else
-        packet.oldestOpenTicketAge = 0.0f;
+        info.oldestOpenTicketAge = 0.0f;
 
     // I am not sure how blizzlike this is, and we don't really have a way to find out
-    packet.estimatedWaitTime = GetAge(sTicketMgr->GetLastChange()); // Estimated wait time ?
+    info.estimatedWaitTime = GetAge(sTicketMgr->GetLastChange()); // Estimated wait time ?
 
     GMTicketEscalationStatus escStatus = std::min(m_escalatedStatus, TICKET_IN_ESCALATION_QUEUE);
     GMTicketOpenedByGMStatus openedStatus = m_viewed ? GMTICKET_OPENEDBYGM_STATUS_OPENED : GMTICKET_OPENEDBYGM_STATUS_NOT_OPENED;
-    packet.escalationStatus = uint8(escStatus);              // escalated data
-    packet.openedByGmStatus = uint8(openedStatus); // whether or not it has been viewed
+    info.escalationStatus = uint8(escStatus);              // escalated data
+    info.openedByGmStatus = uint8(openedStatus); // whether or not it has been viewed
+    packet.ticketInfo = std::move(info);
     return packet;
 }
 

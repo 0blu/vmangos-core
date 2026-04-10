@@ -64,14 +64,14 @@ void WorldPackets::GmTicket::GmTicketSystemStatus::AppendBodyTo(ByteBuffer& buff
 void WorldPackets::GmTicket::GmTicketGetTicketResponse::AppendBodyTo(ByteBuffer& buffer) const
 {
     buffer << status;
-    if (hasTicket)
+    if (ticketInfo)
     {
-        buffer << displayedMessage;
-        buffer << ticketType;
-        buffer << lastModifiedAge;
-        buffer << oldestOpenTicketAge;
-        buffer << estimatedWaitTime;
-        buffer << escalationStatus;
-        buffer << openedByGmStatus;
+        buffer << ticketInfo->displayedMessage;
+        buffer << ticketInfo->ticketType;
+        buffer << ticketInfo->lastModifiedAge;
+        buffer << ticketInfo->oldestOpenTicketAge;
+        buffer << ticketInfo->estimatedWaitTime;
+        buffer << ticketInfo->escalationStatus;
+        buffer << ticketInfo->openedByGmStatus;
     }
 }
