@@ -758,6 +758,11 @@ void Group::SendLootStartRoll(uint32 CountDown, Roll const& r)
     packet->itemRandomPropId = r.itemRandomPropId;
     packet->countdownTime = CountDown;
 
+    // TODO Use broadcaster which does the binary conversion automatically
+    WorldPacket data;
+    data.SetOpcode(packet->GetOpcode());
+    packet->AppendBodyTo(data);
+
     for (const auto& itr : r.playerVote)
     {
         Player* p = sObjectMgr.GetPlayer(itr.first);
@@ -767,7 +772,7 @@ void Group::SendLootStartRoll(uint32 CountDown, Roll const& r)
         if (itr.second == ROLL_NOT_VALID)
             continue;
 
-        p->GetSession()->SendPacket(std::make_unique<WorldPackets::Loot::LootStartRoll>(*packet));
+        p->GetSession()->SendPacket(&data);
     }
 }
 
@@ -783,6 +788,11 @@ void Group::SendLootRoll(ObjectGuid const& targetGuid, uint8 rollNumber, uint8 r
     packet->rollNumber = rollNumber;
     packet->rollType = rollType;
 
+    // TODO Use broadcaster which does the binary conversion automatically
+    WorldPacket data;
+    data.SetOpcode(packet->GetOpcode());
+    packet->AppendBodyTo(data);
+
     for (const auto& itr : r.playerVote)
     {
         Player* p = sObjectMgr.GetPlayer(itr.first);
@@ -790,7 +800,7 @@ void Group::SendLootRoll(ObjectGuid const& targetGuid, uint8 rollNumber, uint8 r
             continue;
 
         if (itr.second != ROLL_NOT_VALID)
-            p->GetSession()->SendPacket(std::make_unique<WorldPackets::Loot::LootRollResponse>(*packet));
+            p->GetSession()->SendPacket(&data);
     }
 }
 
@@ -806,6 +816,11 @@ void Group::SendLootRollWon(ObjectGuid const& targetGuid, uint8 rollNumber, Roll
     packet->rollNumber = rollNumber;
     packet->rollType = uint8(rollType);
 
+    // TODO Use broadcaster which does the binary conversion automatically
+    WorldPacket data;
+    data.SetOpcode(packet->GetOpcode());
+    packet->AppendBodyTo(data);
+
     for (const auto& itr : r.playerVote)
     {
         Player* p = sObjectMgr.GetPlayer(itr.first);
@@ -813,7 +828,7 @@ void Group::SendLootRollWon(ObjectGuid const& targetGuid, uint8 rollNumber, Roll
             continue;
 
         if (itr.second != ROLL_NOT_VALID)
-            p->GetSession()->SendPacket(std::make_unique<WorldPackets::Loot::LootRollWon>(*packet));
+            p->GetSession()->SendPacket(&data);
     }
 }
 
@@ -826,6 +841,11 @@ void Group::SendLootAllPassed(Roll const& r)
     packet->itemRandomPropId = r.itemRandomPropId;
     packet->randomSuffixId = 0;
 
+    // TODO Use broadcaster which does the binary conversion automatically
+    WorldPacket data;
+    data.SetOpcode(packet->GetOpcode());
+    packet->AppendBodyTo(data);
+
     for (const auto& itr : r.playerVote)
     {
         Player* p = sObjectMgr.GetPlayer(itr.first);
@@ -833,7 +853,7 @@ void Group::SendLootAllPassed(Roll const& r)
             continue;
 
         if (itr.second != ROLL_NOT_VALID)
-            p->GetSession()->SendPacket(std::make_unique<WorldPackets::Loot::LootAllPassed>(*packet));
+            p->GetSession()->SendPacket(&data);
     }
 }
 
