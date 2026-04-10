@@ -23,13 +23,14 @@
 #include <string>
 #include <memory>
 
+#include "Packets/GmTicket.h"
+
 class Player;
 class ChatHandler;
 class Field;
 class QueryResult;
 class WorldPacket;
 class WorldSession;
-namespace WorldPackets { namespace GmTicket { class GmTicketGetTicketResponse; } }
 
 // from blizzard lua
 enum GMTicketSystemStatus

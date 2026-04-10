@@ -27,11 +27,12 @@
 #include "ObjectGuid.h"
 #include <shared_mutex>
 
+#include "Packets/Misc.h"
+
 class SocialMgr;
 class PlayerSocial;
 class Player;
 class MasterPlayer;
-class WorldPacket;
 
 enum FriendStatus
 {
@@ -150,9 +151,8 @@ class SocialMgr
 
         void GetFriendInfo(MasterPlayer* player, uint32 friendGUID, FriendInfo &friendInfo);
         // Packet management
-        void MakeFriendStatusPacket(FriendsResult result, uint32 friend_guid, WorldPacket* data);
         void SendFriendStatus(MasterPlayer* player, FriendsResult result, ObjectGuid friend_guid, bool broadcast);
-        void BroadcastToFriendListers(MasterPlayer const* player, WorldPacket const* packet);
+        void BroadcastToFriendListers(MasterPlayer const* player, std::unique_ptr<ServerPacket> packet);
         // Loading
         PlayerSocial* LoadFromDB(std::unique_ptr<QueryResult> result, ObjectGuid guid);
     private:

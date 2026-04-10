@@ -118,4 +118,3 @@ sql/migrations/world_db_updates.sql
 revision.h
 migrations_list.h
 Progression.h
-repo-bundle.bundle

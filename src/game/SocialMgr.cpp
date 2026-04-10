@@ -204,7 +204,7 @@ void SocialMgr::GetFriendInfo(MasterPlayer* player, uint32 friend_lowguid, Frien
 
     PlayerSocialMap::const_iterator itr = player->GetSocial()->m_playerSocialMap.find(friend_lowguid);
     if (itr != player->GetSocial()->m_playerSocialMap.end())
-    { 
+    {
         // PLAYER see his team only and PLAYER can't see MODERATOR, GAME MASTER, ADMINISTRATOR characters
         // MODERATOR, GAME MASTER, ADMINISTRATOR can see all
         if (pFriend && pFriend->GetName() &&
@@ -229,13 +229,6 @@ void SocialMgr::GetFriendInfo(MasterPlayer* player, uint32 friend_lowguid, Frien
             friendInfo.Class = 0;
         }
     }
-}
-
-void SocialMgr::MakeFriendStatusPacket(FriendsResult result, uint32 guid, WorldPacket* data)
-{
-    data->Initialize(SMSG_FRIEND_STATUS, 5);
-    *data << uint8(result);
-    *data << ObjectGuid(HIGHGUID_PLAYER, guid);
 }
 
 void SocialMgr::SendFriendStatus(MasterPlayer* player, FriendsResult result, ObjectGuid friend_guid, bool broadcast)
@@ -264,20 +257,19 @@ void SocialMgr::SendFriendStatus(MasterPlayer* player, FriendsResult result, Obj
     }
 
     if (broadcast)
-    {
-        WorldPacket data;
-        data.SetOpcode(packet->GetOpcode());
-        packet->AppendBodyTo(data);
-        BroadcastToFriendListers(player, &data);
-    }
+        BroadcastToFriendListers(player, std::move(packet)); // TODO Use broadcaster which does the binary conversion automatically
     else
         player->GetSession()->SendPacket(std::move(packet));
 }
 
-void SocialMgr::BroadcastToFriendListers(MasterPlayer const* player, WorldPacket const* packet)
+void SocialMgr::BroadcastToFriendListers(MasterPlayer const* player, std::unique_ptr<ServerPacket> packet)
 {
     if (!player)
         return;
+
+    WorldPacket data;
+    data.SetOpcode(packet->GetOpcode());
+    packet->AppendBodyTo(data);
 
     Team team = player->GetTeam();
     AccountTypes security = player->GetSession()->GetSecurity();
@@ -299,7 +291,7 @@ void SocialMgr::BroadcastToFriendListers(MasterPlayer const* player, WorldPacket
                     (pFriend->GetSession()->GetSecurity() > SEC_PLAYER ||
                      ((pFriend->GetTeam() == team || allowTwoSideWhoList) && security <= gmLevelInWhoList)) &&
                     player->IsVisibleGloballyFor(pFriend))
-                pFriend->GetSession()->SendPacket(packet);
+                pFriend->GetSession()->SendPacket(&data);
         }
     }
 }
