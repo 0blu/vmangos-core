@@ -500,6 +500,114 @@ namespace WorldPackets { namespace Misc
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
 
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_7_1
+    class WeatherUpdate final : public ServerPacket
+    {
+    public:
+        uint32 weatherType = 0;
+        float grade = 0.0f;
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
+        uint32 soundId = 0;
+#endif
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
+        bool instantChange = false;     // true = instant change, false = smooth change
+#endif
+
+        explicit WeatherUpdate() : ServerPacket(SMSG_WEATHER) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+#endif
+
+    class AuthResponse final : public ServerPacket
+    {
+    public:
+        uint8 result = 0;
+        uint32 billingTimeRemaining = 0;
+        uint8 billingPlanFlags = 0;
+        uint32 billingTimeRested = 0;
+        nonstd::optional<uint32> queuePosition;
+
+        explicit AuthResponse() : ServerPacket(SMSG_AUTH_RESPONSE) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class ServerMessage final : public ServerPacket
+    {
+    public:
+        uint32 messageType = 0;
+        std::string text;
+
+        explicit ServerMessage() : ServerPacket(SMSG_SERVER_MESSAGE) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class MeetingstoneJoinFailed final : public ServerPacket
+    {
+    public:
+        uint8 reason = 0;
+
+        explicit MeetingstoneJoinFailed() : ServerPacket(SMSG_MEETINGSTONE_JOINFAILED) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class MeetingstoneSetQueue final : public ServerPacket
+    {
+    public:
+        uint32 areaId = 0;
+        uint8 status = 0;
+
+        explicit MeetingstoneSetQueue() : ServerPacket(SMSG_MEETINGSTONE_SETQUEUE) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    struct FriendEntry
+    {
+        ObjectGuid playerGuid;
+        uint8 status = 0;           // online/offline/afk/dnd
+        uint32 areaId = 0;          // only when online
+        uint32 level = 0;           // only when online
+        uint32 classId = 0;         // only when online
+    };
+
+    class FriendList final : public ServerPacket
+    {
+    public:
+        std::vector<FriendEntry> friends;
+
+        explicit FriendList() : ServerPacket(SMSG_FRIEND_LIST) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class IgnoreList final : public ServerPacket
+    {
+    public:
+        std::vector<ObjectGuid> ignoredPlayers;
+
+        explicit IgnoreList() : ServerPacket(SMSG_IGNORE_LIST) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    struct FriendOnlineInfo
+    {
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
+        uint8 status = 0;
+#endif
+        uint32 areaId = 0;
+        uint32 level = 0;
+        uint32 classId = 0;
+    };
+
+    class FriendStatus final : public ServerPacket
+    {
+    public:
+        uint8 result = 0;                    // FriendsResult enum
+        ObjectGuid friendGuid;
+        nonstd::optional<FriendOnlineInfo> onlineInfo;
+
+        explicit FriendStatus() : ServerPacket(SMSG_FRIEND_STATUS) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
 }} // namespace WorldPackets::Misc
 
 #endif // MANGOS_PACKETS_MISC_H

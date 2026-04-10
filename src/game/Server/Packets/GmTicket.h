@@ -3,6 +3,7 @@
 
 #include "Packet.h"
 #include "SharedDefines.h"
+#include "nonstd/optional.hpp"
 #include <string>
 #include <vector>
 
@@ -86,6 +87,27 @@ namespace WorldPackets { namespace GmTicket
         uint32 status = 0;
 
         explicit GmTicketSystemStatus() : ServerPacket(SMSG_GMTICKET_SYSTEMSTATUS) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    struct GmTicketInfo
+    {
+        std::string displayedMessage;
+        uint8 ticketType = 0;
+        float lastModifiedAge = 0.0f;
+        float oldestOpenTicketAge = 0.0f;
+        float estimatedWaitTime = 0.0f;
+        uint8 escalationStatus = 0;
+        uint8 openedByGmStatus = 0;
+    };
+
+    class GmTicketGetTicketResponse final : public ServerPacket
+    {
+    public:
+        uint32 status = 0;
+        nonstd::optional<GmTicketInfo> ticketInfo;
+
+        explicit GmTicketGetTicketResponse() : ServerPacket(SMSG_GMTICKET_GETTICKET) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
 

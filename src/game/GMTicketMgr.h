@@ -23,6 +23,8 @@
 #include <string>
 #include <memory>
 
+#include "Packets/GmTicket.h"
+
 class Player;
 class ChatHandler;
 class Field;
@@ -136,7 +138,7 @@ public:
     void SaveToDB() const;
     void DeleteFromDB();
 
-    void WritePacket(WorldPacket& data) const;
+    WorldPackets::GmTicket::GmTicketGetTicketResponse BuildTicketResponsePacket() const;
     void SendResponse(WorldSession* session) const;
 
     void TeleportTo(Player* player) const;

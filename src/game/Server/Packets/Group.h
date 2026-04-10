@@ -220,6 +220,54 @@ namespace WorldPackets { namespace Group
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
 
+    class GroupUninviteNotification final : public ServerPacket
+    {
+    public:
+        explicit GroupUninviteNotification() : ServerPacket(SMSG_GROUP_UNINVITE) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class GroupDestroyed final : public ServerPacket
+    {
+    public:
+        explicit GroupDestroyed() : ServerPacket(SMSG_GROUP_DESTROYED) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class GroupListEmpty final : public ServerPacket
+    {
+    public:
+        explicit GroupListEmpty() : ServerPacket(SMSG_GROUP_LIST) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    struct GroupMemberEntry
+    {
+        std::string name;
+        ObjectGuid guid;
+        uint8 onlineStatus = 0;
+        uint8 groupAndFlags = 0; // (groupId | (assistant ? 0x80 : 0))
+    };
+
+    class GroupListFull final : public ServerPacket
+    {
+    public:
+        uint8 groupType = 0;
+        uint8 ownGroupAndFlags = 0; // own (groupId | (assistant ? 0x80 : 0))
+        std::vector<GroupMemberEntry> members;
+        ObjectGuid leaderGuid;
+        // Loot settings - only present when members is not empty
+        uint8 lootMethod = 0;
+        ObjectGuid masterLooterGuid;
+        uint8 lootThreshold = 0;
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_10_2
+        uint8 dungeonDifficulty = 0;
+#endif
+
+        explicit GroupListFull() : ServerPacket(SMSG_GROUP_LIST) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_10_2
     class RaidReadyCheckResponse final : public ServerPacket
     {
@@ -228,6 +276,33 @@ namespace WorldPackets { namespace Group
         uint8 state = 0;        // ready state
 
         explicit RaidReadyCheckResponse() : ServerPacket(MSG_RAID_READY_CHECK) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    struct RaidTargetIconEntry
+    {
+        uint8 iconId = 0;
+        ObjectGuid guid;
+    };
+
+    // Delta update: a single icon was changed (mode byte = 0)
+    class RaidTargetUpdateDelta final : public ServerPacket
+    {
+    public:
+        uint8 iconId = 0;
+        ObjectGuid targetGuid;
+
+        explicit RaidTargetUpdateDelta() : ServerPacket(MSG_RAID_TARGET_UPDATE) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    // Full icon list sent to one session (mode byte = 1)
+    class RaidTargetUpdateFull final : public ServerPacket
+    {
+    public:
+        std::vector<RaidTargetIconEntry> icons;
+
+        explicit RaidTargetUpdateFull() : ServerPacket(MSG_RAID_TARGET_UPDATE) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
 #endif

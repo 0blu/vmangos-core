@@ -321,13 +321,12 @@ void World::AddSession_(WorldSession* s)
     }
 
     // Checked for 1.12.2
-    WorldPacket packet(SMSG_AUTH_RESPONSE, 1 + 4 + 1 + 4);
-    packet << uint8(AUTH_OK);
-    packet << uint32(0);                                    // BillingTimeRemaining
-                                                            // BillingPlanFlags
-    packet << uint8(s->HasTrialRestrictions() ? (BILLING_FLAG_TRIAL | BILLING_FLAG_RESTRICTED) : BILLING_FLAG_NONE);
-    packet << uint32(0);                                    // BillingTimeRested
-    s->SendPacket(&packet);
+    auto authResponse = std::make_unique<WorldPackets::Misc::AuthResponse>();
+    authResponse->result = AUTH_OK;
+    authResponse->billingTimeRemaining = 0;
+    authResponse->billingPlanFlags = s->HasTrialRestrictions() ? (BILLING_FLAG_TRIAL | BILLING_FLAG_RESTRICTED) : BILLING_FLAG_NONE;
+    authResponse->billingTimeRested = 0;
+    s->SendPacket(std::move(authResponse));
 
     UpdateMaxSessionCounters();
 
@@ -368,14 +367,13 @@ void World::AddQueuedSession(WorldSession* sess)
 
     // [-ZERO] Possible wrong
     // The 1st SMSG_AUTH_RESPONSE needs to contain other info too.
-    WorldPacket packet(SMSG_AUTH_RESPONSE, 1 + 4 + 1 + 4 + 4);
-    packet << uint8(AUTH_WAIT_QUEUE);
-    packet << uint32(0);                                    // BillingTimeRemaining
-                                                            // BillingPlanFlags
-    packet << uint8(sess->HasTrialRestrictions() ? (BILLING_FLAG_TRIAL | BILLING_FLAG_RESTRICTED) : BILLING_FLAG_NONE);
-    packet << uint32(0);                                    // BillingTimeRested
-    packet << uint32(GetQueuedSessionPos(sess));            // position in queue
-    sess->SendPacket(&packet);
+    auto authResponse = std::make_unique<WorldPackets::Misc::AuthResponse>();
+    authResponse->result = AUTH_WAIT_QUEUE;
+    authResponse->billingTimeRemaining = 0;
+    authResponse->billingPlanFlags = sess->HasTrialRestrictions() ? (BILLING_FLAG_TRIAL | BILLING_FLAG_RESTRICTED) : BILLING_FLAG_NONE;
+    authResponse->billingTimeRested = 0;
+    authResponse->queuePosition = GetQueuedSessionPos(sess);
+    sess->SendPacket(std::move(authResponse));
 
     //sess->SendAuthWaitQue (GetQueuePos (sess));
 }
@@ -2754,14 +2752,20 @@ void World::ShutdownCancel()
 // Send a server message to the user(s)
 void World::SendServerMessage(ServerMessageType type, char const* text, Player* player)
 {
-    WorldPacket data(SMSG_SERVER_MESSAGE, 50);              // guess size
-    data << uint32(type);
-    data << text;
-
     if (player)
-        player->GetSession()->SendPacket(&data);
+    {
+        auto serverMsg = std::make_unique<WorldPackets::Misc::ServerMessage>();
+        serverMsg->messageType = static_cast<uint32>(type);
+        serverMsg->text = text;
+        player->GetSession()->SendPacket(std::move(serverMsg));
+    }
     else
+    {
+        WorldPacket data(SMSG_SERVER_MESSAGE, 50);
+        data << uint32(type);
+        data << text;
         SendGlobalMessage(&data);
+    }
 }
 
 void World::UpdateSessions(uint32 diff)
