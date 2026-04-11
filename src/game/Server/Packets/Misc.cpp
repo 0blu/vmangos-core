@@ -269,7 +269,7 @@ void WorldPackets::Misc::StandStateUpdate::AppendBodyTo(ByteBuffer& buffer) cons
 void WorldPackets::Misc::PlayTimeWarning::AppendBodyTo(ByteBuffer& buffer) const
 {
     buffer << flag;
-    buffer << int32(timeLeftInSeconds);
+    buffer << timeLeftInSeconds;
 }
 #endif
 

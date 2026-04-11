@@ -36,17 +36,17 @@ void WorldPackets::Character::CharRename::ReadFromWorldPacket(WorldPacket& recv_
 
 void WorldPackets::Character::CharCreateResponse::AppendBodyTo(ByteBuffer& buffer) const
 {
-    buffer << uint8(result);
+    buffer << result;
 }
 
 void WorldPackets::Character::CharDeleteResponse::AppendBodyTo(ByteBuffer& buffer) const
 {
-    buffer << uint8(result);
+    buffer << result;
 }
 
 void WorldPackets::Character::CharacterLoginFailed::AppendBodyTo(ByteBuffer& buffer) const
 {
-    buffer << uint8(result);
+    buffer << result;
 }
 
 void WorldPackets::Character::LoginVerifyWorld::AppendBodyTo(ByteBuffer& buffer) const

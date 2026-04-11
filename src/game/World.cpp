@@ -2754,18 +2754,20 @@ void World::ShutdownCancel()
 // Send a server message to the user(s)
 void World::SendServerMessage(ServerMessageType type, char const* text, Player* player)
 {
+    auto packet = std::make_unique<WorldPackets::Misc::ServerMessage>();
+    packet->messageType = static_cast<uint32>(type);
+    packet->text = text;
+
     if (player)
     {
-        auto serverMsg = std::make_unique<WorldPackets::Misc::ServerMessage>();
-        serverMsg->messageType = static_cast<uint32>(type);
-        serverMsg->text = text;
-        player->GetSession()->SendPacket(std::move(serverMsg));
+        player->GetSession()->SendPacket(std::move(packet));
     }
     else
     {
-        WorldPacket data(SMSG_SERVER_MESSAGE, 50);
-        data << uint32(type);
-        data << text;
+        // TODO Use broadcaster which does the binary conversion automatically
+        WorldPacket data;
+        data.SetOpcode(packet->GetOpcode());
+        packet->AppendBodyTo(data);
         SendGlobalMessage(&data);
     }
 }

@@ -1271,6 +1271,8 @@ void Group::SetTargetIcon(uint8 id, ObjectGuid targetGuid)
     WorldPackets::Group::RaidTargetUpdateDelta deltaPacket;
     deltaPacket.iconId = id;
     deltaPacket.targetGuid = targetGuid;
+
+    // TODO Use broadcaster which does the binary conversion automatically
     WorldPacket data;
     data.SetOpcode(deltaPacket.GetOpcode());
     deltaPacket.AppendBodyTo(data);
@@ -1432,12 +1434,8 @@ void Group::UpdatePlayerOutOfRange(Player* pPlayer)
     if (pPlayer->GetGroupUpdateFlag() == GROUP_UPDATE_FLAG_NONE)
         return;
 
-    auto statsPacket = pPlayer->GetSession()->BuildPartyMemberStatsChangedPacket(pPlayer);
-
-    // TODO Use broadcaster which does the binary conversion automatically
     WorldPacket data;
-    data.SetOpcode(statsPacket.GetOpcode());
-    statsPacket.AppendBodyTo(data);
+    pPlayer->GetSession()->BuildPartyMemberStatsChangedPacket(pPlayer, &data);
 
     for (GroupReference* itr = GetFirstMember(); itr != nullptr; itr = itr->next())
         if (Player* player = itr->getSource())

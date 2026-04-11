@@ -466,9 +466,8 @@ class WorldSession
         void SendMeetingstoneSetqueue(uint32 areaid, uint8 status);
 
         // Group
-        WorldPackets::Group::PartyMemberStats BuildPartyMemberStatsChangedPacket(Player* player);
-        WorldPackets::Group::PartyMemberStatsData BuildPartyMemberStatsPacket(Player* player, uint32 updateMask, bool sendAllAuras);
-
+        void BuildPartyMemberStatsChangedPacket(Player* player, WorldPacket* data);
+        void BuildPartyMemberStatsPacket(Player* player, WorldPacket* data, uint32 updateMask, bool sendAllAuras);
     public:                                                 // opcodes handlers
         template<typename TClientPacket>
         static std::unique_ptr<ClientPacket> Handle_GenericRead(WorldPacket& recvPacket)

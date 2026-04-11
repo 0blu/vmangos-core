@@ -39,5 +39,5 @@ void WorldPackets::Spell::CastResultSimpleFailure::AppendBodyTo(ByteBuffer& buff
 {
     buffer << spellId;
     buffer << uint8(2); // status = fail
-    buffer << uint8(reason);
+    buffer << reason;
 }
