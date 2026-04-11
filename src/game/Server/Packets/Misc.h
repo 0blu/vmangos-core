@@ -527,7 +527,12 @@ namespace WorldPackets { namespace Misc
     {
     public:
         uint32 areaId = 0;
+
+#if SUPPORTED_CLIENT_BUILD <= CLIENT_BUILD_1_4_2
+        uint64 idempotencyToken = 0; // Guess: Incrementing counter. Must change for every response. TODO: Maybe use ms timestamp to enforce a new id on every packet
+#else
         uint8 status = 0;
+#endif
 
         explicit MeetingstoneSetQueue() : ServerPacket(SMSG_MEETINGSTONE_SETQUEUE) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;

@@ -134,7 +134,13 @@ void WorldSession::SendMeetingstoneFailed(uint8 status)
 void WorldSession::SendMeetingstoneSetqueue(uint32 areaid, uint8 status)
 {
     auto packet = std::make_unique<WorldPackets::Misc::MeetingstoneSetQueue>();
+
     packet->areaId = areaid;
+#if SUPPORTED_CLIENT_BUILD <= CLIENT_BUILD_1_4_2
+    packet->idempotencyToken = 0; // TODO: Must forward this but there are soo many callsites of `SendMeetingstoneSetqueue`
+#else
     packet->status = status;
+#endif
+
     SendPacket(std::move(packet));
 }

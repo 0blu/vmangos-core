@@ -454,17 +454,25 @@ uint32 Group::RemoveMember(ObjectGuid guid, uint8 removeMethod)
                 }, 1);
             }
 
-            WorldPacket data;
-
             if (removeMethod == GROUP_KICK)
             {
                 player->GetSession()->SendPacket(std::make_unique<WorldPackets::Group::GroupUninviteNotification>());
 
                 if (IsInLFG())
                 {
-                    data.Initialize(SMSG_MEETINGSTONE_SETQUEUE, 5);
-                    data << 0 << uint8(MEETINGSTONE_STATUS_PARTY_MEMBER_REMOVED_PARTY_REMOVED);
+                    WorldPackets::Misc::MeetingstoneSetQueue packet;
+                    packet.areaId = 0;
+#if SUPPORTED_CLIENT_BUILD <= CLIENT_BUILD_1_4_2
+                    packet.idempotencyToken = 0;
+#else
+                    packet.status = MEETINGSTONE_STATUS_PARTY_MEMBER_REMOVED_PARTY_REMOVED;
+#endif
+                    // TODO Use broadcaster which does the binary conversion automatically
+                    WorldPacket data;
+                    data.SetOpcode(packet.GetOpcode());
+                    packet.AppendBodyTo(data);
                     BroadcastPacket(&data, true);
+
                     leftGroup = true;
                     sWorld.GetLFGQueue().GetMessager().AddMessage([groupId = GetId()](LFGQueue* queue)
                     {
@@ -484,8 +492,17 @@ uint32 Group::RemoveMember(ObjectGuid guid, uint8 removeMethod)
 
                 if (!leaderChanged)
                 {
-                    data.Initialize(SMSG_MEETINGSTONE_SETQUEUE, 5);
-                    data << m_LFGAreaId << uint8(MEETINGSTONE_STATUS_PARTY_MEMBER_LEFT_LFG);
+                    WorldPackets::Misc::MeetingstoneSetQueue packet;
+                    packet.areaId = m_LFGAreaId;
+#if SUPPORTED_CLIENT_BUILD <= CLIENT_BUILD_1_4_2
+                    packet.idempotencyToken = 0;
+#else
+                    packet.status = MEETINGSTONE_STATUS_PARTY_MEMBER_LEFT_LFG;
+#endif
+                    // TODO Use broadcaster which does the binary conversion automatically
+                    WorldPacket data;
+                    data.SetOpcode(packet.GetOpcode());
+                    packet.AppendBodyTo(data);
                     BroadcastPacket(&data, true);
                 }
             }
@@ -495,6 +512,7 @@ uint32 Group::RemoveMember(ObjectGuid guid, uint8 removeMethod)
                 group->SendUpdate();
             else
             {
+                WorldPacket data;
                 data.Initialize(SMSG_GROUP_LIST, 24);
                 data << uint64(0) << uint64(0) << uint64(0);
                 player->GetSession()->SendPacket(&data);
