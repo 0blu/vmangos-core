@@ -2754,14 +2754,20 @@ void World::ShutdownCancel()
 // Send a server message to the user(s)
 void World::SendServerMessage(ServerMessageType type, char const* text, Player* player)
 {
-    WorldPacket data(SMSG_SERVER_MESSAGE, 50);              // guess size
-    data << uint32(type);
-    data << text;
-
     if (player)
-        player->GetSession()->SendPacket(&data);
+    {
+        auto serverMsg = std::make_unique<WorldPackets::Misc::ServerMessage>();
+        serverMsg->messageType = static_cast<uint32>(type);
+        serverMsg->text = text;
+        player->GetSession()->SendPacket(std::move(serverMsg));
+    }
     else
+    {
+        WorldPacket data(SMSG_SERVER_MESSAGE, 50);
+        data << uint32(type);
+        data << text;
         SendGlobalMessage(&data);
+    }
 }
 
 void World::UpdateSessions(uint32 diff)

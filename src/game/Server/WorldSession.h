@@ -466,8 +466,8 @@ class WorldSession
         void SendMeetingstoneSetqueue(uint32 areaid, uint8 status);
 
         // Group
-        void BuildPartyMemberStatsChangedPacket(Player* player, WorldPacket* data);
-        void BuildPartyMemberStatsPacket(Player* player, WorldPacket* data, uint32 updateMask, bool sendAllAuras);
+        WorldPackets::Group::PartyMemberStats BuildPartyMemberStatsChangedPacket(Player* player);
+        WorldPackets::Group::PartyMemberStatsData BuildPartyMemberStatsPacket(Player* player, uint32 updateMask, bool sendAllAuras);
 
     public:                                                 // opcodes handlers
         template<typename TClientPacket>
@@ -892,7 +892,7 @@ class WorldSession
         bool m_playerRecentlyLogout;
         bool m_playerSave;
         uint32 m_exhaustionState;
-        uint32 m_charactersCount;
+        uint32 m_charactersCount;                           // init with max, to prevent character creation before amount is recalculated in CharEnum handler
         uint32 m_characterMaxLevel;
         BigNumber m_sessionKey;
         AccountData m_accountData[NewAccountData::NUM_ACCOUNT_DATA_TYPES];
