@@ -174,9 +174,11 @@ void WorldSession::RequestBgJoinQueue(ObjectGuid battlemaster, uint32 instanceId
         // check Deserter debuff
         if (!_player->CanJoinToBattleground())
         {
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_4_2
             auto bgPacket = std::make_unique<WorldPackets::Battleground::GroupJoinedBattleground>();
             bgPacket->result = BG_GROUPJOIN_DESERTERS;
             _player->GetSession()->SendPacket(std::move(bgPacket));
+#endif
             return;
         }
         // check if already in queue
@@ -271,6 +273,7 @@ void WorldSession::RequestBgJoinQueue(ObjectGuid battlemaster, uint32 instanceId
 
 void WorldSession::HandleBattleGroundPlayerPositionsOpcode(NullClientPacket const& /*packet*/)
 {
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_4_2
     // empty opcode
     BattleGround *bg = _player->GetBattleGround();
     if (!bg)                                                // can't be received if player not in battleground
@@ -324,6 +327,7 @@ void WorldSession::HandleBattleGroundPlayerPositionsOpcode(NullClientPacket cons
     }
 
     SendPacket(std::move(positions));
+#endif
 }
 
 void WorldSession::HandlePVPLogDataOpcode(NullClientPacket const& /*packet*/)
@@ -419,9 +423,11 @@ void WorldSession::HandleBattleFieldPortOpcode(WorldPackets::Battleground::Battl
         if (!_player->CanJoinToBattleground())
         {
             //send bg command result to show nice message
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_4_2
             auto bgJoined = std::make_unique<WorldPackets::Battleground::GroupJoinedBattleground>();
             bgJoined->result = BG_GROUPJOIN_DESERTERS;
             _player->GetSession()->SendPacket(std::move(bgJoined));
+#endif
             action = 0;
             sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "Battleground: player %s (%u) has a deserter debuff, do not port him to battleground!", _player->GetName(), _player->GetGUIDLow());
         }
@@ -512,6 +518,7 @@ void WorldSession::HandleBattleFieldPortOpcode(WorldPackets::Battleground::Battl
     }
 }
 
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_4_2
 void WorldSession::HandleLeaveBattlefieldOpcode(WorldPackets::Battleground::LeaveBattlefield const& packet)
 {
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
@@ -527,6 +534,7 @@ void WorldSession::HandleLeaveBattlefieldOpcode(WorldPackets::Battleground::Leav
 
     _player->LeaveBattleground();
 }
+#endif
 
 void WorldSession::HandleBattlefieldStatusOpcode(NullClientPacket const& /*packet*/)
 {
@@ -583,6 +591,7 @@ void WorldSession::HandleBattlefieldStatusOpcode(NullClientPacket const& /*packe
     }
 }
 
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_4_2
 void WorldSession::HandleAreaSpiritHealerQueryOpcode(WorldPackets::Battleground::AreaSpiritHealerQuery const& packet)
 {
     BattleGround *bg = _player->GetBattleGround();
@@ -598,7 +607,9 @@ void WorldSession::HandleAreaSpiritHealerQueryOpcode(WorldPackets::Battleground:
 
     unit->SendAreaSpiritHealerQueryOpcode(GetPlayer());
 }
+#endif
 
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_4_2
 void WorldSession::HandleAreaSpiritHealerQueueOpcode(WorldPackets::Battleground::AreaSpiritHealerQueue const& packet)
 {
     BattleGround *bg = _player->GetBattleGround();
@@ -614,6 +625,7 @@ void WorldSession::HandleAreaSpiritHealerQueueOpcode(WorldPackets::Battleground:
 
     sScriptMgr.OnGossipHello(GetPlayer(), unit);
 }
+#endif
 
 void WorldSession::SendBattleGroundJoinError(uint8 err)
 {

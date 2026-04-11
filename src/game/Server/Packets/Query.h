@@ -127,7 +127,9 @@ namespace WorldPackets { namespace Query
         uint32 petSpellListId = 0;
 #endif
         uint32 displayId = 0;
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_4_2
         uint8 civilian = 0;
+#endif
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_6_1
         uint8 racialLeader = 0;
 #endif

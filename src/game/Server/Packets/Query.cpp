@@ -95,7 +95,9 @@ void WorldPackets::Query::CreatureQueryResponse::AppendBodyTo(ByteBuffer& buffer
     buffer << petSpellListId;
 #endif
     buffer << displayId;
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_4_2
     buffer << civilian;
+#endif
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_6_1
     buffer << racialLeader;
 #endif
