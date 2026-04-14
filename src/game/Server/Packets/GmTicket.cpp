@@ -61,4 +61,19 @@ void WorldPackets::GmTicket::GmTicketSystemStatus::AppendBodyTo(ByteBuffer& buff
     buffer << status;
 }
 
+void WorldPackets::GmTicket::GmTicketGetTicket::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << status;
+    if (status == 0x06) // GMTICKET_STATUS_HASTEXT
+    {
+        buffer << message;
+        buffer << ticketType;
+        buffer << lastModifiedAge;
+        buffer << oldestTicketAge;
+        buffer << estimatedWaitTime;
+        buffer << escalationStatus;
+        buffer << openedByGMStatus;
+    }
+}
+
 

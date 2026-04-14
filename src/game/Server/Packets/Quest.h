@@ -5,6 +5,9 @@
 #include "ObjectGuid.h"
 #include "SharedDefines.h"
 #include <string>
+#include <vector>
+
+class Quest;
 
 namespace WorldPackets { namespace Quest
 {
@@ -148,6 +151,238 @@ namespace WorldPackets { namespace Quest
     {
     public:
         explicit QuestLogFull() : ServerPacket(SMSG_QUESTLOG_FULL) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class QuestUpdateComplete final : public ServerPacket
+    {
+    public:
+        uint32 questId = 0;
+
+        explicit QuestUpdateComplete() : ServerPacket(SMSG_QUESTUPDATE_COMPLETE) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    struct QuestRewardItem
+    {
+        uint32 itemId = 0;
+        uint32 itemCount = 0;
+    };
+
+    class QuestGiverQuestComplete final : public ServerPacket
+    {
+    public:
+        uint32 questId = 0;
+        uint32 unknown = 0;
+        uint32 xp = 0;
+        uint32 money = 0;
+        std::vector<QuestRewardItem> rewardItems; // max is 5
+
+        explicit QuestGiverQuestComplete() : ServerPacket(SMSG_QUESTGIVER_QUEST_COMPLETE) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class QuestGiverQuestFailed final : public ServerPacket
+    {
+    public:
+        uint32 questId = 0;
+        uint32 reason = 0;
+
+        explicit QuestGiverQuestFailed() : ServerPacket(SMSG_QUESTGIVER_QUEST_FAILED) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class QuestUpdateFailed final : public ServerPacket
+    {
+    public:
+        uint32 questId = 0;
+
+        explicit QuestUpdateFailed() : ServerPacket(SMSG_QUESTUPDATE_FAILED) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class QuestUpdateFailedTimer final : public ServerPacket
+    {
+    public:
+        uint32 questId = 0;
+
+        explicit QuestUpdateFailedTimer() : ServerPacket(SMSG_QUESTUPDATE_FAILEDTIMER) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class QuestGiverQuestInvalid final : public ServerPacket
+    {
+    public:
+        uint32 msg = 0;
+
+        explicit QuestGiverQuestInvalid() : ServerPacket(SMSG_QUESTGIVER_QUEST_INVALID) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class QuestConfirmAcceptResponse final : public ServerPacket
+    {
+    public:
+        uint32 questId = 0;
+        std::string questTitle;
+        ObjectGuid senderGuid;
+
+        explicit QuestConfirmAcceptResponse() : ServerPacket(SMSG_QUEST_CONFIRM_ACCEPT) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class QuestUpdateAddItem final : public ServerPacket
+    {
+    public:
+        uint32 itemId = 0;
+        uint32 count = 0;
+
+        explicit QuestUpdateAddItem() : ServerPacket(SMSG_QUESTUPDATE_ADD_ITEM) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class QuestUpdateAddKill final : public ServerPacket
+    {
+    public:
+        uint32 questId = 0;
+        uint32 entry = 0;       // creature or gameobject entry
+        uint32 count = 0;       // current count
+        uint32 required = 0;    // required count
+        ObjectGuid guid;
+
+        explicit QuestUpdateAddKill() : ServerPacket(SMSG_QUESTUPDATE_ADD_KILL) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class QuestGiverStatus final : public ServerPacket
+    {
+    public:
+        ObjectGuid npcGuid;
+        uint32 status = 0;
+
+        explicit QuestGiverStatus() : ServerPacket(SMSG_QUESTGIVER_STATUS) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    struct QuestListEntry
+    {
+        uint32 questId = 0;
+        uint32 icon = 0;
+        uint32 questLevel = 0;
+        std::string title;
+    };
+
+    class QuestGiverQuestList final : public ServerPacket
+    {
+    public:
+        ObjectGuid npcGuid;
+        std::string greetingText;
+        uint32 emoteDelay = 0;
+        uint32 emote = 0;
+        std::vector<QuestListEntry> quests;
+
+        explicit QuestGiverQuestList() : ServerPacket(SMSG_QUESTGIVER_QUEST_LIST) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    struct QuestRewardItemWithDisplayInfo
+    {
+        uint32 itemId = 0;
+        uint32 itemCount = 0;
+        uint32 displayInfoId = 0;
+    };
+
+    class QuestGiverQuestDetails final : public ServerPacket
+    {
+    public:
+        ObjectGuid npcGuid;
+        uint32 questId = 0;
+        std::string title;
+        std::string details;
+        std::string objectives;
+        uint32 autoFinish = 0;
+
+        bool hiddenRewards = false;
+        std::vector<QuestRewardItemWithDisplayInfo> rewardChoiceItems;
+        std::vector<QuestRewardItemWithDisplayInfo> rewardItems;
+        uint32 rewMoney = 0;
+
+        uint32 rewSpell = 0; // reward spell, this spell will display (icon) (casted if RewSpellCast==0)
+
+        struct Emote
+        {
+            uint32 emoteId = 0;
+            uint32 emoteDelay = 0;
+        };
+        std::vector<Emote> emotes;
+
+        explicit QuestGiverQuestDetails() : ServerPacket(SMSG_QUESTGIVER_QUEST_DETAILS) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class QuestGiverOfferReward final : public ServerPacket
+    {
+    public:
+        ObjectGuid npcGuid;
+        uint32 questId = 0;
+        std::string title;
+        std::string offerRewardText;
+        uint32 autoFinish = 0;
+
+        struct Emote
+        {
+            uint32 emoteDelay = 0;
+            uint32 emoteId = 0;
+        };
+        std::vector<Emote> emotes;
+
+        std::vector<QuestRewardItemWithDisplayInfo> rewardChoiceItems;
+        std::vector<QuestRewardItemWithDisplayInfo> rewardItems;
+        uint32 rewMoney = 0;
+        uint32 questFlags = 0;
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_4_2
+        uint32 rewSpell = 0; // reward spell, this spell will display (icon) (casted if RewSpellCast==0)
+#endif
+
+        explicit QuestGiverOfferReward() : ServerPacket(SMSG_QUESTGIVER_OFFER_REWARD) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class QuestGiverRequestItems final : public ServerPacket
+    {
+    public:
+        ObjectGuid npcGuid;
+        uint32 questId = 0;
+        std::string title;
+        std::string requestItemsText;
+        uint32 emoteDelay = 0;
+        uint32 emoteId = 0;
+        uint32 closeOnCancel = 0;
+        uint32 requiredMoney = 0;
+        std::vector<QuestRewardItemWithDisplayInfo> requiredItems;
+        uint32 unknown = 0;
+        uint32 completableFlags = 0; // flags1
+        uint32 flags2 = 0;
+        uint32 flags3 = 0;
+
+        explicit QuestGiverRequestItems() : ServerPacket(SMSG_QUESTGIVER_REQUEST_ITEMS) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    struct QuestObjective
+    {
+        uint32 creatureOrGOId = 0; // >0 Creature <0 Gameobject (client expects id|0x80000000)
+        uint32 creatureOrGOCount = 0;
+        uint32 reqItemId = 0;
+        uint32 reqItemCount = 0;
+    };
+
+    class QuestQueryResponse final : public ServerPacket
+    {
+    public:
+        int sessionDbLocaleIndex = 0;
+        ::Quest const* quest = nullptr;
+
+        explicit QuestQueryResponse() : ServerPacket(SMSG_QUEST_QUERY_RESPONSE) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
 
