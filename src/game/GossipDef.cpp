@@ -422,7 +422,7 @@ void QuestMenu::AddMenuItem(uint32 QuestId, uint8 Icon)
     m_qItems.push_back(qItem);
 }
 
-bool QuestMenu::HasItem(uint32 questid)
+bool QuestMenu::HasItem(uint32 questid) const
 {
     for (const auto& qItem : m_qItems)
         if (qItem.m_qId == questid)
@@ -435,61 +435,25 @@ void QuestMenu::ClearMenu()
     m_qItems.clear();
 }
 
-void PlayerMenu::SendQuestGiverQuestList(QEmote eEmote, std::string const& Title, ObjectGuid guid)
+void PlayerMenu::SendQuestGiverQuestList(QuestNpcEmoteInfo fallbackEmote, std::string const& Title, ObjectGuid guid) const
 {
     auto questList = std::make_unique<WorldPackets::Quest::QuestGiverQuestList>();
+    questList->sessionDbLocaleIndex = GetMenuSession()->GetSessionDbLocaleIndex();
     questList->npcGuid = guid;
-
-    if (QuestGreetingLocale const* questGreeting = sObjectMgr.GetQuestGreetingLocale(guid.GetEntry(), (guid.IsAnyTypeCreature() ? 0 : 1)))
-    {
-        int locale_idx = GetMenuSession()->GetSessionDbLocaleIndex();
-
-        if ((int32)questGreeting->Content.size() > locale_idx + 1 && !questGreeting->Content[locale_idx + 1].empty())
-            questList->greetingText = questGreeting->Content[locale_idx + 1];
-        else
-            questList->greetingText = questGreeting->Content[0];
-
-        questList->emoteDelay = questGreeting->EmoteDelay;
-        questList->emote = questGreeting->Emote;
-    }
-    else
-    {
-        questList->greetingText = Title;
-        questList->emoteDelay = eEmote._Delay;     // player emote
-        questList->emote = eEmote._Emote;           // NPC emote
-    }
+    questList->fallbackTitle = Title;
+    questList->fallbackEmoteDelay = fallbackEmote.delay;
+    questList->fallbackEmote = fallbackEmote.emote;
 
     for (uint32 count = 0; count < mQuestMenu.MenuItemCount(); ++count)
     {
         QuestMenuItem const& qmi = mQuestMenu.GetItem(count);
-        uint32 questID = qmi.m_qId;
-
-        if (Quest const* pQuest = sObjectMgr.GetQuestTemplate(questID))
-        {
-            WorldPackets::Quest::QuestListEntry entry;
-            entry.questId = questID;
-            entry.icon = qmi.m_qIcon;
-            entry.questLevel = pQuest->GetQuestLevel();
-            entry.title = pQuest->GetTitle();
-
-            int loc_idx = GetMenuSession()->GetSessionDbLocaleIndex();
-            if (loc_idx >= 0)
-            {
-                if (QuestLocale const* ql = sObjectMgr.GetQuestLocale(questID))
-                {
-                    if (ql->Title.size() > (size_t)loc_idx && !ql->Title[loc_idx].empty())
-                        entry.title = ql->Title[loc_idx];
-                }
-            }
-
-            questList->quests.push_back(std::move(entry));
-        }
+        if (Quest const* pQuest = sObjectMgr.GetQuestTemplate(qmi.m_qId))
+            questList->quests.push_back({ pQuest, qmi.m_qIcon });
     }
     GetMenuSession()->SendPacket(std::move(questList));
-    //sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "WORLD: Sent SMSG_QUESTGIVER_QUEST_LIST NPC Guid = %s", guid.GetString().c_str());
 }
 
-void PlayerMenu::SendQuestGiverStatus(uint8 questStatus, ObjectGuid npcGUID)
+void PlayerMenu::SendQuestGiverStatus(uint8 questStatus, ObjectGuid npcGUID) const
 {
     auto statusPacket = std::make_unique<WorldPackets::Quest::QuestGiverStatus>();
     statusPacket->npcGuid = npcGUID;
@@ -497,203 +461,45 @@ void PlayerMenu::SendQuestGiverStatus(uint8 questStatus, ObjectGuid npcGUID)
     GetMenuSession()->SendPacket(std::move(statusPacket));
 }
 
-void PlayerMenu::SendQuestGiverQuestDetails(Quest const* pQuest, ObjectGuid npcGUID, bool ActivateAccept)
+void PlayerMenu::SendQuestGiverQuestDetails(Quest const* pQuest, ObjectGuid npcGUID, bool ActivateAccept) const
 {
     auto detailsPacket = std::make_unique<WorldPackets::Quest::QuestGiverQuestDetails>();
+    detailsPacket->sessionDbLocaleIndex = GetMenuSession()->GetSessionDbLocaleIndex();
     detailsPacket->npcGuid = npcGUID;
-    detailsPacket->questId = pQuest->GetQuestId();
-
-    detailsPacket->title = pQuest->GetTitle();
-    detailsPacket->details = pQuest->GetDetails();
-    detailsPacket->objectives = pQuest->GetObjectives();
-
-    int loc_idx = GetMenuSession()->GetSessionDbLocaleIndex();
-    if (loc_idx >= 0)
-    {
-        if (QuestLocale const* ql = sObjectMgr.GetQuestLocale(pQuest->GetQuestId()))
-        {
-            if (ql->Title.size() > (size_t)loc_idx && !ql->Title[loc_idx].empty())
-                detailsPacket->title = ql->Title[loc_idx];
-            if (ql->Details.size() > (size_t)loc_idx && !ql->Details[loc_idx].empty())
-                detailsPacket->details = ql->Details[loc_idx];
-            if (ql->Objectives.size() > (size_t)loc_idx && !ql->Objectives[loc_idx].empty())
-                detailsPacket->objectives = ql->Objectives[loc_idx];
-        }
-    }
-
-    detailsPacket->autoFinish = ActivateAccept ? 1 : 0;
-    detailsPacket->hiddenRewards = pQuest->HasQuestFlag(QUEST_FLAGS_HIDDEN_REWARDS);
-
-    if (!detailsPacket->hiddenRewards)
-    {
-        for (uint32 i = 0; i < pQuest->GetRewChoiceItemsCount(); ++i)
-        {
-            WorldPackets::Quest::QuestRewardItemWithDisplayInfo item;
-            item.itemId = pQuest->RewChoiceItemId[i];
-            item.itemCount = pQuest->RewChoiceItemCount[i];
-            if (ItemPrototype const* IProto = sObjectMgr.GetItemPrototype(pQuest->RewChoiceItemId[i]))
-                item.displayInfoId = IProto->DisplayInfoID;
-            detailsPacket->rewardChoiceItems.push_back(item);
-        }
-
-        for (uint32 i = 0; i < pQuest->GetRewItemsCount(); ++i)
-        {
-            WorldPackets::Quest::QuestRewardItemWithDisplayInfo item;
-            item.itemId = pQuest->RewItemId[i];
-            item.itemCount = pQuest->RewItemCount[i];
-            if (ItemPrototype const* IProto = sObjectMgr.GetItemPrototype(pQuest->RewItemId[i]))
-                item.displayInfoId = IProto->DisplayInfoID;
-            detailsPacket->rewardItems.push_back(item);
-        }
-
-        detailsPacket->rewMoney = pQuest->GetRewOrReqMoney();
-    }
-
-    detailsPacket->rewSpell = pQuest->GetRewSpell(); // reward spell, this spell will display (icon) (casted if RewSpellCast==0)
-
-    for (uint32 i = 0; i < QUEST_EMOTE_COUNT; ++i)
-    {
-        WorldPackets::Quest::QuestGiverQuestDetails::Emote emote;
-        emote.emoteId = pQuest->DetailsEmote[i];
-        emote.emoteDelay = pQuest->DetailsEmoteDelay[i]; // delay between emotes in ms
-        detailsPacket->emotes.push_back(emote);
-    }
-
+    detailsPacket->quest = pQuest;
+    detailsPacket->autoFinish = ActivateAccept;
     GetMenuSession()->SendPacket(std::move(detailsPacket));
 }
 
-void PlayerMenu::SendQuestGiverOfferReward(Quest const* pQuest, ObjectGuid npcGUID, bool EnableNext)
+void PlayerMenu::SendQuestGiverOfferReward(Quest const* pQuest, ObjectGuid npcGuid, bool EnableNext) const
 {
     auto offerPacket = std::make_unique<WorldPackets::Quest::QuestGiverOfferReward>();
-    offerPacket->npcGuid = npcGUID;
-    offerPacket->questId = pQuest->GetQuestId();
-
-    offerPacket->title = pQuest->GetTitle();
-    offerPacket->offerRewardText = pQuest->GetOfferRewardText();
-
-    int loc_idx = GetMenuSession()->GetSessionDbLocaleIndex();
-    if (loc_idx >= 0)
-    {
-        if (QuestLocale const* ql = sObjectMgr.GetQuestLocale(pQuest->GetQuestId()))
-        {
-            if (ql->Title.size() > (size_t)loc_idx && !ql->Title[loc_idx].empty())
-                offerPacket->title = ql->Title[loc_idx];
-            if (ql->OfferRewardText.size() > (size_t)loc_idx && !ql->OfferRewardText[loc_idx].empty())
-                offerPacket->offerRewardText = ql->OfferRewardText[loc_idx];
-        }
-    }
-
-    offerPacket->autoFinish = EnableNext ? 1 : 0;
-
-    for (uint32 i : pQuest->OfferRewardEmote)
-    {
-        if (i <= 0)
-            break;
-        WorldPackets::Quest::QuestGiverOfferReward::Emote emote;
-        emote.emoteDelay = pQuest->OfferRewardEmoteDelay[offerPacket->emotes.size()];
-        emote.emoteId = i;
-        offerPacket->emotes.push_back(emote);
-    }
-
-    for (uint32 i = 0; i < pQuest->GetRewChoiceItemsCount(); ++i)
-    {
-        WorldPackets::Quest::QuestRewardItemWithDisplayInfo item;
-        item.itemId = pQuest->RewChoiceItemId[i];
-        item.itemCount = pQuest->RewChoiceItemCount[i];
-        if (ItemPrototype const* pItem = sObjectMgr.GetItemPrototype(pQuest->RewChoiceItemId[i]))
-            item.displayInfoId = pItem->DisplayInfoID;
-        offerPacket->rewardChoiceItems.push_back(item);
-    }
-
-    for (uint32 i = 0; i < pQuest->GetRewItemsCount(); ++i)
-    {
-        WorldPackets::Quest::QuestRewardItemWithDisplayInfo item;
-        item.itemId = pQuest->RewItemId[i];
-        item.itemCount = pQuest->RewItemCount[i];
-        if (ItemPrototype const* pItem = sObjectMgr.GetItemPrototype(pQuest->RewItemId[i]))
-            item.displayInfoId = pItem->DisplayInfoID;
-        offerPacket->rewardItems.push_back(item);
-    }
-
-    offerPacket->rewMoney = pQuest->GetRewOrReqMoney();
-    offerPacket->questFlags = pQuest->GetQuestFlags();
-#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_4_2
-    offerPacket->rewSpell = pQuest->GetRewSpell(); // reward spell, this spell will display (icon) (casted if RewSpellCast==0)
-#endif
-
+    offerPacket->sessionDbLocaleIndex = GetMenuSession()->GetSessionDbLocaleIndex();
+    offerPacket->npcGuid = npcGuid;
+    offerPacket->quest = pQuest;
+    offerPacket->autoFinish = EnableNext;
     GetMenuSession()->SendPacket(std::move(offerPacket));
 }
 
-void PlayerMenu::SendQuestGiverRequestItems(Quest const* pQuest, ObjectGuid npcGUID, bool Completable, bool CloseOnCancel)
+void PlayerMenu::SendQuestGiverRequestItems(Quest const* pQuest, ObjectGuid npcGuid, bool isComplete, bool closeOnCancel) const
 {
     // We can always call to RequestItems, but this packet only goes out if there are actually
-    // items.  Otherwise, we'll skip straight to the OfferReward
-
-    std::string title = pQuest->GetTitle();
-    std::string requestItemsText = pQuest->GetRequestItemsText();
-
-    int loc_idx = GetMenuSession()->GetSessionDbLocaleIndex();
-    if (loc_idx >= 0)
+    // items. Otherwise, we'll skip straight to the OfferReward
+    if (pQuest->GetRequestItemsText().empty() || ((pQuest->GetReqItemsCount() == 0) && isComplete))
     {
-        if (QuestLocale const* ql = sObjectMgr.GetQuestLocale(pQuest->GetQuestId()))
-        {
-            if (ql->Title.size() > (size_t)loc_idx && !ql->Title[loc_idx].empty())
-                title = ql->Title[loc_idx];
-            if (ql->RequestItemsText.size() > (size_t)loc_idx && !ql->RequestItemsText[loc_idx].empty())
-                requestItemsText = ql->RequestItemsText[loc_idx];
-        }
-    }
-
-    // Quests that don't require items use the RequestItemsText field to store the text
-    // that is shown when you talk to the quest giver while the quest is incomplete.
-    // Therefore the text should not be shown for them when the quest is complete.
-    // For quests that do require items, it is self explanatory.
-    if (requestItemsText.empty() || ((pQuest->GetReqItemsCount() == 0) && Completable))
-    {
-        SendQuestGiverOfferReward(pQuest, npcGUID, true);
+        // Quests that don't require items use the RequestItemsText field to store the text
+        // that is shown when you talk to the quest giver while the quest is incomplete.
+        // Therefore the text should not be shown for them when the quest is complete.
+        // For quests that do require items, it is self explanatory.
+        SendQuestGiverOfferReward(pQuest, npcGuid, true);
         return;
     }
 
-    auto requestPacket = std::make_unique<WorldPackets::Quest::QuestGiverRequestItems>();
-    requestPacket->npcGuid = npcGUID;
-    requestPacket->questId = pQuest->GetQuestId();
-    requestPacket->title = std::move(title);
-    requestPacket->requestItemsText = std::move(requestItemsText);
-    requestPacket->emoteDelay = 0x00;
-
-    if (Completable)
-        requestPacket->emoteId = pQuest->GetCompleteEmote();
-    else
-        requestPacket->emoteId = pQuest->GetIncompleteEmote();
-
-    // Close Window after cancel
-    requestPacket->closeOnCancel = CloseOnCancel ? 0x01 : 0x00;
-
-    // Required Money
-    requestPacket->requiredMoney = static_cast<uint32>(pQuest->GetRewOrReqMoney() < 0 ? -pQuest->GetRewOrReqMoney() : 0);
-
-    for (int i = 0; i < QUEST_ITEM_OBJECTIVES_COUNT; ++i)
-    {
-        if (!pQuest->ReqItemId[i])
-            continue;
-        WorldPackets::Quest::QuestRewardItemWithDisplayInfo item;
-        item.itemId = pQuest->ReqItemId[i];
-        item.itemCount = pQuest->ReqItemCount[i];
-        if (ItemPrototype const* pItem = sObjectMgr.GetItemPrototype(pQuest->ReqItemId[i]))
-            item.displayInfoId = pItem->DisplayInfoID;
-        requestPacket->requiredItems.push_back(item);
-    }
-
-    requestPacket->unknown = 0x02;
-
-    if (!Completable)                                       // Completable = flags1 && flags2 && flags3 && flags4
-        requestPacket->completableFlags = 0x00;             // flags1
-    else
-        requestPacket->completableFlags = 0x03;
-
-    requestPacket->flags2 = 0x04;                           // flags2
-    requestPacket->flags3 = 0x08;                           // flags3
-    //data << uint32(0x10);                                 // [-ZERO] flags4
-
-    GetMenuSession()->SendPacket(std::move(requestPacket));
+    auto packet = std::make_unique<WorldPackets::Quest::QuestGiverRequestItems>();
+    packet->sessionDbLocaleIndex = GetMenuSession()->GetSessionDbLocaleIndex();
+    packet->npcGuid = npcGuid;
+    packet->quest = pQuest;
+    packet->isComplete = isComplete;
+    packet->closeOnCancel = closeOnCancel;
+    GetMenuSession()->SendPacket(std::move(packet));
 }

@@ -1,5 +1,7 @@
 #include "GmTicket.h"
 
+#include "GMTicketMgr.h"
+
 void WorldPackets::GmTicket::GmTicketCreate::ReadFromWorldPacket(WorldPacket& recv_data)
 {
     uint8 type;
@@ -64,7 +66,7 @@ void WorldPackets::GmTicket::GmTicketSystemStatus::AppendBodyTo(ByteBuffer& buff
 void WorldPackets::GmTicket::GmTicketGetTicket::AppendBodyTo(ByteBuffer& buffer) const
 {
     buffer << status;
-    if (status == 0x06) // GMTICKET_STATUS_HASTEXT
+    if (status == GMTICKET_STATUS_HASTEXT)
     {
         buffer << message;
         buffer << ticketType;

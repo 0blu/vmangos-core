@@ -6434,7 +6434,7 @@ int32 Player::CalculateReputationGain(ReputationSource source, int32 rep, int32 
     {
         case REPUTATION_SOURCE_KILL:
             // Rep loss is not affected by the mob being gray. Tested on classic.
-            rate = rep > 0  && creatureOrQuestLevel <= MaNGOS::XP::GetGrayLevel(GetLevel()) 
+            rate = rep > 0  && creatureOrQuestLevel <= MaNGOS::XP::GetGrayLevel(GetLevel())
                 ? sWorld.getConfig(CONFIG_FLOAT_RATE_REPUTATION_LOWLEVEL_KILL) : 1.0f;
             break;
         case REPUTATION_SOURCE_QUEST:
@@ -12567,9 +12567,9 @@ void Player::SendPreparedQuest(ObjectGuid guid)
     // multiply entries
     else
     {
-        QEmote qe;
-        qe._Delay = 0;
-        qe._Emote = 0;
+        QuestNpcEmoteInfo qe;
+        qe.delay = 0;
+        qe.emote = 0;
         std::string title;
 
         // need pet case for some quests
@@ -12589,8 +12589,8 @@ void Player::SendPreparedQuest(ObjectGuid guid)
                 {
                     if (BroadcastText const* bct = sObjectMgr.GetBroadcastTextLocale(gossiptext->Options[0].BroadcastTextID))
                     {
-                        qe._Emote = bct->emoteId1;
-                        qe._Delay = bct->emoteDelay1;
+                        qe.emote = bct->emoteId1;
+                        qe.delay = bct->emoteDelay1;
                         int locIdx = GetSession()->GetSessionDbLocaleIndex();
                         title = bct->GetText(locIdx, pCreature->GetGender(), false);
                     }

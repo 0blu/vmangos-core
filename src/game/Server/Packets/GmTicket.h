@@ -93,6 +93,7 @@ namespace WorldPackets { namespace GmTicket
     {
     public:
         uint32 status = 0;         // GMTICKET_STATUS_HASTEXT (0x06) or GMTICKET_STATUS_DEFAULT (0x0A)
+
         // following fields are only serialized when status == GMTICKET_STATUS_HASTEXT (0x06)
         std::string message;
         uint8 ticketType = 0;

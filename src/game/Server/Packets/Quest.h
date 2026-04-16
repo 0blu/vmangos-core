@@ -265,19 +265,18 @@ namespace WorldPackets { namespace Quest
 
     struct QuestListEntry
     {
-        uint32 questId = 0;
+        ::Quest const* quest = nullptr;
         uint32 icon = 0;
-        uint32 questLevel = 0;
-        std::string title;
     };
 
     class QuestGiverQuestList final : public ServerPacket
     {
     public:
+        int sessionDbLocaleIndex = 0;
         ObjectGuid npcGuid;
-        std::string greetingText;
-        uint32 emoteDelay = 0;
-        uint32 emote = 0;
+        std::string fallbackTitle;
+        uint32 fallbackEmoteDelay = 0;
+        uint32 fallbackEmote = 0;
         std::vector<QuestListEntry> quests;
 
         explicit QuestGiverQuestList() : ServerPacket(SMSG_QUESTGIVER_QUEST_LIST) {}
@@ -294,26 +293,10 @@ namespace WorldPackets { namespace Quest
     class QuestGiverQuestDetails final : public ServerPacket
     {
     public:
+        int sessionDbLocaleIndex = 0;
         ObjectGuid npcGuid;
-        uint32 questId = 0;
-        std::string title;
-        std::string details;
-        std::string objectives;
-        uint32 autoFinish = 0;
-
-        bool hiddenRewards = false;
-        std::vector<QuestRewardItemWithDisplayInfo> rewardChoiceItems;
-        std::vector<QuestRewardItemWithDisplayInfo> rewardItems;
-        uint32 rewMoney = 0;
-
-        uint32 rewSpell = 0; // reward spell, this spell will display (icon) (casted if RewSpellCast==0)
-
-        struct Emote
-        {
-            uint32 emoteId = 0;
-            uint32 emoteDelay = 0;
-        };
-        std::vector<Emote> emotes;
+        ::Quest const* quest = nullptr;
+        bool autoFinish = false;
 
         explicit QuestGiverQuestDetails() : ServerPacket(SMSG_QUESTGIVER_QUEST_DETAILS) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;
@@ -322,26 +305,10 @@ namespace WorldPackets { namespace Quest
     class QuestGiverOfferReward final : public ServerPacket
     {
     public:
+        int sessionDbLocaleIndex = 0;
         ObjectGuid npcGuid;
-        uint32 questId = 0;
-        std::string title;
-        std::string offerRewardText;
-        uint32 autoFinish = 0;
-
-        struct Emote
-        {
-            uint32 emoteDelay = 0;
-            uint32 emoteId = 0;
-        };
-        std::vector<Emote> emotes;
-
-        std::vector<QuestRewardItemWithDisplayInfo> rewardChoiceItems;
-        std::vector<QuestRewardItemWithDisplayInfo> rewardItems;
-        uint32 rewMoney = 0;
-        uint32 questFlags = 0;
-#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_4_2
-        uint32 rewSpell = 0; // reward spell, this spell will display (icon) (casted if RewSpellCast==0)
-#endif
+        ::Quest const* quest = nullptr;
+        bool autoFinish = false;
 
         explicit QuestGiverOfferReward() : ServerPacket(SMSG_QUESTGIVER_OFFER_REWARD) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;
@@ -350,30 +317,14 @@ namespace WorldPackets { namespace Quest
     class QuestGiverRequestItems final : public ServerPacket
     {
     public:
+        int sessionDbLocaleIndex = 0;
         ObjectGuid npcGuid;
-        uint32 questId = 0;
-        std::string title;
-        std::string requestItemsText;
-        uint32 emoteDelay = 0;
-        uint32 emoteId = 0;
-        uint32 closeOnCancel = 0;
-        uint32 requiredMoney = 0;
-        std::vector<QuestRewardItemWithDisplayInfo> requiredItems;
-        uint32 unknown = 0;
-        uint32 completableFlags = 0; // flags1
-        uint32 flags2 = 0;
-        uint32 flags3 = 0;
+        ::Quest const* quest = nullptr;
+        bool isComplete = false;
+        bool closeOnCancel = false; // Is `false` when quest was opened by a submenu
 
         explicit QuestGiverRequestItems() : ServerPacket(SMSG_QUESTGIVER_REQUEST_ITEMS) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;
-    };
-
-    struct QuestObjective
-    {
-        uint32 creatureOrGOId = 0; // >0 Creature <0 Gameobject (client expects id|0x80000000)
-        uint32 creatureOrGOCount = 0;
-        uint32 reqItemId = 0;
-        uint32 reqItemCount = 0;
     };
 
     class QuestQueryResponse final : public ServerPacket
