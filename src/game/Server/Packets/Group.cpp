@@ -130,4 +130,58 @@ void WorldPackets::Group::RaidTargetUpdateDelta::AppendBodyTo(ByteBuffer& buffer
     buffer << iconId;
     buffer << targetGuid;
 }
+
+void WorldPackets::Group::RaidTargetUpdateAll::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << uint8(1); // 1 - full icon list, 0 - delta update
+    for (auto const& icon : icons)
+    {
+        buffer << icon.iconId;
+        buffer << icon.targetGuid;
+    }
+}
 #endif
+
+void WorldPackets::Group::GroupSetLeaderNotification::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << leaderName;
+}
+
+void WorldPackets::Group::GroupListEmpty::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << uint64(0) << uint64(0) << uint64(0);
+}
+
+void WorldPackets::Group::GroupList::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << groupType;                   // group type
+    buffer << ownGroupAndAssistantFlag;    // own flags (groupid | (assistant?0x80:0))
+
+    buffer << uint32(members.size());
+    for (auto const& member : members)
+    {
+        buffer << member.name;
+        buffer << member.guid;
+        buffer << member.onlineStatus;
+        buffer << member.groupAndAssistantFlag;
+    }
+
+    buffer << leaderGuid;                  // leader guid
+    if (!members.empty())
+    {
+        buffer << lootMethod;              // loot method
+        buffer << looterGuid;              // looter guid (MASTER_LOOT) or 0
+        buffer << lootThreshold;           // loot threshold
+
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_10_2
+        buffer << dungeonDifficulty;       // dungeon difficulty
+#endif
+    }
+}
+
+void WorldPackets::Group::LootMasterList::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << uint8(eligibleLooters.size());
+    for (auto const& guid : eligibleLooters)
+        buffer << guid;
+}

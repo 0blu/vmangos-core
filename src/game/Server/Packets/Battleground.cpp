@@ -63,3 +63,97 @@ void WorldPackets::Battleground::GroupJoinedBattleground::AppendBodyTo(ByteBuffe
 }
 #endif
 
+void WorldPackets::Battleground::BattlefieldStatus::AppendBodyTo(ByteBuffer& buffer) const
+{
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
+    buffer << queueSlot;             // queue id (0...2) - player can be in 3 queues in time
+#endif
+    buffer << mapId;                 // uint64 in client
+    buffer << bracketId;
+    buffer << clientInstanceId;
+    buffer << statusId;
+    buffer << time1;
+    buffer << time2;
+}
+
+void WorldPackets::Battleground::BattlefieldStatusEmpty::AppendBodyTo(ByteBuffer& buffer) const
+{
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
+    buffer << queueSlot;             // queue id (0...2)
+#endif
+    buffer << uint32(0);
+}
+
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_4_2
+void WorldPackets::Battleground::PvpLogData::AppendBodyTo(ByteBuffer& buffer) const
+{
+    if (!ended)
+    {
+        buffer << uint8(0);          // bg not ended
+    }
+    else
+    {
+        buffer << uint8(1);          // bg ended
+        buffer << winner;            // who wins
+    }
+
+    buffer << uint32(playerScores.size());
+    for (auto const& score : playerScores)
+    {
+        buffer << score.playerGuid;
+        buffer << score.rank;
+        buffer << score.killingBlows;
+        buffer << score.honorableKills;
+        buffer << score.deaths;
+        buffer << score.bonusHonor;
+        for (uint32 const& extra : score.extraFields)
+            buffer << extra;
+    }
+}
+#endif
+
+void WorldPackets::Battleground::UpdateWorldState::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << field;
+    buffer << value;
+}
+
+void WorldPackets::Battleground::PlaySound::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << soundId;
+}
+
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_6_1
+void WorldPackets::Battleground::BattlegroundPlayerJoined::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << playerGuid;
+}
+
+void WorldPackets::Battleground::BattlegroundPlayerLeft::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << playerGuid;
+}
+#endif
+
+void WorldPackets::Battleground::BattlefieldList::AppendBodyTo(ByteBuffer& buffer) const
+{
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_6_1
+    buffer << battlemasterGuid;      // battlemaster guid
+#endif
+    buffer << mapId;
+    buffer << bracketId;
+
+    buffer << uint32(instanceIds.size()); // number of bg instances
+    for (uint32 id : instanceIds)
+        buffer << id;
+}
+
+void WorldPackets::Battleground::BattlefieldWin::AppendBodyTo(ByteBuffer& /*buffer*/) const
+{
+}
+
+void WorldPackets::Battleground::BattlefieldLose::AppendBodyTo(ByteBuffer& /*buffer*/) const
+{
+}
+
+

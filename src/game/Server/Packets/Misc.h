@@ -372,6 +372,32 @@ namespace WorldPackets { namespace Misc
 
     // --- Server Packets ---
 
+    // SMSG_MEETINGSTONE_MEMBER_ADDED: notifies group members that a new player was added via LFG
+    class MeetingstoneMemberAdded final : public ServerPacket
+    {
+    public:
+        ObjectGuid playerGuid; // guid of the player that was added
+
+        explicit MeetingstoneMemberAdded() : ServerPacket(SMSG_MEETINGSTONE_MEMBER_ADDED) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    // SMSG_MEETINGSTONE_IN_PROGRESS: empty body; sent periodically while the LFG queue is still searching
+    class MeetingstoneInProgress final : public ServerPacket
+    {
+    public:
+        explicit MeetingstoneInProgress() : ServerPacket(SMSG_MEETINGSTONE_IN_PROGRESS) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    // SMSG_MEETINGSTONE_COMPLETE: empty body; sent when the LFG search completes successfully
+    class MeetingstoneComplete final : public ServerPacket
+    {
+    public:
+        explicit MeetingstoneComplete() : ServerPacket(SMSG_MEETINGSTONE_COMPLETE) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
     class LogoutComplete final : public ServerPacket
     {
     public:

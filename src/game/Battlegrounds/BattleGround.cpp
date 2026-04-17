@@ -701,8 +701,10 @@ void BattleGround::EndBattleGround(Team winner)
         BlockMovement(pPlayer);
 
         // handler removed in 1.9
-        data.Initialize(team == winner ? SMSG_BATTLEFIELD_WIN : SMSG_BATTLEFIELD_LOSE, 0);
-        pPlayer->GetSession()->SendPacket(&data);
+        if (team == winner)
+            pPlayer->GetSession()->SendPacket(std::make_unique<WorldPackets::Battleground::BattlefieldWin>());
+        else
+            pPlayer->GetSession()->SendPacket(std::make_unique<WorldPackets::Battleground::BattlefieldLose>());
 
         // Send final scoreboard
         pPlayer->GetSession()->SendPacket(&m_finalScore);

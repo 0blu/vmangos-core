@@ -294,21 +294,34 @@ void LFGMgr::BuildSetQueuePacket(WorldPacket& data, uint32 areaId, uint8 status)
 #endif
 
     // TODO Use broadcaster which does the binary conversion automatically
+    data.Initialize(packet.GetOpcode());
     packet.AppendBodyTo(data);
 }
 
 void LFGMgr::BuildMemberAddedPacket(WorldPacket& data, ObjectGuid plrGuid)
 {
-    data.Initialize(SMSG_MEETINGSTONE_MEMBER_ADDED, 8);
-    data << uint64(plrGuid);
+    WorldPackets::Misc::MeetingstoneMemberAdded packet;
+    packet.playerGuid = plrGuid;
+
+    // TODO Use broadcaster which does the binary conversion automatically
+    data.Initialize(packet.GetOpcode(), 8);
+    packet.AppendBodyTo(data);
 }
 
 void LFGMgr::BuildInProgressPacket(WorldPacket& data)
 {
-    data.Initialize(SMSG_MEETINGSTONE_IN_PROGRESS, 0);
+    WorldPackets::Misc::MeetingstoneInProgress packet;
+
+    // TODO Use broadcaster which does the binary conversion automatically
+    data.Initialize(packet.GetOpcode(), 0);
+    packet.AppendBodyTo(data);
 }
 
 void LFGMgr::BuildCompletePacket(WorldPacket& data)
 {
-    data.Initialize(SMSG_MEETINGSTONE_COMPLETE, 0);
+    WorldPackets::Misc::MeetingstoneComplete packet;
+
+    // TODO Use broadcaster which does the binary conversion automatically
+    data.Initialize(packet.GetOpcode(), 0);
+    packet.AppendBodyTo(data);
 }

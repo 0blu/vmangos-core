@@ -1041,62 +1041,60 @@ void BattleGroundMgr::BuildBattleGroundStatusPacket(WorldPacket* data, BattleGro
     // we can be in 3 queues in same time...
     if (statusId == 0 || !bg)
     {
-        data->Initialize(SMSG_BATTLEFIELD_STATUS, 4 * 2);
+        WorldPackets::Battleground::BattlefieldStatusEmpty packet;
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
-        *data << uint32(queueSlot);                         // queue id (0...2)
+        packet.queueSlot = queueSlot;                       // queue id (0...2)
 #endif
-        *data << uint32(0);
+        // TODO Use broadcaster which does the binary conversion automatically
+        data->Initialize(packet.GetOpcode(), 4 * 2);
+        packet.AppendBodyTo(*data);
         return;
     }
 
-    data->Initialize(SMSG_BATTLEFIELD_STATUS, (4 + 1 + 1 + 4 + 2 + 4 + 1 + 4 + 4 + 4));
+    WorldPackets::Battleground::BattlefieldStatus packet;
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
-    *data << uint32(queueSlot);                             // queue id (0...2) - player can be in 3 queues in time
+    packet.queueSlot = queueSlot;                           // queue id (0...2) - player can be in 3 queues in time
 #endif
-    // uint64 in client
-    *data << uint32(bg->GetMapId());
-    *data << uint8(bg->GetBracketId());
-    *data << uint32(bg->GetClientInstanceID());
-    *data << uint32(statusId);
+    packet.mapId = bg->GetMapId();                          // uint64 in client
+    packet.bracketId = bg->GetBracketId();
+    packet.clientInstanceId = bg->GetClientInstanceID();
+    packet.statusId = statusId;
     switch (statusId)
     {
         case STATUS_WAIT_QUEUE:                             // status_in_queue
-            *data << uint32(time1);                         // average wait time, milliseconds
-            *data << uint32(time2);                         // time in queue, updated every minute!, milliseconds
+            packet.time1 = time1;                           // average wait time, milliseconds
+            packet.time2 = time2;                           // time in queue, updated every minute!, milliseconds
             break;
         case STATUS_WAIT_JOIN:                              // status_invite
-            *data << uint32(time1);                         // time to remove from queue, milliseconds
+            packet.time1 = time1;                           // time to remove from queue, milliseconds
             break;
         case STATUS_IN_PROGRESS:                            // status_in_progress
-            *data << uint32(time1);                         // time to bg auto leave, 0 at bg start, 120000 after bg end, milliseconds
-            *data << uint32(time2);                         // time from bg start, milliseconds
+            packet.time1 = time1;                           // time to bg auto leave, 0 at bg start, 120000 after bg end, milliseconds
+            packet.time2 = time2;                           // time from bg start, milliseconds
             break;
         default:
             sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "Unknown BG status!");
             break;
     }
+
+    // TODO Use broadcaster which does the binary conversion automatically
+    data->Initialize(packet.GetOpcode(), 4 + 1 + 1 + 4 + 2 + 4 + 1 + 4 + 4 + 4);
+    packet.AppendBodyTo(*data);
 }
 
 void BattleGroundMgr::BuildPvpLogDataPacket(WorldPacket* data, BattleGround *bg)
 {
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_4_2
-    data->Initialize(MSG_PVP_LOG_DATA, (1 + 4 + 40 * bg->GetPlayerScoresSize()));
-
-    if (bg->GetStatus() != STATUS_WAIT_LEAVE)
-    {
-        *data << uint8(0);                                  // bg not ended
-    }
-    else
-    {
-        *data << uint8(1);                                  // bg ended
-        *data << uint8(bg->GetWinner());                    // who wins
-    }
+    WorldPackets::Battleground::PvpLogData packet;
+    packet.ended = bg->GetStatus() == STATUS_WAIT_LEAVE;
+    if (packet.ended)
+        packet.winner = bg->GetWinner();                    // who wins
 
     uint32 count = bg->GetPlayerScoresSize();
     if (count >= 80) // Client has a hard limit to 80. If we go beyond (but it should not happen ?!), WoW Error (happening !)
         count = 80;
-    *data << (uint32)(count);
 
+    packet.playerScores.reserve(count);
     for (BattleGround::BattleGroundScoreMap::const_iterator itr = bg->GetPlayerScoresBegin(); itr != bg->GetPlayerScoresEnd(); ++itr)
     {
         if (!count)
@@ -1105,81 +1103,109 @@ void BattleGroundMgr::BuildPvpLogDataPacket(WorldPacket* data, BattleGround *bg)
         --count;
         BattleGroundScore const* score = itr->second;
 
-        *data << ObjectGuid(itr->first);
+        WorldPackets::Battleground::PvpLogData::PlayerScore entry;
+        entry.playerGuid = ObjectGuid(itr->first);
 
         Player* player = ObjectAccessor::FindPlayerNotInWorld(itr->first);
 
-        *data << uint32(player ? player->GetHonorMgr().GetRank().rank : 4);
-        *data << uint32(score->killingBlows);
-        *data << uint32(score->honorableKills);
-        *data << uint32(score->deaths);
-        *data << uint32(score->bonusHonor);
+        entry.rank = player ? player->GetHonorMgr().GetRank().rank : 4;
+        entry.killingBlows = score->killingBlows;
+        entry.honorableKills = score->honorableKills;
+        entry.deaths = score->deaths;
+        entry.bonusHonor = score->bonusHonor;
 
-        switch (bg->GetTypeID())                             // battleground specific things
+        switch (bg->GetTypeID())                            // battleground specific things
         {
             case BATTLEGROUND_AV:
-                *data << (uint32)0x00000007;                // count of next fields
-                *data << (uint32)((BattleGroundAVScore*)score)->graveyardsAssaulted;  // Graveyards Assaulted
-                *data << (uint32)((BattleGroundAVScore*)score)->graveyardsDefended;   // Graveyards Defended
-                *data << (uint32)((BattleGroundAVScore*)score)->towersAssaulted;      // Towers Assaulted
-                *data << (uint32)((BattleGroundAVScore*)score)->towersDefended;       // Towers Defended
-                *data << (uint32)((BattleGroundAVScore*)score)->secondaryObjectives;  // Mines Taken
-                *data << (uint32)((BattleGroundAVScore*)score)->lieutnantCount;       // Lieutnant kills
-                *data << (uint32)((BattleGroundAVScore*)score)->secondaryNPC;         // Secondary unit summons
+                entry.extraFields.push_back(0x00000007);                                                      // count of next fields
+                entry.extraFields.push_back(((BattleGroundAVScore*)score)->graveyardsAssaulted); // Graveyards Assaulted
+                entry.extraFields.push_back(((BattleGroundAVScore*)score)->graveyardsDefended);  // Graveyards Defended
+                entry.extraFields.push_back(((BattleGroundAVScore*)score)->towersAssaulted);     // Towers Assaulted
+                entry.extraFields.push_back(((BattleGroundAVScore*)score)->towersDefended);      // Towers Defended
+                entry.extraFields.push_back(((BattleGroundAVScore*)score)->secondaryObjectives); // Mines Taken
+                entry.extraFields.push_back(((BattleGroundAVScore*)score)->lieutnantCount);      // Lieutnant kills
+                entry.extraFields.push_back(((BattleGroundAVScore*)score)->secondaryNPC);        // Secondary unit summons
                 break;
             case BATTLEGROUND_WS:
-                *data << (uint32)0x00000002;                // count of next fields
-                *data << (uint32)((BattleGroundWGScore*)score)->flagCaptures;         // Flag Captures
-                *data << (uint32)((BattleGroundWGScore*)score)->flagReturns;          // Flag Returns
+                entry.extraFields.push_back(0x00000002);                                         // count of next fields
+                entry.extraFields.push_back(((BattleGroundWGScore*)score)->flagCaptures);        // Flag Captures
+                entry.extraFields.push_back(((BattleGroundWGScore*)score)->flagReturns);         // Flag Returns
                 break;
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_6_1
             case BATTLEGROUND_AB:
-                *data << (uint32)0x00000002;                // count of next fields
-                *data << (uint32)((BattleGroundABScore*)score)->basesAssaulted;       // Bases Asssulted
-                *data << (uint32)((BattleGroundABScore*)score)->basesDefended;        // Bases Defended
+                entry.extraFields.push_back(0x00000002);                                         // count of next fields
+                entry.extraFields.push_back(((BattleGroundABScore*)score)->basesAssaulted);      // Bases Asssulted
+                entry.extraFields.push_back(((BattleGroundABScore*)score)->basesDefended);       // Bases Defended
                 break;
 #endif
             default:
                 sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "Unhandled MSG_PVP_LOG_DATA for BG id %u", bg->GetTypeID());
-                *data << (uint32)0;
+                entry.extraFields.push_back(0);
                 break;
         }
+
+        packet.playerScores.push_back(std::move(entry));
     }
+
+    // TODO Use broadcaster which does the binary conversion automatically
+    data->Initialize(packet.GetOpcode(), 1 + 4 + 40 * bg->GetPlayerScoresSize());
+    packet.AppendBodyTo(*data);
 #endif
 }
 
 void BattleGroundMgr::BuildGroupJoinedBattlegroundPacket(WorldPacket* data, int32 status)
 {
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_4_2
-    data->Initialize(SMSG_GROUP_JOINED_BATTLEGROUND, 4);
+    WorldPackets::Battleground::GroupJoinedBattleground packet;
     // for status, see enum BattleGroundGroupJoinStatus
-    *data << int32(status);
+    packet.result = static_cast<uint32>(status);
+
+    // TODO Use broadcaster which does the binary conversion automatically
+    data->Initialize(packet.GetOpcode(), 4);
+    packet.AppendBodyTo(*data);
 #endif
 }
 
 void BattleGroundMgr::BuildUpdateWorldStatePacket(WorldPacket* data, uint32 field, uint32 value)
 {
-    data->Initialize(SMSG_UPDATE_WORLD_STATE, 4 + 4);
-    WriteUpdateWorldStatePair(*data, field, value);
+    WorldPackets::Battleground::UpdateWorldState packet;
+    packet.field = field;
+    packet.value = value;
+
+    // TODO Use broadcaster which does the binary conversion automatically
+    data->Initialize(packet.GetOpcode(), 4 + 4);
+    packet.AppendBodyTo(*data);
 }
 
 void BattleGroundMgr::BuildPlaySoundPacket(WorldPacket* data, uint32 soundid)
 {
-    data->Initialize(SMSG_PLAY_SOUND, 4);
-    *data << uint32(soundid);
+    WorldPackets::Battleground::PlaySound packet;
+    packet.soundId = soundid;
+
+    // TODO Use broadcaster which does the binary conversion automatically
+    data->Initialize(packet.GetOpcode(), 4);
+    packet.AppendBodyTo(*data);
 }
 
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_6_1
 void BattleGroundMgr::BuildPlayerLeftBattleGroundPacket(WorldPacket* data, ObjectGuid guid)
 {
-    data->Initialize(SMSG_BATTLEGROUND_PLAYER_LEFT, 8);
-    *data << ObjectGuid(guid);
+    WorldPackets::Battleground::BattlegroundPlayerLeft packet;
+    packet.playerGuid = guid;
+
+    // TODO Use broadcaster which does the binary conversion automatically
+    data->Initialize(packet.GetOpcode(), 8);
+    packet.AppendBodyTo(*data);
 }
 
 void BattleGroundMgr::BuildPlayerJoinedBattleGroundPacket(WorldPacket* data, Player* player)
 {
-    data->Initialize(SMSG_BATTLEGROUND_PLAYER_JOINED, 8);
-    *data << player->GetObjectGuid();
+    WorldPackets::Battleground::BattlegroundPlayerJoined packet;
+    packet.playerGuid = player->GetObjectGuid();
+
+    // TODO Use broadcaster which does the binary conversion automatically
+    data->Initialize(packet.GetOpcode(), 8);
+    packet.AppendBodyTo(*data);
 }
 #endif
 
@@ -1445,25 +1471,22 @@ void BattleGroundMgr::BuildBattleGroundListPacket(WorldPacket* data, ObjectGuid 
 
     uint32 mapId = GetBattleGrounMapIdByTypeId(bgTypeId);
 
-    data->Initialize(SMSG_BATTLEFIELD_LIST);
+    WorldPackets::Battleground::BattlefieldList packet;
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_6_1
-    *data << guid; // battlemaster guid
+    packet.battlemasterGuid = guid;                         // battlemaster guid
 #endif
-    *data << uint32(mapId);
-    *data << uint8(player->GetBattleGroundBracketIdFromLevel(bgTypeId));
-
-    size_t countPos = data->wpos();
-    uint32 count = 0;
-    *data << uint32(0); // number of bg instances
+    packet.mapId = mapId;
+    packet.bracketId = player->GetBattleGroundBracketIdFromLevel(bgTypeId);
 
     uint32 bracketId = player->GetBattleGroundBracketIdFromLevel(bgTypeId);
     ClientBattleGroundIdSet const& ids = m_clientBattleGroundIds[bgTypeId][bracketId];
-    for (const auto id : ids)
-    {
-        *data << uint32(id);
-        ++count;
-    }
-    data->put<uint32>(countPos, count);
+    packet.instanceIds.reserve(ids.size());
+    for (auto const id : ids)
+        packet.instanceIds.push_back(id);
+
+    // TODO Use broadcaster which does the binary conversion automatically
+    data->Initialize(packet.GetOpcode());
+    packet.AppendBodyTo(*data);
 }
 
 void BattleGroundMgr::SendToBattleGround(Player* player, uint32 instanceId, BattleGroundTypeId bgTypeId)

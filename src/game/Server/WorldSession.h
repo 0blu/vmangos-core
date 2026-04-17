@@ -57,9 +57,11 @@
 #include "Packets/Query.h"
 #include "Packets/Quest.h"
 #include "Packets/Skill.h"
+#include "Packets/Social.h"
 #include "Packets/Spell.h"
 #include "Packets/Taxi.h"
 #include "Packets/Trade.h"
+#include "Packets/Warden.h"
 
 #include <memory>
 
