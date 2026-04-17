@@ -72,8 +72,12 @@ void WorldPackets::Battleground::BattlefieldStatus::AppendBodyTo(ByteBuffer& buf
     buffer << bracketId;
     buffer << clientInstanceId;
     buffer << statusId;
+
+    // STATUS_WAIT_JOIN (2) only writes time1 on the wire (the original byte-buffer builder
+    // intentionally omitted time2 for that state). See BattleGroundStatus enum.
     buffer << time1;
-    buffer << time2;
+    if (statusId == 1 /*STATUS_WAIT_QUEUE*/ || statusId == 3 /*STATUS_IN_PROGRESS*/)
+        buffer << time2;
 }
 
 void WorldPackets::Battleground::BattlefieldStatusEmpty::AppendBodyTo(ByteBuffer& buffer) const

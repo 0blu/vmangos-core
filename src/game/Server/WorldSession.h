@@ -828,7 +828,7 @@ class WorldSession
 #endif
 
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_5_1
-        void HandleWardenDataOpcode(WorldPackets::Misc::WardenData const& packet);
+        void HandleWardenDataOpcode(WorldPackets::Warden::WardenData const& packet);
 #endif
         void HandleMinimapPingOpcode(WorldPackets::Group::MinimapPing const& packet);
         void HandleRandomRollOpcode(WorldPackets::Group::RandomRoll const& packet);

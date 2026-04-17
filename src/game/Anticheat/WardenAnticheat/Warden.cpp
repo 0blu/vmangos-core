@@ -359,7 +359,7 @@ void Warden::ReadScanResults(ByteBuffer& buff)
 
 void Warden::SendPacket(ByteBuffer const& buff)
 {
-    auto packet = std::make_shared<WorldPackets::Warden::WardenData>();
+    auto packet = std::make_shared<WorldPackets::Warden::WardenDataServer>();
     packet->encryptedData.append(buff);
 
     // we specifically encrypt the packet copy, rather than the input copy, to avoid
@@ -383,7 +383,7 @@ void Warden::SendPacket(ByteBuffer const& buff)
 
 void Warden::SendPacketDirect(ByteBuffer const& buff, WorldSession* session)
 {
-    auto packet = std::make_unique<WorldPackets::Warden::WardenData>();
+    auto packet = std::make_unique<WorldPackets::Warden::WardenDataServer>();
     packet->encryptedData.append(buff);
 
     // we specifically encrypt the packet copy, rather than the input copy, to avoid

@@ -258,7 +258,7 @@ namespace WorldPackets { namespace Group
         {
             std::string name;
             ObjectGuid  guid;
-            uint8       onlineStatus = 0;     // see GroupMemberOnlineStatus
+            uint8       onlineStatus = 0;     // see GroupMemberStatus flags returned by GetGroupMemberStatus(...)
             uint8       groupAndAssistantFlag = 0; // (subgroup | (assistant ? 0x80 : 0))
         };
 

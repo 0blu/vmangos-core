@@ -241,13 +241,7 @@ void WorldPackets::Misc::Bug::ReadFromWorldPacket(WorldPacket& recv_data)
 }
 
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_5_1
-void WorldPackets::Misc::WardenData::ReadFromWorldPacket(WorldPacket& recv_data)
-{
-    uint32 const remaining = recv_data.size() - recv_data.rpos();
-    data.resize(remaining);
-    if (!data.empty())
-        recv_data.read(data.data(), data.size());
-}
+// NOTE: WardenData (CMSG) / WardenDataServer (SMSG) serialization lives in `Packets/Warden.cpp`.
 #endif
 
 // --- Server Packets ---

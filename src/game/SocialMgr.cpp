@@ -234,17 +234,6 @@ void SocialMgr::GetFriendInfo(MasterPlayer* player, uint32 friend_lowguid, Frien
     }
 }
 
-void SocialMgr::MakeFriendStatusPacket(FriendsResult result, uint32 guid, WorldPacket* data)
-{
-    WorldPackets::Social::FriendStatus packet;
-    packet.result = result;
-    packet.friendGuid = ObjectGuid(HIGHGUID_PLAYER, guid);
-
-    // TODO Use broadcaster which does the binary conversion automatically
-    data->Initialize(packet.GetOpcode(), 5);
-    packet.AppendBodyTo(*data);
-}
-
 void SocialMgr::SendFriendStatus(MasterPlayer* player, FriendsResult result, ObjectGuid friend_guid, bool broadcast)
 {
     uint32 friend_lowguid = friend_guid.GetCounter();
