@@ -1,4 +1,5 @@
 #include "Battleground.h"
+#include "BattleGroundDefines.h"
 
 void WorldPackets::Battleground::BattlefieldListRequest::ReadFromWorldPacket(WorldPacket& recv_data)
 {
@@ -73,10 +74,10 @@ void WorldPackets::Battleground::BattlefieldStatus::AppendBodyTo(ByteBuffer& buf
     buffer << clientInstanceId;
     buffer << statusId;
 
-    // STATUS_WAIT_JOIN (2) only writes time1 on the wire (the original byte-buffer builder
+    // STATUS_WAIT_JOIN only writes time1 on the wire (the original byte-buffer builder
     // intentionally omitted time2 for that state). See BattleGroundStatus enum.
     buffer << time1;
-    if (statusId == 1 /*STATUS_WAIT_QUEUE*/ || statusId == 3 /*STATUS_IN_PROGRESS*/)
+    if (statusId == STATUS_WAIT_QUEUE || statusId == STATUS_IN_PROGRESS)
         buffer << time2;
 }
 
