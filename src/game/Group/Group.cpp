@@ -1361,7 +1361,7 @@ void Group::SendTargetIconList(WorldSession* session)
             continue;
 
         WorldPackets::Group::RaidTargetUpdateAll::IconEntry entry;
-        entry.iconId = uint8(i);
+        entry.iconId = i;
         entry.targetGuid = m_targetIcons[i];
         packet->icons.push_back(entry);
     }
@@ -1386,7 +1386,7 @@ void Group::SendUpdate()
                 markedTargets = std::make_shared<WorldPackets::Group::RaidTargetUpdateAll>();
 
             WorldPackets::Group::RaidTargetUpdateAll::IconEntry entry;
-            entry.iconId = uint8(i);
+            entry.iconId = i;
             entry.targetGuid = m_targetIcons[i];
             markedTargets->icons.push_back(entry);
         }
