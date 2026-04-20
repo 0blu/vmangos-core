@@ -154,8 +154,8 @@ void WorldPackets::Group::GroupListEmpty::AppendBodyTo(ByteBuffer& buffer) const
 
 void WorldPackets::Group::GroupList::AppendBodyTo(ByteBuffer& buffer) const
 {
-    buffer << groupType;                   // group type
-    buffer << ownGroupAndAssistantFlag;    // own flags (groupid | (assistant?0x80:0))
+    buffer << groupType;
+    buffer << ownGroupAndAssistantFlag;
 
     buffer << uint32(members.size());
     for (auto const& member : members)
@@ -166,15 +166,15 @@ void WorldPackets::Group::GroupList::AppendBodyTo(ByteBuffer& buffer) const
         buffer << member.groupAndAssistantFlag;
     }
 
-    buffer << leaderGuid;                  // leader guid
+    buffer << leaderGuid;
     if (!members.empty())
     {
-        buffer << lootMethod;              // loot method
-        buffer << looterGuid;              // looter guid (MASTER_LOOT) or 0
-        buffer << lootThreshold;           // loot threshold
+        buffer << lootMethod;
+        buffer << looterGuid;              // master looter guid (MASTER_LOOT) or 0
+        buffer << lootThreshold;
 
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_10_2
-        buffer << dungeonDifficulty;       // dungeon difficulty
+        buffer << dungeonDifficulty;
 #endif
     }
 }
