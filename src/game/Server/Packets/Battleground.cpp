@@ -67,7 +67,7 @@ void WorldPackets::Battleground::GroupJoinedBattleground::AppendBodyTo(ByteBuffe
 void WorldPackets::Battleground::BattlefieldStatus::AppendBodyTo(ByteBuffer& buffer) const
 {
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
-    buffer << queueSlot;             // queue id (0...2) - player can be in 3 queues in time
+    buffer << queueSlot;             // queue id (0...2) - player can be in 3 queues at the same time
 #endif
     buffer << mapId;                 // uint64 in client
     buffer << bracketId;

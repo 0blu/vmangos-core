@@ -597,7 +597,7 @@ class WorldSession
 #endif
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_10_2
         void HandleRaidTargetUpdateOpcode(WorldPackets::Group::RaidTargetUpdate const& packet);
-        void HandleRaidReadyCheckOpcode(WorldPackets::Group::RaidReadyCheck const& packet);
+        void HandleRaidReadyCheckOpcode(WorldPackets::Group::RaidReadyCheckFromClient const& packet);
 #endif
         void HandleGroupRaidConvertOpcode(NullClientPacket const& packet);
         void HandleGroupChangeSubGroupOpcode(WorldPackets::Group::GroupChangeSubGroup const& packet);

@@ -137,13 +137,15 @@ namespace WorldPackets { namespace Group
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
 
-    class RaidReadyCheck final : public ClientPacket
+    class RaidReadyCheckFromClient final : public ClientPacket
     {
     public:
-        // packet can be used in two ways: request: `hasValue() = false`, response: `hasValue() = true`
+        // packet can be used in two ways:
+        // - The leader will initiate a request when `hasValue() = false`
+        // - All the players in the group will respond with `hasValue() = true`
         nonstd::optional<uint8> state;
 
-        explicit RaidReadyCheck() : ClientPacket(MSG_RAID_READY_CHECK) {}
+        explicit RaidReadyCheckFromClient() : ClientPacket(MSG_RAID_READY_CHECK) {}
         void ReadFromWorldPacket(WorldPacket& recv_data) override;
     };
 #endif
@@ -194,13 +196,22 @@ namespace WorldPackets { namespace Group
     };
 
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_10_2
-    class RaidReadyCheckResponse final : public ServerPacket
+    /// Asks the player if ready or not
+    class RaidReadyCheckFromServer_Request final : public ServerPacket
+    {
+    public:
+        explicit RaidReadyCheckFromServer_Request() : ServerPacket(MSG_RAID_READY_CHECK) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    /// Will be sent to leader
+    class RaidReadyCheckFromServer_Response final : public ServerPacket
     {
     public:
         ObjectGuid senderGuid;  // guid of the player who answered
         uint8 state = 0;        // ready state
 
-        explicit RaidReadyCheckResponse() : ServerPacket(MSG_RAID_READY_CHECK) {}
+        explicit RaidReadyCheckFromServer_Response() : ServerPacket(MSG_RAID_READY_CHECK) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
 
@@ -242,15 +253,8 @@ namespace WorldPackets { namespace Group
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
 
-    // SMSG_GROUP_LIST: empty group list (sent when a player leaves the group)
-    class GroupListEmpty final : public ServerPacket
-    {
-    public:
-        explicit GroupListEmpty() : ServerPacket(SMSG_GROUP_LIST) {}
-        void AppendBodyTo(ByteBuffer& buffer) const override;
-    };
-
     // SMSG_GROUP_LIST: full list of group members sent to a single member
+    // Will sent 0 in all fields if the player is leaving a group
     class GroupList final : public ServerPacket
     {
     public:

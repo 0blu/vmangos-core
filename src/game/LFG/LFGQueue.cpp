@@ -152,13 +152,7 @@ void LFGQueue::Update()
                     sWorld.GetMessager().AddMessage([groupId = qGroup->first](World* world)
                     {
                         Group* group = sObjectMgr.GetGroupById(groupId);
-
-                        WorldPackets::Misc::MeetingstoneInProgress packet;
-
-                        // TODO Use broadcaster which does the binary conversion automatically
-                        WorldPacket data(packet.GetOpcode(), 0);
-                        packet.AppendBodyTo(data);
-                        group->BroadcastPacket(&data, true);
+                        group->BroadcastPacket(std::move(std::make_unique<WorldPackets::Misc::MeetingstoneInProgress>()), true);
                     });
                 }
                 else
@@ -262,18 +256,14 @@ void LFGQueue::AddGroup(LFGGroupQueueInfo const& groupInfo, uint32 groupId)
     {
         Group* group = sObjectMgr.GetGroupById(groupId);
 
-        WorldPackets::Misc::MeetingstoneSetQueue packet;
-        packet.areaId = areaId;
+        auto packet = std::make_unique<WorldPackets::Misc::MeetingstoneSetQueue>();
+        packet->areaId = areaId;
 #if SUPPORTED_CLIENT_BUILD <= CLIENT_BUILD_1_4_2
-        packet.idempotencyToken = 0; // TODO: Must forward this
+        packet->idempotencyToken = 0; // TODO: Must forward this
 #else
-        packet.status = MEETINGSTONE_STATUS_JOINED_QUEUE;
+        packet->status = MEETINGSTONE_STATUS_JOINED_QUEUE;
 #endif
-
-        // TODO Use broadcaster which does the binary conversion automatically
-        WorldPacket data(packet.GetOpcode());
-        packet.AppendBodyTo(data);
-        group->BroadcastPacket(&data, true);
+        group->BroadcastPacket(std::move(packet), true);
     });
 }
 
@@ -387,13 +377,9 @@ bool LFGQueue::FindRoleToGroup(ObjectGuid playerGuid, uint32 groupId, LfgRoles r
             Group* group = sObjectMgr.GetGroupById(groupId);
             Player* player = sObjectMgr.GetPlayer(playerGuid);
 
-            WorldPackets::Misc::MeetingstoneMemberAdded packet;
-            packet.playerGuid = playerGuid;
-
-            // TODO Use broadcaster which does the binary conversion automatically
-            WorldPacket data(packet.GetOpcode(), 8);
-            packet.AppendBodyTo(data);
-            group->BroadcastPacket(&data, true);
+            auto packet = std::make_unique<WorldPackets::Misc::MeetingstoneMemberAdded>();
+            packet->playerGuid = playerGuid;
+            group->BroadcastPacket(std::move(packet), true);
 
             // Add member to the group.
             group->AddMember(playerGuid, player->GetName(), GROUP_LFG);
@@ -454,45 +440,32 @@ void LFGQueue::RemoveGroupFromQueue(uint32 groupId, GroupLeaveMethod leaveMethod
             {
                 if (leaveMethod == GROUP_CLIENT_LEAVE)
                 {
-                    WorldPackets::Misc::MeetingstoneSetQueue packet;
-                    packet.areaId = 0;
+                    auto packet = std::make_unique<WorldPackets::Misc::MeetingstoneSetQueue>();
+                    packet->areaId = 0;
 #if SUPPORTED_CLIENT_BUILD <= CLIENT_BUILD_1_4_2
-                    packet.idempotencyToken = 0; // TODO: Must forward this
+                    packet->idempotencyToken = 0; // TODO: Must forward this
 #else
-                    packet.status = MEETINGSTONE_STATUS_LEAVE_QUEUE;
+                    packet->status = MEETINGSTONE_STATUS_LEAVE_QUEUE;
 #endif
-
-                    // TODO Use broadcaster which does the binary conversion automatically
-                    WorldPacket data(packet.GetOpcode());
-                    packet.AppendBodyTo(data);
-                    grp->BroadcastPacket(&data, true);
+                    grp->BroadcastPacket(std::move(packet), true);
                 }
                 else
                 {
                     // Send complete information to party
                     {
-                        WorldPackets::Misc::MeetingstoneComplete completePacket;
-
-                        // TODO Use broadcaster which does the binary conversion automatically
-                        WorldPacket data(completePacket.GetOpcode(), 0);
-                        completePacket.AppendBodyTo(data);
-                        grp->BroadcastPacket(&data, true);
+                        grp->BroadcastPacket(std::move(std::make_unique<WorldPackets::Misc::MeetingstoneComplete>()), true);
                     }
 
                     // Reset UI for party
                     {
-                        WorldPackets::Misc::MeetingstoneSetQueue resetPacket;
-                        resetPacket.areaId = 0;
+                        auto packet = std::make_unique<WorldPackets::Misc::MeetingstoneSetQueue>();
+                        packet->areaId = 0;
 #if SUPPORTED_CLIENT_BUILD <= CLIENT_BUILD_1_4_2
-                        resetPacket.idempotencyToken = 0; // TODO: Must forward this
+                        packet->idempotencyToken = 0; // TODO: Must forward this
 #else
-                        resetPacket.status = MEETINGSTONE_STATUS_NONE;
+                        packet->status = MEETINGSTONE_STATUS_NONE;
 #endif
-
-                        // TODO Use broadcaster which does the binary conversion automatically
-                        WorldPacket data(resetPacket.GetOpcode());
-                        resetPacket.AppendBodyTo(data);
-                        grp->BroadcastPacket(&data, true);
+                        grp->BroadcastPacket(std::move(packet), true);
                     }
                 }
 

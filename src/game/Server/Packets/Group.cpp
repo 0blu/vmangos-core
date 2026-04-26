@@ -81,7 +81,7 @@ void WorldPackets::Group::RaidTargetUpdate::ReadFromWorldPacket(WorldPacket& rec
         recv_data >> guid;
 }
 
-void WorldPackets::Group::RaidReadyCheck::ReadFromWorldPacket(WorldPacket& recv_data)
+void WorldPackets::Group::RaidReadyCheckFromClient::ReadFromWorldPacket(WorldPacket& recv_data)
 {
     if (!recv_data.empty())
     {
@@ -90,6 +90,11 @@ void WorldPackets::Group::RaidReadyCheck::ReadFromWorldPacket(WorldPacket& recv_
         state = s;
     }
 }
+
+void WorldPackets::Group::RaidReadyCheckFromServer_Request::AppendBodyTo(ByteBuffer& buffer) const
+{
+}
+
 #endif
 
 void WorldPackets::Group::PartyCommandResult::AppendBodyTo(ByteBuffer& buffer) const
@@ -118,7 +123,7 @@ void WorldPackets::Group::GroupDestroyed::AppendBodyTo(ByteBuffer& /*buffer*/) c
 }
 
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_10_2
-void WorldPackets::Group::RaidReadyCheckResponse::AppendBodyTo(ByteBuffer& buffer) const
+void WorldPackets::Group::RaidReadyCheckFromServer_Response::AppendBodyTo(ByteBuffer& buffer) const
 {
     buffer << senderGuid;
     buffer << state;
@@ -145,11 +150,6 @@ void WorldPackets::Group::RaidTargetUpdateAll::AppendBodyTo(ByteBuffer& buffer) 
 void WorldPackets::Group::GroupSetLeaderNotification::AppendBodyTo(ByteBuffer& buffer) const
 {
     buffer << leaderName;
-}
-
-void WorldPackets::Group::GroupListEmpty::AppendBodyTo(ByteBuffer& buffer) const
-{
-    buffer << uint64(0) << uint64(0) << uint64(0);
 }
 
 void WorldPackets::Group::GroupList::AppendBodyTo(ByteBuffer& buffer) const

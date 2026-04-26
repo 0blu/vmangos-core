@@ -359,24 +359,19 @@ void Warden::ReadScanResults(ByteBuffer& buff)
 
 void Warden::SendPacket(ByteBuffer const& buff)
 {
-    auto packet = std::make_shared<WorldPackets::Warden::WardenDataServer>();
+    auto packet = std::make_unique<WorldPackets::Warden::WardenDataServer>();
     packet->encryptedData.append(buff);
 
     // we specifically encrypt the packet copy, rather than the input copy, to avoid
     // creating side-effects for this function
     EncryptData(const_cast<uint8*>(packet->encryptedData.contents()), packet->encryptedData.wpos());
 
-    sWorld.GetMessager().AddMessage([packet, accountId = m_accountId, sessionGuid = m_sessionGuid](World* world)
+    sWorld.GetMessager().AddMessage([packet = std::move(packet), accountId = m_accountId, sessionGuid = m_sessionGuid](World* world) mutable
     {
         if (WorldSession* session = world->FindSession(accountId))
         {
             if (session->GetGUID() == sessionGuid)
-            {
-                // TODO Queue `ServerPacket` directly once `Messager` supports move-only callables
-                WorldPacket pkt(packet->GetOpcode(), packet->encryptedData.wpos());
-                packet->AppendBodyTo(pkt);
-                session->SendPacket(&pkt);
-            }
+                session->SendPacket(std::move(packet));
         }
     });
 }
