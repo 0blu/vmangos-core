@@ -99,6 +99,7 @@ cmake_install.cmake
 # But allow premade code style
 .idea/*
 !.idea/codeStyles/
+!.idea/fileTemplates/
 
 # VSCode
 .vscode
