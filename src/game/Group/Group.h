@@ -34,6 +34,7 @@
 
 #include <map>
 #include <vector>
+#include <memory>
 
 class WorldSession;
 class Map;

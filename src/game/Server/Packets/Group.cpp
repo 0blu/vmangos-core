@@ -91,7 +91,7 @@ void WorldPackets::Group::RaidReadyCheckFromClient::ReadFromWorldPacket(WorldPac
     }
 }
 
-void WorldPackets::Group::RaidReadyCheckFromServer_Request::AppendBodyTo(ByteBuffer& buffer) const
+void WorldPackets::Group::RaidReadyCheckFromServer_Request::AppendBodyTo(ByteBuffer& /*buffer*/) const
 {
 }
 

@@ -31,8 +31,8 @@ class Messager
     private:
         // Type-erased holder for any callable invocable as void(T*).
         // Unlike std::function, this only requires the callable to be MoveConstructible,
-        // allowing capture of move-only types such as std::unique_ptr (C++14 has no
-        // std::move_only_function).
+        // allowing capture of move-only types such as std::unique_ptr
+        // (C++14 has no std::move_only_function).
         struct IMessage
         {
             virtual ~IMessage() = default;
