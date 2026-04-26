@@ -155,7 +155,7 @@ namespace WorldPackets { namespace Battleground
             uint32 bonusHonor = 0;
 
             // Battleground specific extra fields appended after the common header.
-            std::vector<uint32> extraFields;
+            std::vector<int32> extraFields;
         };
 
         bool ended = false;                  // whether the battleground has ended
@@ -210,11 +210,11 @@ namespace WorldPackets { namespace Battleground
     {
     public:
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_6_1
-        ObjectGuid battlemasterGuid; // battlemaster guid
+        ObjectGuid battlemasterGuid;
 #endif
-        uint32 mapId = 0;                     // battleground map id
-        uint8  bracketId = 0;                 // bracket id for the recipient
-        std::vector<uint32> instanceIds;      // list of available bg instance ids
+        uint32 mapId = 0; // battleground map id
+        uint8  bracketId = 0;
+        std::vector<uint32> instanceIds; // list of available bg instance ids
 
         explicit BattlefieldList() : ServerPacket(SMSG_BATTLEFIELD_LIST) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;

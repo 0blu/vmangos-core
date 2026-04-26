@@ -1069,7 +1069,7 @@ std::unique_ptr<ServerPacket> BattleGroundMgr::BuildBattleGroundStatusPacket(Bat
 }
 
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_4_2
-std::unique_ptr<ServerPacket> BattleGroundMgr::BuildPvpLogDataPacket(BattleGround *bg)
+std::unique_ptr<ServerPacket> BattleGroundMgr::BuildPvpLogDataPacket(BattleGround const* bg)
 {
     auto packet = std::make_unique<WorldPackets::Battleground::PvpLogData>();
     packet->ended = bg->GetStatus() == STATUS_WAIT_LEAVE;
@@ -1100,33 +1100,38 @@ std::unique_ptr<ServerPacket> BattleGroundMgr::BuildPvpLogDataPacket(BattleGroun
         entry.deaths = score->deaths;
         entry.bonusHonor = score->bonusHonor;
 
-        switch (bg->GetTypeID())                            // battleground specific things
+        switch (bg->GetTypeID()) // battleground-specific player stats
         {
             case BATTLEGROUND_AV:
-                entry.extraFields.push_back(0x00000007);                                                      // count of next fields
-                entry.extraFields.push_back(((BattleGroundAVScore*)score)->graveyardsAssaulted); // Graveyards Assaulted
-                entry.extraFields.push_back(((BattleGroundAVScore*)score)->graveyardsDefended);  // Graveyards Defended
-                entry.extraFields.push_back(((BattleGroundAVScore*)score)->towersAssaulted);     // Towers Assaulted
-                entry.extraFields.push_back(((BattleGroundAVScore*)score)->towersDefended);      // Towers Defended
-                entry.extraFields.push_back(((BattleGroundAVScore*)score)->secondaryObjectives); // Mines Taken
-                entry.extraFields.push_back(((BattleGroundAVScore*)score)->lieutnantCount);      // Lieutnant kills
-                entry.extraFields.push_back(((BattleGroundAVScore*)score)->secondaryNPC);        // Secondary unit summons
+            {
+                auto avScore = static_cast<BattleGroundAVScore const*>(score);
+                entry.extraFields.push_back(avScore->graveyardsAssaulted);
+                entry.extraFields.push_back(avScore->graveyardsDefended);
+                entry.extraFields.push_back(avScore->towersAssaulted);
+                entry.extraFields.push_back(avScore->towersDefended);
+                entry.extraFields.push_back(avScore->secondaryObjectives);
+                entry.extraFields.push_back(avScore->lieutnantCount);
+                entry.extraFields.push_back(avScore->secondaryNPC);
                 break;
+            }
             case BATTLEGROUND_WS:
-                entry.extraFields.push_back(0x00000002);                                         // count of next fields
-                entry.extraFields.push_back(((BattleGroundWGScore*)score)->flagCaptures);        // Flag Captures
-                entry.extraFields.push_back(((BattleGroundWGScore*)score)->flagReturns);         // Flag Returns
+            {
+                auto wsScore = static_cast<BattleGroundWGScore const*>(score);
+                entry.extraFields.push_back(wsScore->flagCaptures);
+                entry.extraFields.push_back(wsScore->flagReturns);
                 break;
+            }
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_6_1
             case BATTLEGROUND_AB:
-                entry.extraFields.push_back(0x00000002);                                         // count of next fields
-                entry.extraFields.push_back(((BattleGroundABScore*)score)->basesAssaulted);      // Bases Asssulted
-                entry.extraFields.push_back(((BattleGroundABScore*)score)->basesDefended);       // Bases Defended
+            {
+                auto abScore = static_cast<BattleGroundABScore const*>(score);
+                entry.extraFields.push_back(abScore->basesAssaulted);
+                entry.extraFields.push_back(abScore->basesDefended);
                 break;
+            }
 #endif
             default:
                 sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "Unhandled MSG_PVP_LOG_DATA for BG id %u", bg->GetTypeID());
-                entry.extraFields.push_back(0);
                 break;
         }
 
@@ -1444,7 +1449,7 @@ std::unique_ptr<ServerPacket> BattleGroundMgr::BuildBattleGroundListPacket(Objec
 
     auto packet = std::make_unique<WorldPackets::Battleground::BattlefieldList>();
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_6_1
-    packet->battlemasterGuid = guid;                        // battlemaster guid
+    packet->battlemasterGuid = guid;
 #endif
     packet->mapId = mapId;
     packet->bracketId = player->GetBattleGroundBracketIdFromLevel(bgTypeId);

@@ -213,7 +213,7 @@ class BattleGroundMgr
         std::unique_ptr<ServerPacket> BuildBattleGroundListPacket(ObjectGuid guid, Player* player, BattleGroundTypeId bgTypeId);
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_4_2
         std::unique_ptr<ServerPacket> BuildGroupJoinedBattlegroundPacket(int32 status);
-        std::unique_ptr<ServerPacket> BuildPvpLogDataPacket(BattleGround* bg);
+        std::unique_ptr<ServerPacket> BuildPvpLogDataPacket(BattleGround const* bg);
 #endif
         std::unique_ptr<ServerPacket> BuildUpdateWorldStatePacket(uint32 field, uint32 value);
         std::unique_ptr<ServerPacket> BuildBattleGroundStatusPacket(BattleGround* bg, uint8 queueSlot, uint8 statusID, uint32 time1, uint32 time2);

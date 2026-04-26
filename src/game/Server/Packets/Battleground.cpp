@@ -111,6 +111,7 @@ void WorldPackets::Battleground::PvpLogData::AppendBodyTo(ByteBuffer& buffer) co
         buffer << score.honorableKills;
         buffer << score.deaths;
         buffer << score.bonusHonor;
+        buffer << static_cast<uint32>(score.extraFields.size());
         for (uint32 const& extra : score.extraFields)
             buffer << extra;
     }
@@ -143,7 +144,7 @@ void WorldPackets::Battleground::BattlegroundPlayerLeft::AppendBodyTo(ByteBuffer
 void WorldPackets::Battleground::BattlefieldList::AppendBodyTo(ByteBuffer& buffer) const
 {
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_6_1
-    buffer << battlemasterGuid;      // battlemaster guid
+    buffer << battlemasterGuid; // battlemaster guid
 #endif
     buffer << mapId;
     buffer << bracketId;
