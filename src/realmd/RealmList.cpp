@@ -28,7 +28,7 @@
 #include "AuthCodes.h"
 #include "Util.h"                                           // for Tokens typedef
 #include "Log.h"
-#include "Errors.h"
+#include "Debugging/Errors.h"
 #include "Policies/SingletonImp.h"
 #include "Database/DatabaseEnv.h"
 #include "IO/Networking/DNS.h"

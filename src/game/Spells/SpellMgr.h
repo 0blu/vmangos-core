@@ -31,7 +31,7 @@
 #include "DBCStores.h"
 #include "SQLStorages.h"
 #include "SpellEntry.h"
-#include "Errors.h"
+#include "Debugging/Errors.h"
 
 #include <map>
 #include <memory>
@@ -557,7 +557,7 @@ class SpellMgr
 
         bool IsRankSpellDueToSpell(SpellEntry const* spellInfo_1,uint32 spellId_2) const;
         bool IsNoStackSpellDueToSpell(uint32 spellId_1, uint32 spellId_2) const;
-        
+
         uint32 GetSpellBookSuccessorSpellId(uint32 spellId)
         {
             SkillLineAbilityMapBounds bounds = GetSkillLineAbilityMapBoundsBySpellId(spellId);

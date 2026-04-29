@@ -1,7 +1,7 @@
 #include "./ClientPatchCache.h"
 #include "Policies/SingletonImp.h"
 #include "Log.h"
-#include "Errors.h"
+#include "Debugging/Errors.h"
 #include "Config/Config.h"
 #include "Crypto/Hash/HMACSHA1.h"
 #include "Crypto/Hash/MD5.h"

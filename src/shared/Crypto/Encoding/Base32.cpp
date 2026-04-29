@@ -1,6 +1,6 @@
 #include "Base32.h"
 
-#include <Errors.h>
+#include "Debugging/Errors.h"
 
 // ==== Start of the original library, we can replace this with EVP after requiring `>= OpenSSL 1.1.0` ====
 

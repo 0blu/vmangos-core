@@ -22,7 +22,7 @@
 #include <errmsg.h>
 #include <mysqld_error.h>
 #include "Log.h"
-#include "Errors.h"
+#include "Debugging/Errors.h"
 #include "Util.h"
 #include "Policies/SingletonImp.h"
 #include "Platform/Define.h"
@@ -199,7 +199,7 @@ bool MySQLConnection::_Query(std::string const& sql, MYSQL_RES** pResult, MYSQL_
     {
         return false;
     }
-        
+
 
     uint32 _s = WorldTimer::getMSTime();
 

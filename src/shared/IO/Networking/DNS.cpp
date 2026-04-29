@@ -1,7 +1,7 @@
 #include "./DNS.h"
 #include "./Internal.h"
 #include "Log.h"
-#include "Errors.h"
+#include "Debugging/Errors.h"
 #include "Util.h"
 #include "IO/SystemErrorToString.h"
 

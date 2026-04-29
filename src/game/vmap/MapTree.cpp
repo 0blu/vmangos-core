@@ -21,7 +21,7 @@
 #include "VMapManager2.h"
 #include "VMapDefinitions.h"
 #include "WorldModel.h"
-#include "Errors.h"
+#include "Debugging/Errors.h"
 
 #include <string>
 #include <sstream>

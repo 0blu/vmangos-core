@@ -20,8 +20,12 @@ set (shared_SRCS
     ByteBuffer.h
     Common.h
     EnumFlag.h
-    Errors.h
-    Errors.cpp
+    Debugging/Errors.h
+    Debugging/Errors.cpp
+    Debugging/Windows/WheatyExceptionReport.h
+    Debugging/Windows/WheatyExceptionReport.cpp
+    Debugging/Windows/WindowsSehHandler.h
+    Debugging/Windows/WindowsSehHandler.cpp
     LockedQueue.h
     Log.h
     migrations_list.h
@@ -37,7 +41,6 @@ set (shared_SRCS
     ThreadSpecificPtr.cpp
     Timer.h
     Util.h
-    WheatyExceptionReport.h
     Config/Config.h
     Config/ConfigEnv.h
     Crypto/BigNumber.h
@@ -91,7 +94,6 @@ set (shared_SRCS
     ThreadPool.cpp
     Util.cpp
     Duration.h
-    WheatyExceptionReport.cpp
     Auth/AuthCrypt.h
     Auth/AuthCrypt.cpp
     Config/Config.cpp
@@ -188,14 +190,18 @@ if(WIN32) # For window build: Exclude Unix/MacOS files
 
   if (NOT MSVC)
     list(REMOVE_ITEM shared_SRCS
-      WheatyExceptionReport.cpp
-      WheatyExceptionReport.h
+      Debugging/Windows/WheatyExceptionReport.h
+      Debugging/Windows/WheatyExceptionReport.cpp
+      Debugging/Windows/WindowsSehHandler.h
+      Debugging/Windows/WindowsSehHandler.cpp
     )
   endif()
 else()
   list(REMOVE_ITEM shared_SRCS
-    WheatyExceptionReport.cpp
-    WheatyExceptionReport.h
+    Debugging/Windows/WheatyExceptionReport.h
+    Debugging/Windows/WheatyExceptionReport.cpp
+    Debugging/Windows/WindowsSehHandler.h
+    Debugging/Windows/WindowsSehHandler.cpp
     ServiceWin32.cpp
     ServiceWin32.h
     revision.h

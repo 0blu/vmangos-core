@@ -8,7 +8,7 @@
 #include "IO/SystemErrorToString.h"
 
 #include "Log.h"
-#include "Errors.h"
+#include "Debugging/Errors.h"
 
 #if defined(__linux__) || defined(__APPLE__) || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
 #include <sys/socket.h>

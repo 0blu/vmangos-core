@@ -32,8 +32,8 @@
 #include "SystemConfig.h"
 #include "revision.h"
 #include "ArgparserForServer.h"
-
 #include "Crypto/InitializeCrypto.h"
+#include "Debugging/Errors.h"
 
 #ifdef WIN32
 #include "ServiceWin32.h"
@@ -64,6 +64,8 @@ char const* g_mainLogFileName = "Server.log";
 // Launch the mangos server
 extern int main(int argc, char **argv)
 {
+    MaNGOS::Errors::RegisterCrashHandler();
+
     ServerStartupArguments args;
     {
         // parseResult is std::expected, where the error is the return code, that might be present when invalid args or "--help" is given

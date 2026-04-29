@@ -1,6 +1,6 @@
 #include "AsyncSocket.h"
 #include "IO/SystemErrorToString.h"
-#include "Errors.h"
+#include "Debugging/Errors.h"
 #include "Log.h"
 
 #if defined(__linux__)

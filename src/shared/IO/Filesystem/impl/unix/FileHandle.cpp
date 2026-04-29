@@ -1,7 +1,7 @@
 #include "IO/Filesystem/FileHandle.h"
 #include "Log.h"
 #include "IO/SystemErrorToString.h"
-#include "Errors.h"
+#include "Debugging/Errors.h"
 
 #include <sys/stat.h>
 #include <unistd.h>

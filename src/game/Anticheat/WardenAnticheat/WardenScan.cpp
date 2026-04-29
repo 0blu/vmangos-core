@@ -29,7 +29,7 @@
 #include "Crypto/Hash/HMACSHA1.h"
 #include "Crypto/Hash/SHA1.h"
 #include "World.h"
-#include "Errors.h"
+#include "Debugging/Errors.h"
 
 #include <string>
 #include <algorithm>

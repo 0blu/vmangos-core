@@ -1,6 +1,6 @@
 #include "AsyncSocket.h"
 #include "Log.h"
-#include "Errors.h"
+#include "Debugging/Errors.h"
 #include "IpAddress.h"
 
 IO::Networking::AsyncSocket::AsyncSocket(AsyncSocket&& other) noexcept :

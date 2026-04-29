@@ -23,7 +23,7 @@
 #include <limits>
 
 #include "ProgressBar.h"
-#include "Errors.h"
+#include "Debugging/Errors.h"
 
 bool BarGoLink::m_showOutput = true;
 

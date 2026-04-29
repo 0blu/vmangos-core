@@ -21,7 +21,7 @@
 
 #include "typedefs.h"
 #include "Log.h"
-#include "Errors.h"
+#include "Debugging/Errors.h"
 #include <G3D/Vector3.h>
 #include <limits>
 

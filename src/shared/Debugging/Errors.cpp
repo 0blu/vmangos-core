@@ -1,8 +1,49 @@
-#include "Errors.h"
-#include "Log.h"
+#include "Debugging/Errors.h"
+#include "../Log.h"
+
+#include "Platform/CompilerDefs.h"
 
 #ifdef ENABLE_CPPTRACE
 #include <cpptrace/cpptrace.hpp>
+#endif
+
+#if PLATFORM == PLATFORM_WINDOWS
+#include <intrin.h>
+#include <Windows.h>
+
+#define CUSTOM_EXCEPTION_ASSERTION_FAILURE 0xC0000420L // Keep in sync with WheatyExceptionReport.cpp
+
+[[noreturn]]
+static void PerformCrash(std::string const& message) {
+    ULONG_PTR exceptionArgs[] = {
+        reinterpret_cast<ULONG_PTR>(_strdup(message.c_str())),
+        reinterpret_cast<ULONG_PTR>(_ReturnAddress())
+    };
+    RaiseException(CUSTOM_EXCEPTION_ASSERTION_FAILURE, 0, 2, exceptionArgs);
+    exit(1);
+}
+#else
+// should be easily accessible in gdb
+extern "C" { char const* vMangosAssertionFailedMessage = nullptr; }
+[[noreturn]]
+static void PerformCrash(std::string const& message) {
+    vMangosAssertionFailedMessage = strdup(message.c_str());
+    *((volatile int*)nullptr) = 0;
+    exit(1);
+}
+#endif
+
+#if PLATFORM == PLATFORM_WINDOWS
+#include "Windows/WheatyExceptionReport.h"
+void MaNGOS::Errors::RegisterCrashHandler()
+{
+    g_WheatyExceptionReport.EnsureRegistration(); // Ensures the usage of this variable
+}
+#else
+void MaNGOS::Errors::RegisterCrashHandler()
+{
+    /* Currently not supported */
+}
 #endif
 
 void MaNGOS::Errors::PrintStacktrace()
@@ -80,8 +121,5 @@ void MaNGOS::Errors::PrintStacktraceAndThrow(char const* filename, int line, cha
     if (message)
         completeMessage += std::string(" Message: ") + message;
 
-    throw std::runtime_error(completeMessage);
-
-    // Just in case the std::runtime_error was ignored by a debugger, we throw an assert.
-    assert("MANGOS_ASSERT throw was skipped" && false);
+    PerformCrash(completeMessage);
 }

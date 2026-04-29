@@ -36,7 +36,7 @@
 #include "ByteBuffer.h"
 #include "Database/DatabaseEnv.h"
 #include "Progression.h"
-#include "Errors.h"
+#include "Debugging/Errors.h"
 
 #include <string>
 #include <vector>

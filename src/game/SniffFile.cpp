@@ -15,7 +15,7 @@
  */
 
 #include "SniffFile.h"
-#include "Errors.h"
+#include "Debugging/Errors.h"
 #include "Log.h"
 
 SniffFile::SniffFile(FILE* pFile) : m_file(pFile)

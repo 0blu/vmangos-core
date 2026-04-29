@@ -18,7 +18,7 @@
 
 #include "HMACSHA1.h"
 #include "../BigNumber.h"
-#include "Errors.h"
+#include "Debugging/Errors.h"
 
 #include <openssl/hmac.h>
 #include <openssl/sha.h>

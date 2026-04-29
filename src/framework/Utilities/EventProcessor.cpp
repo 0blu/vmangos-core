@@ -20,7 +20,7 @@
 
 #include "EventProcessor.h"
 #include "Log.h"
-#include "Errors.h"
+#include "Debugging/Errors.h"
 
 void BasicEvent::ScheduleAbort()
 {

@@ -24,7 +24,7 @@
 
 #include "Common.h"
 #include "Log.h"
-#include "Errors.h"
+#include "Debugging/Errors.h"
 #include "ByteBuffer.h"
 #include "UpdateFields.h"
 #include "UpdateData.h"
@@ -697,7 +697,7 @@ class WorldObject : public Object
 
         void SendObjectSpawnAnim() const;
         void SendObjectDeSpawnAnim() const;
-        
+
         bool IsControlledByPlayer() const;
         bool IsLikePlayer() const;
         virtual Player* GetAffectingPlayer() const { return nullptr; }

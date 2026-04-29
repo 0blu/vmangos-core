@@ -20,7 +20,7 @@
  */
 
 #include "DatabaseEnv.h"
-#include "Errors.h"
+#include "Debugging/Errors.h"
 #include "Log.h"
 
 QueryResultMysql::QueryResultMysql(MYSQL_RES* result, MYSQL_FIELD* fields, uint64 rowCount, uint32 fieldCount) :

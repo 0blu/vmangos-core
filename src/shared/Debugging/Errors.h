@@ -33,9 +33,12 @@ namespace MaNGOS { namespace Errors
 
     /// Prints a stack trace to `sLog.Out(LOG_BASIC, LOG_LVL_MINIMAL, ...)`
     void PrintStacktrace(int skipFrames, int maxFrames);
+
+    /// Should be the very first thing called in the program
+    void RegisterCrashHandler();
 }} // namespace MaNGOS::Errors
 
-/// Just a macro that converse a raw string to a quoted "string"
+/// Just a macro that converts a raw string to a quoted "string"
 #define MANGOS_ERROR_STRING_ESCAPE(a) #a
 
 /// <example>

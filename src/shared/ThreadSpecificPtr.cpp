@@ -1,5 +1,5 @@
 #include "./ThreadSpecificPtr.h"
-#include "Errors.h"
+#include "Debugging/Errors.h"
 
 thread_local MaNGOS::ThreadSpecificHolder MaNGOS::gtl_ThreadSpecificPtrHolder;
 

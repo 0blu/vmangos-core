@@ -22,7 +22,7 @@
 #include "Util.h"
 #include "Timer.h"
 #include "Log.h"
-#include "Errors.h"
+#include "Debugging/Errors.h"
 
 #include "IO/Utils.h"
 #include "IO/Networking/IpAddress.h"

@@ -3,10 +3,9 @@
 
 #include <cinttypes>
 #if defined(WIN32)
+#include "Debugging/Errors.h"
 #include <string>
 #include <functional>
-#include "../../Errors.h"
-
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #undef WIN32_LEAN_AND_MEAN

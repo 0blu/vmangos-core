@@ -6,7 +6,7 @@
 #include "IO/Multithreading/CreateThread.h"
 #include "Log.h"
 #include "Policies/SingletonImp.h"
-#include "Errors.h"
+#include "Debugging/Errors.h"
 
 INSTANTIATE_SINGLETON_1(IO::Timer::AsyncSystemTimer);
 

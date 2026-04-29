@@ -1,5 +1,5 @@
 #include "IpAddress.h"
-#include "Errors.h"
+#include "Debugging/Errors.h"
 
 #include <sstream>
 

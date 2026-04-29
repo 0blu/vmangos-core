@@ -1,5 +1,5 @@
 #include "./Utils.h"
-#include "../../Errors.h"
+#include "Debugging/Errors.h"
 
 /// Checks whenever the same (IPv4) Address is in the same subnet as the other one
 bool IO::Networking::IsInSameSubnet(IpAddress const& ipAddressInQuestion, IpAddress const& subnetIpAddress, uint8_t subnetMaskInCidrNotation)

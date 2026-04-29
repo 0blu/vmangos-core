@@ -22,7 +22,7 @@
 #include "BIHWrap.h"
 #include "RegularGrid.h"
 #include "GameObjectModel.h"
-#include "Errors.h"
+#include "Debugging/Errors.h"
 
 template<> struct HashTrait< GameObjectModel>
 {

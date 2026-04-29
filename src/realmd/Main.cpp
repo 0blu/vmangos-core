@@ -30,7 +30,7 @@
 
 #include "Config/Config.h"
 #include "Log.h"
-#include "Errors.h"
+#include "Debugging/Errors.h"
 #include "AuthSocket.h"
 #include "LoginThrottle.h"
 #include "SystemConfig.h"
@@ -80,6 +80,8 @@ DatabaseType LoginDatabase;                     // Accessor to the realm server 
 // Launch the realm server
 extern int main(int argc, char** argv)
 {
+    MaNGOS::Errors::RegisterCrashHandler();
+
     ServerStartupArguments args;
     {
         // parseResult is std::expected, where the error is the return code, that might be present when invalid args or "--help" is given

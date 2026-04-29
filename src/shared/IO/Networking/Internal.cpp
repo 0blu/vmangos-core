@@ -1,6 +1,6 @@
 #include "./Internal.h"
 
-#include "Errors.h"
+#include "Debugging/Errors.h"
 
 #if defined(WIN32)
 #include <WinSock2.h>

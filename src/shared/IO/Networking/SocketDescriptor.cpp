@@ -1,7 +1,7 @@
 #include "SocketDescriptor.h"
 #include "IO/Networking/Internal.h"
 
-#include "Errors.h"
+#include "Debugging/Errors.h"
 
 IO::Networking::SocketDescriptor::SocketDescriptor(IO::Native::SocketHandle nativeSocket, IO::Networking::IpEndpoint remoteEndpoint)
     : m_nativeSocket(nativeSocket), m_remoteEndpoint(remoteEndpoint), m_isClosed(false)

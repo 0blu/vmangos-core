@@ -57,7 +57,7 @@
 #include "Anticheat.h"
 #include "InstanceStatistics.h"
 #include "MovementPacketSender.h"
-#include "Errors.h"
+#include "Debugging/Errors.h"
 #include "ScriptMgr.h"
 
 //#define DEBUG_DEBUFF_LIMIT

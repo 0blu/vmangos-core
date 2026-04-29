@@ -1,9 +1,12 @@
 #include "CreateThread.h"
 
+#include "Debugging/Errors.h"
+
 #if defined(WIN32)
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #undef WIN32_LEAN_AND_MEAN
+#include "Debugging/Windows/WindowsSehHandler.h"
 #if defined(__MINGW32__)
 #include <seh.h>
 #endif
@@ -25,7 +28,17 @@ std::thread IO::Multithreading::CreateThread(std::string const& name, std::funct
     return std::thread([name, entryFunction = std::move(entryFunction)]()
     {
         IO::Multithreading::RenameCurrentThread(name);
+#if defined(WIN32)
+        __try
+        {
+#endif
         entryFunction();
+#if defined(WIN32)
+        }
+        __except (MaNGOS::Errors::_Windows_HandleSEH(GetExceptionInformation()))
+        {
+        }
+#endif
     });
 }
 
