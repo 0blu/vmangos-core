@@ -2831,8 +2831,13 @@ void WorldObject::PlayDirectSound(uint32 sound_id, Player const* target /*= null
 
 void WorldObject::PlayDirectMusic(uint32 music_id, Player const* target /*= nullptr*/) const
 {
-    WorldPacket data(SMSG_PLAY_MUSIC, 4);
-    data << uint32(music_id);
+    WorldPackets::Misc::PlayMusic playMusic;
+    playMusic.musicId = music_id;
+
+    WorldPacket data;
+    data.SetOpcode(playMusic.GetOpcode());
+    playMusic.AppendBodyTo(data);
+
     if (target)
         target->SendDirectMessage(&data);
     else
