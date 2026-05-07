@@ -639,7 +639,7 @@ namespace WorldPackets { namespace Misc
     };
 
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
-    /** Tell a client to invalidate all cached entries for a given playerPlayer (like the name) */
+    /** Tell a client to invalidate all cached entries for a given player (like the name) */
     class InvalidatePlayer final : public ServerPacket
     {
     public:
