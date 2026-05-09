@@ -5915,7 +5915,7 @@ void Aura::PeriodicTick(SpellEntry const* sProto, AuraType auraType, uint32 data
 
             pCaster->DealDamageMods(target, pdamage, &absorb);
 
-            pCaster->SendSpellNonMeleeDamageLog(target, GetId(), pdamage, spellProto->GetSpellSchoolMask(), absorb, resist, true, 0);
+            pCaster->SendSpellNonMeleeDamageLog(target, GetSpellProto(), pdamage, spellProto->GetSpellSchoolMask(), absorb, resist, true, 0);
 
             float multiplier = spellProto->EffectMultipleValue[GetEffIndex()] > 0 ? spellProto->EffectMultipleValue[GetEffIndex()] : 1;
 
@@ -6046,7 +6046,7 @@ void Aura::PeriodicTick(SpellEntry const* sProto, AuraType auraType, uint32 data
                     uint32 damage = gain;
                     uint32 absorb = 0;
                     pCaster->DealDamageMods(pCaster, damage, &absorb);
-                    pCaster->SendSpellNonMeleeDamageLog(pCaster, GetId(), damage, spellProto->GetSpellSchoolMask(), absorb, 0, true, 0, false);
+                    pCaster->SendSpellNonMeleeDamageLog(pCaster, GetSpellProto(), damage, spellProto->GetSpellSchoolMask(), absorb, 0, true, 0, false);
 
                     CleanDamage cleanDamage =  CleanDamage(0, BASE_ATTACK, MELEE_HIT_NORMAL, absorb, 0);
                     pCaster->DealDamage(pCaster, damage, &cleanDamage, NODAMAGE, spellProto->GetSpellSchoolMask(), spellProto, true);
@@ -6270,7 +6270,7 @@ void Aura::PeriodicTick(SpellEntry const* sProto, AuraType auraType, uint32 data
             gain = ditheru(gain * spellProto->EffectMultipleValue[GetEffIndex()]);
 
             // maybe has to be sent different to client, but not by SMSG_PERIODICAURALOG
-            SpellNonMeleeDamage damageInfo(pCaster, target, spellProto->Id, SpellSchools(spellProto->School));
+            SpellNonMeleeDamage damageInfo(pCaster, target, spellProto, SpellSchools(spellProto->School));
             damageInfo.periodicLog = true;
             damageInfo.reflected = GetHolder()->IsReflected();
 

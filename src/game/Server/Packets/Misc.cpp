@@ -467,6 +467,16 @@ void WorldPackets::Misc::GameObjectDespawnAnim::AppendBodyTo(ByteBuffer& buffer)
     buffer << gameObjectGuid;
 }
 
+void WorldPackets::Misc::StartMirrorTimer::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << timerType;
+    buffer << remaining;
+    buffer << duration;
+    buffer << scale;
+    buffer << paused;
+    buffer << spellId;
+}
+
 void WorldPackets::Misc::StopMirrorTimer::AppendBodyTo(ByteBuffer& buffer) const
 {
     buffer << timerType;
@@ -475,7 +485,7 @@ void WorldPackets::Misc::StopMirrorTimer::AppendBodyTo(ByteBuffer& buffer) const
 void WorldPackets::Misc::PauseMirrorTimer::AppendBodyTo(ByteBuffer& buffer) const
 {
     buffer << timerType;
-    buffer << uint8(paused ? 1 : 0);
+    buffer << paused;
 }
 
 void WorldPackets::Misc::TransferPending::AppendBodyTo(ByteBuffer& buffer) const

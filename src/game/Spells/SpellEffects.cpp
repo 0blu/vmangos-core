@@ -292,7 +292,7 @@ void Spell::EffectEnvironmentalDMG(SpellEffectIndex effIdx)
         uint32 absorb = 0;
         int32 resist = 0;
         unitTarget->CalculateDamageAbsorbAndResist(m_caster, m_spellInfo->GetSpellSchoolMask(), SPELL_DIRECT_DAMAGE, dither(damage), &absorb, &resist, m_spellInfo);
-        m_caster->SendSpellNonMeleeDamageLog(unitTarget, m_spellInfo->Id, dither(damage), m_spellInfo->GetSpellSchoolMask(), absorb, resist, false, 0, false);
+        m_caster->SendSpellNonMeleeDamageLog(unitTarget, m_spellInfo, dither(damage), m_spellInfo->GetSpellSchoolMask(), absorb, resist, false, 0, false);
 
     }
 }
@@ -799,7 +799,10 @@ void Spell::EffectDummy(SpellEffectIndex effIdx)
                         return;
 
                     // immediately finishes the cooldown on certain Rogue abilities
-                    auto cdCheck = [](SpellEntry const & spellEntry) -> bool { return (spellEntry.SpellFamilyName == SPELLFAMILY_ROGUE && spellEntry.GetRecoveryTime() > 0); };
+                    auto cdCheck = [](SpellEntry const* spellEntry) -> bool
+                    {
+                        return (spellEntry->SpellFamilyName == SPELLFAMILY_ROGUE && spellEntry->GetRecoveryTime() > 0);
+                    };
                     static_cast<Player*>(m_caster)->RemoveSomeCooldown(cdCheck);
                     return;
                 }
