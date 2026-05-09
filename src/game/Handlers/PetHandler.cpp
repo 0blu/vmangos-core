@@ -531,7 +531,7 @@ void WorldSession::HandlePetCastSpellOpcode(WorldPackets::Pet::PetCastSpell cons
     {
         pet->SendPetCastFail(packet.spellId, result);
         if (pet->IsSpellReady(spellInfo))
-            GetPlayer()->SendClearCooldown(packet.spellId, pet);
+            GetPlayer()->SendClearCooldown(spellInfo, pet);
 
         spell->finish(false);
         spell->Delete();

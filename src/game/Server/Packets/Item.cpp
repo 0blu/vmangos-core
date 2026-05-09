@@ -224,3 +224,18 @@ void WorldPackets::Item::ItemPushResult::AppendBodyTo(ByteBuffer& buffer) const
     buffer << count;
 #endif
 }
+
+void WorldPackets::Item::ItemCooldown::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << itemGuid;
+    buffer << spellId;
+}
+
+void WorldPackets::Item::EnchantmentLog::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << casterGuid;
+    buffer << ownerGuid;
+    buffer << itemEntry;
+    buffer << spellId;
+    buffer << uint8(showAffiliation ? 1 : 0);
+}
