@@ -467,11 +467,21 @@ void World::LoadConfigSettings(bool reload)
     {
         uint32 confVersion = 0;
         std::string confVersionNumber = confVersionString;
-        std::size_t suffixSeparatorPos = confVersionString.find('-');
+        std::size_t suffixSeparatorPos = confVersionString.find_last_of('-');
 
         if (suffixSeparatorPos != std::string::npos)
         {
             std::string confVersionSuffix = confVersionString.substr(suffixSeparatorPos + 1);
+            if (confVersionSuffix.empty())
+            {
+                sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "*****************************************************************************");
+                sLog.Out(LOG_BASIC, LOG_LVL_ERROR, " ERROR: mangosd.conf ConfVersion suffix is empty.");
+                sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "        Supported suffix for this branch is '-vanilla'.");
+                sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "*****************************************************************************");
+                Log::WaitBeforeContinueIfNeed();
+                exit(1);
+            }
+
             if (confVersionSuffix != "vanilla")
             {
                 sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "*****************************************************************************");
@@ -488,7 +498,10 @@ void World::LoadConfigSettings(bool reload)
         char* tail = nullptr;
         confVersion = uint32(strtoul(confVersionNumber.c_str(), &tail, 10));
         if (tail == confVersionNumber.c_str() || *tail != '\0')
+        {
+            sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "WARNING: mangosd.conf ConfVersion numeric part '%s' is malformed.", confVersionNumber.c_str());
             confVersion = 0;
+        }
 
         if (confVersion < _MANGOSDCONFVERSION)
         {
