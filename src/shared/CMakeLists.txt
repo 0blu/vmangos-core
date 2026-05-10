@@ -37,6 +37,9 @@ set (shared_SRCS
     ThreadSpecificPtr.cpp
     Timer.h
     Random.h
+    Random.cpp
+    SFMTRand.h
+    SFMTRand.cpp
     Util.h
     Config/Config.h
     Config/ConfigEnv.h
@@ -90,7 +93,6 @@ set (shared_SRCS
     ServiceWin32.cpp
     ThreadPool.cpp
     Util.cpp
-    Random.cpp
     Duration.h
     Auth/AuthCrypt.h
     Auth/AuthCrypt.cpp
@@ -303,6 +305,8 @@ else()
 endif()
 
 SET_TARGET_PROPERTIES(shared PROPERTIES FOLDER "Game Libs")
+
+target_link_libraries(shared PUBLIC sfmt)
 
 if (ENABLE_CPPTRACE)
   target_compile_definitions(shared PRIVATE ENABLE_CPPTRACE)

@@ -16,51 +16,62 @@
 
 #include "Random.h"
 #include "Errors.h"
-
-#include "mersennetwister/MersenneTwister.h"
+#include "SFMTRand.h"
 
 #include <cmath>
+#include <random>
 
-thread_local MTRand mtRand;
+static thread_local SFMTRand sfmtRand;
+static RandomEngine engine;
 
 int32 irand(int32 minInclusive, int32 maxInclusive)
 {
-    return int32(mtRand.randInt(maxInclusive - minInclusive)) + minInclusive;
+    MANGOS_ASSERT(maxInclusive >= minInclusive);
+    std::uniform_int_distribution<int32> uid(minInclusive, maxInclusive);
+    return uid(engine);
 }
 
 uint32 urand(uint32 minInclusive, uint32 maxInclusive)
 {
-    return mtRand.randInt(maxInclusive - minInclusive) + minInclusive;
+    MANGOS_ASSERT(maxInclusive >= minInclusive);
+    std::uniform_int_distribution<uint32> uid(minInclusive, maxInclusive);
+    return uid(engine);
 }
 
 float frand(float minInclusive, float maxExclusive)
 {
-    return mtRand.randExc(maxExclusive - minInclusive) + minInclusive;
+    MANGOS_ASSERT(maxExclusive >= minInclusive);
+    std::uniform_real_distribution<float> urd(minInclusive, maxExclusive);
+    return urd(engine);
 }
 
-int32 rand32()
+uint32 rand32()
 {
-    return mtRand.randInt();
+    return sfmtRand.RandomUInt32();
 }
 
 double rand_norm()
 {
-    return mtRand.randExc();
+    std::uniform_real_distribution<double> urd;
+    return urd(engine);
 }
 
 float rand_norm_f()
 {
-    return (float)mtRand.randExc();
+    std::uniform_real_distribution<float> urd;
+    return urd(engine);
 }
 
 double rand_chance()
 {
-    return mtRand.randExc(100.0);
+    std::uniform_real_distribution<double> urd(0.0, 100.0);
+    return urd(engine);
 }
 
 float rand_chance_f()
 {
-    return (float)mtRand.randExc(100.0);
+    std::uniform_real_distribution<float> urd(0.0f, 100.0f);
+    return urd(engine);
 }
 
 Milliseconds randtime(Milliseconds const& minInclusive, Milliseconds const& maxInclusive)
@@ -79,4 +90,9 @@ int32 rand_dither(float v)
 uint32 rand_ditheru(float v)
 {
     return static_cast<uint32>(rand_dither(std::max(v, 0.f)));
+}
+
+RandomEngine& RandomEngine::Instance()
+{
+    return engine;
 }

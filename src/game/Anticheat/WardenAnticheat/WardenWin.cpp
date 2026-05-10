@@ -766,7 +766,7 @@ void WardenWin::LoadScriptedScans()
 
             strings.emplace_back(hypervisor.Driver);
 
-            auto const seed = static_cast<uint32>(rand32());
+            auto const seed = rand32();
 
             scan << opcode << seed;
 
@@ -808,7 +808,7 @@ void WardenWin::LoadScriptedScans()
     // builder
     [](Warden const* warden, std::vector<std::string>& strings, ByteBuffer& scan)
     {
-        auto const seed = static_cast<uint32>(rand32());
+        auto const seed = rand32();
 
         scan << static_cast<uint8>(warden->GetModule()->opcodes[FIND_CODE_BY_HASH] ^ warden->GetXor())
              << seed;

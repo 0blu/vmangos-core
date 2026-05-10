@@ -21,6 +21,7 @@
 #include "Duration.h"
 
 #include <cmath>
+#include <limits>
 
 /* Return a random number in the range minInclusive..maxInclusive; (max-min) must be smaller than 32768. */
 int32 irand(int32 minInclusive, int32 maxInclusive);
@@ -32,8 +33,8 @@ uint32 urand(uint32 minInclusive, uint32 maxInclusive);
 /* Return a random number in the range [minInclusive, maxExclusive). */
 float frand(float minInclusive, float maxExclusive);
 
-/* Return a random number in the range 0 .. RAND32_MAX. */
-int32 rand32();
+/* Return a random number in the range 0 .. UINT32_MAX. */
+uint32 rand32();
 
 /* Return a random double from 0.0 to 1.0 (exclusive). Floats support only 7 valid decimal digits.
  * A double supports up to 15 valid decimal digits and is used internally (RAND32_MAX has 10 digits).
@@ -114,5 +115,20 @@ int32 rand_dither(float v);
  * Same as rand_dither but returns uint32. Negative inputs are clamped to 0.
  */
 uint32 rand_ditheru(float v);
+
+/*
+ * Wrapper satisfying UniformRandomNumberGenerator concept for use in <random> algorithms.
+ */
+class RandomEngine
+{
+public:
+    typedef uint32 result_type;
+
+    static constexpr result_type min() { return std::numeric_limits<result_type>::min(); }
+    static constexpr result_type max() { return std::numeric_limits<result_type>::max(); }
+    result_type operator()() const { return rand32(); }
+
+    static RandomEngine& Instance();
+};
 
 #endif // _RANDOM_H
