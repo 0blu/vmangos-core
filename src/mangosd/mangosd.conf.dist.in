@@ -3,7 +3,7 @@
 #####################################
 
 [MangosdConf]
-ConfVersion=2025040601
+ConfVersion=2025040601-vanilla
 
 ###################################################################################################################
 # CONNECTIONS AND DIRECTORIES
@@ -3039,4 +3039,3 @@ DynamicRespawn.AffectRespawnTimeBelow = 0
 DynamicRespawn.AffectLevelBelow = 0
 DynamicRespawn.PlayersThreshold = 0
 DynamicRespawn.PlayersMaxLevelDiff = 0
-
