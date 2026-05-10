@@ -38,6 +38,7 @@
 #include "ClientPatchCache.h"
 #include "Memory/NoDeleter.h"
 #include "Errors.h"
+#include "Random.h"
 
 #include "IO/Networking/Utils.h"
 #include "IO/Networking/AsyncSocket.h"
@@ -51,6 +52,7 @@
 #endif
 
 #include <ctime>
+
 //#include "Util.h" -- for commented utf8ToUpperOnlyLatin
 
 typedef struct AuthHandler
