@@ -2132,13 +2132,13 @@ SpellCastResult SpellCaster::CastSpell(float x, float y, float z, SpellEntry con
     return spell->prepare(std::move(targets), triggeredByAura);
 }
 
-void SpellCaster::AddGCD(SpellEntry const& spellEntry, uint32 forcedDuration /*= 0*/, bool /*updateClient = false*/)
+void SpellCaster::AddGCD(SpellEntry const* spellEntry, uint32 forcedDuration /*= 0*/, bool /*updateClient = false*/)
 {
-    uint32 gcdRecTime = forcedDuration ? forcedDuration : spellEntry.StartRecoveryTime;
+    uint32 gcdRecTime = forcedDuration ? forcedDuration : spellEntry->StartRecoveryTime;
     if (!gcdRecTime)
         return;
 
-    m_GCDCatMap.emplace(spellEntry.StartRecoveryCategory, std::chrono::milliseconds(gcdRecTime) + sWorld.GetCurrentClockTime());
+    m_GCDCatMap.emplace(spellEntry->StartRecoveryCategory, std::chrono::milliseconds(gcdRecTime) + sWorld.GetCurrentClockTime());
 }
 
 bool SpellCaster::HasGCD(SpellEntry const* spellEntry) const
@@ -2152,11 +2152,11 @@ bool SpellCaster::HasGCD(SpellEntry const* spellEntry) const
     return !m_GCDCatMap.empty();
 }
 
-void SpellCaster::AddCooldown(SpellEntry const& spellEntry, ItemPrototype const* /*itemProto = nullptr*/, bool /*permanent = false*/, uint32 forcedDuration /*= 0*/)
+void SpellCaster::AddCooldown(SpellEntry const* spellEntry, ItemPrototype const* /*itemProto = nullptr*/, bool /*permanent = false*/, uint32 forcedDuration /*= 0*/)
 {
-    uint32 recTimeDuration = forcedDuration ? forcedDuration : spellEntry.RecoveryTime;
-    if (recTimeDuration || spellEntry.CategoryRecoveryTime)
-        m_cooldownMap.AddCooldown(sWorld.GetCurrentClockTime(), spellEntry.Id, recTimeDuration, spellEntry.Category, spellEntry.CategoryRecoveryTime);
+    uint32 recTimeDuration = forcedDuration ? forcedDuration : spellEntry->RecoveryTime;
+    if (recTimeDuration || spellEntry->CategoryRecoveryTime)
+        m_cooldownMap.AddCooldown(sWorld.GetCurrentClockTime(), spellEntry->Id, recTimeDuration, spellEntry->Category, spellEntry->CategoryRecoveryTime);
 }
 
 void SpellCaster::UpdateCooldowns(TimePoint const& now)
@@ -2198,9 +2198,9 @@ bool SpellCaster::CheckLockout(SpellSchoolMask schoolMask) const
     return false;
 }
 
-bool SpellCaster::GetExpireTime(SpellEntry const& spellEntry, TimePoint& expireTime, bool& isPermanent) const
+bool SpellCaster::GetExpireTime(SpellEntry const* spellEntry, TimePoint& expireTime, bool& isPermanent) const
 {
-    auto spellItr = m_cooldownMap.FindBySpellId(spellEntry.Id);
+    auto spellItr = m_cooldownMap.FindBySpellId(spellEntry->Id);
     if (spellItr != m_cooldownMap.end())
     {
         auto& cdData = spellItr->second;
@@ -2223,16 +2223,18 @@ bool SpellCaster::GetExpireTime(SpellEntry const& spellEntry, TimePoint& expireT
     return false;
 }
 
-bool SpellCaster::IsSpellReady(SpellEntry const& spellEntry, ItemPrototype const* itemProto /*= nullptr*/) const
+bool SpellCaster::IsSpellReady(SpellEntry const* spellEntry, ItemPrototype const* itemProto /*= nullptr*/) const
 {
-    uint32 spellCategory = spellEntry.Category;
+    if (!spellEntry)
+        return false;
+    uint32 spellCategory = spellEntry->Category;
 
     // overwrite category by provided category in item prototype during item cast if need
     if (itemProto)
     {
         for (const auto& Spell : itemProto->Spells)
         {
-            if (Spell.SpellId == spellEntry.Id)
+            if (Spell.SpellId == spellEntry->Id)
             {
                 spellCategory = Spell.SpellCategory;
                 break;
@@ -2240,32 +2242,23 @@ bool SpellCaster::IsSpellReady(SpellEntry const& spellEntry, ItemPrototype const
         }
     }
 
-    if (m_cooldownMap.FindBySpellId(spellEntry.Id) != m_cooldownMap.end())
+    if (m_cooldownMap.FindBySpellId(spellEntry->Id) != m_cooldownMap.end())
         return false;
 
     if (spellCategory && m_cooldownMap.FindByCategory(spellCategory) != m_cooldownMap.end())
         return false;
 
-    if (spellEntry.PreventionType == SPELL_PREVENTION_TYPE_SILENCE && CheckLockout(spellEntry.GetSpellSchoolMask()))
+    if (spellEntry->PreventionType == SPELL_PREVENTION_TYPE_SILENCE && CheckLockout(spellEntry->GetSpellSchoolMask()))
         return false;
 
     return true;
 }
 
-bool SpellCaster::IsSpellReady(uint32 spellId, ItemPrototype const* itemProto /*= nullptr*/) const
-{
-    SpellEntry const* spellEntry = sSpellMgr.GetSpellEntry(spellId);
-    if (!spellEntry)
-        return false;
-
-    return IsSpellReady(*spellEntry, itemProto);
-}
-
-bool SpellCaster::IsSpellOnPermanentCooldown(SpellEntry const& spellEntry) const
+bool SpellCaster::IsSpellOnPermanentCooldown(SpellEntry const* spellEntry) const
 {
     TimePoint now = World::GetCurrentClockTime();
 
-    auto itr = m_cooldownMap.FindBySpellId(spellEntry.Id);
+    auto itr = m_cooldownMap.FindBySpellId(spellEntry->Id);
     if (itr != m_cooldownMap.end() && !(*itr).second->IsSpellCDExpired(now))
         return itr->second->IsPermanent();
 
@@ -2281,18 +2274,9 @@ void SpellCaster::LockOutSpells(SpellSchoolMask schoolMask, uint32 duration)
     }
 }
 
-void SpellCaster::RemoveSpellCooldown(uint32 spellId, bool updateClient /*= true*/)
+void SpellCaster::RemoveSpellCooldown(SpellEntry const* spellEntry, bool /*updateClient = true*/)
 {
-    SpellEntry const* spellEntry = sSpellMgr.GetSpellEntry(spellId);
-    if (!spellEntry)
-        return;
-
-    RemoveSpellCooldown(*spellEntry, updateClient);
-}
-
-void SpellCaster::RemoveSpellCooldown(SpellEntry const& spellEntry, bool /*updateClient = true*/)
-{
-    m_cooldownMap.RemoveBySpellId(spellEntry.Id);
+    m_cooldownMap.RemoveBySpellId(spellEntry->Id);
 }
 
 void SpellCaster::RemoveSpellCategoryCooldown(uint32 category, bool /*updateClient = true*/)

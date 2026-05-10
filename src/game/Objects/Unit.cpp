@@ -4320,7 +4320,7 @@ void Unit::AddGameObject(GameObject* pGo)
             // Need disable spell use for owner
             if (pCreateBySpell->HasAttribute(SPELL_ATTR_COOLDOWN_ON_EVENT))
                 // note: item based cooldowns and cooldown spell mods with charges ignored (unknown existing cases)
-                AddCooldown(*pCreateBySpell);
+                AddCooldown(pCreateBySpell);
         }
     }
 }
@@ -4342,7 +4342,7 @@ void Unit::RemoveGameObject(GameObject* pGo, bool del)
             if (pCreateBySpell->HasAttribute(SPELL_ATTR_COOLDOWN_ON_EVENT) &&
                 pGo->GetGoType() != GAMEOBJECT_TYPE_SUMMONING_RITUAL)
                 // note: item based cooldowns and cooldown spell mods with charges ignored (unknown existing cases)
-                AddCooldown(*pCreateBySpell);
+                AddCooldown(pCreateBySpell);
         }
 
     }
@@ -9184,7 +9184,7 @@ void Unit::ProcDamageAndSpellFor(bool isVictim, Unit* pTarget, ProcSystemArgumen
 
         // don't reroll chance for each target in this case
         if (itr.second->GetSpellProto()->HasAttribute(SPELL_ATTR_EX2_PROC_COOLDOWN_ON_FAILURE) &&
-           !IsSpellReady(itr.second->GetId()))
+           !IsSpellReady(itr.second->GetSpellProto()))
             continue;
 
         // prevent delayed procs from removing auras applied after the proc happened
@@ -9229,7 +9229,7 @@ void Unit::ProcDamageAndSpellFor(bool isVictim, Unit* pTarget, ProcSystemArgumen
             if (result == SPELL_PROC_TRIGGER_ROLL_FAILED &&
                 itr.second->GetSpellProto()->HasAttribute(SPELL_ATTR_EX2_PROC_COOLDOWN_ON_FAILURE) &&
                 spellProcEvent && spellProcEvent->cooldown)
-                AddCooldown(*itr.second->GetSpellProto(), nullptr, false, spellProcEvent->cooldown);
+                AddCooldown(itr.second->GetSpellProto(), nullptr, false, spellProcEvent->cooldown);
 
             continue;
         }
