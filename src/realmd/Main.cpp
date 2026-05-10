@@ -36,8 +36,11 @@
 #include "SystemConfig.h"
 #include "revision.h"
 #include "Util.h"
+#include "Random.h"
 #include "migrations_list.h"
 #include "ArgparserForServer.h"
+
+#include <chrono>
 #include "Crypto/InitializeCrypto.h"
 #include "Crypto/Encoding/Base32.h"
 #include "ProxyProtocol/ProxyV2Reader.h"
@@ -80,6 +83,42 @@ DatabaseType LoginDatabase;                     // Accessor to the realm server 
 // Launch the realm server
 extern int main(int argc, char** argv)
 {
+    // TODO: Remove - temporary speed test for randInt vs randExc
+    constexpr int ITERATIONS = 100'000'000;
+    volatile uint32 sink = 0; // prevent the loop from being optimized away
+
+    {
+        auto start = std::chrono::high_resolution_clock::now();
+        for (int i = 0; i < ITERATIONS; ++i)
+            sink += urand(0, UINT32_MAX);
+        auto end = std::chrono::high_resolution_clock::now();
+        double ms = std::chrono::duration<double, std::milli>(end - start).count();
+        printf("urand       (%d iterations): %.2f ms (%.0f ns/call)\n", ITERATIONS, ms, ms * 1e6 / ITERATIONS);
+        printf("sink = %u\n", sink);
+    }
+
+    {
+        auto start = std::chrono::high_resolution_clock::now();
+        for (int i = 0; i < ITERATIONS; ++i)
+            sink = (uint32)(rand_norm() * UINT32_MAX);
+        auto end = std::chrono::high_resolution_clock::now();
+        double ms = std::chrono::duration<double, std::milli>(end - start).count();
+        printf("rand_norm   (%d iterations): %.2f ms (%.0f ns/call)\n", ITERATIONS, ms, ms * 1e6 / ITERATIONS);
+        printf("sink = %u\n", sink);
+    }
+
+    {
+        auto start = std::chrono::high_resolution_clock::now();
+        for (int i = 0; i < ITERATIONS; ++i)
+            sink = (uint32)(rand_norm_f() * UINT32_MAX);
+        auto end = std::chrono::high_resolution_clock::now();
+        double ms = std::chrono::duration<double, std::milli>(end - start).count();
+        printf("rand_norm_f (%d iterations): %.2f ms (%.0f ns/call)\n", ITERATIONS, ms, ms * 1e6 / ITERATIONS);
+        printf("sink = %u\n", sink);
+    }
+
+    return 0;
+
     ServerStartupArguments args;
     {
         // parseResult is std::expected, where the error is the return code, that might be present when invalid args or "--help" is given

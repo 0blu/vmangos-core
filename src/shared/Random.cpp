@@ -17,50 +17,82 @@
 #include "Random.h"
 #include "Errors.h"
 
-#include "mersennetwister/MersenneTwister.h"
+#include "SFMT.h"
 
 #include <cmath>
+#include <ctime>
 
-thread_local MTRand mtRand;
+namespace
+{
+    struct SFMTRand
+    {
+        sfmt_t sfmt;
+        SFMTRand()
+        {
+            sfmt_init_gen_rand(&sfmt,
+                static_cast<uint32_t>(time(nullptr)) ^
+                static_cast<uint32_t>(clock()) ^
+                static_cast<uint32_t>(reinterpret_cast<uintptr_t>(this)));
+        }
+    };
+}
+
+thread_local SFMTRand sfmtRand;
+
+// Generate a uniform random integer in [0, n] without modulo bias.
+static uint32_t sfmt_randInt_n(uint32_t n)
+{
+    uint32_t used = n;
+    used |= used >> 1;
+    used |= used >> 2;
+    used |= used >> 4;
+    used |= used >> 8;
+    used |= used >> 16;
+    uint32_t i;
+    do
+        i = sfmt_genrand_uint32(&sfmtRand.sfmt) & used;
+    while (i > n);
+    return i;
+}
 
 int32 irand(int32 minInclusive, int32 maxInclusive)
 {
-    return int32(mtRand.randInt(maxInclusive - minInclusive)) + minInclusive;
+    return int32(sfmt_randInt_n(maxInclusive - minInclusive)) + minInclusive;
 }
 
 uint32 urand(uint32 minInclusive, uint32 maxInclusive)
 {
-    return mtRand.randInt(maxInclusive - minInclusive) + minInclusive;
+    return sfmt_randInt_n(maxInclusive - minInclusive) + minInclusive;
 }
 
 float frand(float minInclusive, float maxExclusive)
 {
-    return mtRand.randExc(maxExclusive - minInclusive) + minInclusive;
+    return static_cast<float>(sfmt_genrand_real2(&sfmtRand.sfmt)) * (maxExclusive - minInclusive) + minInclusive;
 }
 
 int32 rand32()
 {
-    return mtRand.randInt();
+    return static_cast<int32>(sfmt_genrand_uint32(&sfmtRand.sfmt));
 }
 
 double rand_norm()
 {
-    return mtRand.randExc();
+    return sfmt_genrand_real2(&sfmtRand.sfmt);
 }
 
 float rand_norm_f()
 {
-    return (float)mtRand.randExc();
+    return static_cast<float>(sfmt_genrand_real2(&sfmtRand.sfmt));
 }
 
 double rand_chance()
 {
-    return mtRand.randExc(100.0);
+    return sfmt_genrand_real2(&sfmtRand.sfmt) * 100.0;
 }
 
 float rand_chance_f()
 {
-    return (float)mtRand.randExc(100.0);
+    return static_cast<float>(sfmt_genrand_real2(&sfmtRand.sfmt) * 100.0);
 }
 
 Milliseconds randtime(Milliseconds const& minInclusive, Milliseconds const& maxInclusive)

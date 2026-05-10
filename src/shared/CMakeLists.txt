@@ -302,6 +302,8 @@ else()
   target_link_libraries(shared PUBLIC ${ZLIB_LIBRARIES})
 endif()
 
+target_link_libraries(shared PRIVATE sfmt)
+
 SET_TARGET_PROPERTIES(shared PROPERTIES FOLDER "Game Libs")
 
 if (ENABLE_CPPTRACE)
