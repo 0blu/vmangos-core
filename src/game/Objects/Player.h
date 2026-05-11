@@ -1986,6 +1986,7 @@ class Player final: public Unit
         void DestroyForPlayer(Player const* target) const override;
         void SendLogXPGain(uint32 givenXP, Unit const* victim, uint32 restXP) const;
 
+        void SendMessageToSet(std::unique_ptr<ServerPacket const> packet, bool self) const override;
         void SendMessageToSet(WorldPacket* data, bool self) const override;
         void SendMessageToSetInRange(WorldPacket* data, float fist, bool self) const override;
         void SendMessageToSetInRange(WorldPacket* data, float dist, bool self, bool own_team_only) const;
