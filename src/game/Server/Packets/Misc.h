@@ -1022,7 +1022,7 @@ namespace WorldPackets { namespace Misc
     {
     public:
         uint32 field = 0;  // world state field id (will be uint16 on older clients)
-        uint32 value = 0;  // new value
+        uint32 value = 0;  // new value (will be uint16 on older clients)
 
         explicit UpdateWorldState() : ServerPacket(SMSG_UPDATE_WORLD_STATE) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;

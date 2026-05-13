@@ -669,8 +669,9 @@ void WorldPackets::Misc::UpdateWorldState::AppendBodyTo(ByteBuffer& buffer) cons
 {
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
     buffer << field;
+    buffer << value;
 #else
     buffer << static_cast<uint16>(field);
+    buffer << static_cast<uint16>(value);
 #endif
-    buffer << value;
 }
