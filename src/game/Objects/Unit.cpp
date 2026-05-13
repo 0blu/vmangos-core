@@ -1002,6 +1002,8 @@ void Unit::Kill(Unit* pVictim, SpellEntry const* spellProto, bool durabilityLoss
         WorldPackets::Combat::PartyKillLog partyKillLogPacket;
         partyKillLogPacket.killerGuid = pPlayerTap->GetObjectGuid(); // player with killing blow
         partyKillLogPacket.victimGuid = pVictim->GetObjectGuid();
+
+        // TODO Use broadcaster which does the binary conversion automatically, also dont forget to add pPlayerTap
         WorldPacket data(partyKillLogPacket.GetOpcode(), (8 + 8));    // send event PARTY_KILL
         partyKillLogPacket.AppendBodyTo(data);
 

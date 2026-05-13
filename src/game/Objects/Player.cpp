@@ -6868,6 +6868,7 @@ void Player::DuelComplete(DuelCompleteType type)
         return;
 
     {
+        // TODO Use broadcaster to send it to self and opponent
         auto packet = std::make_unique<WorldPackets::Duel::DuelComplete>();
         packet->started = (type != DUEL_INTERRUPTED);
         GetSession()->SendPacket(std::move(packet));
@@ -8168,7 +8169,7 @@ void Player::SendNotifyLootItemRemoved(uint8 lootSlot) const
 
 void Player::SendUpdateWorldState(uint32 state, uint32 value) const
 {
-    auto packet = std::make_unique<WorldPackets::Battleground::UpdateWorldState>();
+    auto packet = std::make_unique<WorldPackets::Misc::UpdateWorldState>();
     packet->field = state;
     packet->value = value;
     GetSession()->SendPacket(std::move(packet));

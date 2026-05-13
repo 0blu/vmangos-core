@@ -1018,6 +1018,16 @@ namespace WorldPackets { namespace Misc
     };
 #endif
 
+    class UpdateWorldState final : public ServerPacket
+    {
+    public:
+        uint32 field = 0;  // world state field id (will be uint16 on older clients)
+        uint32 value = 0;  // new value
+
+        explicit UpdateWorldState() : ServerPacket(SMSG_UPDATE_WORLD_STATE) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
 }} // namespace WorldPackets::Misc
 
 #endif // MANGOS_PACKETS_MISC_H

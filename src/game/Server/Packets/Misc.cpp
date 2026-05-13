@@ -664,3 +664,13 @@ void WorldPackets::Misc::ClientControlUpdate::AppendBodyTo(ByteBuffer& buffer) c
     buffer << allowMove;
 }
 #endif
+
+void WorldPackets::Misc::UpdateWorldState::AppendBodyTo(ByteBuffer& buffer) const
+{
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
+    buffer << field;
+#else
+    buffer << static_cast<uint16>(field);
+#endif
+    buffer << value;
+}
