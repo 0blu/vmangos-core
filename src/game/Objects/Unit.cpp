@@ -9254,7 +9254,7 @@ Player* Unit::GetSpellModOwner() const
 }
 
 // ----------Pet responses methods-----------------
-void Unit::SendPetCastFail(uint32 spellid, SpellCastResult msg)
+void Unit::SendPetCastFail(SpellEntry const* spellEntry, SpellCastResult msg)
 {
     if (msg == SPELL_CAST_OK)
         return;
@@ -9262,7 +9262,7 @@ void Unit::SendPetCastFail(uint32 spellid, SpellCastResult msg)
     if (Player* pOwner = ::ToPlayer(GetCharmerOrOwner()))
     {
         auto packet = std::make_unique<WorldPackets::Pet::PetCastFailed>();
-        packet->spellId = spellid;
+        packet->spellEntry = spellEntry;
         packet->status = static_cast<uint8>(SPELL_RESULT_STATUS_FAIL);
         packet->reason = static_cast<uint8>(msg);
         pOwner->GetSession()->SendPacket(std::move(packet));

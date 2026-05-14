@@ -7,6 +7,8 @@
 #include "SpellCastTargetsInfo.h"
 #include <string>
 
+class SpellEntry;
+
 namespace WorldPackets { namespace Pet
 {
     class QueryPetName final : public ClientPacket
@@ -210,7 +212,7 @@ namespace WorldPackets { namespace Pet
     class PetCastFailed final : public ServerPacket
     {
     public:
-        uint32 spellId = 0;
+        ::SpellEntry const* spellEntry = nullptr;
         uint8 status = 0;  // SPELL_RESULT_STATUS_FAIL
         uint8 reason = 0;  // SpellCastResult enum value
 

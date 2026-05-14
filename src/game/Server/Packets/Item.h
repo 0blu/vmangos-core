@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+class SpellEntry;
+
 namespace WorldPackets { namespace Item
 {
     class QueryItem final : public ClientPacket
@@ -347,7 +349,7 @@ namespace WorldPackets { namespace Item
     {
     public:
         ObjectGuid itemGuid;
-        uint32 spellId = 0;
+        ::SpellEntry const* spellEntry = nullptr;
 
         explicit ItemCooldown() : ServerPacket(SMSG_ITEM_COOLDOWN) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;
