@@ -24,12 +24,12 @@ include_directories(
 
 # link loadlib with zlib
 
-if(UNIX)
+if(WIN32 AND MINGW)
+  target_link_libraries(loadlib zlib libmpq)
+else()
   find_package(ZLIB REQUIRED)
   if(ZLIB_FOUND)
     include_directories(${ZLIB_INCLUDE_DIRS})
     target_link_libraries(loadlib ${ZLIB_LIBRARIES} libmpq)
   endif(ZLIB_FOUND)
-else()
-  target_link_libraries(loadlib zlib libmpq)
-endif(UNIX)
+endif()

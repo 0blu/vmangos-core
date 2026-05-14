@@ -19,6 +19,3 @@
 if (MINGW)
 add_subdirectory(libseh)
 endif()
-if(WIN32)
-    add_subdirectory(zlib)
-endif()

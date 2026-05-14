@@ -1,0 +1,14 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+  "name": "vmangos",
+  "dependencies": [
+    "openssl",
+    "zlib",
+    "libmariadb",
+    "nlohmann-json",
+    {
+      "name": "curl",
+      "features": ["ssl"]
+    }
+  ]
+}

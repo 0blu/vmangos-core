@@ -105,10 +105,7 @@ endif()
 
 if(WIN32)
   target_link_libraries(${EXECUTABLE_NAME}
-    optimized ${MYSQL_LIBRARY}
-    optimized ${OPENSSL_LIBRARIES}
-    debug ${MYSQL_DEBUG_LIBRARY}
-    debug ${OPENSSL_DEBUG_LIBRARIES}
+    ${MYSQL_LIBRARY}
   )
   if(MINGW)
     target_link_libraries(${EXECUTABLE_NAME}
@@ -123,8 +120,6 @@ endif()
 if(UNIX)
   target_link_libraries(${EXECUTABLE_NAME}
     ${MYSQL_LIBRARY}
-    ${OPENSSL_LIBRARIES}
-    ${OPENSSL_EXTRA_LIBRARIES}
   )
 endif()
 

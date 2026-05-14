@@ -35,7 +35,6 @@ include_directories(
     ../../dep/recastnavigation/
     ../../dep/recastnavigation/Detour/Include
     ../../dep/recastnavigation/Recast/Include
-    ../../dep/src/zlib
 )
 
 set(SOURCES

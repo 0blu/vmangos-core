@@ -245,34 +245,16 @@ target_include_directories(shared PUBLIC
   ${CMAKE_SOURCE_DIR}/src/framework
   ${CMAKE_BINARY_DIR}
   ${MYSQL_INCLUDE_DIR}
-  ${OPENSSL_INCLUDE_DIR}
-  ${ZLIB_INCLUDE_DIRS}
 )
 target_compile_definitions(shared PUBLIC OPENSSL_NO_DEPRECATED) # Disable the usage of deprecated OpenSSL functions
 
-if(WIN32)
-  target_include_directories(shared PUBLIC
-    ${CMAKE_SOURCE_DIR}/dep/windows/include
-  )
-
-  if(MINGW)
-    target_include_directories(shared PRIVATE
-      ${CMAKE_SOURCE_DIR}/dep/src/libseh
-    )
-  endif()
+if (ENABLE_MAILSENDER)
+  find_package(nlohmann_json CONFIG REQUIRED)
+  target_link_libraries(shared PRIVATE nlohmann_json::nlohmann_json)
 endif()
 
 if (REQUIRES_LIBCURL)
-  if(WIN32)
-    target_include_directories(shared PUBLIC
-      ${CURL_INCLUDE_DIR}
-    )
-    target_link_libraries(shared PUBLIC
-      ${CURL_LIBRARY}
-    )
-  else()
-    target_link_libraries(shared PUBLIC curl)
-  endif()
+  target_link_libraries(shared PUBLIC CURL::libcurl)
 endif()
 
 if(UNIX)
@@ -290,18 +272,6 @@ if(WIN32)
   endif()
 endif()
 
-if (ENABLE_CPPTRACE)
-  target_link_libraries(shared PRIVATE cpptrace::cpptrace)
-endif()
-
-if(WIN32)
-  target_link_libraries(shared PUBLIC zlib)
-else()
-  target_link_libraries(shared PUBLIC ${ZLIB_LIBRARIES})
-endif()
+target_link_libraries(shared PUBLIC OpenSSL::SSL OpenSSL::Crypto ZLIB::ZLIB)
 
 SET_TARGET_PROPERTIES(shared PROPERTIES FOLDER "Game Libs")
-
-if (ENABLE_CPPTRACE)
-  target_compile_definitions(shared PRIVATE ENABLE_CPPTRACE)
-endif()
