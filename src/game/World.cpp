@@ -454,8 +454,8 @@ void World::LoadConfigSettings(bool reload)
     }
 
     // Read the version of the configuration file and warn the user in case of emptiness or mismatch
-    uint32 confVersion = sConfig.GetIntDefault("ConfVersion", 0);
-    if (!confVersion)
+    std::string confVersionString = sConfig.GetStringDefault("ConfVersion", "");
+    if (confVersionString.empty())
     {
         sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "*****************************************************************************");
         sLog.Out(LOG_BASIC, LOG_LVL_ERROR, " WARNING: mangosd.conf does not include a ConfVersion variable.");
@@ -465,6 +465,44 @@ void World::LoadConfigSettings(bool reload)
     }
     else
     {
+        uint32 confVersion = 0;
+        std::string confVersionNumber = confVersionString;
+        std::size_t suffixSeparatorPos = confVersionString.find_last_of('-');
+
+        if (suffixSeparatorPos != std::string::npos)
+        {
+            std::string confVersionSuffix = confVersionString.substr(suffixSeparatorPos + 1);
+            if (confVersionSuffix.empty())
+            {
+                sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "*****************************************************************************");
+                sLog.Out(LOG_BASIC, LOG_LVL_ERROR, " ERROR: mangosd.conf ConfVersion suffix is empty.");
+                sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "        Supported suffix for this branch is '-vanilla'.");
+                sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "*****************************************************************************");
+                Log::WaitBeforeContinueIfNeed();
+                exit(1);
+            }
+
+            if (confVersionSuffix != "vanilla")
+            {
+                sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "*****************************************************************************");
+                sLog.Out(LOG_BASIC, LOG_LVL_ERROR, " ERROR: Unsupported mangosd.conf ConfVersion suffix '%s'.", confVersionSuffix.c_str());
+                sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "        Supported suffix for this branch is '-vanilla'.");
+                sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "*****************************************************************************");
+                Log::WaitBeforeContinueIfNeed();
+                exit(1);
+            }
+
+            confVersionNumber = confVersionString.substr(0, suffixSeparatorPos);
+        }
+
+        char* tail = nullptr;
+        confVersion = uint32(strtoul(confVersionNumber.c_str(), &tail, 10));
+        if (tail == confVersionNumber.c_str() || *tail != '\0')
+        {
+            sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "WARNING: mangosd.conf ConfVersion numeric part '%s' is malformed.", confVersionNumber.c_str());
+            confVersion = 0;
+        }
+
         if (confVersion < _MANGOSDCONFVERSION)
         {
             sLog.Out(LOG_BASIC, LOG_LVL_ERROR, "*****************************************************************************");
