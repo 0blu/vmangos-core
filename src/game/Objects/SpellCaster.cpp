@@ -651,10 +651,10 @@ float SpellCaster::GetSpellResistChance(Unit const* victim, uint32 schoolMask, b
     return resistModHitChance;
 }
 
-void SpellCaster::SendSpellMiss(Unit const* target, uint32 spellId, SpellMissInfo missInfo) const
+void SpellCaster::SendSpellMiss(Unit const* target, SpellEntry const* spellEntry, SpellMissInfo missInfo) const
 {
     auto packet = std::make_unique<WorldPackets::Spell::SpellLogMiss>();
-    packet->spellEntry = sSpellMgr.GetSpellEntry(spellId);
+    packet->spellEntry = spellEntry;
     packet->casterGuid = GetObjectGuid();
     WorldPackets::Spell::SpellLogMissEntry entry;
     entry.targetGuid = target->GetObjectGuid();
@@ -663,12 +663,12 @@ void SpellCaster::SendSpellMiss(Unit const* target, uint32 spellId, SpellMissInf
     SendObjectMessageToSet(std::move(packet), true);
 }
 
-void SpellCaster::SendSpellDamageResist(Unit const* target, uint32 spellId) const
+void SpellCaster::SendSpellDamageResist(Unit const* target, SpellEntry const* spellEntry) const
 {
     auto packet = std::make_unique<WorldPackets::Spell::ProcResist>();
     packet->casterGuid = GetObjectGuid();
     packet->targetGuid = target->GetObjectGuid();
-    packet->spellEntry = sSpellMgr.GetSpellEntry(spellId);
+    packet->spellEntry = spellEntry;
     packet->logFormat = 0; // 0=default, 1=debug
     SendMessageToSet(std::move(packet), true);
 }

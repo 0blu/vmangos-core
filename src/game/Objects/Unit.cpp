@@ -1716,7 +1716,7 @@ void Unit::TriggerDamageShields(Unit* pVictim)
             // Damage shield can be resisted...
             if (SpellMissInfo missInfo = pVictim->SpellHitResult(this, pSpellProto, (*i)->GetEffIndex()))
             {
-                pVictim->SendSpellMiss(this, pSpellProto->Id, missInfo);
+                pVictim->SendSpellMiss(this, pSpellProto, missInfo);
                 continue;
             }
 

@@ -1558,7 +1558,7 @@ void Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask)
         unit->IsImmuneToSpell(m_spellInfo, unit == pRealUnitCaster)))
     {
         if (pRealCaster)
-            pRealCaster->SendSpellMiss(unit, m_spellInfo->Id, SPELL_MISS_IMMUNE);
+            pRealCaster->SendSpellMiss(unit, m_spellInfo, SPELL_MISS_IMMUNE);
 
         ResetEffectDamageAndHeal();
         return;
@@ -1587,7 +1587,7 @@ void Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask)
                 // dead creatures don't see alive players, but spells should still hit
                 !(unit->IsPlayer() && unit->IsAlive() && m_caster->IsCreature() && m_casterUnit->IsDead()))
             {
-                pRealCaster->SendSpellMiss(unit, m_spellInfo->Id, SPELL_MISS_EVADE);
+                pRealCaster->SendSpellMiss(unit, m_spellInfo, SPELL_MISS_EVADE);
                 ResetEffectDamageAndHeal();
                 return;
             }
@@ -1644,7 +1644,7 @@ void Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask)
             // for delayed spells ignore negative spells (after duel end) for friendly targets
             if (m_delayed && !m_spellInfo->IsPositiveSpell())
             {
-                pRealCaster->SendSpellMiss(unit, m_spellInfo->Id, SPELL_MISS_EVADE);
+                pRealCaster->SendSpellMiss(unit, m_spellInfo, SPELL_MISS_EVADE);
                 ResetEffectDamageAndHeal();
                 return;
             }

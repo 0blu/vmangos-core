@@ -1635,7 +1635,7 @@ SpellAuraProcResult Unit::HandleProcTriggerDamageAuraProc(Unit* pVictim, uint32 
     // Trigger damage can be resisted...
     if (SpellMissInfo missInfo = SpellHitResult(pVictim, spellInfo, triggeredByAura->GetEffIndex(), false))
     {
-        SendSpellDamageResist(pVictim, spellInfo->Id);
+        SendSpellDamageResist(pVictim, spellInfo);
         return SPELL_AURA_PROC_OK;
     }
 

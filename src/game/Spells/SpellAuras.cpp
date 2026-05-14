@@ -5772,7 +5772,7 @@ void Aura::PeriodicTick(SpellEntry const* sProto, AuraType auraType, uint32 data
                 SpellMissInfo result = pCaster->SpellHitResult(target, spellProto, GetEffIndex(), false);
                 if (result != SPELL_MISS_NONE)
                 {
-                    pCaster->SendSpellMiss(target, GetId(), result);
+                    pCaster->SendSpellMiss(target, spellProto, result);
                     return;
                 }
             }
@@ -5885,7 +5885,7 @@ void Aura::PeriodicTick(SpellEntry const* sProto, AuraType auraType, uint32 data
                 SpellMissInfo result = pCaster->SpellHitResult(target, spellProto, GetEffIndex(), false);
                 if (result != SPELL_MISS_NONE)
                 {
-                    pCaster->SendSpellMiss(target, GetId(), result);
+                    pCaster->SendSpellMiss(target, spellProto, result);
                     return;
                 }
             }
@@ -6082,7 +6082,7 @@ void Aura::PeriodicTick(SpellEntry const* sProto, AuraType auraType, uint32 data
                 SpellMissInfo result = pCaster->SpellHitResult(target, spellProto, GetEffIndex(), false);
                 if (result != SPELL_MISS_NONE)
                 {
-                    pCaster->SendSpellMiss(target, GetId(), result);
+                    pCaster->SendSpellMiss(target, spellProto, result);
                     return;
                 }
             }

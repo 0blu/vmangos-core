@@ -394,8 +394,8 @@ public:
     void DealSpellDamage(SpellNonMeleeDamage* damageInfo, bool durabilityLoss);
     void SendSpellNonMeleeDamageLog(SpellNonMeleeDamage const* log) const;
     void SendSpellNonMeleeDamageLog(Unit const* target, SpellEntry const* spellEntry, uint32 damage, SpellSchoolMask damageSchoolMask, uint32 absorbedDamage, int32 resist, bool isPeriodic, uint32 blocked, bool criticalHit = false, bool split = false) const;
-    void SendSpellMiss(Unit const* target, uint32 spellId, SpellMissInfo missInfo) const;
-    void SendSpellDamageResist(Unit const* target, uint32 spellId) const;
+    void SendSpellMiss(Unit const* target, SpellEntry const* spellEntry, SpellMissInfo missInfo) const;
+    void SendSpellDamageResist(Unit const* target, SpellEntry const* spellEntry) const;
     void SendSpellOrDamageImmune(Unit const* target, uint32 spellId) const;
     int32 DealHeal(Unit* pVictim, uint32 addhealth, SpellEntry const* spellProto, bool critical = false);
     void SendHealSpellLog(Unit const* pVictim, uint32 SpellID, uint32 Damage, bool critical = false) const;
