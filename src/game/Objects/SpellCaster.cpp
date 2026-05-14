@@ -673,13 +673,12 @@ void SpellCaster::SendSpellDamageResist(Unit const* target, SpellEntry const* sp
     SendMessageToSet(std::move(packet), true);
 }
 
-void SpellCaster::SendSpellOrDamageImmune(Unit const* target, uint32 spellId) const
+void SpellCaster::SendSpellOrDamageImmune(Unit const* target, SpellEntry const* spellEntry) const
 {
     auto packet = std::make_unique<WorldPackets::Spell::SpellOrDamageImmune>();
     packet->casterGuid = GetObjectGuid();
     packet->targetGuid = target->GetObjectGuid();
-    packet->spellEntry = sSpellMgr.GetSpellEntry(spellId);
-    packet->logFormat = 0;
+    packet->spellEntry = spellEntry;
     SendMessageToSet(std::move(packet), true);
 }
 
@@ -767,38 +766,38 @@ int32 SpellCaster::DealHeal(Unit* pVictim, uint32 addhealth, SpellEntry const* s
         pHealer = pUnit->GetOwner();
 
     if (IsPlayer() || pVictim->IsPlayer())
-        pHealer->SendHealSpellLog(pVictim, spellProto->Id, addhealth, critical);
+        pHealer->SendHealSpellLog(pVictim, spellProto, addhealth, critical);
 
     return gain;
 }
 
-void SpellCaster::SendHealSpellLog(Unit const* pVictim, uint32 SpellID, uint32 Damage, bool critical) const
+void SpellCaster::SendHealSpellLog(Unit const* pVictim, SpellEntry const* spellEntry, uint32 Damage, bool critical) const
 {
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
     auto packet = std::make_unique<WorldPackets::Spell::SpellHealLog>();
     packet->targetGuid = pVictim->GetObjectGuid();
     packet->healerGuid = GetObjectGuid();
-    packet->spellEntry = sSpellMgr.GetSpellEntry(SpellID);
+    packet->spellEntry = spellEntry;
     packet->healAmount = Damage;
     packet->isCritical = critical;
     SendMessageToSet(std::move(packet), true);
 #endif
 }
 
-void SpellCaster::EnergizeBySpell(Unit* pVictim, uint32 SpellID, uint32 Damage, Powers powertype)
+void SpellCaster::EnergizeBySpell(Unit* pVictim, SpellEntry const* spellEntry, uint32 Damage, Powers powertype)
 {
-    SendEnergizeSpellLog(pVictim, SpellID, Damage, powertype);
+    SendEnergizeSpellLog(pVictim, spellEntry, Damage, powertype);
     // needs to be called after sending spell log
     pVictim->ModifyPower(powertype, Damage);
 }
 
-void SpellCaster::SendEnergizeSpellLog(Unit const* pVictim, uint32 SpellID, uint32 Damage, Powers powertype) const
+void SpellCaster::SendEnergizeSpellLog(Unit const* pVictim, SpellEntry const* spellEntry, uint32 Damage, Powers powertype) const
 {
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
     auto packet = std::make_unique<WorldPackets::Spell::SpellEnergizeLog>();
     packet->targetGuid = pVictim->GetObjectGuid();
     packet->casterGuid = GetObjectGuid();
-    packet->spellEntry = sSpellMgr.GetSpellEntry(SpellID);
+    packet->spellEntry = spellEntry;
     packet->powerType = static_cast<uint32>(powertype);
     packet->amount = Damage;
     SendMessageToSet(std::move(packet), true);

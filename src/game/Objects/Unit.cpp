@@ -1723,7 +1723,7 @@ void Unit::TriggerDamageShields(Unit* pVictim)
             // ...or immuned
             if (IsImmuneToDamage(pSpellProto->GetSpellSchoolMask()))
             {
-                pVictim->SendSpellOrDamageImmune(this, pSpellProto->Id);
+                pVictim->SendSpellOrDamageImmune(this, pSpellProto);
                 continue;
             }
 
