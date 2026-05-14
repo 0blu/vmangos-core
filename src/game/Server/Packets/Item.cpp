@@ -1,5 +1,6 @@
 #include "Item.h"
 #include "ItemDefines.h"
+#include "SpellEntry.h"
 
 void WorldPackets::Item::QueryItem::ReadFromWorldPacket(WorldPacket& recv_data)
 {

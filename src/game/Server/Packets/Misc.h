@@ -9,6 +9,8 @@
 #include <vector>
 #include <array>
 
+class SpellEntry;
+
 namespace WorldPackets { namespace Misc
 {
     class WorldTeleport final : public ClientPacket
@@ -723,7 +725,7 @@ namespace WorldPackets { namespace Misc
         uint32 duration = 0;    // full timer duration in ms
         int32 scale = 0;        // rate of change (-1 = decreasing, 10 = increasing)
         bool paused = false;
-        uint32 spellId = 0;     // spell causing the timer (0 if no spell)
+        ::SpellEntry const* maybeSpellEntry = nullptr; // spell causing the timer (nullptr if no spell)
 
         explicit StartMirrorTimer() : ServerPacket(SMSG_START_MIRROR_TIMER) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;

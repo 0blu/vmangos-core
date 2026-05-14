@@ -1,5 +1,7 @@
 #include "Misc.h"
 
+#include "SpellEntry.h"
+
 void WorldPackets::Misc::WorldTeleport::ReadFromWorldPacket(WorldPacket& recv_data)
 {
     recv_data >> timeMs;
@@ -474,7 +476,7 @@ void WorldPackets::Misc::StartMirrorTimer::AppendBodyTo(ByteBuffer& buffer) cons
     buffer << duration;
     buffer << scale;
     buffer << paused;
-    buffer << spellId;
+    buffer << (maybeSpellEntry ? maybeSpellEntry->Id : 0u);
 }
 
 void WorldPackets::Misc::StopMirrorTimer::AppendBodyTo(ByteBuffer& buffer) const

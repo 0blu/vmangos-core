@@ -867,7 +867,7 @@ void Player::SetEnvironmentFlags(EnvironmentFlags flags, bool apply)
         m_mirrorTimers[MirrorTimer::ENVIRONMENTAL].SetScale((m_environmentFlags & ENVIRONMENT_MASK_LIQUID_HAZARD) ? -1 : 10);
 }
 
-void Player::SendMirrorTimerStart(uint32 type, uint32 remaining, uint32 duration, int32 scale, bool paused/* = false*/, uint32 spellId/* = 0*/)
+void Player::SendMirrorTimerStart(uint32 type, uint32 remaining, uint32 duration, int32 scale, bool paused/* = false*/, SpellEntry const* maybeSpellEntry/* = nullptr*/)
 {
     auto packet = std::make_unique<WorldPackets::Misc::StartMirrorTimer>();
     packet->timerType = type;
@@ -875,7 +875,7 @@ void Player::SendMirrorTimerStart(uint32 type, uint32 remaining, uint32 duration
     packet->duration = duration;
     packet->scale = scale;
     packet->paused = paused;
-    packet->spellId = spellId;
+    packet->maybeSpellEntry = maybeSpellEntry;
     GetSession()->SendPacket(std::move(packet));
 }
 
@@ -900,7 +900,7 @@ void Player::FreezeMirrorTimers(bool state)
 {
     for (auto& timer : m_mirrorTimers)
     {
-        if (!timer.GetSpellId())
+        if (!timer.GetMaybeSpellEntry())
             timer.SetFrozen(state);
     }
 }
@@ -920,7 +920,7 @@ void Player::SendMirrorTimers(bool forced/*= false*/)
         switch (status)
         {
             case MirrorTimer::FULL_UPDATE:
-                SendMirrorTimerStart(timer.GetType(), timer.GetRemaining(), timer.GetDuration(), timer.GetScale(), timer.IsFrozen(), timer.GetSpellId());
+                SendMirrorTimerStart(timer.GetType(), timer.GetRemaining(), timer.GetDuration(), timer.GetScale(), timer.IsFrozen(), timer.GetMaybeSpellEntry());
                 break;
             case MirrorTimer::STATUS_UPDATE:
                 if (!timer.IsActive())
@@ -929,7 +929,7 @@ void Player::SendMirrorTimers(bool forced/*= false*/)
                 {
                     // NOTE: Replaced with full resend due to clientside UI bug, details inside
                     // SendMirrorTimerPause(timer.GetType(), timer.IsFrozen());
-                    SendMirrorTimerStart(timer.GetType(), timer.GetRemaining(), timer.GetDuration(), timer.GetScale(), timer.IsFrozen(), timer.GetSpellId());
+                    SendMirrorTimerStart(timer.GetType(), timer.GetRemaining(), timer.GetDuration(), timer.GetScale(), timer.IsFrozen(), timer.GetMaybeSpellEntry());
                 }
                 break;
             default:
@@ -953,7 +953,7 @@ void Player::UpdateMirrorTimers(uint32 diff, bool send/* = true*/)
             {
                 if (active)
                 {
-                    if (timer.GetSpellId())
+                    if (timer.GetMaybeSpellEntry())
                     {
                         if (auto buff = GetMirrorTimerBuff(type))
                             m_mirrorTimers[type].SetRemaining(uint32(std::abs(buff->GetAuraDuration())));
@@ -967,7 +967,7 @@ void Player::UpdateMirrorTimers(uint32 diff, bool send/* = true*/)
                 else
                 {
                     if (auto buff = GetMirrorTimerBuff(type))
-                        m_mirrorTimers[type].Start(uint32(std::abs(buff->GetAuraDuration())), uint32(std::abs(buff->GetAuraMaxDuration())), buff->GetId());
+                        m_mirrorTimers[type].Start(uint32(std::abs(buff->GetAuraDuration())), uint32(std::abs(buff->GetAuraMaxDuration())), buff->GetSpellProto());
                     else
                         m_mirrorTimers[type].Start(GetMirrorTimerMaxDuration(type));
                 }
