@@ -31,16 +31,6 @@
 #endif
 #include <mysql.h>
 
-// my_bool declaration is removed in 8.0
-#if MYSQL_VERSION_ID >= 80000
-typedef char my_bool;
-#ifdef _MSC_VER
-#pragma message("You are using an incompatible mysql version!")
-#else
-#warning "You are using an incompatible mysql version!"
-#endif
-#endif
-
 //MySQL prepared statement class
 class MySqlPreparedStatement : public SqlPreparedStatement
 {
@@ -61,7 +51,7 @@ protected:
     //bind parameters
     void addParam(int nIndex, SqlStmtFieldData const& data);
 
-    static enum_field_types ToMySQLType(SqlStmtFieldData const& data, my_bool& bUnsigned);
+    static enum_field_types ToMySQLType(SqlStmtFieldData const& data, bool& bUnsigned);
 
 private:
     void RemoveBinds();

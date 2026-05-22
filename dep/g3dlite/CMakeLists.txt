@@ -66,7 +66,6 @@ target_sources(g3dlite
 target_include_directories(g3dlite
   PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/source
   PRIVATE ${CMAKE_SOURCE_DIR}/dep/include
-  PRIVATE ${CMAKE_SOURCE_DIR}/dep/src/libseh
   PUBLIC  ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
@@ -84,17 +83,5 @@ target_compile_options(g3dlite PRIVATE
   $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-w>
 )
 
-if(WIN32)
-  target_include_directories(g3dlite PRIVATE ${CMAKE_SOURCE_DIR}/dep/windows/include/zlib)
-  if(MINGW)
-    target_link_libraries(g3dlite zlib libseh)
-  else()
-    target_link_libraries(g3dlite zlib)
-  endif()
-else()
-  find_package(ZLIB REQUIRED)
-  if(ZLIB_FOUND)
-    target_include_directories(g3dlite PRIVATE ${ZLIB_INCLUDE_DIRS})
-    target_link_libraries(g3dlite ${ZLIB_LIBRARIES})
-  endif(ZLIB_FOUND)
-endif(WIN32)
+find_package(ZLIB REQUIRED)
+target_link_libraries(g3dlite PRIVATE ZLIB::ZLIB)

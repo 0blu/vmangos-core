@@ -22,12 +22,6 @@ include_directories(../../src/shared)
 include_directories(../../src/framework/)
 include_directories(${MYSQL_INCLUDE_DIR})
 
-if(WIN32)
-  include_directories(
-    ${CMAKE_SOURCE_DIR}/dep/windows/include
-  )
-endif()
-
 add_executable(RealmMerge RealmMerge.cpp)
 mangos_target_flags(RealmMerge)
 SET_TARGET_PROPERTIES (RealmMerge PROPERTIES FOLDER Tools)
@@ -38,8 +32,7 @@ target_link_libraries(RealmMerge
 
 if(WIN32)
   target_link_libraries(RealmMerge
-    optimized ${MYSQL_LIBRARY}
-    debug ${MYSQL_DEBUG_LIBRARY}
+    ${MYSQL_LIBRARY}
   )
 endif()
 

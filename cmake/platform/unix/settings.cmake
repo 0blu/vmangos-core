@@ -52,6 +52,10 @@ set(BUILD_ADDITIONAL_FLAGS "${BUILD_ADDITIONAL_FLAGS} -Wno-overloaded-virtual") 
 set(BUILD_ADDITIONAL_FLAGS "${BUILD_ADDITIONAL_FLAGS} -Wno-tautological-constant-out-of-range-compare") # Sometimes used for MAGNOS_ASSERT
 set(BUILD_ADDITIONAL_FLAGS "${BUILD_ADDITIONAL_FLAGS} -Wno-strict-aliasing") # dereferencing type-punned pointer will break strict-aliasing rules
 
+# Should fix | C++20 related
+set(BUILD_ADDITIONAL_FLAGS "${BUILD_ADDITIONAL_FLAGS} -Wno-deprecated-enum-enum-conversion") # operator '+': deprecated between enumerations of different types
+set(BUILD_ADDITIONAL_FLAGS "${BUILD_ADDITIONAL_FLAGS} -Wno-deprecated-anon-enum-enum-conversion") # arithmetic between different enumeration types
+
 if(BUILD_FOR_HOST_CPU)
   set(BUILD_ADDITIONAL_FLAGS "${BUILD_ADDITIONAL_FLAGS} -march=native")
 endif()
