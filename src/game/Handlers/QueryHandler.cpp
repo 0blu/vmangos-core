@@ -115,44 +115,10 @@ void WorldSession::HandleCreatureQueryOpcode(WorldPackets::Query::QueryCreature 
     CreatureInfo const* ci = sObjectMgr.GetCreatureTemplate(packet.entry);
     if (ci)
     {
-        std::string const* name = &ci->name;
-        std::string const* subName = &ci->subname;
-
-        int loc_idx = GetSessionDbLocaleIndex();
-        if (loc_idx >= 0)
-        {
-            CreatureLocale const* cl = sObjectMgr.GetCreatureLocale(packet.entry);
-            if (cl)
-            {
-                if (cl->Name.size() > size_t(loc_idx) && !cl->Name[loc_idx].empty())
-                    name = &cl->Name[loc_idx];
-                if (cl->SubName.size() > size_t(loc_idx) && !cl->SubName[loc_idx].empty())
-                    subName = &cl->SubName[loc_idx];
-            }
-        }
-
         auto response = std::make_unique<WorldPackets::Query::CreatureQueryResponse>();
-        response->entry = packet.entry;                     // creature entry
-        response->name = *name;
-        response->subName = *subName;
-#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_10_2
-        response->typeFlags = ci->GetTypeFlags();
-#else
-        response->typeFlags = ci->static_flags1;
-#endif
-        response->type = ci->type;
-        response->petFamily = ci->pet_family;               // CreatureFamily.dbc
-        response->rank = ci->rank;                          // Creature Rank (elite, boss, etc)
-#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_7_1
-        response->petSpellListId = ci->pet_spell_list_id;   // Id from CreatureSpellData.dbc
-#endif
-        response->displayId = ci->display_id[0];
-#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_4_2
-        response->isCivilian = ci->civilian;
-#endif
-#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_6_1
-        response->isRacialLeader = ci->racial_leader;
-#endif
+        response->sessionDbLocaleIndex = GetSessionDbLocaleIndex();
+        response->entry = packet.entry;
+        response->creatureInfo = ci;
         SendPacket(std::move(response));
     }
     else

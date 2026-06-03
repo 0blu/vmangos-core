@@ -1,4 +1,5 @@
 #include "Query.h"
+#include "ObjectMgr.h"
 
 void WorldPackets::Query::QueryPlayerName::ReadFromWorldPacket(WorldPacket& recv_data)
 {
@@ -63,34 +64,53 @@ void WorldPackets::Query::PageTextQueryResponse::AppendBodyTo(ByteBuffer& buffer
 
 void WorldPackets::Query::CreatureQueryResponse::AppendBodyTo(ByteBuffer& buffer) const
 {
-    if (notFound)
+    if (notFound || !creatureInfo)
     {
         buffer << (entry | 0x80000000);
         return;
     }
 
+    std::string const* name = &creatureInfo->name;
+    std::string const* subName = &creatureInfo->subname;
+
+    int const locIdx = sessionDbLocaleIndex;
+    if (locIdx >= 0)
+    {
+        if (CreatureLocale const* creatureLocale = sObjectMgr.GetCreatureLocale(entry))
+        {
+            if (creatureLocale->Name.size() > static_cast<size_t>(locIdx) && !creatureLocale->Name[locIdx].empty())
+                name = &creatureLocale->Name[locIdx];
+            if (creatureLocale->SubName.size() > static_cast<size_t>(locIdx) && !creatureLocale->SubName[locIdx].empty())
+                subName = &creatureLocale->SubName[locIdx];
+        }
+    }
+
     buffer << entry;
-    buffer << name;
+    buffer << *name;
     buffer << ""; // name2
     buffer << ""; // name3
     buffer << ""; // name4
-    buffer << subName;
-    buffer << typeFlags;
-    buffer << type;
-    buffer << petFamily;
-    buffer << rank;
+    buffer << *subName;
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_10_2
+    buffer << creatureInfo->GetTypeFlags();
+#else
+    buffer << creatureInfo->static_flags1;
+#endif
+    buffer << creatureInfo->type;
+    buffer << creatureInfo->pet_family;
+    buffer << creatureInfo->rank;
     // This field is reserved in the classic creature query response payload and clients expect it as 0.
     // Keeping it explicit preserves packet alignment with the legacy opcode layout.
     buffer << uint32(0);
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_7_1
-    buffer << petSpellListId;
+    buffer << creatureInfo->pet_spell_list_id;
 #endif
-    buffer << displayId;
+    buffer << creatureInfo->display_id[0];
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_4_2
-    buffer << isCivilian;
+    buffer << creatureInfo->civilian;
 #endif
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_6_1
-    buffer << isRacialLeader;
+    buffer << creatureInfo->racial_leader;
 #endif
 }
 

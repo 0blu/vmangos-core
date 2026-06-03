@@ -4,6 +4,8 @@
 #include "Packet.h"
 #include "ObjectGuid.h"
 
+struct CreatureInfo;
+
 namespace WorldPackets { namespace Query
 {
     class QueryPlayerName final : public ClientPacket
@@ -101,24 +103,10 @@ namespace WorldPackets { namespace Query
     class CreatureQueryResponse final : public ServerPacket
     {
     public:
+        int sessionDbLocaleIndex = -1;
         uint32 entry = 0;                 // queried creature entry
         bool notFound = false;            // whether queried entry was not found in templates
-        std::string name;
-        std::string subName;
-        uint32 typeFlags = 0;
-        uint32 type = 0;
-        uint32 petFamily = 0;
-        uint32 rank = 0;
-#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_7_1
-        uint32 petSpellListId = 0;
-#endif
-        uint32 displayId = 0;
-#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_4_2
-        bool isCivilian = false;
-#endif
-#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_6_1
-        bool isRacialLeader = false;
-#endif
+        CreatureInfo const* creatureInfo = nullptr;
 
         CreatureQueryResponse() : ServerPacket(SMSG_CREATURE_QUERY_RESPONSE) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;
