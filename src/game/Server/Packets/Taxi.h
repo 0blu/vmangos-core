@@ -79,12 +79,12 @@ namespace WorldPackets { namespace Taxi
     class ShowTaxiNodes final : public ServerPacket
     {
     public:
-        uint32 canLand = 1;
+        uint32 uiState = 1; // expected to be 1 to show the taxi route map window
         ObjectGuid flightmasterGuid;
         uint32 currentNode = 0;
         uint32 knownNodesMask[8] = {};
 
-        explicit ShowTaxiNodes() : ServerPacket(SMSG_SHOWTAXINODES) {}
+        ShowTaxiNodes() : ServerPacket(SMSG_SHOWTAXINODES) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
 

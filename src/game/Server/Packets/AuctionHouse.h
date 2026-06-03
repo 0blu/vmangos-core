@@ -153,7 +153,7 @@ namespace WorldPackets { namespace AuctionHouse
         ObjectGuid newBidderGuid;      // used by AUCTION_ERR_HIGHER_BID
         uint32 newBid = 0;             // used by AUCTION_ERR_HIGHER_BID
 
-        explicit AuctionCommandResult() : ServerPacket(SMSG_AUCTION_COMMAND_RESULT) {}
+        AuctionCommandResult() : ServerPacket(SMSG_AUCTION_COMMAND_RESULT) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
 }} // namespace WorldPackets::AuctionHouse

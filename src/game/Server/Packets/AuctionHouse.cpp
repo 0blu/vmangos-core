@@ -1,4 +1,5 @@
 #include "AuctionHouse.h"
+// Needed for AuctionAction/AuctionError enum constants used by AuctionCommandResult serialization.
 #include "SharedDefines.h"
 
 void WorldPackets::AuctionHouse::AuctionHello::ReadFromWorldPacket(WorldPacket& recv_data)

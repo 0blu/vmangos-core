@@ -138,7 +138,7 @@ namespace WorldPackets { namespace Mail
         uint32 itemGuidLow = 0;
         uint32 itemCount = 0;
 
-        explicit SendMailResult() : ServerPacket(SMSG_SEND_MAIL_RESULT) {}
+        SendMailResult() : ServerPacket(SMSG_SEND_MAIL_RESULT) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
 

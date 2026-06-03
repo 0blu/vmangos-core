@@ -129,7 +129,7 @@ namespace WorldPackets { namespace Character
         ObjectGuid renamedCharacterGuid;
         std::string newName;
 
-        explicit CharRenameResponse() : ServerPacket(SMSG_CHAR_RENAME) {}
+        CharRenameResponse() : ServerPacket(SMSG_CHAR_RENAME) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
 

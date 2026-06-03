@@ -50,7 +50,7 @@ void WorldPackets::Taxi::ActivateTaxiReply::AppendBodyTo(ByteBuffer& buffer) con
 
 void WorldPackets::Taxi::ShowTaxiNodes::AppendBodyTo(ByteBuffer& buffer) const
 {
-    buffer << canLand;
+    buffer << uiState;
     buffer << flightmasterGuid;
     buffer << currentNode;
     for (uint32 mask : knownNodesMask)

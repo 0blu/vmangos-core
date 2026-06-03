@@ -49,8 +49,8 @@ void WorldSession::SendMailResult(uint32 mailId, MailResponseType mailAction, Ma
     packet->mailAction = mailAction;
     packet->mailError = mailError;
     packet->equipError = equipError;
-    packet->itemGuidLow = item_guid; // item guid low
-    packet->itemCount = item_count;  // item count
+    packet->itemGuidLow = item_guid;
+    packet->itemCount = item_count;
     SendPacket(std::move(packet));
 }
 

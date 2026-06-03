@@ -120,13 +120,16 @@ namespace WorldPackets { namespace Query
         uint8 racialLeader = 0;
 #endif
 
-        explicit CreatureQueryResponse() : ServerPacket(SMSG_CREATURE_QUERY_RESPONSE) {}
+        CreatureQueryResponse() : ServerPacket(SMSG_CREATURE_QUERY_RESPONSE) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
 
     class GameObjectQueryResponse final : public ServerPacket
     {
     public:
+        static constexpr uint32 RawDataSize_1_12_1 = 24;
+        static constexpr uint32 RawDataSize_Legacy = 16;
+
         uint32 entryId = 0;               // queried gameobject entry
         bool notFound = false;            // whether queried entry was not found in templates
         uint32 type = 0;
@@ -135,9 +138,9 @@ namespace WorldPackets { namespace Query
 #if SUPPORTED_CLIENT_BUILD >= CLIENT_BUILD_1_12_1
         std::string icon;
 #endif
-        uint8 rawData[24] = {};
+        uint8 rawData[RawDataSize_1_12_1] = {};
 
-        explicit GameObjectQueryResponse() : ServerPacket(SMSG_GAMEOBJECT_QUERY_RESPONSE) {}
+        GameObjectQueryResponse() : ServerPacket(SMSG_GAMEOBJECT_QUERY_RESPONSE) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
 
@@ -147,12 +150,12 @@ namespace WorldPackets { namespace Query
         std::string maleText;
         std::string femaleText;
         uint32 language = 0;
-        uint32 emoteDelay0 = 0;
-        uint32 emote0 = 0;
         uint32 emoteDelay1 = 0;
         uint32 emote1 = 0;
         uint32 emoteDelay2 = 0;
         uint32 emote2 = 0;
+        uint32 emoteDelay3 = 0;
+        uint32 emote3 = 0;
     };
 
     class NpcTextUpdate final : public ServerPacket
@@ -161,7 +164,7 @@ namespace WorldPackets { namespace Query
         uint32 textId = 0;
         NpcTextOption options[8];
 
-        explicit NpcTextUpdate() : ServerPacket(SMSG_NPC_TEXT_UPDATE) {}
+        NpcTextUpdate() : ServerPacket(SMSG_NPC_TEXT_UPDATE) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
 

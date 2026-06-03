@@ -77,7 +77,9 @@ void WorldPackets::Query::CreatureQueryResponse::AppendBodyTo(ByteBuffer& buffer
     buffer << type;
     buffer << petFamily;
     buffer << rank;
-    buffer << uint32(0); // unknown
+    // This field is reserved in the classic creature query response payload and clients expect it as 0.
+    // Keeping it explicit preserves packet alignment with the legacy opcode layout.
+    buffer << uint32(0);
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_7_1
     buffer << petSpellListId;
 #endif
@@ -105,9 +107,11 @@ void WorldPackets::Query::GameObjectQueryResponse::AppendBodyTo(ByteBuffer& buff
     buffer << uint8(0) << uint8(0) << uint8(0); // name2, name3, name4
 #if SUPPORTED_CLIENT_BUILD >= CLIENT_BUILD_1_12_1
     buffer << icon;
-    buffer.append(rawData, 24); // these are read as int32
+    // GameObjectInfo stores this as raw bytes; the client interprets the same 24-byte segment as int32 fields.
+    buffer.append(rawData, RawDataSize_1_12_1);
 #else
-    buffer.append(rawData, 16); // these are read as int32
+    // Legacy clients consume the same blob format but only the first 16 bytes.
+    buffer.append(rawData, RawDataSize_Legacy);
 #endif
 }
 
@@ -120,12 +124,11 @@ void WorldPackets::Query::NpcTextUpdate::AppendBodyTo(ByteBuffer& buffer) const
         buffer << option.maleText;
         buffer << option.femaleText;
         buffer << option.language;
-        buffer << option.emoteDelay0;
-        buffer << option.emote0;
         buffer << option.emoteDelay1;
         buffer << option.emote1;
         buffer << option.emoteDelay2;
         buffer << option.emote2;
+        buffer << option.emoteDelay3;
+        buffer << option.emote3;
     }
 }
-

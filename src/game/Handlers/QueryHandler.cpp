@@ -211,23 +211,6 @@ void WorldSession::HandleGameObjectQueryOpcode(WorldPackets::Query::QueryGameObj
             }
         }
 
-        constexpr size_t fixedSize =
-            sizeof(uint32) + // entryID
-            sizeof(uint32) + // type
-            sizeof(uint32) + // displayId
-            sizeof(char) + // name
-            sizeof(char) + // name2
-            sizeof(char) + // name3
-            sizeof(char) + // name4
-#if SUPPORTED_CLIENT_BUILD >= CLIENT_BUILD_1_12_1
-            sizeof(char) + // name5
-            sizeof(uint32) * 24; // data
-#else
-            sizeof(uint32) * 16; // data
-#endif
-
-        size_t const nameLen = strlen(name);
-
         auto response = std::make_unique<WorldPackets::Query::GameObjectQueryResponse>();
         response->entryId = packet.entryID;
         response->type = info->type;
@@ -235,9 +218,9 @@ void WorldSession::HandleGameObjectQueryOpcode(WorldPackets::Query::QueryGameObj
         response->name = name;
 #if SUPPORTED_CLIENT_BUILD >= CLIENT_BUILD_1_12_1
         response->icon = info->icon;
-        memcpy(response->rawData, info->raw.data, 24);
+        memcpy(response->rawData, info->raw.data, WorldPackets::Query::GameObjectQueryResponse::RawDataSize_1_12_1);
 #else
-        memcpy(response->rawData, info->raw.data, 16);
+        memcpy(response->rawData, info->raw.data, WorldPackets::Query::GameObjectQueryResponse::RawDataSize_Legacy);
 #endif
         //data << float(info->size);                // [-ZERO] go size: not in Zero
         SendPacket(std::move(response));
@@ -342,12 +325,12 @@ void WorldSession::HandleNpcTextQueryOpcode(WorldPackets::Npc::NpcTextQuery cons
 
                 response->options[i].language = bct->languageId;
 
-                response->options[i].emoteDelay0 = bct->emoteDelay1;
-                response->options[i].emote0 = bct->emoteId1;
-                response->options[i].emoteDelay1 = bct->emoteDelay2;
-                response->options[i].emote1 = bct->emoteId2;
-                response->options[i].emoteDelay2 = bct->emoteDelay3;
-                response->options[i].emote2 = bct->emoteId3;
+                response->options[i].emoteDelay1 = bct->emoteDelay1;
+                response->options[i].emote1 = bct->emoteId1;
+                response->options[i].emoteDelay2 = bct->emoteDelay2;
+                response->options[i].emote2 = bct->emoteId2;
+                response->options[i].emoteDelay3 = bct->emoteDelay3;
+                response->options[i].emote3 = bct->emoteId3;
             }
             else
             {
