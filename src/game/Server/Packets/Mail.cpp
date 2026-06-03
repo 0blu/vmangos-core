@@ -88,7 +88,12 @@ void WorldPackets::Mail::SendMailResult::AppendBodyTo(ByteBuffer& buffer) const
     buffer << mailAction;
     buffer << mailError;
     if (mailError == MAIL_ERR_EQUIP_ERROR)
+    {
         buffer << equipError;
+    }
     else if (mailAction == MAIL_ITEM_TAKEN)
-        buffer << itemGuidLow << itemCount;
+    {
+        buffer << itemGuidLow;
+        buffer << itemCount;
+    }
 }

@@ -114,10 +114,10 @@ namespace WorldPackets { namespace Query
 #endif
         uint32 displayId = 0;
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_4_2
-        uint8 civilian = 0;
+        bool isCivilian = false;
 #endif
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_6_1
-        uint8 racialLeader = 0;
+        bool isRacialLeader = false;
 #endif
 
         CreatureQueryResponse() : ServerPacket(SMSG_CREATURE_QUERY_RESPONSE) {}

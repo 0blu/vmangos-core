@@ -65,13 +65,15 @@ void WorldPackets::Query::CreatureQueryResponse::AppendBodyTo(ByteBuffer& buffer
 {
     if (notFound)
     {
-        buffer << uint32(entry | 0x80000000);
+        buffer << (entry | 0x80000000);
         return;
     }
 
     buffer << entry;
     buffer << name;
-    buffer << uint8(0) << uint8(0) << uint8(0); // name2, name3, name4
+    buffer << ""; // name2
+    buffer << ""; // name3
+    buffer << ""; // name4
     buffer << subName;
     buffer << typeFlags;
     buffer << type;
@@ -85,10 +87,10 @@ void WorldPackets::Query::CreatureQueryResponse::AppendBodyTo(ByteBuffer& buffer
 #endif
     buffer << displayId;
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_4_2
-    buffer << civilian;
+    buffer << isCivilian;
 #endif
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_6_1
-    buffer << racialLeader;
+    buffer << isRacialLeader;
 #endif
 }
 
@@ -96,7 +98,7 @@ void WorldPackets::Query::GameObjectQueryResponse::AppendBodyTo(ByteBuffer& buff
 {
     if (notFound)
     {
-        buffer << uint32(entryId | 0x80000000);
+        buffer << (entryId | 0x80000000);
         return;
     }
 
@@ -104,7 +106,9 @@ void WorldPackets::Query::GameObjectQueryResponse::AppendBodyTo(ByteBuffer& buff
     buffer << type;
     buffer << displayId;
     buffer << name;
-    buffer << uint8(0) << uint8(0) << uint8(0); // name2, name3, name4
+    buffer << ""; // name2
+    buffer << ""; // name3
+    buffer << ""; // name4
 #if SUPPORTED_CLIENT_BUILD >= CLIENT_BUILD_1_12_1
     buffer << icon;
     // The client interprets this as 24 int32 values (96 bytes) on 1.12.1+.

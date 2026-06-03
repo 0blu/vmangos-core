@@ -148,10 +148,10 @@ void WorldSession::HandleCreatureQueryOpcode(WorldPackets::Query::QueryCreature 
 #endif
         response->displayId = ci->display_id[0];
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_4_2
-        response->civilian = ci->civilian;
+        response->isCivilian = ci->civilian;
 #endif
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_6_1
-        response->racialLeader = ci->racial_leader;
+        response->isRacialLeader = ci->racial_leader;
 #endif
         SendPacket(std::move(response));
     }
