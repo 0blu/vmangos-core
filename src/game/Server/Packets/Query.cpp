@@ -107,10 +107,10 @@ void WorldPackets::Query::GameObjectQueryResponse::AppendBodyTo(ByteBuffer& buff
     buffer << uint8(0) << uint8(0) << uint8(0); // name2, name3, name4
 #if SUPPORTED_CLIENT_BUILD >= CLIENT_BUILD_1_12_1
     buffer << icon;
-    // GameObjectInfo stores this as raw bytes; the client interprets the same 24-byte segment as int32 fields.
+    // The client interprets this as 24 int32 values (96 bytes) on 1.12.1+.
     buffer.append(rawData, RawDataSize_1_12_1);
 #else
-    // Legacy clients consume the same blob format but only the first 16 bytes.
+    // Legacy clients consume the same blob format but only the first 16 int32 values (64 bytes).
     buffer.append(rawData, RawDataSize_Legacy);
 #endif
 }

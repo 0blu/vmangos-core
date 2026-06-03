@@ -29,6 +29,7 @@
 #include "Player.h"
 #include "Path.h"
 #include "WaypointMovementGenerator.h"
+#include "Database/DBCStores.h"
 
 void WorldSession::HandleTaxiNodeStatusQueryOpcode(WorldPackets::Taxi::TaxiNodeStatusQuery const& packet)
 {
@@ -95,7 +96,7 @@ void WorldSession::SendTaxiMenu(Creature* unit)
     if (GetPlayer()->IsTaxiCheater())
     {
         for (uint32 i = 0; i < 8; ++i)
-            packet->knownNodesMask[i] = 0xFFFFFFFF;
+            packet->knownNodesMask[i] = sTaxiNodesMask[i];
     }
     else
     {

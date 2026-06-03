@@ -127,8 +127,8 @@ namespace WorldPackets { namespace Query
     class GameObjectQueryResponse final : public ServerPacket
     {
     public:
-        static constexpr uint32 RawDataSize_1_12_1 = 24;
-        static constexpr uint32 RawDataSize_Legacy = 16;
+        static constexpr uint32 RawDataSize_1_12_1 = 24 * sizeof(int32);
+        static constexpr uint32 RawDataSize_Legacy = 16 * sizeof(int32);
 
         uint32 entryId = 0;               // queried gameobject entry
         bool notFound = false;            // whether queried entry was not found in templates
