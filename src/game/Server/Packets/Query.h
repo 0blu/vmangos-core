@@ -98,6 +98,73 @@ namespace WorldPackets { namespace Query
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
 
+    class CreatureQueryResponse final : public ServerPacket
+    {
+    public:
+        uint32 entry = 0;                 // queried creature entry
+        bool notFound = false;            // whether queried entry was not found in templates
+        std::string name;
+        std::string subName;
+        uint32 typeFlags = 0;
+        uint32 type = 0;
+        uint32 petFamily = 0;
+        uint32 rank = 0;
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_7_1
+        uint32 petSpellListId = 0;
+#endif
+        uint32 displayId = 0;
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_4_2
+        uint8 civilian = 0;
+#endif
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_6_1
+        uint8 racialLeader = 0;
+#endif
+
+        explicit CreatureQueryResponse() : ServerPacket(SMSG_CREATURE_QUERY_RESPONSE) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class GameObjectQueryResponse final : public ServerPacket
+    {
+    public:
+        uint32 entryId = 0;               // queried gameobject entry
+        bool notFound = false;            // whether queried entry was not found in templates
+        uint32 type = 0;
+        uint32 displayId = 0;
+        std::string name;
+#if SUPPORTED_CLIENT_BUILD >= CLIENT_BUILD_1_12_1
+        std::string icon;
+#endif
+        uint8 rawData[24] = {};
+
+        explicit GameObjectQueryResponse() : ServerPacket(SMSG_GAMEOBJECT_QUERY_RESPONSE) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    struct NpcTextOption
+    {
+        float probability = 0.0f;
+        std::string maleText;
+        std::string femaleText;
+        uint32 language = 0;
+        uint32 emoteDelay0 = 0;
+        uint32 emote0 = 0;
+        uint32 emoteDelay1 = 0;
+        uint32 emote1 = 0;
+        uint32 emoteDelay2 = 0;
+        uint32 emote2 = 0;
+    };
+
+    class NpcTextUpdate final : public ServerPacket
+    {
+    public:
+        uint32 textId = 0;
+        NpcTextOption options[8];
+
+        explicit NpcTextUpdate() : ServerPacket(SMSG_NPC_TEXT_UPDATE) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
 }} // namespace WorldPackets::Query
 
 #endif // MANGOS_PACKETS_QUERY_H

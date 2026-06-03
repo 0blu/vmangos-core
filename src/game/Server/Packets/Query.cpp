@@ -61,4 +61,71 @@ void WorldPackets::Query::PageTextQueryResponse::AppendBodyTo(ByteBuffer& buffer
     buffer << nextPageId;
 }
 
+void WorldPackets::Query::CreatureQueryResponse::AppendBodyTo(ByteBuffer& buffer) const
+{
+    if (notFound)
+    {
+        buffer << uint32(entry | 0x80000000);
+        return;
+    }
+
+    buffer << entry;
+    buffer << name;
+    buffer << uint8(0) << uint8(0) << uint8(0); // name2, name3, name4
+    buffer << subName;
+    buffer << typeFlags;
+    buffer << type;
+    buffer << petFamily;
+    buffer << rank;
+    buffer << uint32(0); // unknown
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_7_1
+    buffer << petSpellListId;
+#endif
+    buffer << displayId;
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_4_2
+    buffer << civilian;
+#endif
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_6_1
+    buffer << racialLeader;
+#endif
+}
+
+void WorldPackets::Query::GameObjectQueryResponse::AppendBodyTo(ByteBuffer& buffer) const
+{
+    if (notFound)
+    {
+        buffer << uint32(entryId | 0x80000000);
+        return;
+    }
+
+    buffer << entryId;
+    buffer << type;
+    buffer << displayId;
+    buffer << name;
+    buffer << uint8(0) << uint8(0) << uint8(0); // name2, name3, name4
+#if SUPPORTED_CLIENT_BUILD >= CLIENT_BUILD_1_12_1
+    buffer << icon;
+    buffer.append(rawData, 24); // these are read as int32
+#else
+    buffer.append(rawData, 16); // these are read as int32
+#endif
+}
+
+void WorldPackets::Query::NpcTextUpdate::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << textId;
+    for (auto const& option : options)
+    {
+        buffer << option.probability;
+        buffer << option.maleText;
+        buffer << option.femaleText;
+        buffer << option.language;
+        buffer << option.emoteDelay0;
+        buffer << option.emote0;
+        buffer << option.emoteDelay1;
+        buffer << option.emote1;
+        buffer << option.emoteDelay2;
+        buffer << option.emote2;
+    }
+}
 

@@ -48,3 +48,11 @@ void WorldPackets::Taxi::ActivateTaxiReply::AppendBodyTo(ByteBuffer& buffer) con
     buffer << replyCode;
 }
 
+void WorldPackets::Taxi::ShowTaxiNodes::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << canLand;
+    buffer << flightmasterGuid;
+    buffer << currentNode;
+    for (uint32 mask : knownNodesMask)
+        buffer << mask;
+}
