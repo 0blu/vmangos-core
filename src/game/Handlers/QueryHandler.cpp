@@ -131,33 +131,6 @@ void WorldSession::HandleCreatureQueryOpcode(WorldPackets::Query::QueryCreature 
             }
         }
 
-        constexpr size_t fixedSize =
-            sizeof(uint32) // entry
-            + sizeof(char) // name
-            + sizeof(char) // name2
-            + sizeof(char) // name3
-            + sizeof(char) // name4
-            + sizeof(char) // subName
-            + sizeof(uint32) // type_flags
-            + sizeof(uint32) // type
-            + sizeof(uint32) // pet_family
-            + sizeof(uint32) // rank
-            + sizeof(uint32) // unknown
-#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_7_1
-            + sizeof(uint32) // pet_spell_list_id
-#endif
-            + sizeof(uint32)  // display_id
-#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_4_2
-            + sizeof(uint8)  // civilian
-#endif
-#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_6_1
-            + sizeof(uint8) // racial_leader
-#endif
-            ;
-
-        size_t const nameLen = name->size();
-        size_t const subNameLen = subName->size();
-
         auto response = std::make_unique<WorldPackets::Query::CreatureQueryResponse>();
         response->entry = packet.entry;                     // creature entry
         response->name = *name;
