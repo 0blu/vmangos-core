@@ -6,6 +6,7 @@
 #include "nonstd/expected.hpp"
 
 struct CreatureInfo;
+struct GameObjectInfo;
 
 namespace WorldPackets { namespace Query
 {
@@ -117,15 +118,8 @@ namespace WorldPackets { namespace Query
         static constexpr uint32 RawDataSize_1_12_1 = 24 * sizeof(int32);
         static constexpr uint32 RawDataSize_Legacy = 16 * sizeof(int32);
 
-        uint32 entryId = 0;               // queried gameobject entry
-        bool notFound = false;            // whether queried entry was not found in templates
-        uint32 type = 0;
-        uint32 displayId = 0;
-        std::string name;
-#if SUPPORTED_CLIENT_BUILD >= CLIENT_BUILD_1_12_1
-        std::string icon;
-#endif
-        uint8 rawData[RawDataSize_1_12_1] = {};
+        int sessionDbLocaleIndex = -1;
+        nonstd::expected<GameObjectInfo const*, uint32> maybeGameObjectInfo; // gameobject info OR if not found, just the entry id
 
         GameObjectQueryResponse() : ServerPacket(SMSG_GAMEOBJECT_QUERY_RESPONSE) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;

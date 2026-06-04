@@ -136,29 +136,9 @@ void WorldSession::HandleGameObjectQueryOpcode(WorldPackets::Query::QueryGameObj
     GameObjectInfo const* info = sObjectMgr.GetGameObjectTemplate(packet.entryID);
     if (info)
     {
-        char const* name = info->name.c_str();
-        int loc_idx = GetSessionDbLocaleIndex();
-        if (loc_idx >= 0)
-        {
-            GameObjectLocale const* gl = sObjectMgr.GetGameObjectLocale(packet.entryID);
-            if (gl)
-            {
-                if (gl->Name.size() > size_t(loc_idx) && !gl->Name[loc_idx].empty())
-                    name = gl->Name[loc_idx].c_str();
-            }
-        }
-
         auto response = std::make_unique<WorldPackets::Query::GameObjectQueryResponse>();
-        response->entryId = packet.entryID;
-        response->type = info->type;
-        response->displayId = info->displayId;
-        response->name = name;
-#if SUPPORTED_CLIENT_BUILD >= CLIENT_BUILD_1_12_1
-        response->icon = info->icon;
-        memcpy(response->rawData, info->raw.data, WorldPackets::Query::GameObjectQueryResponse::RawDataSize_1_12_1);
-#else
-        memcpy(response->rawData, info->raw.data, WorldPackets::Query::GameObjectQueryResponse::RawDataSize_Legacy);
-#endif
+        response->sessionDbLocaleIndex = GetSessionDbLocaleIndex();
+        response->maybeGameObjectInfo = info;
         //data << float(info->size);                // [-ZERO] go size: not in Zero
         SendPacket(std::move(response));
     }
@@ -167,8 +147,7 @@ void WorldSession::HandleGameObjectQueryOpcode(WorldPackets::Query::QueryGameObj
         sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "WORLD: CMSG_GAMEOBJECT_QUERY - Guid: %s Entry: %u Missing gameobject info!",
                   packet.guid.GetString().c_str(), packet.entryID);
         auto response = std::make_unique<WorldPackets::Query::GameObjectQueryResponse>();
-        response->entryId = packet.entryID;
-        response->notFound = true;
+        response->maybeGameObjectInfo = nonstd::make_unexpected(packet.entryID); // not found
         SendPacket(std::move(response));
     }
 }

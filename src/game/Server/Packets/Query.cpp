@@ -118,26 +118,40 @@ void WorldPackets::Query::CreatureQueryResponse::AppendBodyTo(ByteBuffer& buffer
 
 void WorldPackets::Query::GameObjectQueryResponse::AppendBodyTo(ByteBuffer& buffer) const
 {
-    if (notFound)
+    if (!maybeGameObjectInfo.has_value())
     {
-        buffer << (entryId | 0x80000000);
+        uint32 const entry = maybeGameObjectInfo.error();
+        buffer << (entry | 0x80000000);
         return;
     }
 
-    buffer << entryId;
-    buffer << type;
-    buffer << displayId;
-    buffer << name;
+    GameObjectInfo const* gameObjectInfo = maybeGameObjectInfo.value();
+    std::string const* name = &gameObjectInfo->name;
+
+    int const locIdx = sessionDbLocaleIndex;
+    if (locIdx >= 0)
+    {
+        if (GameObjectLocale const* gameObjectLocale = sObjectMgr.GetGameObjectLocale(gameObjectInfo->id))
+        {
+            if (gameObjectLocale->Name.size() > static_cast<size_t>(locIdx) && !gameObjectLocale->Name[locIdx].empty())
+                name = &gameObjectLocale->Name[locIdx];
+        }
+    }
+
+    buffer << gameObjectInfo->id;
+    buffer << gameObjectInfo->type;
+    buffer << gameObjectInfo->displayId;
+    buffer << *name;
     buffer << ""; // name2
     buffer << ""; // name3
     buffer << ""; // name4
 #if SUPPORTED_CLIENT_BUILD >= CLIENT_BUILD_1_12_1
-    buffer << icon;
+    buffer << gameObjectInfo->icon;
     // The client interprets this as 24 int32 values (96 bytes) on 1.12.1+.
-    buffer.append(rawData, RawDataSize_1_12_1);
+    buffer.append(reinterpret_cast<uint8 const*>(gameObjectInfo->raw.data), RawDataSize_1_12_1);
 #else
     // Legacy clients consume the same blob format but only the first 16 int32 values (64 bytes).
-    buffer.append(rawData, RawDataSize_Legacy);
+    buffer.append(reinterpret_cast<uint8 const*>(gameObjectInfo->raw.data), RawDataSize_Legacy);
 #endif
 }
 
