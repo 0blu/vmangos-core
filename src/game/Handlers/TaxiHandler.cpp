@@ -88,7 +88,6 @@ void WorldSession::SendTaxiMenu(Creature* unit)
     if (curloc == 0)
         return;
 
-    // Show the currently known taxi nodes to the player for this flightmaster.
     auto packet = std::make_unique<WorldPackets::Taxi::ShowTaxiNodes>();
     packet->flightmasterGuid = unit->GetObjectGuid();
     packet->currentNode = curloc;
