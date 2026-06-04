@@ -79,7 +79,6 @@ namespace WorldPackets { namespace Taxi
     class ShowTaxiNodes final : public ServerPacket
     {
     public:
-        uint32 uiState = 1; // expected to be 1 to show the taxi route map window
         ObjectGuid flightmasterGuid;
         uint32 currentNode = 0;
         uint32 knownNodesMask[8] = {};
