@@ -117,8 +117,7 @@ void WorldSession::HandleCreatureQueryOpcode(WorldPackets::Query::QueryCreature 
     {
         auto response = std::make_unique<WorldPackets::Query::CreatureQueryResponse>();
         response->sessionDbLocaleIndex = GetSessionDbLocaleIndex();
-        response->entry = packet.entry;
-        response->creatureInfo = ci;
+        response->maybeCreatureInfo = ci;
         SendPacket(std::move(response));
     }
     else
@@ -126,8 +125,7 @@ void WorldSession::HandleCreatureQueryOpcode(WorldPackets::Query::QueryCreature 
         sLog.Out(LOG_BASIC, LOG_LVL_DEBUG, "WORLD: CMSG_CREATURE_QUERY - Guid: %s Entry: %u NO CREATURE INFO!",
                   packet.guid.GetString().c_str(), packet.entry);
         auto response = std::make_unique<WorldPackets::Query::CreatureQueryResponse>();
-        response->entry = packet.entry;
-        response->notFound = true;
+        response->maybeCreatureInfo = nonstd::make_unexpected(packet.entry); // not found
         SendPacket(std::move(response));
     }
 }

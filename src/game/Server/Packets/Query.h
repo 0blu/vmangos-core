@@ -3,6 +3,7 @@
 
 #include "Packet.h"
 #include "ObjectGuid.h"
+#include "nonstd/expected.hpp"
 
 struct CreatureInfo;
 
@@ -104,9 +105,7 @@ namespace WorldPackets { namespace Query
     {
     public:
         int sessionDbLocaleIndex = -1;
-        uint32 entry = 0;                 // queried creature entry
-        bool notFound = false;            // whether queried entry was not found in templates
-        CreatureInfo const* creatureInfo = nullptr;
+        nonstd::expected<CreatureInfo const*, uint32> maybeCreatureInfo; // creature info OR if not found, just the entry id
 
         CreatureQueryResponse() : ServerPacket(SMSG_CREATURE_QUERY_RESPONSE) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;

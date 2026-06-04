@@ -64,19 +64,21 @@ void WorldPackets::Query::PageTextQueryResponse::AppendBodyTo(ByteBuffer& buffer
 
 void WorldPackets::Query::CreatureQueryResponse::AppendBodyTo(ByteBuffer& buffer) const
 {
-    if (notFound || !creatureInfo)
+    if (!maybeCreatureInfo.has_value())
     {
+        uint32 const entry = maybeCreatureInfo.error();
         buffer << (entry | 0x80000000);
         return;
     }
 
+    CreatureInfo const* creatureInfo = maybeCreatureInfo.value();
     std::string const* name = &creatureInfo->name;
     std::string const* subName = &creatureInfo->subname;
 
     int const locIdx = sessionDbLocaleIndex;
     if (locIdx >= 0)
     {
-        if (CreatureLocale const* creatureLocale = sObjectMgr.GetCreatureLocale(entry))
+        if (CreatureLocale const* creatureLocale = sObjectMgr.GetCreatureLocale(creatureInfo->entry))
         {
             if (creatureLocale->Name.size() > static_cast<size_t>(locIdx) && !creatureLocale->Name[locIdx].empty())
                 name = &creatureLocale->Name[locIdx];
@@ -85,7 +87,7 @@ void WorldPackets::Query::CreatureQueryResponse::AppendBodyTo(ByteBuffer& buffer
         }
     }
 
-    buffer << entry;
+    buffer << creatureInfo->entry;
     buffer << *name;
     buffer << ""; // name2
     buffer << ""; // name3
