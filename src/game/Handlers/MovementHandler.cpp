@@ -966,10 +966,9 @@ void WorldSession::HandleMoveNotActiveMoverOpcode(WorldPackets::Movement::MoveNo
 
 void WorldSession::HandleMountSpecialAnimOpcode(NullClientPacket const& /*packet*/)
 {
-    WorldPacket data(SMSG_MOUNTSPECIAL_ANIM, 8);
-    data << GetPlayer()->GetObjectGuid();
-
-    GetPlayer()->SendMovementMessageToSet(std::move(data), false);
+    auto packet = std::make_unique<WorldPackets::Movement::MountSpecialAnim>();
+    packet->mountedUnitGuid = GetPlayer()->GetObjectGuid();
+    GetPlayer()->SendMovementMessageToSet(std::move(packet), false);
 }
 
 void WorldSession::HandleSummonResponseOpcode(WorldPackets::Misc::SummonResponse const& packet)
