@@ -94,7 +94,7 @@ void WorldSession::SendTaxiMenu(Creature* unit)
     packet->currentNode = curloc;
 
     if (GetPlayer()->IsTaxiCheater())
-    {
+    { // player is able to use all taxi nodes
         for (uint32 i = 0; i < 8; ++i)
             packet->knownNodesMask[i] = sTaxiNodesMask[i];
     }
