@@ -106,7 +106,7 @@ namespace WorldPackets { namespace Query
     {
     public:
         int sessionDbLocaleIndex = -1;
-        nonstd::expected<CreatureInfo const*, uint32> maybeCreatureInfo; // creature info OR if not found, just the entry id
+        nonstd::expected<CreatureInfo const*, uint32> maybeCreatureInfo = nonstd::make_unexpected(uint32(0)); // creature info OR if not found, just the entry id
 
         CreatureQueryResponse() : ServerPacket(SMSG_CREATURE_QUERY_RESPONSE) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;
@@ -119,7 +119,7 @@ namespace WorldPackets { namespace Query
         static constexpr uint32 RawDataSize_Legacy = 16 * sizeof(int32);
 
         int sessionDbLocaleIndex = -1;
-        nonstd::expected<GameObjectInfo const*, uint32> maybeGameObjectInfo; // gameobject info OR if not found, just the entry id
+        nonstd::expected<GameObjectInfo const*, uint32> maybeGameObjectInfo = nonstd::make_unexpected(uint32(0)); // gameobject info OR if not found, just the entry id
 
         GameObjectQueryResponse() : ServerPacket(SMSG_GAMEOBJECT_QUERY_RESPONSE) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;
