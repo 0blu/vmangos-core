@@ -70,6 +70,12 @@ These control the version of Winsock used by G3D.
         #undef __MSVCRT_VERSION__
         #define __MSVCRT_VERSION__ 0x0601
     #endif
+    // WIN32_LEAN_AND_MEAN prevents windows.h from pulling in winscard.h →
+    // wtypes.h → rpcndr.h, which causes "reference to 'byte' is ambiguous"
+    // under MinGW64 with C++17 (clash between Windows' typedef and std::byte).
+    #ifndef WIN32_LEAN_AND_MEAN
+    #   define WIN32_LEAN_AND_MEAN
+    #endif
     #include <windows.h>
 #elif  defined(__FreeBSD__) || defined(__OpenBSD__)
     #define G3D_FREEBSD

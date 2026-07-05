@@ -30,6 +30,9 @@ elseif(MINGW) # Allows same flags as GCC
   set(BUILD_ADDITIONAL_FLAGS "${BUILD_ADDITIONAL_FLAGS} -Wno-tautological-constant-out-of-range-compare") # Sometimes used for MAGNOS_ASSERT
   set(BUILD_ADDITIONAL_FLAGS "${BUILD_ADDITIONAL_FLAGS} -Wno-strict-aliasing") # dereferencing type-punned pointer will break strict-aliasing rules
 
+  # Should fix | C++20 related
+  set(BUILD_ADDITIONAL_FLAGS "${BUILD_ADDITIONAL_FLAGS} -Wno-deprecated-enum-enum-conversion") # operator '+': deprecated between enumerations of different types
+
 
   set(MANGOS_C_FLAGS "${MANGOS_C_FLAGS} ${BUILD_ADDITIONAL_FLAGS}")
   set(MANGOS_CXX_FLAGS "${MANGOS_CXX_FLAGS} ${BUILD_ADDITIONAL_FLAGS}")

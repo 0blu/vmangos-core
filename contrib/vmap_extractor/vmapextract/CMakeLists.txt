@@ -22,15 +22,8 @@ add_executable(${EXECUTABLE_NAME} adtfile.cpp dbcfile.cpp gameobject_extract.cpp
 mangos_target_flags(${EXECUTABLE_NAME})
 SET_TARGET_PROPERTIES (${EXECUTABLE_NAME} PROPERTIES FOLDER Extractors)
 
-if(UNIX)
-  find_package(ZLIB REQUIRED)
-  if(ZLIB_FOUND)
-    include_directories(${ZLIB_INCLUDE_DIRS})
-    target_link_libraries(${EXECUTABLE_NAME} libmpq bz2 g3dlite shared ${ZLIB_LIBRARIES})
-  endif(ZLIB_FOUND)
-else()
-  target_link_libraries(${EXECUTABLE_NAME} libmpq bz2 g3dlite shared zlib)
-endif(UNIX)
+find_package(ZLIB REQUIRED)
+target_link_libraries(${EXECUTABLE_NAME} libmpq bz2 g3dlite shared ZLIB::ZLIB)
 
 install(TARGETS ${EXECUTABLE_NAME} DESTINATION ${BIN_DIR}/Extractors)
 if(WIN32 AND MSVC)

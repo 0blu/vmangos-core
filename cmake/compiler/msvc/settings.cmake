@@ -63,6 +63,10 @@ set(MSVC_DISABLED_WARNINGS "${MSVC_DISABLED_WARNINGS} /wd4946") # reinterpret_ca
 set(MSVC_DISABLED_WARNINGS "${MSVC_DISABLED_WARNINGS} /wd4702") # unreachable code TODO Inside Pet.cpp, I have no idea what is unreachable there
 set(MSVC_DISABLED_WARNINGS "${MSVC_DISABLED_WARNINGS} /wd4355") # 'this': used in base member initializer list
 
+# Should fix | C++20 related
+set(MSVC_DISABLED_WARNINGS "${MSVC_DISABLED_WARNINGS} /wd5054") # operator '+': deprecated between enumerations of different types
+set(MSVC_DISABLED_WARNINGS "${MSVC_DISABLED_WARNINGS} /wd5262") # implicit fall-through occurs here; are you missing a break statement? Use [[fallthrough]]
+
 set(MSVC_ADDITIONAL_FLAGS "${MSVC_ADDITIONAL_FLAGS} /Wall") # Enable all warnings
 
 # Legacy warnings:

@@ -4,9 +4,6 @@
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #undef WIN32_LEAN_AND_MEAN
-#if defined(__MINGW32__)
-#include <seh.h>
-#endif
 #elif defined(__linux__) || defined(__APPLE__) || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
 #include <pthread.h>
 #endif
@@ -29,13 +26,12 @@ std::thread IO::Multithreading::CreateThread(std::string const& name, std::funct
     });
 }
 
-void IO::Multithreading::RenameCurrentThread(std::string const& name)
+#if defined(WIN32) && !defined(__MINGW32__)
+// SEH must live in its own function — MSVC C2712 forbids __try in functions
+// that have C++ objects requiring stack unwinding (e.g. std::wstring).
+static void RenameCurrentThreadSEH(char const* name)
 {
-#if defined(WIN32)
-    // Windows part taken from https://stackoverflow.com/a/23899379
-    // SetThreadDescription is only supported on >= Win10, that's why we are using this approach
-
-    const DWORD MS_VC_EXCEPTION=0x406D1388;
+    const DWORD MS_VC_EXCEPTION = 0x406D1388;
 #pragma pack(push,8)
     typedef struct tagTHREADNAME_INFO
     {
@@ -48,29 +44,46 @@ void IO::Multithreading::RenameCurrentThread(std::string const& name)
 
     THREADNAME_INFO info;
     info.dwType = 0x1000;
-    info.szName = name.c_str();
+    info.szName = name;
     info.dwThreadID = GetCurrentThreadId();
     info.dwFlags = 0;
 
-#if defined(__MINGW32__)
-    // MinGW lacks SEH __try/__except syntax, so the libseh macros are used.
-    __seh_try
-    {
-        RaiseException(MS_VC_EXCEPTION, 0, sizeof(info) / sizeof(ULONG_PTR), (ULONG_PTR*)&info);
-    }
-    __seh_except(EXCEPTION_EXECUTE_HANDLER)
-    {
-    }
-    __seh_end_except
-#else
     __try
     {
-        RaiseException( MS_VC_EXCEPTION, 0, sizeof(info)/sizeof(ULONG_PTR), (ULONG_PTR*)&info );
+        RaiseException(MS_VC_EXCEPTION, 0, sizeof(info) / sizeof(ULONG_PTR), (ULONG_PTR*)&info);
     }
     __except(EXCEPTION_EXECUTE_HANDLER)
     {
     }
+}
 #endif
+
+void IO::Multithreading::RenameCurrentThread(std::string const& name)
+{
+#if defined(WIN32)
+    // Prefer SetThreadDescription (Win10+): stored in the OS, visible in any debugger and crash dumps.
+    // Load dynamically so the binary still runs on older Windows.
+    typedef HRESULT (WINAPI *PFN_SetThreadDescription)(HANDLE, PCWSTR);
+    static auto const pSetThreadDescription = reinterpret_cast<PFN_SetThreadDescription>(
+        reinterpret_cast<void*>(GetProcAddress(GetModuleHandleA("kernel32.dll"), "SetThreadDescription")));
+    if (pSetThreadDescription)
+    {
+        int const wlen = MultiByteToWideChar(CP_UTF8, 0, name.c_str(), -1, nullptr, 0);
+        if (wlen > 0)
+        {
+            std::wstring wname(wlen - 1, L'\0');
+            MultiByteToWideChar(CP_UTF8, 0, name.c_str(), -1, wname.data(), wlen);
+            pSetThreadDescription(GetCurrentThread(), wname.c_str());
+        }
+    }
+#if !defined(__MINGW32__)
+    else
+    {
+        // Fallback for pre-Win10: raise a named exception that Visual Studio's debugger intercepts.
+        // Thread naming is a debugging convenience only; skipping it has no runtime impact.
+        RenameCurrentThreadSEH(name.c_str());
+    }
+#endif // !defined(__MINGW32__)
 #elif defined(__linux__) || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
     ::pthread_setname_np(pthread_self(), name.c_str());
 #elif defined(__APPLE__)

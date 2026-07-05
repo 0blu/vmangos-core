@@ -131,14 +131,6 @@ class ByteBuffer
             return *this;
         }
 
-#if defined(__MINGW32__) && !defined(__MINGW64__)
-        ByteBuffer& operator<<(time_t value)
-        {
-            append<time_t>(value);
-            return *this;
-        }
-#endif
-
         // signed as in 2e complement
         ByteBuffer& operator<<(int8 value)
         {

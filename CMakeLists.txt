@@ -15,14 +15,26 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-# CMake policies
-cmake_minimum_required(VERSION 3.1...3.20)
+# For the `classic` branch we target Windows 7 SP1 x64 with VisualStudio 2019 >=16.11
+# - max C++20 support
+# - bundled with cmake 3.19 (technically Windows 7 supports even newer versions)
+cmake_minimum_required(VERSION 3.19 FATAL_ERROR)
 
-project(MaNGOS)
+project(vMaNGOS)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_CXX_EXTENSIONS OFF) # Disable non-standard C++ features
+
+# Ensure 64bit version
+if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
+  message(FATAL_ERROR "Please switch to x64 build. Current pointer size is '${CMAKE_SIZEOF_VOID_P}' but should be '8'")
+  return()
+endif()
+
+# Force static linking with vcpkg
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libraries" FORCE)
 
 # Allow `find_package()` to use `<PackageName>_ROOT` variable
 if(${CMAKE_VERSION} VERSION_GREATER "3.11")
@@ -42,15 +54,6 @@ if(BUILDING_IN_SOURCE)
 endif()
 
 find_package(Git)
-
-# Find out what system we use to include the needed libs
-if(WIN32)
-  if(PLATFORM MATCHES X86) # 32-bit
-    set(DEP_ARCH win32)
-  else() # 64-bit
-    set(DEP_ARCH x64)
-  endif()
-endif()
 
 # Set up the install-prefix
 if(CMAKE_INSTALL_PREFIX STREQUAL "/usr/local")
@@ -93,42 +96,20 @@ else()
   set(REQUIRES_LIBCURL OFF)
 endif()
 
-# Using the prepackages Windows dependencies from the repo
-if(WIN32)
-  set(MYSQL_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/dep/windows/include/mysql)
-  set(MYSQL_LIBRARY ${CMAKE_SOURCE_DIR}/dep/windows/lib/${DEP_ARCH}_release/libmySQL.lib)
-  set(MYSQL_DEBUG_LIBRARY ${CMAKE_SOURCE_DIR}/dep/windows/lib/${DEP_ARCH}_debug/libmySQL.lib)
-  set(OPENSSL_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/dep/windows/include/openssl)
-  set(OPENSSL_LIBRARIES ${CMAKE_SOURCE_DIR}/dep/windows/lib/${DEP_ARCH}_release/libeay32.lib)
-  set(OPENSSL_DEBUG_LIBRARIES ${CMAKE_SOURCE_DIR}/dep/windows/lib/${DEP_ARCH}_debug/libeay32.lib)
-  set(ZLIB_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/dep/windows/include/zlib)
-  if (REQUIRES_LIBCURL AND MSVC)
-    # MinGW falls through to find_package(CURL) below, which picks up
-    # libcurl from the toolchain environment (e.g., MSYS2).
-    set(CURL_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/dep/windows/optional_dependencies/curl/include)
-    set(CURL_LIBRARY     ${CMAKE_SOURCE_DIR}/dep/windows/optional_dependencies/curl/lib/libcurl.lib)
-  endif()
-endif()
+# Find packages via vcpkg
+find_package(OpenSSL REQUIRED)
+find_package(ZLIB REQUIRED)
 
-# *nix-specific packages
-if(UNIX)
-  find_package(MySQL REQUIRED)
-  find_package(OpenSSL REQUIRED)
-  find_package(ZLIB REQUIRED)
-endif()
+# MariaDB client library via vcpkg (lightweight, no Boost dependency).
+# Provides mysql.h / errmsg.h / mysqld_error.h as a drop-in replacement
+# for the MySQL C client, so the rest of the build continues to use the
+# MYSQL_* variable names below.
+find_package(unofficial-libmariadb CONFIG REQUIRED)
+get_target_property(MYSQL_INCLUDE_DIR unofficial::libmariadb INTERFACE_INCLUDE_DIRECTORIES)
+set(MYSQL_LIBRARY unofficial::libmariadb)
 
 if(REQUIRES_LIBCURL)
-  if(WIN32)
-    find_package(CURL) # No `REQUIRED`, since we want to print our own message.
-    if(NOT CURL_FOUND OR NOT CURL_VERSION_STRING)
-      message(FATAL_ERROR
-              "Your build options require CURL to be present, but it was not found.\n"
-              "You can find a script to automatically download CURL in dep/windows/optional_dependencies"
-      )
-    endif()
-  else()
-    find_package(CURL REQUIRED)
-  endif()
+  find_package(CURL REQUIRED)
 endif()
 
 # Add uninstall script and target
@@ -212,38 +193,6 @@ set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
 set(CMAKE_INSTALL_RPATH ${LIBS_DIR})
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
-if(WIN32)
-  install(
-    FILES
-      ${CMAKE_SOURCE_DIR}/dep/windows/lib/${DEP_ARCH}_release/libeay32.dll
-      ${CMAKE_SOURCE_DIR}/dep/windows/lib/${DEP_ARCH}_release/libmySQL.dll
-    DESTINATION ${LIBS_DIR}
-    CONFIGURATIONS Release
-  )
-  install(
-    FILES
-      ${CMAKE_SOURCE_DIR}/dep/windows/lib/${DEP_ARCH}_debug/libeay32.dll
-      ${CMAKE_SOURCE_DIR}/dep/windows/lib/${DEP_ARCH}_debug/libmySQL.dll
-    DESTINATION ${LIBS_DIR}
-    CONFIGURATIONS Debug
-  )
-  if(PLATFORM MATCHES X86)
-    # Copy dll's Windows needs
-    install(
-      FILES
-        ${CMAKE_SOURCE_DIR}/dep/windows/lib/win32_release/dbghelp.dll
-      DESTINATION ${LIBS_DIR}
-      CONFIGURATIONS Release
-    )
-    install(
-      FILES
-        ${CMAKE_SOURCE_DIR}/dep/windows/lib/win32_debug/dbghelp.dll
-      DESTINATION ${LIBS_DIR}
-      CONFIGURATIONS Debug
-    )
-  endif()
-endif()
-
 if(XCODE)
   if(PLATFORM MATCHES X86)
     set(CMAKE_OSX_ARCHITECTURES i386)
@@ -261,8 +210,7 @@ set(DEFINITIONS
 )
 
 if(WIN32)
-  set(DEFINITIONS ${DEFINITIONS} WIN32 _WIN32)
-  set(DEFINITIONS_RELEASE ${DEFINITIONS_RELEASE} _CRT_SECURE_NO_WARNINGS)
+  set(DEFINITIONS ${DEFINITIONS} WIN32 _WIN32 _CRT_SECURE_NO_WARNINGS)
 else()
   set(DEFINITIONS ${DEFINITIONS} SYSCONFDIR="${CONF_DIR}/")
 endif()

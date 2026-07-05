@@ -47,18 +47,8 @@ add_library(libmpq STATIC
 	${libMPQ_SRCS}
 )
 
-if(UNIX)
-  find_package(ZLIB REQUIRED)
-  if(ZLIB_FOUND)
-    include_directories(${ZLIB_INCLUDE_DIRS})
-    target_link_libraries(libmpq ${ZLIB_LIBRARIES})
-  endif(ZLIB_FOUND)
-else()
-  include_directories(${CMAKE_SOURCE_DIR}/dep/windows/include/zlib)
-  if(MINGW)
-    target_link_libraries(libmpq zlib)
-  endif()
-endif()
+find_package(ZLIB REQUIRED)
+target_link_libraries(libmpq PRIVATE ZLIB::ZLIB)
 
 SET_TARGET_PROPERTIES (libmpq PROPERTIES FOLDER "3rd Party")
 

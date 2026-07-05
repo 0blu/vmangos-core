@@ -576,15 +576,7 @@ include_directories(
   ${CMAKE_BINARY_DIR}
   ${CMAKE_BINARY_DIR}/src/shared
   ${MYSQL_INCLUDE_DIR}
-  ${OPENSSL_INCLUDE_DIR}
-  ${ZLIB_INCLUDE_DIRS}
 )
-
-if(WIN32)
-  include_directories(
-    ${CMAKE_SOURCE_DIR}/dep/windows/include
-  )
-endif()
 
 source_group("Object"
   REGULAR_EXPRESSION .*
