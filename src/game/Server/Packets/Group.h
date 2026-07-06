@@ -3,12 +3,12 @@
 
 #include "Packet.h"
 #include "ObjectGuid.h"
+#include "SpellAuraDefines.h"
 #include "nonstd/optional.hpp"
 
+#include <array>
 #include <string>
 #include <vector>
-
-class Player;
 
 namespace WorldPackets { namespace Group
 {
@@ -301,9 +301,44 @@ namespace WorldPackets { namespace Group
     class PartyMemberStats final : public ServerPacket
     {
     public:
-        ::Player const* player = nullptr;  // player to serialize stats for
-        uint32 updateMask = 0;             // group update mask
-        bool sendAllAuras = false;         // whether to send all auras or only updates
+        ObjectGuid playerGuid;
+        uint32 updateMask = 0;
+
+        // GROUP_UPDATE_FLAG_STATUS
+        uint8 memberStatus = 0;
+        // GROUP_UPDATE_FLAG_CUR_HP / MAX_HP
+        uint16 currentHp = 0;
+        uint16 maxHp = 0;
+        // GROUP_UPDATE_FLAG_POWER_TYPE / CUR_POWER / MAX_POWER
+        uint8  powerType = 0;
+        uint16 currentPower = 0;
+        uint16 maxPower = 0;
+        // GROUP_UPDATE_FLAG_LEVEL
+        uint16 level = 0;
+        // GROUP_UPDATE_FLAG_ZONE
+        uint16 zone = 0;
+        // GROUP_UPDATE_FLAG_POSITION
+        int16  posX = 0;
+        int16  posY = 0;
+        // GROUP_UPDATE_FLAG_AURAS: lower 32 bits of the aura application mask
+        uint32 positiveAurasMask = 0;
+        std::array<uint16, MAX_POSITIVE_AURAS> positiveAuraSpellIds{};
+        // GROUP_UPDATE_FLAG_AURAS_NEGATIVE: full 64-bit mask; bits [32,48) written to client
+        uint64 negativeAurasMask = 0;
+        std::array<uint16, MAX_AURAS - MAX_POSITIVE_AURAS> negativeAuraSpellIds{};
+        // GROUP_UPDATE_FLAG_PET_*
+        ObjectGuid  petGuid;
+        std::string petName;
+        uint16 petModelId = 0;
+        uint16 petCurrentHp = 0;
+        uint16 petMaxHp = 0;
+        uint8  petPowerType = 0;
+        uint16 petCurrentPower = 0;
+        uint16 petMaxPower = 0;
+        uint32 petPositiveAurasMask = 0;
+        std::array<uint16, MAX_POSITIVE_AURAS> petPositiveAuraSpellIds{};
+        uint64 petNegativeAurasMask = 0;
+        std::array<uint16, MAX_AURAS - MAX_POSITIVE_AURAS> petNegativeAuraSpellIds{};
 
         explicit PartyMemberStats() : ServerPacket(SMSG_PARTY_MEMBER_STATS) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;
@@ -313,9 +348,44 @@ namespace WorldPackets { namespace Group
     class PartyMemberStatsFull final : public ServerPacket
     {
     public:
-        ::Player const* player = nullptr;  // player to serialize stats for
-        uint32 updateMask = 0;             // group update mask
-        bool sendAllAuras = false;         // whether to send all auras or only updates
+        ObjectGuid playerGuid;
+        uint32 updateMask = 0;
+
+        // GROUP_UPDATE_FLAG_STATUS
+        uint8 memberStatus = 0;
+        // GROUP_UPDATE_FLAG_CUR_HP / MAX_HP
+        uint16 currentHp = 0;
+        uint16 maxHp = 0;
+        // GROUP_UPDATE_FLAG_POWER_TYPE / CUR_POWER / MAX_POWER
+        uint8  powerType = 0;
+        uint16 currentPower = 0;
+        uint16 maxPower = 0;
+        // GROUP_UPDATE_FLAG_LEVEL
+        uint16 level = 0;
+        // GROUP_UPDATE_FLAG_ZONE
+        uint16 zone = 0;
+        // GROUP_UPDATE_FLAG_POSITION
+        int16  posX = 0;
+        int16  posY = 0;
+        // GROUP_UPDATE_FLAG_AURAS: lower 32 bits of the aura application mask
+        uint32 positiveAurasMask = 0;
+        std::array<uint16, MAX_POSITIVE_AURAS> positiveAuraSpellIds{};
+        // GROUP_UPDATE_FLAG_AURAS_NEGATIVE: full 64-bit mask; bits [32,48) written to client
+        uint64 negativeAurasMask = 0;
+        std::array<uint16, MAX_AURAS - MAX_POSITIVE_AURAS> negativeAuraSpellIds{};
+        // GROUP_UPDATE_FLAG_PET_*
+        ObjectGuid  petGuid;
+        std::string petName;
+        uint16 petModelId = 0;
+        uint16 petCurrentHp = 0;
+        uint16 petMaxHp = 0;
+        uint8  petPowerType = 0;
+        uint16 petCurrentPower = 0;
+        uint16 petMaxPower = 0;
+        uint32 petPositiveAurasMask = 0;
+        std::array<uint16, MAX_POSITIVE_AURAS> petPositiveAuraSpellIds{};
+        uint64 petNegativeAurasMask = 0;
+        std::array<uint16, MAX_AURAS - MAX_POSITIVE_AURAS> petNegativeAuraSpellIds{};
 
         explicit PartyMemberStatsFull() : ServerPacket(SMSG_PARTY_MEMBER_STATS_FULL) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;
