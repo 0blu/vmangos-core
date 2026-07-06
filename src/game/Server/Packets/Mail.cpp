@@ -97,3 +97,47 @@ void WorldPackets::Mail::SendMailResult::AppendBodyTo(ByteBuffer& buffer) const
         buffer << itemCount;
     }
 }
+
+void WorldPackets::Mail::MailListResult::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << static_cast<uint8>(mails.size());
+    for (MailListEntry const& mail : mails)
+    {
+        buffer << mail.messageId;
+        buffer << mail.messageType;
+
+        switch (mail.messageType)
+        {
+            case MailMessageTypeNormal:
+                buffer << mail.senderGuid;
+                break;
+            case MailMessageTypeCreature:
+            case MailMessageTypeGameObject:
+            case MailMessageTypeAuction:
+                buffer << mail.senderEntry;
+                break;
+            case MailMessageTypeItem:
+                break;
+        }
+
+        buffer << mail.subject;
+        buffer << mail.itemTextId;
+        buffer << mail.packageId;
+        buffer << mail.stationeryId;
+        buffer << mail.attachedItem.itemEntry;
+        buffer << mail.attachedItem.permanentEnchantId;
+        buffer << mail.attachedItem.randomPropertyId;
+        buffer << mail.attachedItem.suffixFactor;
+        buffer << mail.attachedItem.count;
+        buffer << mail.attachedItem.spellCharges;
+        buffer << mail.attachedItem.maxDurability;
+        buffer << mail.attachedItem.durability;
+        buffer << mail.money;
+        buffer << mail.cashOnDelivery;
+        buffer << mail.checkedFlags;
+        buffer << mail.daysLeft;
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
+        buffer << mail.mailTemplateId;
+#endif
+    }
+}

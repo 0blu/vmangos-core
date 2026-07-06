@@ -179,6 +179,18 @@ namespace WorldPackets { namespace Petition
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
 
+    class PetitionShowSignaturesResponse final : public ServerPacket
+    {
+    public:
+        ObjectGuid itemGuid;               // charter item guid
+        ObjectGuid ownerGuid;              // petition owner guid
+        uint32 petitionGuid = 0;           // petition id
+        std::vector<ObjectGuid> signerGuids; // signer guids
+
+        explicit PetitionShowSignaturesResponse() : ServerPacket(SMSG_PETITION_SHOW_SIGNATURES) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
 }} // namespace WorldPackets::Petition
 
 #endif // MANGOS_PACKETS_PETITION_H

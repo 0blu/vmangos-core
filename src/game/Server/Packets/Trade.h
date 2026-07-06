@@ -3,7 +3,11 @@
 
 #include "Packet.h"
 #include "ObjectGuid.h"
-#include <vector>
+#include "TradeData.h"
+
+#include <array>
+
+struct ItemPrototype;
 
 namespace WorldPackets { namespace Trade
 {
@@ -67,6 +71,35 @@ namespace WorldPackets { namespace Trade
         uint8 slot = 0;
 
         explicit TradeStatus() : ServerPacket(SMSG_TRADE_STATUS) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    struct TradeStatusExtendedItem
+    {
+        ItemPrototype const* itemTemplate = nullptr;
+        uint32 stackCount = 0;
+        uint32 isWrapped = 0;
+        ObjectGuid giftCreatorGuid;
+        uint32 enchantmentId = 0;
+        ObjectGuid creatorGuid;
+        uint32 spellCharges = 0;
+        uint32 itemSuffixFactor = 0;
+        uint32 itemRandomPropertyId = 0;
+        uint32 maxDurability = 0;
+        uint32 durability = 0;
+    };
+
+    class TradeStatusExtended final : public ServerPacket
+    {
+    public:
+        uint8 traderState = 0;             // 1 = trader window, 0 = own window
+        uint32 tradeSlotCount = 0;         // trade slot count
+        uint32 displayedTradeSlotCount = 0; // duplicate trade slot count field
+        uint32 traderMoney = 0;            // offered money
+        uint32 spellId = 0;                // spell cast on the traded item
+        std::array<TradeStatusExtendedItem, TRADE_SLOT_COUNT> items;
+
+        explicit TradeStatusExtended() : ServerPacket(SMSG_TRADE_STATUS_EXTENDED) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
 

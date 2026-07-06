@@ -55,46 +55,36 @@ void WorldSession::SendUpdateTrade(bool trader_state /*= true*/)
 {
     TradeData* view_trade = trader_state ? _player->GetTradeData()->GetTraderData() : _player->GetTradeData();
 
-    WorldPacket data(SMSG_TRADE_STATUS_EXTENDED, (100));    // guess size
-    data << uint8(trader_state ? 1 : 0);                    // send trader or own trade windows state (last need for proper show spell apply to non-trade slot)
-    data << uint32(TRADE_SLOT_COUNT);                       // trade slots count/number?, = next field in most cases
-    data << uint32(TRADE_SLOT_COUNT);                       // trade slots count/number?, = prev field in most cases
-    data << uint32(view_trade->GetMoney());                 // trader gold
-    data << uint32(view_trade->GetSpell());                 // spell casted on lowest slot item
+    auto packet = std::make_unique<WorldPackets::Trade::TradeStatusExtended>();
+    packet->traderState = trader_state ? 1 : 0;             // send trader or own trade windows state (last need for proper show spell apply to non-trade slot)
+    packet->tradeSlotCount = TRADE_SLOT_COUNT;              // trade slots count/number?, = next field in most cases
+    packet->displayedTradeSlotCount = TRADE_SLOT_COUNT;     // trade slots count/number?, = prev field in most cases
+    packet->traderMoney = view_trade->GetMoney();           // trader gold
+    packet->spellId = view_trade->GetSpell();               // spell casted on lowest slot item
 
     for (uint8 i = 0; i < TRADE_SLOT_COUNT; ++i)
     {
-        data << uint8(i);                                   // trade slot number, if not specified, then end of packet
-
-        if (Item* item = view_trade->GetItem(TradeSlots(i)))
+        if (Item const* item = view_trade->GetItem(static_cast<TradeSlots>(i)))
         {
-            data << uint32(item->GetProto()->ItemId);       // entry
-            data << uint32(item->GetProto()->DisplayInfoID);// display id
-            data << uint32(item->GetCount());               // stack count
+            WorldPackets::Trade::TradeStatusExtendedItem& packetItem = packet->items[i];
+            packetItem.itemTemplate = item->GetProto();
+            packetItem.stackCount = item->GetCount();
 
-            // wrapped: hide stats but show giftcreator name
-            data << uint32(item->HasFlag(ITEM_FIELD_FLAGS, ITEM_DYNFLAG_WRAPPED) ? 1 : 0);
-            data << item->GetGuidValue(ITEM_FIELD_GIFTCREATOR);
+            // wrapped: hide stats but show giftCreator name
+            packetItem.isWrapped = item->HasFlag(ITEM_FIELD_FLAGS, ITEM_DYNFLAG_WRAPPED) ? 1 : 0;
+            packetItem.giftCreatorGuid = item->GetGuidValue(ITEM_FIELD_GIFTCREATOR);
 
-            data << uint32(item->GetEnchantmentId(PERM_ENCHANTMENT_SLOT));
-            data << item->GetGuidValue(ITEM_FIELD_CREATOR);
-            data << uint32(item->GetSpellCharges());        // charges
-            data << uint32(item->GetItemSuffixFactor());    // SuffixFactor
-            data << uint32(item->GetItemRandomPropertyId());// random properties id
-            data << uint32(item->GetProto()->LockID);       // lock id
-            // max durability
-            data << uint32(item->GetUInt32Value(ITEM_FIELD_MAXDURABILITY));
-            // durability
-            data << uint32(item->GetUInt32Value(ITEM_FIELD_DURABILITY));
-        }
-        else
-        {
-            for (uint8 j = 0; j < 15; ++j)
-                data << uint32(0);
+            packetItem.enchantmentId = item->GetEnchantmentId(PERM_ENCHANTMENT_SLOT);
+            packetItem.creatorGuid = item->GetGuidValue(ITEM_FIELD_CREATOR);
+            packetItem.spellCharges = item->GetSpellCharges();
+            packetItem.itemSuffixFactor = item->GetItemSuffixFactor();
+            packetItem.itemRandomPropertyId = item->GetItemRandomPropertyId();
+            packetItem.maxDurability = item->GetUInt32Value(ITEM_FIELD_MAXDURABILITY);
+            packetItem.durability = item->GetUInt32Value(ITEM_FIELD_DURABILITY);
         }
     }
 
-    SendPacket(&data);
+    SendPacket(std::move(packet));
 }
 
 //==============================================================

@@ -157,15 +157,14 @@ void WorldSession::HandlePetitionShowSignOpcode(WorldPackets::Petition::Petition
 
     uint8 signs = petition->GetSignatureCount();
 
-    WorldPacket data(SMSG_PETITION_SHOW_SIGNATURES, (8 + 8 + 4 + 1 + signs * 12));
-    data << packet.itemGuid;                        // item guid
-    data << _player->GetObjectGuid();               // owner guid
-    data << petitionGuid;                           // petition guid
-    data << signs;                                  // sign's count
-
-    petition->BuildSignatureData(data);
-
-    SendPacket(&data);
+    auto response = std::make_unique<WorldPackets::Petition::PetitionShowSignaturesResponse>();
+    response->itemGuid = packet.itemGuid;           // item guid
+    response->ownerGuid = _player->GetObjectGuid(); // owner guid
+    response->petitionGuid = petitionGuid;          // petition guid
+    response->signerGuids.reserve(signs);
+    for (PetitionSignature* signature : petition->GetSignatureList())
+        response->signerGuids.push_back(signature->GetSignatureGuid());
+    SendPacket(std::move(response));
 }
 
 void WorldSession::HandlePetitionQueryOpcode(WorldPackets::Petition::QueryPetition const& packet)
@@ -387,14 +386,14 @@ void WorldSession::HandleOfferPetitionOpcode(WorldPackets::Petition::OfferPetiti
     uint8 signs = petition->GetSignatureCount();
 
     // Send response
-    WorldPacket data(SMSG_PETITION_SHOW_SIGNATURES, (8 + 8 + 4 + 1 + signs * 12));
-    data << charter->GetObjectGuid();                       // item guid
-    data << _player->GetObjectGuid();                       // owner guid
-    data << uint32(petitionGuid);                           // petition guid
-    data << uint8(signs);                                   // sign's count
-
-    petition->BuildSignatureData(data);
-    player->GetSession()->SendPacket(&data);
+    auto response = std::make_unique<WorldPackets::Petition::PetitionShowSignaturesResponse>();
+    response->itemGuid = charter->GetObjectGuid();          // item guid
+    response->ownerGuid = _player->GetObjectGuid();         // owner guid
+    response->petitionGuid = petitionGuid;                  // petition guid
+    response->signerGuids.reserve(signs);
+    for (PetitionSignature const* signature : petition->GetSignatureList())
+        response->signerGuids.push_back(signature->GetSignatureGuid());
+    player->GetSession()->SendPacket(std::move(response));
 }
 
 void WorldSession::HandleTurnInPetitionOpcode(WorldPackets::Petition::TurnInPetition const& packet)

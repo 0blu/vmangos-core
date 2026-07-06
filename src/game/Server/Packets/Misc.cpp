@@ -291,6 +291,37 @@ void WorldPackets::Misc::WhoisResponse::AppendBodyTo(ByteBuffer& buffer) const
     buffer << message;
 }
 
+void WorldPackets::Misc::AreaTriggerMessage::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << uint32(message.size() + 1);
+    buffer << message;
+}
+
+void WorldPackets::Misc::WhoResponse::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << displayedCount;
+    buffer << onlineCount;
+    for (WhoEntry const& entry : entries)
+    {
+        buffer << entry.playerName;
+        buffer << entry.guildName;
+        buffer << entry.level;
+        buffer << entry.classId;
+        buffer << entry.raceId;
+        buffer << entry.zoneId;
+#if SUPPORTED_CLIENT_BUILD <= CLIENT_BUILD_1_8_4
+        buffer << entry.partyStatus;
+#endif
+    }
+}
+
+void WorldPackets::Misc::AuthResponse::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << result;
+    if (result == AUTH_WAIT_QUEUE)
+        buffer << queuePosition;
+}
+
 void WorldPackets::Misc::UpdateAccountDataResponse::AppendBodyTo(ByteBuffer& buffer) const
 {
     buffer << type;
@@ -428,6 +459,18 @@ void WorldPackets::Misc::PlaySound::AppendBodyTo(ByteBuffer& buffer) const
 void WorldPackets::Misc::Notification::AppendBodyTo(ByteBuffer& buffer) const
 {
     buffer << message;
+}
+
+void WorldPackets::Misc::AccountDataMd5::AppendBodyTo(ByteBuffer& buffer) const
+{
+    for (std::array<uint8, 16> const& hash : hashes)
+        buffer.append(hash.data(), hash.size());
+}
+
+void WorldPackets::Misc::TutorialFlags::AppendBodyTo(ByteBuffer& buffer) const
+{
+    for (uint32 tutorial : tutorialData)
+        buffer << tutorial;
 }
 
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4

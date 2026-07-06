@@ -133,3 +133,25 @@ void WorldPackets::Npc::BinderConfirm::AppendBodyTo(ByteBuffer& buffer) const
     buffer << binderGuid;
 }
 #endif
+
+void WorldPackets::Npc::TrainerListResponse::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << trainerGuid;
+    buffer << trainerType;
+    buffer << uint32(spells.size());
+    for (TrainerListSpell const& spell : spells)
+    {
+        buffer << spell.spellId;
+        buffer << spell.state;
+        buffer << spell.spellCost;
+        buffer << spell.canLearnPrimaryProfessionFirstRank;
+        buffer << spell.primaryProfessionFirstRank;
+        buffer << spell.requiredLevel;
+        buffer << spell.requiredSkill;
+        buffer << spell.requiredSkillValue;
+        buffer << spell.requiredSpellId1;
+        buffer << spell.requiredSpellId2;
+        buffer << spell.reserved;
+    }
+    buffer << greeting;
+}

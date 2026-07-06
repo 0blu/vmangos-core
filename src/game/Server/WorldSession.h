@@ -373,7 +373,7 @@ class WorldSession
         void SendNotification(int32 string_id, ...);
         void SendPetNameInvalid(uint32 error, std::string const& name);
         void SendPartyResult(PartyOperation operation, std::string const& memberName, PartyResult res);
-        void SendAreaTriggerMessage(char const* Text, ...) ATTR_PRINTF(2, 3);
+        void SendAreaTriggerMessage(char const* text, ...) ATTR_PRINTF(2, 3);
         void SendQueryTimeResponse();
 
         // Handle the authentication waiting queue (to be completed)

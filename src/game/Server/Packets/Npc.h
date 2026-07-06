@@ -8,6 +8,8 @@
 
 namespace WorldPackets { namespace Npc
 {
+    struct TrainerSpell;
+
     class GossipHello final : public ClientPacket
     {
     public:
@@ -228,6 +230,33 @@ namespace WorldPackets { namespace Npc
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
 #endif
+
+    struct TrainerListSpell
+    {
+        uint32 spellId = 0;                // trainer spell id
+        uint8 state = 0;                   // trainer spell state
+        uint32 spellCost = 0;              // trainer spell cost
+        uint32 canLearnPrimaryProfessionFirstRank = 0; // first rank learn flag
+        uint32 primaryProfessionFirstRank = 0; // learn confirmation flag
+        uint8 requiredLevel = 0;           // required level
+        uint32 requiredSkill = 0;          // required skill
+        uint32 requiredSkillValue = 0;     // required skill value
+        uint32 requiredSpellId1 = 0;       // first prerequisite spell id
+        uint32 requiredSpellId2 = 0;       // second prerequisite spell id
+        uint32 reserved = 0;               // trailing zero field
+    };
+
+    class TrainerListResponse final : public ServerPacket
+    {
+    public:
+        ObjectGuid trainerGuid;            // trainer guid
+        uint32 trainerType = 0;            // trainer type
+        std::vector<TrainerListSpell> spells;
+        std::string greeting;              // trainer greeting
+
+        explicit TrainerListResponse() : ServerPacket(SMSG_TRAINER_LIST) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
 
 }} // namespace WorldPackets::Npc
 
