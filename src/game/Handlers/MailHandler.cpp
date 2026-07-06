@@ -57,9 +57,9 @@ void WorldSession::SendMailResult(uint32 mailId, MailResponseType mailAction, Ma
 void WorldSession::SendNewMail()
 {
     // deliver undelivered mail
-    WorldPacket data(SMSG_RECEIVED_MAIL, 4);
-    data << (uint32)0;
-    SendPacket(&data);
+    auto packet = std::make_unique<WorldPackets::Mail::ReceivedMail>();
+    packet->notifyDelay = 0;
+    SendPacket(std::move(packet));
 }
 
 bool WorldSession::CheckMailBox(ObjectGuid guid)
@@ -725,33 +725,8 @@ void WorldSession::HandleGetMailList(WorldPackets::Mail::GetMailList const& pack
     MasterPlayer* pl = GetMasterPlayer();
     ASSERT(pl);
 
-    constexpr uint32 averageSizePerMail =
-        sizeof(uint32) /*Message Id*/ +
-        sizeof(uint8) /*Message Type*/ +
-        sizeof(uint64) /*Sender Guid*/ +
-        32 /*Subject (max 64)*/ +
-        sizeof(uint32) /*Item Text Id*/ +
-        sizeof(uint32) /*Unknown*/ +
-        sizeof(uint32) /*Stationery*/ +
-        sizeof(uint32) /*Item Entry*/ +
-        sizeof(uint32) /*Item Enchantment Id*/ +
-        sizeof(uint32) /*Item Random Property Id*/ +
-        sizeof(uint32) /*Item Suffix Factor*/ +
-        sizeof(uint8) /*Item Count*/ +
-        sizeof(uint32) /*Item Spell Charges*/ +
-        sizeof(uint32) /*Item Max Durability*/ +
-        sizeof(uint32) /*Item Durability*/ +
-        sizeof(uint32) /*Money*/ +
-        sizeof(uint32) /*Cod*/ +
-        sizeof(uint32) /*Checked*/ +
-        sizeof(float) /*Expire Time*/
-#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
-        + sizeof(uint32) /*Mail Template Id*/
-#endif
-        ;
-
-    WorldPacket data(SMSG_MAIL_LIST_RESULT, 1 + std::min(pl->GetMailSize(), 253u) * averageSizePerMail);
-    data << uint8(0);                                       // mail's count
+    auto response = std::make_unique<WorldPackets::Mail::MailListResult>();
+    response->mails.reserve(std::min(pl->GetMailSize(), 253u));
     time_t cur_time = time(nullptr);
 
     uint32 mailsCount = 0;                                  // real send to client mails amount
@@ -765,61 +740,57 @@ void WorldSession::HandleGetMailList(WorldPackets::Mail::GetMailList const& pack
         if ((*itr)->state == MAIL_STATE_DELETED || cur_time < (*itr)->deliver_time || cur_time > (*itr)->expire_time)
             continue;
 
-        data << uint32((*itr)->messageID);                  // Message ID
-        data << uint8((*itr)->messageType);                 // Message Type
+        WorldPackets::Mail::MailListEntry mail;
+        mail.messageId = (*itr)->messageID;                 // Message ID
+        mail.messageType = (*itr)->messageType;             // Message Type
 
         switch ((*itr)->messageType)
         {
             case MAIL_NORMAL:                               // sender guid
-                data << ObjectGuid(HIGHGUID_PLAYER, (*itr)->sender);
+                mail.senderGuid = ObjectGuid(HIGHGUID_PLAYER, (*itr)->sender);
                 break;
             case MAIL_CREATURE:
             case MAIL_GAMEOBJECT:
             case MAIL_AUCTION:
-                data << (uint32)(*itr)->sender;             // creature/gameobject entry, auction id
+                mail.senderEntry = (*itr)->sender;          // creature/gameobject entry, auction id
                 break;
             case MAIL_ITEM:                                 // item entry (?) sender = "Unknown", NYI
                 break;
         }
 
-        data << (*itr)->subject;                            // Subject string - once 00, when mail type = 3
-        data << uint32((*itr)->itemTextId);                 // sure about this
-        data << uint32(0);                                  // package (Package.dbc)
-        data << uint32((*itr)->stationery);                 // stationery (Stationery.dbc)
+        mail.subject = (*itr)->subject;                     // Subject string - once 00, when mail type = 3
+        mail.itemTextId = (*itr)->itemTextId;               // sure about this
+        mail.packageId = 0;                                 // package (Package.dbc)
+        mail.stationeryId = (*itr)->stationery;             // stationery (Stationery.dbc)
 
         // 1.12.1 can have only single item
         Item *item = !(*itr)->items.empty() ? pl->GetMItem((*itr)->items[0].itemGuid) : nullptr;
 
         if (item)
         {
-            data << uint32(item->GetEntry());
-            data << uint32(item->GetEnchantmentId((EnchantmentSlot)PERM_ENCHANTMENT_SLOT)); // permanent enchantment
-            data << uint32(item->GetItemRandomPropertyId());                                // can be negative
-            data << uint32(item->GetItemSuffixFactor());                                    // unk
-            data << uint8(item->GetCount());                                                // stack count
-            data << uint32(item->GetSpellCharges());                                        // charges
-            data << uint32(item->GetUInt32Value(ITEM_FIELD_MAXDURABILITY));                 // durability max
-            data << uint32(item->GetUInt32Value(ITEM_FIELD_DURABILITY));                    // durability current
+            mail.attachedItem.itemEntry = item->GetEntry();
+            mail.attachedItem.permanentEnchantId = item->GetEnchantmentId((EnchantmentSlot)PERM_ENCHANTMENT_SLOT); // permanent enchantment
+            mail.attachedItem.randomPropertyId = item->GetItemRandomPropertyId();                                  // can be negative
+            mail.attachedItem.suffixFactor = item->GetItemSuffixFactor();                                          // unk
+            mail.attachedItem.count = item->GetCount();                                                            // stack count
+            mail.attachedItem.spellCharges = item->GetSpellCharges();                                              // charges
+            mail.attachedItem.maxDurability = item->GetUInt32Value(ITEM_FIELD_MAXDURABILITY);                     // durability max
+            mail.attachedItem.durability = item->GetUInt32Value(ITEM_FIELD_DURABILITY);                           // durability current
         }
-        else
-        {
-            data << uint32(0) << uint32(0) << uint32(0) << uint32(0) << uint8(0) << uint32(0) << uint32(0) << uint32(0);
-        }
-
-        data << uint32((*itr)->money);                      // copper
-        data << uint32((*itr)->COD);                        // Cash on delivery
-        data << uint32((*itr)->checked);                    // flags
-        data << float(float((*itr)->expire_time - time(nullptr)) / float(DAY));// Time
+        mail.money = (*itr)->money;                         // copper
+        mail.cashOnDelivery = (*itr)->COD;                 // Cash on delivery
+        mail.checkedFlags = (*itr)->checked;               // flags
+        mail.daysLeft = float(float((*itr)->expire_time - time(nullptr)) / float(DAY));// Time
 
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
-        data << uint32((*itr)->mailTemplateId);             // mail template (MailTemplate.dbc)
+        mail.mailTemplateId = (*itr)->mailTemplateId;       // mail template (MailTemplate.dbc)
 #endif
 
+        response->mails.push_back(std::move(mail));
         mailsCount += 1;
     }
 
-    data.put<uint8>(0, mailsCount);                         // set real send mails to client
-    SendPacket(&data);
+    SendPacket(std::move(response));
 
     // recalculate m_nextMailDelivereTime and unReadMails
     pl->UpdateNextMailTimeAndUnreads();

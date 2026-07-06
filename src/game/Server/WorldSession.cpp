@@ -880,21 +880,19 @@ void WorldSession::KickPlayer()
 
 // Cancel channeling handler
 
-void WorldSession::SendAreaTriggerMessage(char const* Text, ...)
+void WorldSession::SendAreaTriggerMessage(char const* text, ...)
 {
     va_list ap;
     char szStr [1024];
     szStr[0] = '\0';
 
-    va_start(ap, Text);
-    vsnprintf(szStr, 1024, Text, ap);
+    va_start(ap, text);
+    vsnprintf(szStr, 1024, text, ap);
     va_end(ap);
 
-    uint32 length = strlen(szStr) + 1;
-    WorldPacket data(SMSG_AREA_TRIGGER_MESSAGE, 4 + length);
-    data << length;
-    data << szStr;
-    SendPacket(&data);
+    auto packet = std::make_unique<WorldPackets::Misc::AreaTriggerMessage>();
+    packet->message = szStr;
+    SendPacket(std::move(packet));
 }
 
 void WorldSession::SendNotification(char const* format, ...)
@@ -908,9 +906,9 @@ void WorldSession::SendNotification(char const* format, ...)
         vsnprintf(szStr, 1024, format, ap);
         va_end(ap);
 
-        WorldPacket data(SMSG_NOTIFICATION, (strlen(szStr) + 1));
-        data << szStr;
-        SendPacket(&data);
+        auto packet = std::make_unique<WorldPackets::Misc::Notification>();
+        packet->message = szStr;
+        SendPacket(std::move(packet));
     }
 }
 
@@ -926,9 +924,9 @@ void WorldSession::SendNotification(int32 string_id, ...)
         vsnprintf(szStr, 1024, format, ap);
         va_end(ap);
 
-        WorldPacket data(SMSG_NOTIFICATION, (strlen(szStr) + 1));
-        data << szStr;
-        SendPacket(&data);
+        auto packet = std::make_unique<WorldPackets::Misc::Notification>();
+        packet->message = szStr;
+        SendPacket(std::move(packet));
     }
 }
 
@@ -962,16 +960,16 @@ void WorldSession::SendAuthWaitQue(uint32 position)
 {
     if (position == 0)
     {
-        WorldPacket packet(SMSG_AUTH_RESPONSE, 1);
-        packet << uint8(AUTH_OK);
-        SendPacket(&packet);
+        auto packet = std::make_unique<WorldPackets::Misc::AuthResponse>();
+        packet->result = AUTH_OK;
+        SendPacket(std::move(packet));
     }
     else
     {
-        WorldPacket packet(SMSG_AUTH_RESPONSE, 5);
-        packet << uint8(AUTH_WAIT_QUEUE);
-        packet << uint32(position);
-        SendPacket(&packet);
+        auto packet = std::make_unique<WorldPackets::Misc::AuthResponse>();
+        packet->result = AUTH_WAIT_QUEUE;
+        packet->queuePosition = position;
+        SendPacket(std::move(packet));
     }
 }
 
@@ -1063,7 +1061,8 @@ void WorldSession::SendAccountDataTimes()
     uint32 const dataCount = isOldClient
                 ? static_cast<uint32>(OldAccountData::NUM_ACCOUNT_DATA_TYPES)
                 : static_cast<uint32>(NewAccountData::NUM_ACCOUNT_DATA_TYPES);
-    WorldPacket data(SMSG_ACCOUNT_DATA_MD5, dataCount * MD5::Digest::size());
+    auto packet = std::make_unique<WorldPackets::Misc::AccountDataMd5>();
+    packet->hashes.reserve(dataCount);
     for (uint32 index = 0; index < NewAccountData::NUM_ACCOUNT_DATA_TYPES; ++index)
     {
         // Skip indexes that dont exist in old clients
@@ -1076,9 +1075,11 @@ void WorldSession::SendAccountDataTimes()
 
         std::string const& accountData = m_accountData[index].data;
         MD5::Digest hash = accountData.empty() ? MD5::CreateEmpty() : MD5::ComputeFrom(accountData);
-        data.append(hash.data(), hash.size());
+        std::array<uint8, MD5::Digest::size()> hashBytes {};
+        std::copy(hash.begin(), hash.end(), hashBytes.begin());
+        packet->hashes.push_back(hashBytes);
     }
-    SendPacket(&data);
+    SendPacket(std::move(packet));
 }
 
 void WorldSession::LoadTutorialsData()
@@ -1108,10 +1109,9 @@ void WorldSession::LoadTutorialsData()
 
 void WorldSession::SendTutorialsData()
 {
-    WorldPacket data(SMSG_TUTORIAL_FLAGS, 4 * 8);
-    for (uint32 tutorial : m_tutorials)
-        data << tutorial;
-    SendPacket(&data);
+    auto packet = std::make_unique<WorldPackets::Misc::TutorialFlags>();
+    std::copy(std::begin(m_tutorials), std::end(m_tutorials), packet->tutorialData.begin());
+    SendPacket(std::move(packet));
 }
 
 void WorldSession::SaveTutorialsData()

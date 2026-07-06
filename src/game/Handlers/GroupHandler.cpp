@@ -772,11 +772,13 @@ void WorldSession::HandleRequestPartyMemberStatsOpcode(WorldPackets::Group::Requ
 
     if (!player || !player->IsInSameRaidWith(_player))
     {
+        WorldPacket data(
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_5_1
-        WorldPacket data(SMSG_PARTY_MEMBER_STATS_FULL, 3 + 4 + 1);
+            SMSG_PARTY_MEMBER_STATS_FULL,
 #else
-        WorldPacket data(SMSG_PARTY_MEMBER_STATS, 8 + 4 + 1);
+            SMSG_PARTY_MEMBER_STATS,
 #endif
+            8 + 4 + 1);
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
         data << packet.guid.WriteAsPacked();
 #else
@@ -789,12 +791,14 @@ void WorldSession::HandleRequestPartyMemberStatsOpcode(WorldPackets::Group::Requ
     }
 
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_5_1
-    WorldPacket data(SMSG_PARTY_MEMBER_STATS_FULL, 4 + 2 + 2 + 2 + 1 + 2 * 6 + 8 + 1 + 8);
+    auto packetResponse = std::make_unique<WorldPackets::Group::PartyMemberStatsFull>();
 #else
-    WorldPacket data(SMSG_PARTY_MEMBER_STATS, 4 + 2 + 2 + 2 + 1 + 2 * 6 + 8 + 1 + 8);
+    auto packetResponse = std::make_unique<WorldPackets::Group::PartyMemberStats>();
 #endif
-    BuildPartyMemberStatsPacket(player, &data, GROUP_UPDATE_FULL, true);
-    SendPacket(&data);
+    packetResponse->player = player;
+    packetResponse->updateMask = GROUP_UPDATE_FULL;
+    packetResponse->sendAllAuras = true;
+    SendPacket(std::move(packetResponse));
 }
 #endif
 

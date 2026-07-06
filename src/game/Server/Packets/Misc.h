@@ -461,6 +461,49 @@ namespace WorldPackets { namespace Misc
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
 
+    class AreaTriggerMessage final : public ServerPacket
+    {
+    public:
+        std::string message; // area trigger message
+
+        explicit AreaTriggerMessage() : ServerPacket(SMSG_AREA_TRIGGER_MESSAGE) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    struct WhoEntry
+    {
+        std::string playerName;            // player name
+        std::string guildName;             // guild name
+        uint32 level = 0;                  // player level
+        uint32 classId = 0;                // class id
+        uint32 raceId = 0;                 // race id
+        uint32 zoneId = 0;                 // zone id
+#if SUPPORTED_CLIENT_BUILD <= CLIENT_BUILD_1_8_4
+        uint32 partyStatus = 0;            // party status
+#endif
+    };
+
+    class WhoResponse final : public ServerPacket
+    {
+    public:
+        std::vector<WhoEntry> entries;
+        uint32 displayedCount = 0;         // listed count
+        uint32 onlineCount = 0;            // online count
+
+        explicit WhoResponse() : ServerPacket(SMSG_WHO) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class AuthResponse final : public ServerPacket
+    {
+    public:
+        uint8 result = 0;                  // auth result
+        uint32 queuePosition = 0;          // queue position when waiting
+
+        explicit AuthResponse() : ServerPacket(SMSG_AUTH_RESPONSE) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
     class UpdateAccountDataResponse final : public ServerPacket
     {
     public:
@@ -644,6 +687,24 @@ namespace WorldPackets { namespace Misc
         std::string message; // Notification message
 
         explicit Notification() : ServerPacket(SMSG_NOTIFICATION) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class AccountDataMd5 final : public ServerPacket
+    {
+    public:
+        std::vector<std::array<uint8, 16>> hashes;
+
+        explicit AccountDataMd5() : ServerPacket(SMSG_ACCOUNT_DATA_MD5) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    class TutorialFlags final : public ServerPacket
+    {
+    public:
+        std::array<uint32, 8> tutorialData = {};
+
+        explicit TutorialFlags() : ServerPacket(SMSG_TUTORIAL_FLAGS) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
 

@@ -1,5 +1,6 @@
 #include "Group.h"
 #include "Group/Group.h"
+#include "Player.h"
 
 void WorldPackets::Group::GroupInvite::ReadFromWorldPacket(WorldPacket& recv_data)
 {
@@ -185,3 +186,144 @@ void WorldPackets::Group::LootMasterList::AppendBodyTo(ByteBuffer& buffer) const
     for (auto const& guid : eligibleLooters)
         buffer << guid;
 }
+
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_4_2
+namespace
+{
+    void AppendPartyMemberStats(ByteBuffer& buffer, ::Player const* player, uint32 mask, bool sendAllAuras)
+    {
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
+        buffer << player->GetPackGUID();
+#else
+        buffer << player->GetGUID();
+#endif
+        buffer << mask;
+
+        if (mask & GROUP_UPDATE_FLAG_STATUS)
+            buffer << uint8(GetGroupMemberStatus(player));
+
+        if (mask & GROUP_UPDATE_FLAG_CUR_HP)
+            buffer << uint16(player->GetHealth());
+
+        if (mask & GROUP_UPDATE_FLAG_MAX_HP)
+            buffer << uint16(player->GetMaxHealth());
+
+        Powers powerType = player->GetPowerType();
+        if (mask & GROUP_UPDATE_FLAG_POWER_TYPE)
+            buffer << uint8(powerType);
+
+        if (mask & GROUP_UPDATE_FLAG_CUR_POWER)
+            buffer << uint16(player->GetPower(powerType));
+
+        if (mask & GROUP_UPDATE_FLAG_MAX_POWER)
+            buffer << uint16(player->GetMaxPower(powerType));
+
+        if (mask & GROUP_UPDATE_FLAG_LEVEL)
+            buffer << uint16(player->GetLevel());
+
+        if (mask & GROUP_UPDATE_FLAG_ZONE)
+            buffer << uint16(player->GetCachedZoneId());
+
+        if (mask & GROUP_UPDATE_FLAG_POSITION)
+            buffer << int16(player->GetPositionX()) << int16(player->GetPositionY());
+
+        if (mask & GROUP_UPDATE_FLAG_AURAS)
+        {
+            uint64 auramask = sendAllAuras ? player->GetAuraApplicationMask() : player->GetAuraUpdateMask();
+            buffer << uint32(auramask);
+            for (uint32 i = 0; i < MAX_POSITIVE_AURAS; ++i)
+                if (auramask & (uint64(1) << i))
+                    buffer << uint16(player->GetUInt32Value(UNIT_FIELD_AURA + i));
+        }
+
+        if (mask & GROUP_UPDATE_FLAG_AURAS_NEGATIVE)
+        {
+            uint64 auramask = sendAllAuras ? player->GetNegativeAuraApplicationMask() : player->GetAuraUpdateMask();
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_6_1
+            uint16 maskForClient = uint16(auramask >> 32);
+#else
+            uint8 maskForClient = uint8(auramask >> 32);
+#endif
+            buffer << maskForClient;
+            for (uint64 i = MAX_POSITIVE_AURAS; i < MAX_AURAS; ++i)
+                if (auramask & (uint64(1) << i))
+                    buffer << uint16(player->GetUInt32Value(UNIT_FIELD_AURA + i));
+        }
+
+        Pet* pet = player->GetPet();
+        if (mask & GROUP_UPDATE_FLAG_PET_GUID)
+            buffer << (pet ? pet->GetObjectGuid() : ObjectGuid());
+
+        if (mask & GROUP_UPDATE_FLAG_PET_NAME)
+        {
+            if (pet)
+                buffer << pet->GetName();
+            else
+                buffer << uint8(0);
+        }
+
+        if (mask & GROUP_UPDATE_FLAG_PET_MODEL_ID)
+            buffer << uint16(pet ? pet->GetDisplayId() : 0);
+
+        if (mask & GROUP_UPDATE_FLAG_PET_CUR_HP)
+            buffer << uint16(pet ? pet->GetHealth() : 0);
+
+        if (mask & GROUP_UPDATE_FLAG_PET_MAX_HP)
+            buffer << uint16(pet ? pet->GetMaxHealth() : 0);
+
+        if (mask & GROUP_UPDATE_FLAG_PET_POWER_TYPE)
+            buffer << uint8(pet ? pet->GetPowerType() : 0);
+
+        if (mask & GROUP_UPDATE_FLAG_PET_CUR_POWER)
+            buffer << uint16(pet ? pet->GetPower(pet->GetPowerType()) : 0);
+
+        if (mask & GROUP_UPDATE_FLAG_PET_MAX_POWER)
+            buffer << uint16(pet ? pet->GetMaxPower(pet->GetPowerType()) : 0);
+
+        if (mask & GROUP_UPDATE_FLAG_PET_AURAS)
+        {
+            if (pet)
+            {
+                uint64 auramask = sendAllAuras ? pet->GetAuraApplicationMask() : pet->GetAuraUpdateMask();
+                buffer << uint32(auramask);
+                for (uint32 i = 0; i < MAX_POSITIVE_AURAS; ++i)
+                    if (auramask & (uint64(1) << i))
+                        buffer << uint16(pet->GetUInt32Value(UNIT_FIELD_AURA + i));
+            }
+            else
+                buffer << uint32(0);
+        }
+
+        if (mask & GROUP_UPDATE_FLAG_PET_AURAS_NEGATIVE)
+        {
+            if (pet)
+            {
+                uint64 auramask = sendAllAuras ? pet->GetNegativeAuraApplicationMask() : pet->GetAuraUpdateMask();
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_6_1
+                uint16 maskForClient = uint16(auramask >> 32);
+#else
+                uint8 maskForClient = uint8(auramask >> 32);
+#endif
+                buffer << maskForClient;
+                for (uint32 i = MAX_POSITIVE_AURAS; i < MAX_AURAS; ++i)
+                    if (auramask & (uint64(1) << i))
+                        buffer << uint16(pet->GetUInt32Value(UNIT_FIELD_AURA + i));
+            }
+            else
+                buffer << uint16(0);
+        }
+    }
+}
+
+void WorldPackets::Group::PartyMemberStats::AppendBodyTo(ByteBuffer& buffer) const
+{
+    AppendPartyMemberStats(buffer, player, updateMask, sendAllAuras);
+}
+
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_5_1
+void WorldPackets::Group::PartyMemberStatsFull::AppendBodyTo(ByteBuffer& buffer) const
+{
+    AppendPartyMemberStats(buffer, player, updateMask, sendAllAuras);
+}
+#endif
+#endif

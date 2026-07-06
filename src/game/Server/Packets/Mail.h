@@ -9,6 +9,12 @@
 
 namespace WorldPackets { namespace Mail
 {
+    static constexpr uint8 MailMessageTypeNormal = 0;      // player sender guid
+    static constexpr uint8 MailMessageTypeAuction = 2;     // auction house sender id
+    static constexpr uint8 MailMessageTypeCreature = 3;    // creature entry sender id
+    static constexpr uint8 MailMessageTypeGameObject = 4;  // gameobject entry sender id
+    static constexpr uint8 MailMessageTypeItem = 5;        // item entry sender, no extra sender payload
+
     class SendMail final : public ClientPacket
     {
     public:
@@ -139,6 +145,47 @@ namespace WorldPackets { namespace Mail
         uint32 itemCount = 0;
 
         SendMailResult() : ServerPacket(SMSG_SEND_MAIL_RESULT) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+    struct MailListItem
+    {
+        uint32 itemEntry = 0;              // attached item entry id
+        uint32 permanentEnchantId = 0;     // permanent enchantment id
+        uint32 randomPropertyId = 0;       // random property id
+        uint32 suffixFactor = 0;           // suffix factor
+        uint8 count = 0;                   // item stack count
+        uint32 spellCharges = 0;           // remaining spell charges
+        uint32 maxDurability = 0;          // maximum durability
+        uint32 durability = 0;             // current durability
+    };
+
+    struct MailListEntry
+    {
+        uint32 messageId = 0;              // mail message id
+        uint8 messageType = 0;             // MailMessageType enum value
+        ObjectGuid senderGuid;             // sender guid for normal mail
+        uint32 senderEntry = 0;            // sender entry/id for non-player senders
+        std::string subject;               // subject line
+        uint32 itemTextId = 0;             // item text id
+        uint32 packageId = 0;              // package id
+        uint32 stationeryId = 0;           // stationery id
+        MailListItem attachedItem;         // attached item data
+        uint32 money = 0;                  // attached money
+        uint32 cashOnDelivery = 0;         // COD amount
+        uint32 checkedFlags = 0;           // checked flags
+        float daysLeft = 0.0f;             // remaining time in days
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
+        uint32 mailTemplateId = 0;         // mail template id
+#endif
+    };
+
+    class MailListResult final : public ServerPacket
+    {
+    public:
+        std::vector<MailListEntry> mails;
+
+        MailListResult() : ServerPacket(SMSG_MAIL_LIST_RESULT) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
 

@@ -126,4 +126,16 @@ void WorldPackets::Petition::PetitionShowList::AppendBodyTo(ByteBuffer& buffer) 
     }
 }
 
+void WorldPackets::Petition::PetitionShowSignaturesResponse::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << itemGuid;
+    buffer << ownerGuid;
+    buffer << petitionGuid;
+    buffer << uint8(signerGuids.size());
+    for (ObjectGuid const& signerGuid : signerGuids)
+    {
+        buffer << signerGuid;
+        buffer << uint32(0);
+    }
+}
 

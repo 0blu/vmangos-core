@@ -94,7 +94,7 @@ void WorldSession::HandleTrainerListOpcode(WorldPackets::Npc::TrainerList const&
     SendTrainerList(packet.guid);
 }
 
-static void SendTrainerSpellHelper(WorldPacket& data, TrainerSpell const* tSpell, uint32 triggerSpell, TrainerSpellState state, float fDiscountMod, bool can_learn_primary_prof)
+static bool BuildTrainerSpellData(WorldPackets::Npc::TrainerListSpell& trainerSpell, TrainerSpell const* tSpell, uint32 triggerSpell, TrainerSpellState state, float fDiscountMod, bool can_learn_primary_prof)
 {
     SpellEntry const* triggerInfo = sSpellMgr.GetSpellEntry(triggerSpell);
     uint32 spellLevel = 0;
@@ -103,39 +103,42 @@ static void SendTrainerSpellHelper(WorldPacket& data, TrainerSpell const* tSpell
     else if (triggerInfo)
         spellLevel = triggerInfo->spellLevel;
     else
-        return;
+        return false;
 
     bool primary_prof_first_rank = sSpellMgr.IsPrimaryProfessionFirstRankSpell(triggerSpell);
 
     SpellChainNode const* chain_node = sSpellMgr.GetSpellChainNode(triggerSpell);
 
-    data << uint32(tSpell->spell);
-    data << uint8(state == TRAINER_SPELL_GREEN_DISABLED ? TRAINER_SPELL_GREEN : state);
-    data << uint32(tSpell->spellCost * fDiscountMod + 0.5f);
-
-    data << uint32(primary_prof_first_rank && can_learn_primary_prof ? 1 : 0);
+    trainerSpell.spellId = tSpell->spell;
+    trainerSpell.state = state == TRAINER_SPELL_GREEN_DISABLED ? TRAINER_SPELL_GREEN : state;
+    trainerSpell.spellCost = uint32(tSpell->spellCost * fDiscountMod + 0.5f);
+    trainerSpell.canLearnPrimaryProfessionFirstRank = primary_prof_first_rank && can_learn_primary_prof ? 1 : 0;
     // primary prof. learn confirmation dialog
-    data << uint32(primary_prof_first_rank ? 1 : 0);    // must be equal prev. field to have learn button in enabled state
-    data << uint8(spellLevel);
-    data << uint32(tSpell->reqSkill);
-    data << uint32(tSpell->reqSkillValue);
+    trainerSpell.primaryProfessionFirstRank = primary_prof_first_rank ? 1 : 0;    // must be equal prev. field to have learn button in enabled state
+    trainerSpell.requiredLevel = spellLevel;
+    trainerSpell.requiredSkill = tSpell->reqSkill;
+    trainerSpell.requiredSkillValue = tSpell->reqSkillValue;
     // Nostalrius: le client veut spellreq1, spellreq2 avec spellreq2 != 0 seulement si spellreq1 != 0.
     if (chain_node)
     {
         if (chain_node->req)
         {
-            data << uint32(chain_node->req);
-            data << uint32(chain_node->prev);
+            trainerSpell.requiredSpellId1 = chain_node->req;
+            trainerSpell.requiredSpellId2 = chain_node->prev;
         }
         else
         {
-            data << uint32(chain_node->prev);
-            data << uint32(0);
+            trainerSpell.requiredSpellId1 = chain_node->prev;
+            trainerSpell.requiredSpellId2 = 0;
         }
     }
     else
-        data << uint32(0) << uint32(0);
-    data << uint32(0);
+    {
+        trainerSpell.requiredSpellId1 = 0;
+        trainerSpell.requiredSpellId2 = 0;
+    }
+    trainerSpell.reserved = 0;
+    return true;
 }
 
 void WorldSession::SendTrainerList(ObjectGuid guid)
@@ -185,12 +188,11 @@ void WorldSession::SendTrainerList(ObjectGuid guid)
         strTitle = GetMangosString(LANG_NPC_TAINER_HELLO);
     }
 
-    WorldPacket data(SMSG_TRAINER_LIST, 8 + 4 + 4 + maxcount * 38 + strTitle.size() + 1);
-    data << ObjectGuid(guid);
-    data << uint32(trainer_type);
-
-    size_t count_pos = data.wpos();
-    data << uint32(maxcount);
+    auto packet = std::make_unique<WorldPackets::Npc::TrainerListResponse>();
+    packet->trainerGuid = guid;
+    packet->trainerType = trainer_type;
+    packet->greeting = strTitle;
+    packet->spells.reserve(maxcount);
 
     // reputation discount
     float fDiscountMod = _player->GetReputationPriceDiscount(unit);
@@ -211,9 +213,12 @@ void WorldSession::SendTrainerList(ObjectGuid guid)
 
             TrainerSpellState state = _player->GetTrainerSpellState(tSpell);
 
-            SendTrainerSpellHelper(data, tSpell, triggerSpell, state, fDiscountMod, can_learn_primary_prof);
-
-            ++count;
+            WorldPackets::Npc::TrainerListSpell trainerSpell;
+            if (BuildTrainerSpellData(trainerSpell, tSpell, triggerSpell, state, fDiscountMod, can_learn_primary_prof))
+            {
+                packet->spells.push_back(std::move(trainerSpell));
+                ++count;
+            }
         }
     }
 
@@ -230,16 +235,15 @@ void WorldSession::SendTrainerList(ObjectGuid guid)
 
             TrainerSpellState state = _player->GetTrainerSpellState(tSpell);
 
-            SendTrainerSpellHelper(data, tSpell, triggerSpell, state, fDiscountMod, can_learn_primary_prof);
-
-            ++count;
+            WorldPackets::Npc::TrainerListSpell trainerSpell;
+            if (BuildTrainerSpellData(trainerSpell, tSpell, triggerSpell, state, fDiscountMod, can_learn_primary_prof))
+            {
+                packet->spells.push_back(std::move(trainerSpell));
+                ++count;
+            }
         }
     }
-
-    data << strTitle;
-
-    data.put<uint32>(count_pos, count);
-    SendPacket(&data);
+    SendPacket(std::move(packet));
 }
 
 void WorldSession::SendTrainingSuccess(ObjectGuid guid, uint32 spellId)

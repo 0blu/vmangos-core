@@ -8,6 +8,8 @@
 #include <string>
 #include <vector>
 
+class Player;
+
 namespace WorldPackets { namespace Group
 {
     class GroupInvite final : public ClientPacket
@@ -294,6 +296,32 @@ namespace WorldPackets { namespace Group
         explicit LootMasterList() : ServerPacket(SMSG_LOOT_MASTER_LIST) {}
         void AppendBodyTo(ByteBuffer& buffer) const override;
     };
+
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_4_2
+    class PartyMemberStats final : public ServerPacket
+    {
+    public:
+        ::Player const* player = nullptr;  // player to serialize stats for
+        uint32 updateMask = 0;             // group update mask
+        bool sendAllAuras = false;         // whether to send all auras or only updates
+
+        explicit PartyMemberStats() : ServerPacket(SMSG_PARTY_MEMBER_STATS) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_5_1
+    class PartyMemberStatsFull final : public ServerPacket
+    {
+    public:
+        ::Player const* player = nullptr;  // player to serialize stats for
+        uint32 updateMask = 0;             // group update mask
+        bool sendAllAuras = false;         // whether to send all auras or only updates
+
+        explicit PartyMemberStatsFull() : ServerPacket(SMSG_PARTY_MEMBER_STATS_FULL) {}
+        void AppendBodyTo(ByteBuffer& buffer) const override;
+    };
+#endif
+#endif
 
 }} // namespace WorldPackets::Group
 

@@ -271,9 +271,9 @@ void WorldSession::HandleItemQuerySingleOpcode(WorldPackets::Item::QueryItem con
     ItemPrototype const* pProto = sObjectMgr.GetItemPrototype(packet.itemEntry);
     if (!pProto || (!pProto->Discovered && GetSecurity() <= SEC_PLAYER))
     {
-        WorldPacket data(SMSG_ITEM_QUERY_SINGLE_RESPONSE, 4);
-        data << uint32(packet.itemEntry | 0x80000000);
-        SendPacket(&data);
+        auto response = std::make_unique<WorldPackets::Item::ItemQuerySingleResponse>();
+        response->itemEntry = packet.itemEntry;
+        SendPacket(std::move(response));
         return;
     }
 
@@ -292,67 +292,65 @@ void WorldSession::HandleItemQuerySingleOpcode(WorldPackets::Item::QueryItem con
                 description = il->Description[loc_idx].c_str();
         }
     }
-    // guess size
-    WorldPacket data(SMSG_ITEM_QUERY_SINGLE_RESPONSE, 600);
-    data << pProto->ItemId;
-    data << pProto->Class;
+    auto response = std::make_unique<WorldPackets::Item::ItemQuerySingleResponse>();
+    response->found = true;
+    response->itemEntry = pProto->ItemId;
+    response->itemClass = pProto->Class;
     // client known only 0 subclass (and 1-2 obsolute subclasses)
-    data << (pProto->Class == ITEM_CLASS_CONSUMABLE ? uint32(0) : pProto->SubClass);
-    data << name;                                       // max length of any of 4 names: 256 bytes
-    data << "";                                         //pProto->Name2; // blizz not send name there, just empty string
-    data << "";                                         //pProto->Name3; // blizz not send name there, just empty string
-    data << "";                                         //pProto->Name4; // blizz not send name there, just empty string
-    data << pProto->DisplayInfoID;
-    data << pProto->Quality;
-    data << pProto->Flags;
-    data << pProto->BuyPrice;
-    data << pProto->SellPrice;
-    data << pProto->InventoryType;
-    data << pProto->AllowableClass;
-    data << pProto->AllowableRace;
-    data << pProto->ItemLevel;
-    data << pProto->RequiredLevel;
-    data << pProto->RequiredSkill;
-    data << pProto->RequiredSkillRank;
-    data << pProto->RequiredSpell;
-    data << pProto->RequiredHonorRank;
-    data << pProto->RequiredCityRank;
+    response->itemSubClass = (pProto->Class == ITEM_CLASS_CONSUMABLE ? uint32(0) : pProto->SubClass);
+    response->name = name;                                  // max length of any of 4 names: 256 bytes
+    response->displayInfoId = pProto->DisplayInfoID;
+    response->quality = pProto->Quality;
+    response->flags = pProto->Flags;
+    response->buyPrice = pProto->BuyPrice;
+    response->sellPrice = pProto->SellPrice;
+    response->inventoryType = pProto->InventoryType;
+    response->allowableClass = pProto->AllowableClass;
+    response->allowableRace = pProto->AllowableRace;
+    response->itemLevel = pProto->ItemLevel;
+    response->requiredLevel = pProto->RequiredLevel;
+    response->requiredSkill = pProto->RequiredSkill;
+    response->requiredSkillRank = pProto->RequiredSkillRank;
+    response->requiredSpell = pProto->RequiredSpell;
+    response->requiredHonorRank = pProto->RequiredHonorRank;
+    response->requiredCityRank = pProto->RequiredCityRank;
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_6_1
-    data << pProto->RequiredReputationFaction;
-    data << (pProto->RequiredReputationFaction > 0  ? pProto->RequiredReputationRank : 0);   // send value only if reputation faction id setted (needed for some items)
+    response->requiredReputationFaction = pProto->RequiredReputationFaction;
+    response->requiredReputationRank = (pProto->RequiredReputationFaction > 0  ? pProto->RequiredReputationRank : 0);   // send value only if reputation faction id setted (needed for some items)
 #endif
-    data << pProto->MaxCount;
-    data << pProto->Stackable;
-    data << pProto->ContainerSlots;
-    for (const auto& i : pProto->ItemStat)
+    response->maxCount = pProto->MaxCount;
+    response->stackable = pProto->Stackable;
+    response->containerSlots = pProto->ContainerSlots;
+    for (size_t index = 0; index < WorldPackets::Item::ItemStatCount; ++index)
     {
-        data << i.ItemStatType;
-        data << i.ItemStatValue;
+        response->stats[index].type = pProto->ItemStat[index].ItemStatType;
+        response->stats[index].value = pProto->ItemStat[index].ItemStatValue;
     }
-    for (const auto& i : pProto->Damage)
+    for (size_t index = 0; index < WorldPackets::Item::ItemDamageCount; ++index)
     {
-        data << i.DamageMin;
-        data << i.DamageMax;
-        data << i.DamageType;
+        response->damages[index].minimum = pProto->Damage[index].DamageMin;
+        response->damages[index].maximum = pProto->Damage[index].DamageMax;
+        response->damages[index].type = pProto->Damage[index].DamageType;
     }
 
     // resistances (7)
-    data << pProto->Armor;
-    data << pProto->HolyRes;
-    data << pProto->FireRes;
-    data << pProto->NatureRes;
-    data << pProto->FrostRes;
-    data << pProto->ShadowRes;
-    data << pProto->ArcaneRes;
+    response->armor = pProto->Armor;
+    response->holyResistance = pProto->HolyRes;
+    response->fireResistance = pProto->FireRes;
+    response->natureResistance = pProto->NatureRes;
+    response->frostResistance = pProto->FrostRes;
+    response->shadowResistance = pProto->ShadowRes;
+    response->arcaneResistance = pProto->ArcaneRes;
 
-    data << pProto->Delay;
-    data << pProto->AmmoType;
+    response->delay = pProto->Delay;
+    response->ammoType = pProto->AmmoType;
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
-    data << (float)pProto->RangedModRange;
+    response->rangedModRange = pProto->RangedModRange;
 #endif
 
-    for (const auto& itr : pProto->Spells)
+    for (size_t index = 0; index < WorldPackets::Item::ItemSpellCount; ++index)
     {
+        auto const& itr = pProto->Spells[index];
         // send DBC data for cooldowns in same way as it used in Spell::SendSpellCooldown
         // use `item_template` or if not set then only use spell cooldowns
         SpellEntry const* spell = sSpellMgr.GetSpellEntry(itr.SpellId);
@@ -360,58 +358,57 @@ void WorldSession::HandleItemQuerySingleOpcode(WorldPackets::Item::QueryItem con
         {
             bool db_data = itr.SpellCooldown >= 0 || itr.SpellCategoryCooldown >= 0;
 
-            data << itr.SpellId;
-            data << itr.SpellTrigger;
-
             // let the database control the sign here.  negative means that the item should be consumed once the charges are consumed.
-            data << itr.SpellCharges;
+            response->spells[index].spellId = itr.SpellId;
+            response->spells[index].trigger = itr.SpellTrigger;
+            response->spells[index].charges = itr.SpellCharges;
 
             if (db_data)
             {
-                data << uint32(itr.SpellCooldown);
-                data << uint32(itr.SpellCategory);
-                data << uint32(itr.SpellCategoryCooldown);
+                response->spells[index].cooldown = uint32(itr.SpellCooldown);
+                response->spells[index].category = uint32(itr.SpellCategory);
+                response->spells[index].categoryCooldown = uint32(itr.SpellCategoryCooldown);
             }
             else
             {
-                data << uint32(spell->RecoveryTime);
-                data << uint32(spell->Category);
-                data << uint32(spell->CategoryRecoveryTime);
+                response->spells[index].cooldown = uint32(spell->RecoveryTime);
+                response->spells[index].category = uint32(spell->Category);
+                response->spells[index].categoryCooldown = uint32(spell->CategoryRecoveryTime);
             }
         }
         else
         {
-            data << uint32(0);
-            data << uint32(0);
-            data << uint32(0);
-            data << uint32(-1);
-            data << uint32(0);
-            data << uint32(-1);
+            response->spells[index].spellId = 0;
+            response->spells[index].trigger = 0;
+            response->spells[index].charges = 0;
+            response->spells[index].cooldown = uint32(-1);
+            response->spells[index].category = 0;
+            response->spells[index].categoryCooldown = uint32(-1);
         }
     }
-    data << pProto->Bonding;
-    data << description;
-    data << pProto->PageText;
-    data << pProto->LanguageID;
-    data << pProto->PageMaterial;
-    data << pProto->StartQuest;
-    data << pProto->LockID;
-    data << pProto->Material;
-    data << pProto->Sheath;
-    data << pProto->RandomProperty;
-    data << pProto->Block;
-    data << pProto->ItemSet;
-    data << pProto->MaxDurability;
+    response->bonding = pProto->Bonding;
+    response->description = description;
+    response->pageText = pProto->PageText;
+    response->languageId = pProto->LanguageID;
+    response->pageMaterial = pProto->PageMaterial;
+    response->startQuest = pProto->StartQuest;
+    response->lockId = pProto->LockID;
+    response->material = pProto->Material;
+    response->sheath = pProto->Sheath;
+    response->randomProperty = pProto->RandomProperty;
+    response->block = pProto->Block;
+    response->itemSet = pProto->ItemSet;
+    response->maxDurability = pProto->MaxDurability;
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_6_1
-    data << pProto->Area;
+    response->area = pProto->Area;
 #endif
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_10_2
-    data << pProto->Map;
+    response->map = pProto->Map;
 #endif
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
-    data << pProto->BagFamily;
+    response->bagFamily = pProto->BagFamily;
 #endif
-    SendPacket(&data);
+    SendPacket(std::move(response));
 }
 
 void WorldSession::HandleReadItemOpcode(WorldPackets::Item::ReadItem const& packet)
@@ -725,11 +722,10 @@ void WorldSession::SendListInventory(ObjectGuid vendorguid, uint8 menu_type)
 
     if (!vItems && !tItems)
     {
-        WorldPacket data(SMSG_LIST_INVENTORY, (8 + 1 + 1));
-        data << ObjectGuid(vendorguid);
-        data << uint8(0);                                   // count==0, next will be error code
-        data << uint8(0);                                   // "Vendor has no inventory"
-        SendPacket(&data);
+        auto packet = std::make_unique<WorldPackets::Item::ListInventoryResponse>();
+        packet->vendorGuid = vendorguid;
+        packet->reason = 0;                                 // "Vendor has no inventory"
+        SendPacket(std::move(packet));
         return;
     }
 
@@ -738,11 +734,9 @@ void WorldSession::SendListInventory(ObjectGuid vendorguid, uint8 menu_type)
 
     uint8 count = 0;
 
-    WorldPacket data(SMSG_LIST_INVENTORY, (8 + 1 + numitems * 7 * 4));
-    data << ObjectGuid(vendorguid);
-
-    size_t count_pos = data.wpos();
-    data << uint8(count);
+    auto packet = std::make_unique<WorldPackets::Item::ListInventoryResponse>();
+    packet->vendorGuid = vendorguid;
+    packet->items.reserve(numitems);
 
     float discountMod = _player->GetReputationPriceDiscount(pCreature);
 
@@ -784,18 +778,18 @@ void WorldSession::SendListInventory(ObjectGuid vendorguid, uint8 menu_type)
                         continue;
                 }
 
-                ++count;
-
                 // reputation discount
                 uint32 price = uint32(pProto->BuyPrice * discountMod + 0.5f);
-
-                data << uint32(count);
-                data << uint32(crItem->item);
-                data << uint32(pProto->DisplayInfoID);
-                data << uint32(crItem->maxcount <= 0 ? 0xFFFFFFFF : pCreature->GetVendorItemCurrentCount(crItem));
-                data << uint32(price);
-                data << uint32(pProto->MaxDurability);
-                data << uint32(pProto->BuyCount);
+                WorldPackets::Item::VendorInventoryItem item;
+                item.slot = count + 1;
+                item.itemEntry = crItem->item;
+                item.displayInfoId = pProto->DisplayInfoID;
+                item.availableCount = crItem->maxcount <= 0 ? 0xFFFFFFFF : pCreature->GetVendorItemCurrentCount(crItem);
+                item.price = price;
+                item.maxDurability = pProto->MaxDurability;
+                item.buyCount = pProto->BuyCount;
+                packet->items.push_back(item);
+                ++count;
 
                 if (count >= MAX_VENDOR_ITEMS)
                     break;
@@ -805,13 +799,13 @@ void WorldSession::SendListInventory(ObjectGuid vendorguid, uint8 menu_type)
 
     if (count == 0)
     {
-        data << uint8(0);                                   // "Vendor has no inventory"
-        SendPacket(&data);
+        packet->items.clear();
+        packet->reason = 0;                                 // "Vendor has no inventory"
+        SendPacket(std::move(packet));
         return;
     }
 
-    data.put<uint8>(count_pos, count);
-    SendPacket(&data);
+    SendPacket(std::move(packet));
 }
 
 void WorldSession::HandleAutoStoreBagItemOpcode(WorldPackets::Item::AutoStoreBagItem const& packet)

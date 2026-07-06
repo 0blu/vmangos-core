@@ -240,3 +240,118 @@ void WorldPackets::Item::EnchantmentLog::AppendBodyTo(ByteBuffer& buffer) const
     buffer << spellId;
     buffer << uint8(showAffiliation ? 1 : 0);
 }
+
+void WorldPackets::Item::ItemQuerySingleResponse::AppendBodyTo(ByteBuffer& buffer) const
+{
+    if (!found)
+    {
+        buffer << (itemEntry | 0x80000000);
+        return;
+    }
+
+    buffer << itemEntry;
+    buffer << itemClass;
+    buffer << itemSubClass;
+    buffer << name;
+    buffer << "";
+    buffer << "";
+    buffer << "";
+    buffer << displayInfoId;
+    buffer << quality;
+    buffer << flags;
+    buffer << buyPrice;
+    buffer << sellPrice;
+    buffer << inventoryType;
+    buffer << allowableClass;
+    buffer << allowableRace;
+    buffer << itemLevel;
+    buffer << requiredLevel;
+    buffer << requiredSkill;
+    buffer << requiredSkillRank;
+    buffer << requiredSpell;
+    buffer << requiredHonorRank;
+    buffer << requiredCityRank;
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_6_1
+    buffer << requiredReputationFaction;
+    buffer << requiredReputationRank;
+#endif
+    buffer << maxCount;
+    buffer << stackable;
+    buffer << containerSlots;
+    for (ItemStatValue const& stat : stats)
+    {
+        buffer << stat.type;
+        buffer << stat.value;
+    }
+    for (ItemDamageValue const& damage : damages)
+    {
+        buffer << damage.minimum;
+        buffer << damage.maximum;
+        buffer << damage.type;
+    }
+    buffer << armor;
+    buffer << holyResistance;
+    buffer << fireResistance;
+    buffer << natureResistance;
+    buffer << frostResistance;
+    buffer << shadowResistance;
+    buffer << arcaneResistance;
+    buffer << delay;
+    buffer << ammoType;
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_9_4
+    buffer << rangedModRange;
+#endif
+    for (ItemSpellValue const& spell : spells)
+    {
+        buffer << spell.spellId;
+        buffer << spell.trigger;
+        buffer << spell.charges;
+        buffer << spell.cooldown;
+        buffer << spell.category;
+        buffer << spell.categoryCooldown;
+    }
+    buffer << bonding;
+    buffer << description;
+    buffer << pageText;
+    buffer << languageId;
+    buffer << pageMaterial;
+    buffer << startQuest;
+    buffer << lockId;
+    buffer << material;
+    buffer << sheath;
+    buffer << randomProperty;
+    buffer << block;
+    buffer << itemSet;
+    buffer << maxDurability;
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_6_1
+    buffer << area;
+#endif
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_10_2
+    buffer << map;
+#endif
+#if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_8_4
+    buffer << bagFamily;
+#endif
+}
+
+void WorldPackets::Item::ListInventoryResponse::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << vendorGuid;
+    buffer << uint8(items.size());
+    if (items.empty())
+    {
+        buffer << reason;
+        return;
+    }
+
+    for (VendorInventoryItem const& item : items)
+    {
+        buffer << item.slot;
+        buffer << item.itemEntry;
+        buffer << item.displayInfoId;
+        buffer << item.availableCount;
+        buffer << item.price;
+        buffer << item.maxDurability;
+        buffer << item.buyCount;
+    }
+}

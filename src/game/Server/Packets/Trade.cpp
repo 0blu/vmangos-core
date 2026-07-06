@@ -51,4 +51,39 @@ void WorldPackets::Trade::TradeStatus::AppendBodyTo(ByteBuffer& buffer) const
     }
 }
 
+void WorldPackets::Trade::TradeStatusExtended::AppendBodyTo(ByteBuffer& buffer) const
+{
+    buffer << traderState;
+    buffer << tradeSlotCount;
+    buffer << displayedTradeSlotCount;
+    buffer << traderMoney;
+    buffer << spellId;
+
+    for (uint8 slotIndex = 0; slotIndex < items.size(); ++slotIndex)
+    {
+        buffer << slotIndex;
+
+        TradeStatusExtendedItem const& item = items[slotIndex];
+        if (!item.itemTemplate)
+        {
+            for (uint8 zeroField = 0; zeroField < 15; ++zeroField)
+                buffer << static_cast<uint32>(0); // since we have no item, we need to fill the space with something
+            continue;
+        }
+
+        buffer << item.itemTemplate->ItemId;
+        buffer << item.itemTemplate->DisplayInfoID;
+        buffer << item.stackCount;
+        buffer << item.isWrapped;
+        buffer << item.giftCreatorGuid;
+        buffer << item.enchantmentId;
+        buffer << item.creatorGuid;
+        buffer << item.spellCharges;
+        buffer << item.itemSuffixFactor;
+        buffer << item.itemRandomPropertyId;
+        buffer << item.itemTemplate->LockID;
+        buffer << item.maxDurability;
+        buffer << item.durability;
+    }
+}
 
